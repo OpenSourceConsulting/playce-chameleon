@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <!-- Sample Template -->
+    <definition name=".sampleTemplate" template="/WEB-INF/jsp/layout/mainLayout.jsp">
+        <put-attribute name="css" value="/WEB-INF/jsp/layout/css/sample-css.jsp" />
+        <put-attribute name="js" value="/WEB-INF/jsp/layout/js/sample-js.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/layout/part/sample/top.jsp" />
+        <put-attribute name="contents" value="/WEB-INF/jsp/layout/part/blank.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/layout/part/sample/bottom.jsp" />
+    </definition>
+    
+    <!-- Default Main Template -->
+    <definition name=".mainTemplate" template="/WEB-INF/jsp/layout/mainLayout.jsp">
+        <put-attribute name="css" value="/WEB-INF/jsp/layout/css/chameleon-css.jsp" />
+        <put-attribute name="js" value="/WEB-INF/jsp/layout/js/chameleon-js.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/layout/part/chameleon/top.jsp" />
+        <put-attribute name="contents" value="/WEB-INF/jsp/layout/part/blank.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/layout/part/chameleon/bottom.jsp" />
+    </definition>
+    
+    <!-- Default Sub Template -->
+    <definition name=".subTemplate" template="/WEB-INF/jsp/layout/subLayout.jsp">
+        <put-attribute name="css" value="/WEB-INF/jsp/layout/css/chameleon-css.jsp" />
+        <put-attribute name="js" value="/WEB-INF/jsp/layout/js/chameleon-js.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/layout/part/chameleon/top.jsp" />
+        <put-attribute name="left" value="/WEB-INF/jsp/layout/part/chameleon/left.jsp" />
+        <put-attribute name="contents" value="/WEB-INF/jsp/layout/part/blank.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/layout/part/chameleon/bottom.jsp" />
+    </definition>
+
+    <!-- emptyLayout -->
+    <definition name=".emptyLayoutTemplate" template="/WEB-INF/jsp/layout/emptyLayout.jsp">
+        <put-attribute name="contents" value="/WEB-INF/jsp/layout/part/blank.jsp" />
+    </definition>
+
+    <!-- empty -->
+    <definition name=".emptyTemplate" template="/WEB-INF/jsp/layout/empty.jsp">
+        <put-attribute name="css" value="/WEB-INF/jsp/layout/css/jss-css.jsp" />
+        <put-attribute name="js" value="/WEB-INF/jsp/layout/js/jss-js.jsp" />
+        <put-attribute name="contents" value="/WEB-INF/jsp/layout/part/blank.jsp" />
+    </definition>
+        
+    <!-- Sample Template Definition -->
+    <definition name="/sample/*/*/*/*" extends=".sampleTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/sample/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+        
+    <definition name="/sample/*/*/*" extends=".sampleTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/sample/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="/sample/*/*" extends=".sampleTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/sample/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="/sample/*" extends=".sampleTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/sample/{1}.jsp" />
+    </definition>
+        
+    <!-- Admin Main & Sub Template Definition -->
+    <definition name="/main/*/*/*/*" extends=".mainTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+        
+    <definition name="/main/*/*/*" extends=".mainTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="/main/*/*" extends=".mainTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="/main/*" extends=".mainTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}.jsp" />
+    </definition>
+    
+    <definition name="/sub/*/*/*/*" extends=".subTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+    
+    <definition name="/sub/*/*/*" extends=".subTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="/sub/*/*" extends=".subTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="/sub/*" extends=".subTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}.jsp" />
+    </definition>
+    
+    <!-- emptyTemplate Definition for iFrame -->
+    <definition name="/ifrm/*/*/*/*/*" extends=".emptyTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp" />
+    </definition>
+    
+    <definition name="/ifrm/*/*/*/*" extends=".emptyTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+    
+    <definition name="/ifrm/*/*/*" extends=".emptyTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="/error/*" extends=".emptyTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/error/{1}.jsp" />
+    </definition>
+</tiles-definitions>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="blank">
+    <!-- 
+        sqlmap-config.xml 셋팅용. 
+                실제 사용하는 SqlMap 파일은 각 서비스 어플리케이션의 DAO 클래스 하위의 sql 디렉토리에 있다.
+    --> 	
+ </sqlMap>

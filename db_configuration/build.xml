@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>
+<project basedir="." name="DATABASE_CONFIGURATION">
+    <property file="config.properties" />
+    <property name="lib.dir" value="lib" />
+    <property name="data.dir" value="data" />
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+
+    <!-- ================================= 
+			target: createTables
+			테이블을 일괄로 생성합니다.              
+         ================================= -->
+    <target name="createTables">
+        <echo message="CREATE TABLES USING: ${db.driver} ${db.url}" />
+        <sql encoding="utf8" driver="${db.driver}" url="${db.url}" userid="${db.username}" password="${db.password}" onerror="continue">
+            <classpath refid="classpath" />
+            <fileset dir="${data.dir}"><include name="create_sample_table_hsqldb.sql"/></fileset>
+        </sql>
+    </target>
+
+    <target name="initalizeData">
+        <echo message="Initailize DATA: ${db.driver} ${db.url}" />
+        <sql encoding="utf8" driver="${db.driver}" url="${db.url}" userid="${db.username}" password="${db.password}" onerror="continue">
+            <classpath refid="classpath" />
+            <fileset dir="${data.dir}"><include name="insert_sample_data_hsqldb.sql"/></fileset>
+        </sql>
+    </target>
+    
+    <!-- ================================= 
+			target: tset-db-start
+			테스트 데이터베이스(HSQLDB)를 기동합니다.              
+         ================================= -->
+    <target name="test-db-start" description="Starts Test HSQLDB Server">
+        <java classname="org.hsqldb.Server" fork="on" classpathref="classpath">
+            <arg line="-database.0 file:log/${db.schema} -dbname.0 ${db.schema}" />
+        </java>
+    </target>
+
+    <!-- ================================= 
+			target: test-db-stop
+			테스트 데이터베이스(HSQLDB)를 종료합니다.              
+         ================================= -->
+    <target name="test-db-stop" description="Stops Test HSQLDB Server">
+        <java classname="org.hsqldb.util.ShutdownServer">
+            <classpath refid="classpath" />
+            <arg line="-url ${db.url}" />
+        </java>
+    </target>
+
+    <!-- ================================= 
+          target: test-db-admin
+		    테스트 데이터베이스(HSQLDB) 관리자(ADMINISTRATOR)를 실행합니다. 
+         ================================= 
+    -->
+    <target name="test-db-admin" description="DB Client">
+        <java classname="org.hsqldb.util.DatabaseManagerSwing" fork="true">
+            <classpath refid="classpath" />
+            <arg line="-url ${db.url}" />
+        </java>
+    </target>
+</project>

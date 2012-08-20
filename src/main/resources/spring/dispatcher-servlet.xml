@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/mobile/device http://www.springframework.org/schema/mobile/device/spring-mobile-device-1.0.xsd">
+		
+	<mvc:annotation-driven />
+	
+	<!-- Configures the Spring MVC @Controller programming model -->
+	<context:component-scan base-package="sample" use-default-filters="false" >
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" /> 
+		
+    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+	    <property name="definitions">
+	        <list>
+	            <value>classpath:tiles/tiles-views.xml</value>
+	        </list>
+	    </property>
+    </bean>
+    
+ 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="10485769" />
+    </bean>
+    
+	<bean id="beanViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <property name="order" value="10" />
+    </bean>
+    
+    <bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView" />
+        <property name="order" value="20" />
+    </bean>
+    
+    <bean id="jstlViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+       <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+       <property name="prefix" value="/WEB-INF/jsp/" />
+       <property name="suffix" value=".jsp" />
+        <property name="order" value="30" />
+    </bean>
+    
+    <bean name="jsonView" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+
+    <bean id="exceptionResolver" class="sample.common.MovieFinderExceptionResolver">
+        <property name="defaultErrorView" value="forward:/sample/error.jsp" />
+    </bean>
+</beans>
