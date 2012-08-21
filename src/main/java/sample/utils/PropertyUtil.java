@@ -45,7 +45,7 @@ public class PropertyUtil {
     private static Exception exception;
     
     static {
-        Properties properties = new Properties();
+        properties = new Properties();
         
         try {
             properties.load(PropertyUtil.class.getClass().getResourceAsStream("/config/context.properties"));
