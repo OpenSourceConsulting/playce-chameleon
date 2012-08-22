@@ -18,15 +18,16 @@
  * ---------------	----------------	------------
  * Sang-cheon Park	2012. 8. 17.		First Draft.
  */
-package sample.common.exception;
+package com.athena.chameleon.common.exception;
 
 import java.util.Locale;
 
 import org.springframework.context.MessageSource;
 
-import sample.common.exception.message.DetailMessageSource;
-import sample.common.exception.message.Message;
-import sample.common.exception.message.MessageHandler;
+import com.athena.chameleon.common.exception.message.DetailMessageSource;
+import com.athena.chameleon.common.exception.message.Message;
+import com.athena.chameleon.common.exception.message.MessageHandler;
+
 
 /**
  * <pre>

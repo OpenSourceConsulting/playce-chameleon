@@ -18,7 +18,7 @@
  * ---------------	----------------	------------
  * Sang-cheon Park	2012. 8. 17.		First Draft.
  */
-package sample.common.exception.message;
+package com.athena.chameleon.common.exception.message;
 
 import java.text.MessageFormat;
 import java.util.Locale;

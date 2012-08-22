@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sample.common.aspect;
+package com.athena.chameleon.common.aspect;
 
 import java.util.Locale;
 
@@ -29,8 +29,9 @@ import org.springframework.aop.framework.Advised;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import com.athena.chameleon.common.exception.BaseException;
+
 import sample.common.MovieFinderException;
-import sample.common.exception.BaseException;
 
 /**
  * This LoggingAspect class is an Aspect class to provide logging functionality on this project.

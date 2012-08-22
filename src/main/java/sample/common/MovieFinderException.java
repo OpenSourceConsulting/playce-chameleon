@@ -17,7 +17,8 @@ package sample.common;
 
 import org.springframework.context.MessageSource;
 
-import sample.common.exception.BaseException;
+import com.athena.chameleon.common.exception.BaseException;
+
 
 /**
  * This MovieFinderException class contains various constructor for different functionality on this project.
