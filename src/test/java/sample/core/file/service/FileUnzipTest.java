@@ -75,7 +75,7 @@ public class FileUnzipTest {
                         CharsetDetector detector = new CharsetDetector();
                         detector.setText(FileUtils.readFileToByteArray(f));
                         
-                        //영문만 입력된 파일의 인코딩이 ISO-8859 일 경우 encoding이 되지 않지만 한글 입력시 정산적으로 encoding 되므로 예외처리
+                        //ISO-8859의 경우 예외처리
                         assertTrue("["+f.getAbsolutePath() + "] file encoding error : " + detector.detect().getName(),
                                 (detector.detect().getName().equals(PropertyUtil.getProperty("unzip.default.encoding"))
                                         || detector.detect().getName().indexOf(PropertyUtil.getProperty("unzip.en.encoding")) > -1));
