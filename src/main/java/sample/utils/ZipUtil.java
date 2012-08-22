@@ -1,4 +1,23 @@
-
+/*
+ * Copyright 2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Revision History
+ * Author           Date                Description
+ * ---------------  ----------------    ------------
+ * Hyo-jeong Lee    2012. 8. 22.        First Draft.
+ */
 package sample.utils;
 
 import java.io.File;
@@ -8,24 +27,50 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipFile;
 
 import com.ibm.icu.text.CharsetDetector;
+
+/**
+ * 압축된 파일의 인코딩을 변경하여 압축해제 하기 위한 유틸 클래스
+ * 
+ * @author Hyo-jeong Lee
+ * @version 1.0
+ */
 
 public class ZipUtil {
 
     private static final Log logger = LogFactory.getLog(ZipUtil.class);
-
-    /*
-     * FilePath : zip file full path. unzipedPath : unzip Directory full path
+    
+    /**
+     * 
+     * 입력된 압축파일을 압축 해제한다.
+     *
+     * @param zipFilePath 압축파일 경로
+     * @param unzipDirPath 압축을 해제할 디렉토리 경로
+     * @return String 압축 해제된 디렉토리 경로
+     * @throws Exception
      */
-    public static String extract(String zipFilePath, String unzipDirPath) throws IOException {
+    public static String extract(String zipFilePath, String unzipDirPath) throws Exception {
+        return extract(zipFilePath, unzipDirPath, PropertyUtil.getProperty("unzip.default.encoding"));
+    }
 
+    /**
+     * 
+     * 입력된 압축파일을 압축 해제한다.
+     *
+     * @param zipFilePath 압축파일 경로
+     * @param unzipDirPath 압축을 해제할 디렉토리 경로
+     * @param declaredEncoding 인코딩할 유니코드 
+     * @return String 압축 해제된 디렉토리 경로
+     * @throws IOException
+     */
+    public static String extract(String zipFilePath, String unzipDirPath, String declaredEncoding) throws IOException {
         ZipFile zipFile = null;
 
         try {
@@ -39,9 +84,9 @@ public class ZipUtil {
                 logger.debug("[ZipUtil] unzipDirPath :" + unZipDir);
             }
 
-            zipFile = new ZipFile(zipFilePath);
+            zipFile = new ZipFile(zipFilePath, "EUC-KR");
 
-            Enumeration e = zipFile.entries();
+            Enumeration e = zipFile.getEntries();
             for (; e.hasMoreElements();) {
                 FileOutputStream output = null;
                 InputStream input = null;
@@ -81,14 +126,15 @@ public class ZipUtil {
                             output = new FileOutputStream(outputFile);
                             
                             String changeTarget = PropertyUtil.getProperty("unzip.change.target");
+                            
                             if(changeTarget.indexOf(entryName.substring(entryName.lastIndexOf(".")+1, entryName.length())) > -1) {
                                 
-                                OutputStreamWriter osr = new OutputStreamWriter(output, "UTF-8");
+                                OutputStreamWriter osr = new OutputStreamWriter(output, declaredEncoding);
                                 
                                 CharsetDetector detector = new CharsetDetector();
                                 data = IOUtils.toByteArray(input, entry.getSize());
                                 IOUtils.closeQuietly(input);
-                                detector.setDeclaredEncoding(PropertyUtil.getProperty("unzip.default.encoding"));
+                                detector.setDeclaredEncoding(declaredEncoding);
                                 detector.setText(data);
                                 Reader reader = detector.detect().getReader();
                                 
@@ -103,7 +149,6 @@ public class ZipUtil {
                                 osr.close();
                                 
                             } else {
-                                
                                 int len = 0;
                                 byte buffer[] = new byte[1024];
                                 while ((len = input.read(buffer)) > 0)

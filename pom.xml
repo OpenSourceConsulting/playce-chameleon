@@ -456,6 +456,12 @@
            <scope>compile</scope>
        </dependency>
        
+       <dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.6.5</version>
+		</dependency>
+		
 		<!-- oracle 10g driver 
 		<dependency>
 			<groupId>ojdbc</groupId>
@@ -469,8 +475,9 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.21</version>
 		</dependency>
+		
 	</dependencies>
-
+	
   	<repositories>
 		<repository>
 			<id>mvn2</id>
