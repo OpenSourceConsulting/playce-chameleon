@@ -27,8 +27,12 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,12 +48,14 @@ import com.ibm.icu.text.CharsetDetector;
  * 
  * @author Hyo-jeong Lee
  * @version 1.0
- */
+ */ 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:./src/main/resources/spring/context-*.xml" })
 public class FileUnzipTest {
-
+	
+	private static final Log logger = LogFactory.getLog(FileUnzipTest.class);
+    
     @Test
     public void unzipTest() throws Exception  {
         String zipFilePath = "C:/test/test.zip";
@@ -57,30 +63,35 @@ public class FileUnzipTest {
         String unzipPath = ZipUtil.extract(zipFilePath, tmpfileDir);
         
         File unzipDir = new File(unzipPath);
-        fileAsset(unzipDir);
-        fileRead(unzipDir);
+        fileAsset(unzipDir, unzipPath);
+        fileRead(unzipDir, unzipPath);
     }
     
-    public void fileAsset(File file) throws Exception {
+    public void fileAsset(File file, String rootPath) throws Exception {
         if(file.isDirectory()) {
             for (int i=0;i < file.listFiles().length;i++) {
                 File f = file.listFiles()[i];
                 if(f.isDirectory()) {
-                    fileAsset(f);
+                    fileAsset(f, rootPath);
                 } else {
+                	
                     //File unzip TestCase
-                    assertNotNull("["+f.getAbsolutePath() + "] file null error", f);
+                	String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
+                    assertNotNull("["+filePath + "] file null error", f);
+                    
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[FileUnzipTest] FilePath :" + filePath);
+                    }
                     
                     String changeTarget = PropertyUtil.getProperty("unzip.change.target");
-                    String fileName = f.getName();
                     
                     //UTF-8 Encoding Test Case
-                    if(changeTarget.indexOf(fileName.substring(fileName.lastIndexOf(".")+1, fileName.length())) > -1) {
+                    if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
                         CharsetDetector detector = new CharsetDetector();
                         detector.setText(FileUtils.readFileToByteArray(f));
                         
                         //ISO-8859의 경우 예외처리
-                        assertTrue("["+f.getAbsolutePath() + "] file encoding error : " + detector.detect().getName(),
+                        assertTrue("["+filePath + "] file encoding error : " + detector.detect().getName(),
                                 (detector.detect().getName().equals(PropertyUtil.getProperty("unzip.default.encoding"))
                                         || detector.detect().getName().indexOf(PropertyUtil.getProperty("unzip.en.encoding")) > -1));
                     }
@@ -90,32 +101,41 @@ public class FileUnzipTest {
         }
     }
 
-    public void fileRead(File file) throws Exception {
+    //FileRead 및 라인단위 패턴 매칭 Test Code
+    public void fileRead(File file, String rootPath) throws Exception {
+    	
+    	Pattern p = Pattern.compile(".*test.*");
+    	Matcher match = null;
+    	
         if(file.isDirectory()) {
             for (int i=0;i < file.listFiles().length;i++) {
                 File f = file.listFiles()[i];
                 if(f.isDirectory()) {
-                    fileRead(f);
+                    fileRead(f, rootPath);
                 } else {
                     
+                	String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
                     String changeTarget = PropertyUtil.getProperty("unzip.change.target");
-                    String fileName = f.getName();
                     
                     //문서 라인 추출
-                    if(changeTarget.indexOf(fileName.substring(fileName.lastIndexOf(".")+1, fileName.length())) > -1) {
+                    if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
                     
                         try {
                             FileReader reader = new FileReader(f);
                             BufferedReader buffer = new BufferedReader(reader);
                             
+                            
                             String lineStr = null;
                             int line = 0;
                             while((lineStr = buffer.readLine()) != null) {
                                 
-                                line++;
+                            	line++;
                                 
-                                if(lineStr.indexOf("test") > -1) {
-                                    System.out.println("["+f.getAbsolutePath()+"] " + line + " line : " + lineStr);
+                                match = p.matcher(lineStr);
+                                if(match.matches()) {
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug("["+filePath+"] " + line + " line : " + lineStr);
+                                    }
                                 }
                             }
                             
