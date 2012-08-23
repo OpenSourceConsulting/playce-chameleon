@@ -35,10 +35,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.utils.ZipUtil;
 
 import com.ibm.icu.text.CharsetDetector;
@@ -55,11 +55,25 @@ import com.ibm.icu.text.CharsetDetector;
 public class FileUnzipTest {
 	
 	private static final Log logger = LogFactory.getLog(FileUnzipTest.class);
+	
+	@Value("#{filteringProperties['unzip.dir.path']}")
+	public String unzipDirPath;
+
+	@Value("#{contextProperties['unzip.change.target']}")
+	public String changeTarget;
+
+	@Value("#{contextProperties['unzip.default.encoding']}")
+	public String defaultEncoding;
+
+	@Value("#{contextProperties['unzip.en.encoding']}")
+	public String enEncoding;
     
     @Test
     public void unzipTest() throws Exception  {
-        String zipFilePath = "C:/test/test.zip";
-        String tmpfileDir = PropertyUtil.getProperty("unzip.dir.path") + File.separator + System.currentTimeMillis();
+        //String zipFilePath = "C:/test/test.zip";
+    	//String tmpfileDir = PropertyUtil.getProperty("unzip.dir.path") + File.separator + System.currentTimeMillis();
+        String zipFilePath = this.getClass().getResource("/files/test.zip").getFile();
+        String tmpfileDir = unzipDirPath + File.separator + System.currentTimeMillis();
         String unzipPath = ZipUtil.extract(zipFilePath, tmpfileDir);
         
         File unzipDir = new File(unzipPath);
@@ -83,7 +97,7 @@ public class FileUnzipTest {
                         logger.debug("[FileUnzipTest] FilePath :" + filePath);
                     }
                     
-                    String changeTarget = PropertyUtil.getProperty("unzip.change.target");
+                    //String changeTarget = PropertyUtil.getProperty("unzip.change.target");
                     
                     //UTF-8 Encoding Test Case
                     if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
@@ -91,9 +105,13 @@ public class FileUnzipTest {
                         detector.setText(FileUtils.readFileToByteArray(f));
                         
                         //ISO-8859의 경우 예외처리
+//                        assertTrue("["+filePath + "] file encoding error : " + detector.detect().getName(),
+//                                (detector.detect().getName().equals(PropertyUtil.getProperty("unzip.default.encoding"))
+//                                        || detector.detect().getName().indexOf(PropertyUtil.getProperty("unzip.en.encoding")) > -1));
+                                                
                         assertTrue("["+filePath + "] file encoding error : " + detector.detect().getName(),
-                                (detector.detect().getName().equals(PropertyUtil.getProperty("unzip.default.encoding"))
-                                        || detector.detect().getName().indexOf(PropertyUtil.getProperty("unzip.en.encoding")) > -1));
+                                (detector.detect().getName().equals(defaultEncoding)
+                                        || detector.detect().getName().indexOf(enEncoding) > -1));
                     }
                  
                 }
@@ -115,7 +133,7 @@ public class FileUnzipTest {
                 } else {
                     
                 	String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
-                    String changeTarget = PropertyUtil.getProperty("unzip.change.target");
+                    //String changeTarget = PropertyUtil.getProperty("unzip.change.target");
                     
                     //문서 라인 추출
                     if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
