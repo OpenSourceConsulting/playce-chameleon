@@ -1,3 +1,3 @@
 #!/bin/sh
-# pull from GitHub
+# pull from GitHub...
 mvn clean install -DskipTests=true -Dmode=production
