@@ -56,7 +56,7 @@ public class FileUnzipTest {
 	
 	private static final Log logger = LogFactory.getLog(FileUnzipTest.class);
 	
-	@Value("#{filteringProperties['unzip.dir.path']}")
+	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
 	public String unzipDirPath;
 
 	@Value("#{contextProperties['unzip.change.target']}")
@@ -89,6 +89,8 @@ public class FileUnzipTest {
                     fileAsset(f, rootPath);
                 } else {
                 	
+                    System.out.println(f.getAbsolutePath());
+                    System.out.println(rootPath);
                     //File unzip TestCase
                 	String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
                     assertNotNull("["+filePath + "] file null error", f);
