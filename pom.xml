@@ -98,6 +98,32 @@
                         <encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
 				</plugin>
+				
+				<!-- Jetty Local Runtime Environment -->
+				<plugin>
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>maven-jetty-plugin</artifactId>
+					<version>6.1.15</version>
+					<configuration>
+						<contextPath>/api</contextPath>
+						<scanIntervalSeconds>30</scanIntervalSeconds>
+						<jettyEnvXml>src/main/resources/config/jetty-env.xml</jettyEnvXml>
+						<connectors>
+							<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+								<port>8180</port>
+								<maxIdleTime>60000</maxIdleTime>
+							</connector>
+						</connectors>
+	
+						<systemProperties>
+							<systemProperty>
+								<name>server.type</name>
+								<value>Local</value>
+							</systemProperty>
+						</systemProperties>
+					</configuration>
+				</plugin>
+				
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>hibernate3-maven-plugin</artifactId>
