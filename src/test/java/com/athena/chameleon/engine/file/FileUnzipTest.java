@@ -197,7 +197,7 @@ public class FileUnzipTest {
             //unShaller.setSchema(schema);
             
             WebAppType app = (WebAppType) unShaller.unmarshal(file);
-            List<JAXBElement<FilterType>> test = app.getDescriptionAndDisplayNameAndIcon();
+            //List<JAXBElement<FilterType>> test = app.getDescriptionAndDisplayNameAndIcon();
             
         }/* catch(SAXException se) {
             fail("Xml Pasing Error : SAXException");
