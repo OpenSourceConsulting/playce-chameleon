@@ -1,15 +1,22 @@
-/* Copyright (c) 2010 MOIBA.
- * All right reserved.
+/*
+ * Copyright 2012 the original author or authors.
  *
- * This software is the confidential and proprietary information of MOIBA
- * You shall not disclose such Confidential Information and shall use it only 
- * in accordance with the terms of the license agreement
- * you entered into with MOIBA
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Revision History
  * Author              Date             Description
  * ------------------  --------------   ------------------
- * Sang-cheon Park     2010. 12. 27.    First Draft.
+ * Sang-cheon Park     2012. 8. 24.     First Draft.
  */
 package com.athena.chameleon.engine.utils;
 
@@ -37,9 +44,6 @@ import com.sun.xml.bind.v2.WellKnownNamespace;
  * </pre>
  * @author 박상천
  * @version 1.0
- * @see Refer to KWAC_class명세서.doc for more information
- * 
- * This file contains the declarations of String class and its helper classes.
  */
 public abstract class SimpleOxmUtils {
     
@@ -170,7 +174,6 @@ public abstract class SimpleOxmUtils {
 
         marshal.marshal(obj, btArrOutPutStream); 
         
-        
         btArrOutPutStream.close();
         return btArrOutPutStream.toString();
     }//end of marshal()
@@ -179,7 +182,6 @@ public abstract class SimpleOxmUtils {
      * <pre>
      * XML 문자열을 Object로 변환한다.
      * </pre>
-     * @param <E> 변환될 Target Object
      * @param xml Source XML 문자열
      * @param clazz 변환될 Target Object Class
      * @return 변환된 Object
@@ -192,9 +194,22 @@ public abstract class SimpleOxmUtils {
     
     /**
      * <pre>
+     * Source XML File을 Object로 변환한다.
+     * </pre>
+     * @param file Source XML File
+     * @param clazz 변환될 Target Object Class
+     * @return 변환된 Object
+     * @throws JAXBException XML -> Object binding 시 발생 가능한 예외
+     */
+    public static <E> E unmarshal(File file, Class<E> clazz) throws JAXBException {
+        Schema schema = null;       
+        return unmarshal(file, clazz, schema);
+    }//end of unmarshal()
+    
+    /**
+     * <pre>
      * Schema File을 이용하여 XML 문자열을 Object로 변환한다.
      * </pre>
-     * @param <E> 변환될 Target Object
      * @param xml Source XML 문자열
      * @param clazz 변환될 Target Object Class
      * @param schemaFile 변환시 사용될 XSD Schema File
@@ -211,7 +226,6 @@ public abstract class SimpleOxmUtils {
      * <pre>
      * XML 문자열을 Object로 변환한다.
      * </pre>
-     * @param <E> 변환될 Target Object
      * @param xml Source XML 문자열
      * @param clazz 변환될 Target Object Class
      * @param schema 변환시 사용될 XSD Schema
@@ -223,6 +237,27 @@ public abstract class SimpleOxmUtils {
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setSchema(schema);
         Object obj = unmarshaller.unmarshal(new StringReader(xml));        
+        return clazz.cast(obj);
+    }//end of unmarshal()
+    
+    /**
+     * <pre>
+     * Source XML File을 Object로 변환한다.
+     * </pre>
+     * @param file Source XML File
+     * @param clazz 변환될 Target Object Class
+     * @param schema 변환시 사용될 XSD Schema
+     * @return 변환된 Object
+     * @throws JAXBException XML -> Object binding 시 발생 가능한 예외
+     */
+    public static <E> E unmarshal(File file, Class<E> clazz, Schema schema) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(clazz);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        unmarshaller.setSchema(schema);
+        Object obj = unmarshaller.unmarshal(file);  
+        
+        System.out.println(obj.getClass().getCanonicalName());
+        
         return clazz.cast(obj);
     }//end of unmarshal()
 }//end of SimpleOxmUtils.java

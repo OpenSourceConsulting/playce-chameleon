@@ -87,7 +87,7 @@ public class ZipUtil {
 
             zipFile = new ZipFile(zipFilePath, "EUC-KR");
 
-            Enumeration e = zipFile.getEntries();
+            Enumeration<?> e = zipFile.getEntries();
             for (; e.hasMoreElements();) {
                 FileOutputStream output = null;
                 InputStream input = null;
