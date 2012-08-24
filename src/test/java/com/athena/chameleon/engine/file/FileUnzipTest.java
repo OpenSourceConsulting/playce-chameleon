@@ -27,8 +27,16 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -38,7 +46,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.xml.sax.SAXException;
 
+import com.athena.chameleon.engine.entity.FilterType;
+import com.athena.chameleon.engine.entity.WebAppType;
 import com.athena.chameleon.engine.utils.ZipUtil;
 
 import com.ibm.icu.text.CharsetDetector;
@@ -89,8 +100,6 @@ public class FileUnzipTest {
                     fileAsset(f, rootPath);
                 } else {
                 	
-                    System.out.println(f.getAbsolutePath());
-                    System.out.println(rootPath);
                     //File unzip TestCase
                 	String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
                     assertNotNull("["+filePath + "] file null error", f);
@@ -140,6 +149,12 @@ public class FileUnzipTest {
                     //문서 라인 추출
                     if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
                     
+
+                        //xml file pasing
+                        if(filePath.indexOf("web.xml") > -1) {
+                            webXmlPasing(f);
+                        }
+                        
                         try {
                             FileReader reader = new FileReader(f);
                             BufferedReader buffer = new BufferedReader(reader);
@@ -168,6 +183,30 @@ public class FileUnzipTest {
                 }
             }
         }
+    }
+    
+    //xml file pasing
+    public void webXmlPasing(File file) {
+        
+        try {
+            JAXBContext context = JAXBContext.newInstance(WebAppType.class);
+            Unmarshaller unShaller = context.createUnmarshaller();
+            
+            //SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            //Schema schema = sf.newSchema(file);
+            //unShaller.setSchema(schema);
+            
+            WebAppType app = (WebAppType) unShaller.unmarshal(file);
+            List<JAXBElement<FilterType>> test = app.getDescriptionAndDisplayNameAndIcon();
+            
+        }/* catch(SAXException se) {
+            fail("Xml Pasing Error : SAXException");
+        }*/ catch(JAXBException je) {
+            fail("Xml Pasing Error : JAXBException");
+        } catch(Exception e) {
+            fail("Xml Pasing Error");
+        }
+        
     }
 }
 //end of FileUnzipTest.java
