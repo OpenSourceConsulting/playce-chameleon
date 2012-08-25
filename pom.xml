@@ -179,6 +179,34 @@
 						<excludes>com/**/engine/entity/*</excludes>
 					</configuration>
 				</plugin>
+				<!-- Cobertura Plugin -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>cobertura-maven-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<skip>${cobertura.skip}</skip>
+						<formats>
+							<format>xml</format>
+						</formats>
+						<instrumentation>
+							<excludes>
+								<exclude>**/aspect/*.class</exclude>
+								<exclude>**/exception/*.class</exclude>
+								<exclude>**/entity/*.class</exclude>
+								<exclude>**/sample/**/*.class</exclude>
+							</excludes>
+						</instrumentation>
+					</configuration>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>cobertura</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
