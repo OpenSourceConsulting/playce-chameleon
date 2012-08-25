@@ -20,9 +20,7 @@
  */
 package com.athena.chameleon.engine.file;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -90,6 +88,12 @@ public class FileUnzipTest {
         File unzipDir = new File(unzipPath);
         fileAsset(unzipDir, unzipPath);
         fileRead(unzipDir, unzipPath);
+        
+        
+        
+        
+        // 테스트 종료 후 압축해제 디렉토리 제거
+        deleteDirectory(unzipDir);
     }
     
     public void fileAsset(File file, String rootPath) throws Exception {
@@ -206,7 +210,28 @@ public class FileUnzipTest {
         } catch(Exception e) {
             fail("Xml Pasing Error");
         }
-        
     }
+    
+	/**
+	 * <pre>
+	 * 테스트 시 생성된 임시 디렉토리를 삭제하기 위해 추가
+	 * </pre>
+	 * @param path
+	 * @return
+	 */
+	public boolean deleteDirectory(File path) {
+		if (path.exists()) {
+			File[] files = path.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].isDirectory()) {
+					deleteDirectory(files[i]);
+				} else {
+					files[i].delete();
+				}
+			}
+		}
+		
+		return (path.delete());
+	}//end of deleteDirectory
 }
 //end of FileUnzipTest.java
