@@ -166,6 +166,19 @@
 					<artifactId>maven-pmd-plugin</artifactId>
 					<version>2.5</version>
 				</plugin>
+				<!-- CheckStyle manven plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>2.9.1</version>
+					<configuration>
+						<!-- 
+						<configLocation>/src/main/resources/checks/checkstyle.xml</configLocation>
+						-->
+						<!-- <excludes>com/**/a/*, com/**/b/*, com/**/c/*</excludes> -->
+						<excludes>com/**/engine/entity/*</excludes>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -583,19 +596,6 @@
 		</plugins>
 	</reporting>
 	-->
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<configLocation>checkstyle.xml</configLocation>
-					<packageNamesLocation>src/main/resources/checks/packagenames.xml</packageNamesLocation>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
 
 	<!-- Software Configuration Management(SCM) Information 
 	<scm>
