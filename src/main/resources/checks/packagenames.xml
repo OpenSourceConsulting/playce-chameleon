@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE checkstyle-packages>
+<checkstyle-packages>
+	<package name="com.athena.chameleon">
+		<package name="common" />
+		<package name="engine">
+			<package name="utils" />
+		</package>
+	</package>
+</checkstyle-packages>
