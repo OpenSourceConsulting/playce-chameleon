@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:artifact="antlib:org.apache.maven.artifact.ant"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>athena-chameleon</groupId>
 	<artifactId>athena-chameleon</artifactId>
@@ -154,18 +156,21 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			
 			<!-- EMMA   -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>emma-maven-plugin</artifactId>
 				<version>1.0-alpha-1</version>
 			</plugin>
+			
 			<!-- PMD manven plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>2.5</version>
 			</plugin>
+			
 			<!-- CheckStyle manven plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -187,6 +192,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			
 			<!-- Cobertura Plugin -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -214,6 +220,148 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			
+			<!-- Ant plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>engine-deploy</id>
+						<phase>package</phase>
+						<configuration>
+							<!--
+							<target name="packaging">								
+								<property name="src.dir" value="src/main/java" description="프로젝트 소스가 위치하는 디렉토리 명" />
+								<property name="config.dir" value="src/main/config" description="프로젝트 config 리소스가 위치하는 디렉토리 명" />
+								<property name="resources.dir" value="src/main/resources" description="프로젝트 리소스가 위치하는 디렉토리 명" />
+							
+								<property name="target.dir" value="target/engine" description="빌드 작업 루트 디렉토리" />
+							
+								<echo message="compile classpath: ${compile_classpath}" />
+								<echo message="runtime classpath: ${runtime_classpath}" />
+								<echo message="test classpath:    ${test_classpath}" />
+								<echo message="plugin classpath:  ${plugin_classpath}" />
+							
+								<echo>이전 빌드의 결과를 삭제합니다.</echo>
+								<delete dir="${target.dir}" includeemptydirs="true" failonerror="false" />
+							
+								<echo>빌드할 디렉토리를 생성합니다.</echo>
+								<mkdir dir="${target.dir}" />
+							
+								<echo>Chameleon engine 소스 컴파일을 수행합니다.</echo>
+								<javac srcdir="${src.dir}" destdir="${target.dir}" compiler="javac1.6"
+									source="1.6" target="1.6" encoding="utf-8" debug="true"
+									includeantruntime="false" failonerror="false">
+									<classpath>
+										<path refid="maven.compile.classpath" />
+									</classpath>
+								</javac>
+								<copy todir="${target.dir}">
+									<fileset dir="${src.dir}">
+										<include name="**/*" />
+										<exclude name="**/*.java" />
+									</fileset>
+								</copy>
+							
+								<echo>리소스를 복사합니다.</echo>
+								<copy todir="${target.dir}">
+									<fileset dir="${config.dir}">
+										<include name="**/*" />
+									</fileset>
+									<fileset dir="${resources.dir}">
+										<include name="**/*" />
+									</fileset>
+								</copy>
+							
+								<echo>패키징을 수행합니다.</echo>
+								<jar destfile="target/athena-chameleon.jar" basedir="${target.dir}">
+									<!- 
+									<restrict>
+										<name name="**/*.class" />
+										<archives>
+											<zips>
+												<fileset dir="${base.dir}/lib" includes="*.jar" />
+											</zips>
+										</archives>
+									</restrict> 
+									->
+									<zipgroupfileset dir="${base.dir}/lib" includes="*.jar"/>
+									<manifest>
+										<attribute name="Main-Class" value="com.athena.chameleon.engine.utils.ZipUtil" />
+									</manifest>
+								</jar>
+							</target>
+							-->
+							<target>
+								<property name="base.dir" value="target/athena-chameleon-1.0.0-SNAPSHOT/WEB-INF" description="빌드 결과 루트 디렉토리" />
+								<property name="target.dir" value="target/engine" description="패키징 작업 루트 디렉토리" />
+							
+								<echo>이전 패키징 결과를 삭제합니다.</echo>
+								<delete dir="${target.dir}" includeemptydirs="true" failonerror="false" />
+							
+								<echo>패키징 디렉토리를 생성합니다.</echo>
+								<mkdir dir="${target.dir}" />
+								
+						        <echo>빌드 결과를 복사합니다.</echo>
+						        <copy todir="${target.dir}">
+						            <fileset dir="${base.dir}/classes">
+						                <include name="**/*" />
+						                <exclude name="com/athena/chameleon/web/**/*" />
+						            </fileset>
+						        </copy>
+							
+								<echo>Athena Chameleon 패키징을 수행합니다.</echo>
+								<jar destfile="target/athena-chameleon.jar" basedir="${target.dir}">
+									<!-- 
+									<restrict>
+										<name name="**/*.class" />
+										<archives>
+											<zips>
+												<fileset dir="${base.dir}/lib" includes="*.jar" />
+											</zips>
+										</archives>
+									</restrict> 
+									-->
+									<zipgroupfileset dir="${base.dir}/lib" includes="*.jar"/>
+									<manifest>
+										<attribute name="Main-Class" value="com.athena.chameleon.engine.utils.ZipUtil" />
+									</manifest>
+								</jar>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<!-- 
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>com.jcraft</groupId>
+						<artifactId>jsch</artifactId>
+						<version>0.1.48</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.8.4</version>
+					</dependency>
+				</dependencies> 
+				-->
 			</plugin>
 		</plugins>
 	</build>
