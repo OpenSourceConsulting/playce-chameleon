@@ -20,7 +20,9 @@
  */
 package com.athena.chameleon.engine.file;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,12 +31,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -44,12 +43,19 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.xml.sax.SAXException;
 
-import com.athena.chameleon.engine.entity.FilterType;
+import com.athena.chameleon.engine.entity.DescriptionType;
+import com.athena.chameleon.engine.entity.DisplayNameType;
+import com.athena.chameleon.engine.entity.ErrorPageType;
+import com.athena.chameleon.engine.entity.FilterMappingType;
+import com.athena.chameleon.engine.entity.ResourceRefType;
+import com.athena.chameleon.engine.entity.ServletMappingType;
+import com.athena.chameleon.engine.entity.ServletNameType;
+import com.athena.chameleon.engine.entity.UrlPatternType;
 import com.athena.chameleon.engine.entity.WebAppType;
+import com.athena.chameleon.engine.entity.WelcomeFileListType;
+import com.athena.chameleon.engine.utils.JaxbUtils;
 import com.athena.chameleon.engine.utils.ZipUtil;
-
 import com.ibm.icu.text.CharsetDetector;
 
 /**
@@ -153,7 +159,6 @@ public class FileUnzipTest {
                     //문서 라인 추출
                     if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
                     
-
                         //xml file pasing
                         if(filePath.indexOf("web.xml") > -1) {
                             webXmlPasing(f);
@@ -193,22 +198,107 @@ public class FileUnzipTest {
     public void webXmlPasing(File file) {
         
         try {
-            JAXBContext context = JAXBContext.newInstance(WebAppType.class);
-            Unmarshaller unShaller = context.createUnmarshaller();
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity");
+            JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(file);
             
-            //SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            //Schema schema = sf.newSchema(file);
-            //unShaller.setSchema(schema);
+            WebAppType webapp = (WebAppType)result.getValue();
             
-            WebAppType app = (WebAppType) unShaller.unmarshal(file);
-            //List<JAXBElement<FilterType>> test = app.getDescriptionAndDisplayNameAndIcon();
+            List<JAXBElement<?>> elementList = webapp.getDescriptionAndDisplayNameAndIcon();
             
-        }/* catch(SAXException se) {
-            fail("Xml Pasing Error : SAXException");
-        }*/ catch(JAXBException je) {
+            for(JAXBElement<?> element : elementList) {
+                
+                if(element.getValue() instanceof FilterMappingType) {
+                    //filter mapping 정보
+                    getFilterMappingType((FilterMappingType) element.getValue());
+                } else if(element.getValue() instanceof ServletMappingType) {
+                    //servlet mapping 정보
+                    getServletMappingType((ServletMappingType) element.getValue());
+                } else if(element.getValue() instanceof DisplayNameType) {
+                    //display name 정보
+                    if (logger.isDebugEnabled()) 
+                        logger.debug("[display name] " + ((DisplayNameType)element.getValue()).getValue());
+                } else if(element.getValue() instanceof ErrorPageType) {
+                    //error page 정보
+                    getErrorPageType((ErrorPageType) element.getValue());
+                } else if(element.getValue() instanceof WelcomeFileListType) {
+                    //welcome file 정보
+                    getWelcomFileListType((WelcomeFileListType) element.getValue());
+                } else if(element.getValue() instanceof ResourceRefType) {
+                    //resource reference 정보
+                    getResourceRefType((ResourceRefType) element.getValue());
+                }
+            }
+            
+        } catch(JAXBException je) {
+            je.printStackTrace();
             fail("Xml Pasing Error : JAXBException");
         } catch(Exception e) {
             fail("Xml Pasing Error");
+        }
+    }
+    
+    // filter mapping 정보
+    public void getFilterMappingType(FilterMappingType filterMapping) {
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("[filter mapping type]");
+            logger.debug("filter name : " + filterMapping.getFilterName().getValue());
+            
+            for(Object o : filterMapping.getUrlPatternOrServletName()) {
+
+                if(o instanceof UrlPatternType)
+                    logger.debug("url pattern : " + ((UrlPatternType)o).getValue());
+                else if (o instanceof ServletNameType)
+                    logger.debug("url pattern : " + ((ServletNameType)o).getValue());
+                    
+            }
+        }
+    }
+
+    //servlet mapping 정보
+    public void getServletMappingType(ServletMappingType servletMapping) {
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("[servlet mapping type]");
+            logger.debug("servlet name : " + servletMapping.getServletName().getValue());
+            
+            for(UrlPatternType pattern : servletMapping.getUrlPattern()) {
+                logger.debug("url pattern : " + pattern.getValue());
+            }
+        }
+    }
+    
+    //error page 정보
+    public void getErrorPageType(ErrorPageType errorPage) {
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("[error page type]");
+            logger.debug("error code : " + errorPage.getErrorCode().getValue());
+            logger.debug("location   : " + errorPage.getLocation().getValue());
+        }
+    }
+
+    //welcome file 정보
+    public void getWelcomFileListType(WelcomeFileListType welcomeFileList) {
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("[welcome file list type]");
+            for(String welcomeFile : welcomeFileList.getWelcomeFile())
+                logger.debug("welcome file : " + welcomeFile);
+        }
+    }
+
+    //resource reference 정보
+    public void getResourceRefType(ResourceRefType resourceRef) {
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("[resource reference type]");
+            for(DescriptionType desc : resourceRef.getDescription()) 
+                logger.debug("discription : " + desc.getValue());
+            
+            logger.debug("resource ref name : " + resourceRef.getResRefName().getValue());
+            logger.debug("resource type : " + resourceRef.getResType().getValue());
+            logger.debug("resource auth : " + resourceRef.getResAuth().getValue());
         }
     }
     
