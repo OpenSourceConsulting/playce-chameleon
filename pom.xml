@@ -327,7 +327,7 @@
 									-->
 									<zipgroupfileset dir="${base.dir}/lib" includes="*.jar"/>
 									<manifest>
-										<attribute name="Main-Class" value="com.athena.chameleon.engine.utils.ZipUtil" />
+										<attribute name="Main-Class" value="com.athena.chameleon.engine.Starter" />
 									</manifest>
 								</jar>
 							</target>
