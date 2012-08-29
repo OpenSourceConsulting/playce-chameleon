@@ -150,6 +150,6 @@ public class Starter {
 	 * @return
 	 */
 	private static boolean isValidExtension(String fqfn) {
-		return ArrayUtils.contains(SUPPORT_ARCHIVE_FORMAT, fqfn.substring(fqfn.lastIndexOf(".") + 1));
+		return ArrayUtils.contains(SUPPORT_ARCHIVE_FORMAT, fqfn.substring(fqfn.lastIndexOf(".") + 1).toLowerCase());
 	}//end of isValidExtension()
 }//end of Starter.java
