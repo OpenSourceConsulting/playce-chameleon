@@ -327,9 +327,16 @@
 									-->
 									<zipgroupfileset dir="${base.dir}/lib" includes="*.jar"/>
 									<manifest>
-										<attribute name="Main-Class" value="com.athena.chameleon.engine.utils.ZipUtil" />
+										<attribute name="Main-Class" value="com.athena.chameleon.engine.Starter" />
 									</manifest>
 								</jar>
+								
+								<echo>Athena Chameleon 실행 스크립트를 복사합니다.</echo>
+						        <copy todir="target">
+						            <fileset dir="src/main/scripts">
+						                <include name="**/*" />
+						            </fileset>
+						        </copy>
 							</target>
 						</configuration>
 						<goals>
