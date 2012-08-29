@@ -7,6 +7,8 @@
 
 LOGGING_DIRECTORY="./log"
 JAVA_OPTS="-Xms128m -Xmx256m -Dlogging.directory=${LOGGING_DIRECTORY}"
+LANG=ko_KR.UTF-8
+export LANG
 
 # Setup the JVM
 if [ "x$JAVA" = "x" ]; then
