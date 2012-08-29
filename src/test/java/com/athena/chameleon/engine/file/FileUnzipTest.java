@@ -20,22 +20,18 @@
  */
 package com.athena.chameleon.engine.file;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -44,19 +40,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.athena.chameleon.engine.entity.DescriptionType;
-import com.athena.chameleon.engine.entity.DisplayNameType;
-import com.athena.chameleon.engine.entity.ErrorPageType;
-import com.athena.chameleon.engine.entity.FilterMappingType;
-import com.athena.chameleon.engine.entity.ResourceRefType;
-import com.athena.chameleon.engine.entity.ServletMappingType;
-import com.athena.chameleon.engine.entity.ServletNameType;
-import com.athena.chameleon.engine.entity.UrlPatternType;
-import com.athena.chameleon.engine.entity.WebAppType;
-import com.athena.chameleon.engine.entity.WelcomeFileListType;
-import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.chameleon.engine.core.MigrationComponent;
+import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.xml.webapp.DescriptionType;
+import com.athena.chameleon.engine.entity.xml.webapp.DisplayNameType;
+import com.athena.chameleon.engine.entity.xml.webapp.ErrorPageType;
+import com.athena.chameleon.engine.entity.xml.webapp.FilterMappingType;
+import com.athena.chameleon.engine.entity.xml.webapp.ResourceRefType;
+import com.athena.chameleon.engine.entity.xml.webapp.ServletMappingType;
+import com.athena.chameleon.engine.entity.xml.webapp.ServletNameType;
+import com.athena.chameleon.engine.entity.xml.webapp.UrlPatternType;
+import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
+import com.athena.chameleon.engine.entity.xml.webapp.WelcomeFileListType;
 import com.athena.chameleon.engine.utils.ZipUtil;
-import com.ibm.icu.text.CharsetDetector;
 
 /**
  * This FileUnzipTest class is a Test Case class for FileUnzip.
@@ -74,165 +70,105 @@ public class FileUnzipTest {
 	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
 	public String unzipDirPath;
 
-	@Value("#{contextProperties['unzip.change.target']}")
-	public String changeTarget;
-
 	@Value("#{contextProperties['unzip.default.encoding']}")
 	public String defaultEncoding;
 
 	@Value("#{contextProperties['unzip.en.encoding']}")
 	public String enEncoding;
-    
+
+	@Inject
+    @Named("engineMigrationComponent")
+    private MigrationComponent component;
+
     @Test
     public void unzipTest() throws Exception  {
-        //String zipFilePath = "C:/test/test.zip";
-    	//String tmpfileDir = PropertyUtil.getProperty("unzip.dir.path") + File.separator + System.currentTimeMillis();
         String zipFilePath = this.getClass().getResource("/files/test.zip").getFile();
-        String tmpfileDir = unzipDirPath + File.separator + System.currentTimeMillis();
-        String unzipPath = ZipUtil.extract(zipFilePath, tmpfileDir);
+        String tmpFileDir = unzipDirPath + File.separator + System.currentTimeMillis();
+        String unzipPath = ZipUtil.extract(zipFilePath, tmpFileDir);
         
-        File unzipDir = new File(unzipPath);
-        fileAsset(unzipDir, unzipPath);
-        fileRead(unzipDir, unzipPath);
+        File unzipFile = new File(unzipPath);
+        component = new MigrationComponent();
+        component.setMigrationFileList(unzipFile, unzipPath);
         
+        List<MigrationFile> list = component.getMigrationFileList();
         
-        
+        fileAsset(list);
+        fileRead(list);
+        webXmlPasing(component.webXmlPasing());
         
         // 테스트 종료 후 압축해제 디렉토리 제거
-        //deleteDirectory(unzipDir);
+        deleteDirectory(unzipFile);
     }
     
-    public void fileAsset(File file, String rootPath) throws Exception {
-        if(file.isDirectory()) {
-            for (int i=0;i < file.listFiles().length;i++) {
-                File f = file.listFiles()[i];
-                if(f.isDirectory()) {
-                    fileAsset(f, rootPath);
-                } else {
-                	
-                    //File unzip TestCase
-                	String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
-                    assertNotNull("["+filePath + "] file null error", f);
-                    
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("[FileUnzipTest] FilePath :" + filePath);
-                    }
-                    
-                    //String changeTarget = PropertyUtil.getProperty("unzip.change.target");
-                    
-                    //UTF-8 Encoding Test Case
-                    if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
-                        CharsetDetector detector = new CharsetDetector();
-                        detector.setText(FileUtils.readFileToByteArray(f));
-                        
-                        //ISO-8859의 경우 예외처리
-//                        assertTrue("["+filePath + "] file encoding error : " + detector.detect().getName(),
-//                                (detector.detect().getName().equals(PropertyUtil.getProperty("unzip.default.encoding"))
-//                                        || detector.detect().getName().indexOf(PropertyUtil.getProperty("unzip.en.encoding")) > -1));
-                                                
-//                        assertTrue("["+filePath + "] file encoding error : " + detector.detect().getName(),
-//                                (detector.detect().getName().equals(defaultEncoding)
-//                                        || detector.detect().getName().indexOf(enEncoding) > -1));
-                    }
-                 
-                }
+    public void fileAsset(List<MigrationFile> list) throws Exception {
+        for(MigrationFile file : list) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("[FileUnzipTest] FilePath :" + file.getFileName());
             }
         }
     }
 
     //FileRead 및 라인단위 패턴 매칭 Test Code
-    public void fileRead(File file, String rootPath) throws Exception {
-    	
-    	Pattern p = Pattern.compile(".*test.*");
-    	Matcher match = null;
-    	
-        if(file.isDirectory()) {
-            for (int i=0;i < file.listFiles().length;i++) {
-                File f = file.listFiles()[i];
-                if(f.isDirectory()) {
-                    fileRead(f, rootPath);
-                } else {
-                    
-                	String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
-                    //String changeTarget = PropertyUtil.getProperty("unzip.change.target");
-                    
-                    //문서 라인 추출
-                    if(changeTarget.indexOf(filePath.substring(filePath.lastIndexOf(".")+1, filePath.length())) > -1) {
-                    
-                        //xml file pasing
-                        if(filePath.indexOf("web.xml") > -1) {
-                            webXmlPasing(f);
-                        }
-                        
-                        try {
-                            FileReader reader = new FileReader(f);
-                            BufferedReader buffer = new BufferedReader(reader);
-                            
-                            
-                            String lineStr = null;
-                            int line = 0;
-                            while((lineStr = buffer.readLine()) != null) {
-                                
-                            	line++;
-                                
-                                match = p.matcher(lineStr);
-                                if(match.matches()) {
-                                    if (logger.isDebugEnabled()) {
-                                        logger.debug("["+filePath+"] " + line + " line : " + lineStr);
-                                    }
-                                }
-                            }
-                            
-                        } catch(Exception e) {
-                            fail("File Read error");
-                        }
-                        
-                    }
-                 
+    public void fileRead(List<MigrationFile> list) throws Exception {
+    	for(MigrationFile file : list) {
+    	    
+    	    Iterator<Entry<Integer, String>> iterator = file.getLineMap().entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Entry<Integer, String> entry = (Entry<Integer, String>)iterator.next();
+                
+                if (logger.isDebugEnabled()) {
+                    logger.debug("["+file.getFileName()+"] " + entry.getKey() + " line : " + entry.getValue());
                 }
+                
             }
-        }
+    	}
     }
     
     //xml file pasing
-    public void webXmlPasing(File file) {
+    public void webXmlPasing(WebAppType webapp) {
         
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity");
-            JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(file);
             
-            WebAppType webapp = (WebAppType)result.getValue();
+            FilterMappingType mappingType = new FilterMappingType(); 
+            mappingType = (FilterMappingType) component.getWebXmlElementEntity(webapp, mappingType);
+            getFilterMappingType(mappingType);
             
-            List<JAXBElement<?>> elementList = webapp.getDescriptionAndDisplayNameAndIcon();
+            List<Object> entityList = new ArrayList<Object>();
+            entityList.add(new ServletMappingType());
+            entityList.add(new DisplayNameType());
+            entityList.add(new ErrorPageType());
+            entityList.add(new WelcomeFileListType());
+            entityList.add(new ResourceRefType());
             
-            for(JAXBElement<?> element : elementList) {
+            HashMap<Object, Object> pasingMap = (HashMap<Object, Object>) component.getWebXmlElementEntityMap(webapp, entityList);
+            Iterator<Entry<Object, Object>> iterator = pasingMap.entrySet().iterator();
+            
+            while (iterator.hasNext()) {
+                Entry<Object, Object> entry = (Entry<Object, Object>)iterator.next();
                 
-                if(element.getValue() instanceof FilterMappingType) {
-                    //filter mapping 정보
-                    getFilterMappingType((FilterMappingType) element.getValue());
-                } else if(element.getValue() instanceof ServletMappingType) {
+                if(entry.getKey() instanceof ServletMappingType) {
                     //servlet mapping 정보
-                    getServletMappingType((ServletMappingType) element.getValue());
-                } else if(element.getValue() instanceof DisplayNameType) {
+                    getServletMappingType((ServletMappingType) entry.getValue());
+                } else if(entry.getKey() instanceof DisplayNameType) {
                     //display name 정보
                     if (logger.isDebugEnabled()) 
-                        logger.debug("[display name] " + ((DisplayNameType)element.getValue()).getValue());
-                } else if(element.getValue() instanceof ErrorPageType) {
+                        logger.debug("[display name] " + ((DisplayNameType)entry.getValue()).getValue());
+                } else if(entry.getKey() instanceof ErrorPageType) {
                     //error page 정보
-                    getErrorPageType((ErrorPageType) element.getValue());
-                } else if(element.getValue() instanceof WelcomeFileListType) {
+                    getErrorPageType((ErrorPageType) entry.getValue());
+                } else if(entry.getKey() instanceof WelcomeFileListType) {
                     //welcome file 정보
-                    getWelcomFileListType((WelcomeFileListType) element.getValue());
-                } else if(element.getValue() instanceof ResourceRefType) {
+                    getWelcomFileListType((WelcomeFileListType) entry.getValue());
+                } else if(entry.getKey() instanceof ResourceRefType) {
                     //resource reference 정보
-                    getResourceRefType((ResourceRefType) element.getValue());
+                    getResourceRefType((ResourceRefType) entry.getValue());
                 }
+                
             }
             
-        } catch(JAXBException je) {
-            je.printStackTrace();
-            fail("Xml Pasing Error : JAXBException");
         } catch(Exception e) {
+            e.printStackTrace();
             fail("Xml Pasing Error");
         }
     }
