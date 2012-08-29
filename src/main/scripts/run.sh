@@ -5,7 +5,7 @@
 ##                                                                          ##
 ### ====================================================================== ###
 
-LOGGING_DIRECTORY="."
+LOGGING_DIRECTORY="./log"
 JAVA_OPTS="-Xms128m -Xmx256m -Dlogging.directory=${LOGGING_DIRECTORY}"
 
 # Setup the JVM
