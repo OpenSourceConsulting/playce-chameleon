@@ -7,6 +7,9 @@
 SET LOGGING_DIRECTORY=./log
 SET JAVA_OPTS="-Dlogging.directory=%LOGGING_DIRECTORY%"
 
+IF DEFINED JAVA_HOME (
+    SET JAVA="%JAVA_HOME%\bin\java"
+)
 IF NOT DEFINED JAVA_HOME (
     SET JAVA="%cd%\jre\bin\java"
 )
