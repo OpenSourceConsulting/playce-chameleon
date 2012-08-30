@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
@@ -53,6 +54,7 @@ public class MigrationComponent {
 
     public String                   rootPath;
     public File                     webXmlFile;
+    public File                     applicationXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
     
     /**
@@ -101,6 +103,8 @@ public class MigrationComponent {
                         //xml file pasing
                         if(filePath.indexOf("web.xml") > -1) {
                             webXmlFile = f;
+                        } else if(filePath.indexOf("application.xml") > -1) {
+                        	applicationXmlFile = f;
                         }
                         
                         try {
@@ -135,7 +139,7 @@ public class MigrationComponent {
 
     /**
      * 
-     * web.xml passing
+     * web.xml pasing
      *
      * @param xmlFile web.xml file
      * @return WebAppType
@@ -147,7 +151,7 @@ public class MigrationComponent {
     
     /**
      * 
-     * web.xml passing
+     * web.xml pasing
      *
      * @return WebAppType
      */
@@ -155,7 +159,7 @@ public class MigrationComponent {
         
         WebAppType webApp = null;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.tomcat");
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp");
             JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(webXmlFile);
             
             webApp = (WebAppType)result.getValue();
@@ -211,7 +215,42 @@ public class MigrationComponent {
         }
         return entityMap;
     }
+
+    /**
+     * 
+     * application.xml pasing
+     *
+     * @param xmlFile application.xml file
+     * @return ApplicationType
+     */
+    public ApplicationType applicationXmlPasing(File xmlFile) {
+        this.applicationXmlFile = xmlFile;
+        return applicationXmlPasing();
+    }
+    
+    /**
+     * 
+     * application.xml pasing
+     *
+     * @return ApplicationType
+     */
+    public ApplicationType applicationXmlPasing() {
         
+    	ApplicationType app = null;
+        try {
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application");
+            JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(applicationXmlFile);
+            
+            app = (ApplicationType)result.getValue();
+            
+        } catch(JAXBException je) {
+            je.printStackTrace();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return app;
+    }
+       
     /**
      * @return the migrationFileList
      */
@@ -240,5 +279,21 @@ public class MigrationComponent {
         this.webXmlFile = webXmlFile;
     }
     
+    /**
+     * 
+     * @return the applicationXmlFile
+     */
+    public File getApplicationXmlFile() {
+		return applicationXmlFile;
+	}
+
+    /**
+     * 
+     * @param applicationXmlFile the applicationXmlFile to set
+     */
+	public void setApplicationXmlFile(File applicationXmlFile) {
+		this.applicationXmlFile = applicationXmlFile;
+	}
+
 }
 //end of MigrationContext.java

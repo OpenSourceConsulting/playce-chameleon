@@ -42,6 +42,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
+import com.athena.chameleon.engine.entity.xml.application.ModuleType;
+import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleType;
 import com.athena.chameleon.engine.entity.xml.webapp.DescriptionType;
 import com.athena.chameleon.engine.entity.xml.webapp.DisplayNameType;
 import com.athena.chameleon.engine.entity.xml.webapp.ErrorPageType;
@@ -95,6 +98,7 @@ public class FileUnzipTest {
         fileAsset(list);
         fileRead(list);
         webXmlPasing(component.webXmlPasing());
+        applicationXmlPasing(component.applicationXmlPasing());
         
         // 테스트 종료 후 압축해제 디렉토리 제거
         deleteDirectory(unzipFile);
@@ -169,7 +173,49 @@ public class FileUnzipTest {
             
         } catch(Exception e) {
             e.printStackTrace();
-            fail("Xml Pasing Error");
+            fail("web xml Pasing Error");
+        }
+    }
+
+    //application file pasing
+    public void applicationXmlPasing(ApplicationType app) {
+        
+        try {
+        	List<ModuleType> moduleList = app.getModule();
+        	
+        	StringBuffer buf = new StringBuffer();
+        	buf.append("\n[application.xml] \n");
+        	if(moduleList != null) 
+        		buf.append(" [module type] \n");
+        		
+        	for(ModuleType module : moduleList) {
+        		if(module.getEjb() != null)
+        			buf.append("ejb : " + module.getEjb().getValue() + "\n");
+        		else if(module.getJava() != null) 
+        			buf.append("java : " + module.getJava().getValue() + "\n");
+        		else if(module.getWeb() != null) 
+        			buf.append("web url : " + module.getWeb().getWebUri().getValue() + "\n" +
+        					"web context root : " + module.getWeb().getContextRoot().getValue() + "\n");
+        	}
+        	
+        	List<SecurityRoleType> securityRoleList = app.getSecurityRole();
+        	if(securityRoleList != null) 
+        		buf.append(" [Security Role type] \n");
+        		
+        	for(SecurityRoleType securityRole : securityRoleList) {
+        		for(com.athena.chameleon.engine.entity.xml.j2ee.DescriptionType desc : securityRole.getDescription()) 
+        			buf.append("discription : " + desc.getValue() + "\n");
+        		
+        		buf.append("role name : " + securityRole.getRoleName().getValue() + "\n");
+        	}
+        	
+        	if (logger.isDebugEnabled()) {
+        		logger.debug(buf.toString());
+        	}
+        	
+        } catch(Exception e) {
+            e.printStackTrace();
+            fail("application xml Pasing Error");
         }
     }
     
