@@ -66,9 +66,9 @@ import com.athena.chameleon.engine.utils.ZipUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:./src/main/resources/spring/context-*.xml" })
-public class FileUnzipTest {
+public class MigrationComponentTest {
 	
-	private static final Log logger = LogFactory.getLog(FileUnzipTest.class);
+	private static final Log logger = LogFactory.getLog(MigrationComponentTest.class);
 	
 	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
 	public String unzipDirPath;
@@ -80,7 +80,7 @@ public class FileUnzipTest {
 	public String enEncoding;
 
 	@Inject
-    @Named("engineMigrationComponent")
+    @Named("migrationComponent")
     private MigrationComponent component;
 
     @Test

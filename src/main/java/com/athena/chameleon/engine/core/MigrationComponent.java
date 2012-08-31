@@ -49,7 +49,7 @@ import com.athena.chameleon.engine.utils.JaxbUtils;
  * @version 1.0
  */
 
-@Component("engineMigrationComponent")
+@Component("migrationComponent")
 public class MigrationComponent {
 
     public String                   rootPath;
@@ -180,7 +180,7 @@ public class MigrationComponent {
      * @param elementEntity 가져올 elementEntity
      * @return Object
      */
-    public static Object getWebXmlElementEntity(WebAppType webApp, Object elementEntity) {
+    public Object getWebXmlElementEntity(WebAppType webApp, Object elementEntity) {
 
         List<JAXBElement<?>> elementList = webApp.getDescriptionAndDisplayNameAndIcon();
         Object entity = null;
@@ -201,7 +201,7 @@ public class MigrationComponent {
      * @param elementEntityList 가져올 elementEntity List
      * @return HashMap<?, ?>
      */
-    public static HashMap<?, ?> getWebXmlElementEntityMap(WebAppType webApp, List<Object> elementEntityList) {
+    public HashMap<?, ?> getWebXmlElementEntityMap(WebAppType webApp, List<Object> elementEntityList) {
 
         List<JAXBElement<?>> elementList = webApp.getDescriptionAndDisplayNameAndIcon();
         HashMap<Object, Object> entityMap = new HashMap<Object, Object>();
