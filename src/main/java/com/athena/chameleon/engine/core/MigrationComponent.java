@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.EjbJarType;
 import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
@@ -55,6 +56,7 @@ public class MigrationComponent {
     public String                   rootPath;
     public File                     webXmlFile;
     public File                     applicationXmlFile;
+    public File                     ejbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
     
     /**
@@ -101,10 +103,12 @@ public class MigrationComponent {
                         HashMap<Integer, String> lineMap = new LinkedHashMap<Integer, String>();
                         
                         //xml file pasing
-                        if(filePath.indexOf("web.xml") > -1) {
+                        if(filePath.indexOf("/WEB-INF/web.xml") > -1) {
                             webXmlFile = f;
-                        } else if(filePath.indexOf("application.xml") > -1) {
+                        } else if(filePath.indexOf("/WEB-INF/application.xml") > -1) {
                         	applicationXmlFile = f;
+                        } else if(filePath.indexOf("/META-INF/ebj-jar.xml") > -1) {
+                            ejbXmlFile = f;
                         }
                         
                         try {
@@ -249,6 +253,41 @@ public class MigrationComponent {
             e.printStackTrace();
         }
         return app;
+    }
+
+    /**
+     * 
+     * ejb-jar.xml pasing
+     *
+     * @param xmlFile ejb-jar.xml file
+     * @return EjbJarType
+     */
+    public EjbJarType ejbXmlPasing(File xmlFile) {
+        this.ejbXmlFile = xmlFile;
+        return ejbXmlPasing();
+    }
+    
+    /**
+     * 
+     *  ejb-jar.xml pasing
+     *
+     * @return EjbJarType
+     */
+    public EjbJarType ejbXmlPasing() {
+        
+        EjbJarType ejb = null;
+        try {
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar");
+            JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(ejbXmlFile);
+            
+            ejb = (EjbJarType)result.getValue();
+            
+        } catch(JAXBException je) {
+            je.printStackTrace();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return ejb;
     }
        
     /**
