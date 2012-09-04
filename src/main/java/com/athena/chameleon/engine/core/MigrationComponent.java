@@ -91,7 +91,7 @@ public class MigrationComponent {
                     setMigrationFileList(f);
                 } else {
                     
-                    String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length());
+                    String filePath = f.getAbsolutePath().substring(rootPath.length(), f.getAbsolutePath().length()).replace('\\', '/');
                     String changeTarget = PropertyUtil.getProperty("unzip.change.target");
                     
                     MigrationFile fileEntity = new MigrationFile();
@@ -103,11 +103,11 @@ public class MigrationComponent {
                         HashMap<Integer, String> lineMap = new LinkedHashMap<Integer, String>();
                         
                         //xml file pasing
-                        if(filePath.indexOf("/WEB-INF/web.xml") > -1) {
+                        if(filePath.indexOf("WEB-INF/web.xml") > -1) {
                             webXmlFile = f;
-                        } else if(filePath.indexOf("/WEB-INF/application.xml") > -1) {
+                        } else if(filePath.indexOf("WEB-INF/application.xml") > -1) {
                         	applicationXmlFile = f;
-                        } else if(filePath.indexOf("/META-INF/ebj-jar.xml") > -1) {
+                        } else if(filePath.indexOf("META-INF/ejb-jar.xml") > -1) {
                             ejbXmlFile = f;
                         }
                         
