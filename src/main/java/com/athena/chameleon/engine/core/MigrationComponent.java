@@ -161,6 +161,9 @@ public class MigrationComponent {
      */
     public WebAppType webXmlPasing() {
         
+    	if(webXmlFile == null)
+    		return null;
+    		
         WebAppType webApp = null;
         try {
             Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp");
@@ -186,6 +189,9 @@ public class MigrationComponent {
      */
     public Object getWebXmlElementEntity(WebAppType webApp, Object elementEntity) {
 
+    	if(webApp == null)
+    		return null;
+    	
         List<JAXBElement<?>> elementList = webApp.getDescriptionAndDisplayNameAndIcon();
         Object entity = null;
         
@@ -240,6 +246,9 @@ public class MigrationComponent {
      */
     public ApplicationType applicationXmlPasing() {
         
+    	if(applicationXmlFile == null)
+    		return null;
+    	
     	ApplicationType app = null;
         try {
             Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application");
@@ -275,6 +284,9 @@ public class MigrationComponent {
      */
     public EjbJarType ejbXmlPasing() {
         
+    	if(ejbXmlFile == null)
+    		return null;
+    	
         EjbJarType ejb = null;
         try {
             Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar");

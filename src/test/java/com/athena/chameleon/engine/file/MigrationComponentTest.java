@@ -44,6 +44,10 @@ import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.ModuleType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.EjbJarType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.EntityBeanType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.MessageDrivenBeanType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.SessionBeanType;
 import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleType;
 import com.athena.chameleon.engine.entity.xml.webapp.DescriptionType;
 import com.athena.chameleon.engine.entity.xml.webapp.DisplayNameType;
@@ -56,6 +60,8 @@ import com.athena.chameleon.engine.entity.xml.webapp.UrlPatternType;
 import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
 import com.athena.chameleon.engine.entity.xml.webapp.WelcomeFileListType;
 import com.athena.chameleon.engine.utils.ZipUtil;
+
+import freemarker.template.utility.StringUtil;
 
 /**
  * This FileUnzipTest class is a Test Case class for FileUnzip.
@@ -99,6 +105,7 @@ public class MigrationComponentTest {
         fileRead(list);
         webXmlPasing(component.webXmlPasing());
         applicationXmlPasing(component.applicationXmlPasing());
+        ejbXmlPasing(component.ejbXmlPasing());
         
         // 테스트 종료 후 압축해제 디렉토리 제거
         deleteDirectory(unzipFile);
@@ -134,6 +141,9 @@ public class MigrationComponentTest {
         
         try {
             
+        	if(webapp == null)
+        		return;
+        	
             FilterMappingType mappingType = new FilterMappingType(); 
             mappingType = (FilterMappingType) component.getWebXmlElementEntity(webapp, mappingType);
             getFilterMappingType(mappingType);
@@ -181,6 +191,9 @@ public class MigrationComponentTest {
     public void applicationXmlPasing(ApplicationType app) {
         
         try {
+        	if(app == null)
+        		return;
+        	
         	List<ModuleType> moduleList = app.getModule();
         	
         	StringBuffer buf = new StringBuffer();
@@ -211,6 +224,69 @@ public class MigrationComponentTest {
         	
         	if (logger.isDebugEnabled()) {
         		logger.debug(buf.toString());
+        	}
+        	
+        } catch(Exception e) {
+            e.printStackTrace();
+            fail("application xml Pasing Error");
+        }
+    }
+
+    //ejb file pasing
+    public void ejbXmlPasing(EjbJarType ejb) {
+        
+        try {
+        	
+        	String message1 = "1. EJB - @param@\n" +
+        			" 1.1 EJB 정보\n" +
+        			" Bean Name : @param@\n" +
+        			" Home Class: @param@\n" +
+        			" Remote Class : @param@\n" +
+        			" Bean Class : @param@\n" +
+        			" EJB 유형 : @param@ Session Bean\n" +
+        			" 트랜잭션 유형 : @param@\n";
+        	/*
+        	String message2 = "만약 EJB3.0 유형으로 변경을 하고 싶으시다면 아래의 내용을 참고하십시오.\n" +
+        			" 단계 0 : 이클립스의 EJB 프로젝트를 생서하십시오.\n" +
+        			" 단계 1 : @param@ 소스를 삭제하십시오.\n" +
+        			" 단계 2 : Remote 클래스를 다음이 순서로 변경하십시오.\n" +
+        			"        public interface @param@ extends Remote 부분의 extends Remote를 삭제하십시오.\n" +
+        			"        비즈니스 메소드의 throws RemoteException 을 삭제하십시오.\n" +
+        			"        클래스 레벨의 어노테이션으로 다음을 추가하십시오.\n" +
+        			"		@Stateless(mappedName=\"@param@\")\n" +
+        			"		@TransactionManagement(value=TransactionManagementType.CONTAINER)\n" +
+        			"		public class @param@ extends @param@ {\n" +
+        			"		}\n" +
+        			" 단계 3 : 위의 생성된 코드를 컴파일하신 후 압축하십시오.";
+        	*/		
+        	if(ejb != null) {
+        		message1.replaceFirst("@param@", ejb.getId());
+        		
+        		for(Object o : ejb.getEnterpriseBeans().getSessionOrEntityOrMessageDriven()){
+        			if(o instanceof MessageDrivenBeanType) {
+        				MessageDrivenBeanType bean = (MessageDrivenBeanType) o;
+        				message1.replaceFirst("@param@", bean.getEjbName().getValue());
+        				
+        			} else if(o instanceof EntityBeanType) {
+        				EntityBeanType bean = (EntityBeanType) o;
+        				message1.replaceFirst("@param@", bean.getEjbName().getValue());
+        				
+        			} else if(o instanceof SessionBeanType) {
+        				SessionBeanType bean = (SessionBeanType) o;
+        				message1.replaceFirst("@param@", bean.getEjbName().getValue());
+        				message1.replaceFirst("@param@", bean.getHome().getValue());
+        				message1.replaceFirst("@param@", bean.getRemote().getValue());
+        				message1.replaceFirst("@param@", bean.getEjbClass().getValue());
+        				message1.replaceFirst("@param@", bean.getSessionType().getValue());
+        				message1.replaceFirst("@param@", bean.getTransactionType().getValue());
+        			}
+        		}
+        		
+
+            	if (logger.isDebugEnabled()) {
+            		logger.debug(message1);
+            	}
+            	
         	}
         	
         } catch(Exception e) {
