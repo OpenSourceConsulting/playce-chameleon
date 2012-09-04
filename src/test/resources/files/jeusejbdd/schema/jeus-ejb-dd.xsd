@@ -1,0 +1,1628 @@
+<?xml version="1.0" encoding="EUC-KR"?>
+<xs:schema
+    xmlns="http://www.tmaxsoft.com/xml/ns/jeus"
+    targetNamespace="http://www.tmaxsoft.com/xml/ns/jeus"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="5.0">
+
+    <xs:include schemaLocation="jeus-common.xsd"/>
+    <xs:include schemaLocation="jeus-webservices-client-dd.xsd"/>
+
+    <xs:element name="jeus-ejb-dd" type="jeus-ejb-ddType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+			[Description]: 단일 JEUS EJB 모듈의 최상위 element. 각각의 jeus-ejb-dd.xml
+			파일에는 이 태그가 반드시 존재한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:complexType name="jeus-ejb-ddType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="module-info" type="ejb-module-infoType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 모듈 전체에 적용되는 포괄적인 정보를 설정한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>true</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="beanlist" type="beanlistType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 각 bean의 설정을 하는 element이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ejb-relation-map" type="ejb-relation-mapType"
+                minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 CMP 2.0 Entity Bean간의 Relation을 정의할 때 사용한다.
+                    ejb-relation-map element는  ejb-jar.xml 에 선언된 각각의 Relation마다 하나씩 존재한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="message-destination" type="jndi-refType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: ejb-jar.xml의 <message-destination>에 선언된 message destination와
+                    JNDI에 등록된 실제 Destination객체를 매핑한다.
+                    [Dependency]: message-destination/jndi-info/ref = ejb-jar/enterprise-beans/ * /message-destination-ref/message-destination-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ejb-module-infoType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="keep-generated" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 module에 대해서 생성된 java source file을 남길지의 여부를 지정한다.
+                    이 설정이 true일때는 jeus-application-dd.xml의 설정에 우선한다. false인 경우에는
+                    jeus-application-dd.xml의 keep-generated 설정에 따른다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="fast-deploy" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 module이 deploy전에 ejb module compiler에 의해 compile되어 fast deploy가 가능할때
+                    설정한다. 이 설정이 true일때는 jeus-application-dd.xml의 설정에 우선한다. false인 경우에는
+                    jeus-application-dd.xml의 fast deploy 설정에 따른다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="role-permission" type="rolePermissionType"
+                minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 EJB module에서의 user principal과 ejb-jar.xml에서 사용하는 role의 관계를
+                    설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="unspecified-method-permission" type="unspecified-method-permissionType" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: ejb-jar.xml에서 method permission이 지정되어 있지 않은 method에 대한 설정을 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="unspecified-container-transaction" type="trans-attributeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: ejb-jar.xml에서 container transaction이 지정되어 있지 않은 method에 대한 설정을 한다. 이 값의 default는 -Djeus.ejb.transaction.attribute.default로 설정할수 있다. 이 값이 지정되어 있지 않으면 Supports가 default로 사용된다. 
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="unspecified-method-permissionType">
+        <xs:choice>
+            <xs:element name="role" type="xs:token" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: ejb-jar.xml에서 method permission이 지정되어 있지 않은 method의 permission을 여기에 설정된
+                  role에게 부여한다. 다른 role의 principal은 이 method들을 호출할 permission을 얻지 못한다.
+                  [Value Description]: ejb-jar.xml의 <assembler-description>에서 지정된 role name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="excluded" type="emptyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                [Description]: ejb-jar.xml에서 method permission이 지정되어 있지 않은 method를 exclude시킨다. 따라서
+                어떤 principal은 이 method들을 호출할 permission을 얻지 못한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="unchecked" type="emptyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                [Description]: ejb-jar.xml에서 method permission이 지정되어 있지 않은 method를 unchecked로 간주한다.
+                따라서 모든 principal은 이 method들을 호출할 permission을 얻는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:simpleType name="trans-attributeType">
+        <xs:annotation>
+            <xs:documentation>
+
+	The trans-attributeType specifies how the container must
+	manage the transaction boundaries when delegating a method
+	invocation to an enterprise bean's business method.
+
+	The value must be one of the following:
+
+	    NotSupported
+	    Supports
+	    Required
+	    RequiresNew
+	    Mandatory
+	    Never
+
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="NotSupported"/>
+            <xs:enumeration value="Supports"/>
+            <xs:enumeration value="Required"/>
+            <xs:enumeration value="RequiresNew"/>
+            <xs:enumeration value="Mandatory"/>
+            <xs:enumeration value="Never"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="beanlistType">
+        <xs:sequence>
+            <xs:element name="jeus-bean" type="jeus-beanType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 각 bean에 대한 jeus specific 설정을 한다. ejb-jar.xml의 각 bean마다 이 설정이
+                    되어야 한다. bean의 종류마다 설정해야 할 element가 다르므로 JEUS EJB 메뉴얼을 참고해서
+                    설정하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jeus-beanType">
+        <xs:sequence>
+            <xs:element name="ejb-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: ejb-jar.xml에 지정된 ejb-name을 가리킨다.
+                    [Example]: <ejb-name>teller</ejb-name>
+					[Dependency]: ejb-jar/enterprise-beans/ * /ejb-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: JNDI Naming System에 등록될 유일한 이름이다. 클러스터링에 참여하는 모든 빈은 같은 export-name을 가져야 한다.
+                    [Value Description]: 임의로 지정할 수 있고 JNDI Naming System에서 반드시 유일한  이름이어야만 한다.
+                    [Example]: <export-name>TELLEREJB</export-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="local-export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 빈이 로컬 빈 인터페이스일 때 사용하는 JNDI 이름이다.
+                    [Value Description]: 임의로 지정할 수 있고 JNDI Naming System에서 반드시 유일한  이름이어야만 한다.
+                    [Example]: <local-export-name>LOCALTELLEREJB</local-export-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="export-port" type="nonNegativeIntType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 이 빈이 서비스하게 될 RMI Listener Port를 명시한다. 이 설정은
+                    클라이언트와 EJB간에 방화벽이 있을 때 사용되기도 한다.  이 element는 관리자가 RMI 통신을 허용하는
+                    포트 번호를 제공 하는 경우에만 사용할 수 있다.
+                    [Value Description]: 포트번호
+                    [Example]: <export-port>7654</export-port>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="export-iiop" type="export-iiopType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element를 설정하면 빈의 인터페이스 가 IIOP stub과 skeleton으로서
+                    COS Naming Server에 export될 수 있도록 한다. 이는 IIOP로 접근 가능한 모든 클라이언트가 빈에
+                    접근 가능하도록 한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="single-vm-only" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: “true”로 설정되어 있으면 JNDI 서버는 빈이 실행 되고 있는 JVM에서만 빈 이름이
+                    export될 수 있도록 범위를 한정시킨다. 이 의미는 해당 빈을 접근 할 수 있는 클라이언트는 동일한
+                    JVM내에서 운영되고 있는 Servlet과 빈들뿐이라는 것이다(즉 그 빈은 현재의 Engine Container에서만
+                    볼 수 있다는 것이다). 이 옵션은 같은 빈이 다른 Engine Container에도 Deploy 되어 있을 경우에
+                    유용하게 사용될 수 있다. 일반적으로 빈이 같은 JNDI export 이름을 가지고 있을 경우에는 이 이름들이
+                    export될 때 서로를 JNDI Naming Server에서 overwrite 한다. 이 옵션을 사용함으로써 각 빈들은
+                    빈을 운영하고 있는 JVM에서만 인식되고 범위가 제한됨으로 export 이름이 overwrite되지 않는다.
+                    [Example]: <single-vm-only>true</single-vm-only>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="local-invoke-optimize" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 두 개의EJB가 서로 통신하고 같은 JVM 안에서 실행된다면  메소드
+                    호출을 할지 RMI 통신을 할지를 결정한다. 이 옵션이 활성화되었을 때 메소드 호출로
+                    통신한다(call-by-reference). 이 사실을 이용해서 EJB프로그래밍을 하지 않을 것을 권장한다.
+                    모든 메소드 호출은 call-by-value인 것처럼 취급하라.
+                    [Performance Recommendation]: 성능을 향상시키기 위해서 두 개의 EJB가 같은 JVM에 존재할 때
+                    이 값을 true 로 설정한다.
+                    [Example]: <local-invoke-optimize>true</local-invoke-optimize>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="use-access-control" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB method를 호출하는 중에 method를 호출한 principal을 대상으로 EJB method가
+                    사용하는 resource에 대해 J2SE Security에서 제공하는 access-control을 사용할 것인지를 지정한다.
+                    이 기능이 동작하기 위해서는 JEUS를 기동할 때 -Djava.security.manager를 설정해서 security manager를
+                    활성화시켜야 한다.
+                    [Performance Recommendation]: access control을 check하지 않을거라면 false로 지정하는 것이 성능에
+                    도움이 된다.
+                    [Example]: <use-access-control>false</use-access-control>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="run-as-identity" type="run-as-identityType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 ejb-jar.xml에 정의된 run-as-specified-identity role 이름을 실세
+                    사용자이름(principal)으로 매핑을 정의한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="security-interop" type="security-interopType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 IIOP/CSI를 사용하고 EJB 엔진에서 사용가능할 때 즉 enable-interop
+                    element가 true 일 때 선언된다.  다음의 설정에 대한 정보가 필요하면 CSI 스펙을 참고하라.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="env" type="envType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 표준 EJB DD 정의된 <env-entry>태그에 추가되거나 Override 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ejb-ref" type="jndi-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 코드에서 사용하는 EJB 참조를 실제 EJB JNDI 이름으로 bind한다.
+                    [Dependency]: ejb-ref/jndi-info/ref-name = ejb-jar/enterprise-beans/ * /ejb-ref/ejb-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="res-ref" type="jndi-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 소스코드 상에서 사용할 수 있는 외부 자원(예: 데이터베이스) 참조 이름을 선언할 수 있다.
+                    [Dependency]: res-ref/jndi-info/ref-name = ejb-jar/enterprise-beans/ * /resource-ref/res-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="res-env-ref" type="jndi-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 코드에서 사용하는 외부자원 참조를 실제 JNDI 이름으로 bind한다.
+                    이 element는 표준 EJB DD의 <resource-env-ref>에 대응한다.
+                    [Dependency]: res-env-ref/jndi-info/ref-name = ejb-jar/enterprise-beans/ * /resource-env-ref/resource-env-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="service-ref" type="jeus-webservices-client-ddType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: JEUS 웹 서비스 클라이언트 설정 문서의 루트 엘리먼트(root element).
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="thread-max" type="nonNegativeIntType" default="100">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 엔진이 클라이언트의 요청을 받고 처리하는 쓰래드의 최대 갯수를 설정한다.
+                    이 값만큼의 thread가 이미 사용되고 있다면 그 다음의 request들은 다른 thread들이 사용가능하게
+                    될때까지 기다리게 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="clustering" type="clusteringType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 클러스터링 설정은 장애 대처와 로드 분산 기능을 제공한다. 이것은 기본적으로
+                    하나의 EJB 가 다른 여러 EJB 엔진에 모두 설치되었을 때 사용 가능하다. 이것은 JEUS 노드간의
+                    클러스터링 방법과 설정이 유사하다. 클러스터링에 참여하는 모든 EJB 는 같은 export-name 을
+                    가져야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="invoke-http" type="invoke-httpType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 기능을 설정하면 클라이언트 측의 EJB stub 과 원격지의 RMI 실행환경은 HTTP-RMI
+                    요청(Request)으로 통신한다.  이것은 방화벽을 사이에 두고 EJB에 접근할 때 사용된다. 이 모드
+                    ( HTTP 호출 모드 )를 사용할 때 클라이언트가  EJB stub에서 메소드를 호출하면 HTTP-RMI 요청
+                    ( Request )은 이것을 웹 컨테이너로 보낼 웹 서버로 발송된다. 그리고  이것은 RMI Handler
+                    Servlet(jeus. rmi.http.ServletHandler)으로 보내지고 여기서 Handler Servlet은 요청(Request
+                    )으로부터 HTTP 헤더를 제거한 뒤 이것을 RMI 실행환경으로 전송한다.
+                    이 element가 설정되기에 앞서 jeus.rmi.http. ServletHandler Servlet은 반드시 JEUS 웹 컨테이너에
+                    Deploy되어 있어야만 한다( 더 자세한 정보는 JEUS 웹 서버 가이드를 참고하라. ).
+                    [Performance Recommendation]: HTTP 호출 모드를 사용함으로써 약간의 성능 향상을 기대할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="pooling-bean" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: stateful session bean에 대해서만 적용되는 element로 이 element를 true로 설정하면
+                    상태유지 세션 빈 인스턴스는 비활성화(클라이언트 요청을 모두 처리하고 빈 풀에 인스턴스가 반환된
+                    상태)된 후에 재사용된다.
+                    [Performance Recommendation]: 상태유지 세션 빈의 재사용을 금지시킬 특별한 이유가 없다면 전체적인
+                    성능 최적화를 위해서 이 기능을 true로 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="object-management" type="object-managementType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 오직 상태유지 세션 빈과 엔티티 빈에만 적용되는 객체 관리 기능은 이 빈에 대한 빈
+                    인스턴스 풀링 작업을 제어한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="file-db-info" type="file-db-infoType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 엔진은 상태유지 세션 빈이 비 활성화될 때 빈의 상태를 File DB에 저장하고 후에
+                    다시 필요할 때 다시 그 상태 값을 복구한다. 이때 사용하는 File DB에 대한 설정을 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="persistence-optimize" type="persistence-optimizeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: 이 element는 entity bean에서 ejbLoad 와 ejbStore 메소드를 호출될 때를 결정하는
+                  EJB 엔진 규칙을 결정하고 최적화 하기 위한 설정을 포함한다. 이 메소드들을 더 적게 호출될수록
+                  성능은 보다 효율적이 된다.
+                  [Performance Recommendation]: 이 element의 하위 element들은 성능에 큰 영향을 끼치는 것이므로
+                  정확히 설정되어야 한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>true</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="schema-info" type="schema-infoType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 데이터베이스의 컬럼과 EJB 필드의 매핑을 정의한다. 이 element는 오직
+                    CMP Entity Bean에서만 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="database-insert-delay" type="database-insert-delayType" default="ejbPostCreate">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 옵션은 EJB가 생성될 때, 언제 새로운  EJB 데이터가 DB에 저장될지를 결정한다. 현재는
+                    두 가지 방법이 있다. ejbCreate() 메소드 완료 후와 ejbPostCreate() 메소드 완료 후가 있다.
+                    [Example]: <database-insert-delay>ejbCreate</database-insert-delay>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="cm-persistence-optimize" type="cm-persistence-optimizeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element의 사용은 EJB 엔진에 의해 생성되는 ejbLoad()와 ejbStore() 메소드의
+                    성능을 향상시키기 위해서 사용하는 어떤 속성들을 정의한다. 이 element는 오직 CMP Entity
+                    Bean에서만 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="enable-instant-ql" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 값을 "true"로 설정 한다면 이 빈의 홈 인터페이스는 부가적으로 JEUS 특정적인
+                    인터페이스 ( "jeus.ejb.bean.objectbase.EJBInstanceFinder" )를 구현한다. 이 인터페이스는
+                    다음과 같은 메소드를 포함한다.
+                        findWithInstantQL(java.lang.String qlSentence).
+                    이 메소드는 클라이언트의 소스 코드에서 바로 임의의 EJB QL 쿼리를 명시할 수 있도록 해준다. 이것은
+                    finder 메소드가 충분하지 않을 경우 임시적인 해결책이 될 수 있다.
+                    참고: "qlSentence" 문자열 파라미터는 오직 파라미터가 없는, 즉 "?" 이 없는 EJB QL  문장만을
+                    지원한다는 사실을 유의하라. 이것은 오직 CMP 2.0  Entity Bean에서만 작동한다.
+                    [Performance Recommendation]: "findWithInstantQL(java.lang.String qlSentence)" 메소드 사용은
+                    비효율적이다. 아주 특별한 상황이 아니라면 사용하지 않는 것이 좋다.
+                    [Example]: <enable-instant-ql>true</enable-instant-ql>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="connection-factory-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 2.0 style의 Message-Driven Bean에서만 사용하는 element로 이 MDB가 사용할
+                    JMS connection factory 의 JNDI 이름을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="mdb-resource-adapter" type="mdb-resource-adapterType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: Connector와 연동되는 Message-Driven Bean에서만 사용하는 element로
+                    이 MDB가 사용할 resource adapter를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="destination" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 2.0 style의 Message-Driven Bean에서만 사용하는 element로 이 MDB가 사용할
+                    JMS Destination의 JNDI 이름을 설정한다. 자세한 것은 JEUS JMS 메뉴얼과 JMS spec을
+                    참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="max-message" type="nonNegativeIntType" default="10">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 2.0 style의 Message-Driven Bean에서만 사용하는 element로 이 MDB가 사용하는
+                    JMS Session에 주어지는 최대 message 개수를 지정한다. 자세한 것은 JEUS JMS 메뉴얼과 JMS spec을
+                    참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ack-mode" type="ack-modeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 2.0 style의 Message-Driven Bean에서만 사용하는 element로 이 MDB가 사용하는
+                    JMS Session의 Ackndowledge mode를 설정한다. 자세한 것은 JEUS JMS 메뉴얼과 JMS spec을
+                    참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="durable" type="durableType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 2.0 style의 Message-Driven Bean에서만 사용하는 element로 이 MDB를 JMS의
+                    durable subscriber로 지정할지를 결정한다.자세한 것은 JEUS JMS 메뉴얼과 JMS spec을
+                    참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="msg-selector" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 2.0 style의 Message-Driven Bean에서만 사용하는 element로 이 MDB가
+                    사용할 message selector를 설정한다.자세한 것은 JEUS JMS 메뉴얼과 JMS spec을
+                    참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="jndi-spi" type="jndi-spiType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: EJB 2.0 style의 Message-Driven Bean에서만 사용하는 element로 만약 MDB가
+                    기본값(jeus.jndi.JEUSContextFactory) 이 아닌 다른 JNDI 이름 서비스에 등록되어 있는
+                    JMS 서비스를 사용한다면 이 element를 사용한다. 이 element는 JEUS MDB를 IBM MQ 나
+                    SONIC MQ같은 JEUS JMS 서비스 이외의 것과 연결할 때 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="durable-timer-service" type="durable-timer-serviceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 EJB가 Timer Service를 사용하는 경우 persistence timer에 대한 동작을
+                    설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="export-iiopType">
+        <xs:choice>
+            <xs:element name="only-iiop" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 EJB의 Home을 IIOP이외에 RMI Stub도 같이 등록할지를 결정한다.
+					같이 등록된다면 CosNaming에는 IIOP stub이, JEUS JNDI에는 RMI stub이 등록된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="durable-timer-serviceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="enable-durable-timers" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 EJB가 timer를 persistence하게 관리하게 할것인지를 결정한다. 이 값이 true라고
+                    하더라도 EJBMain.xml에 durable timer 설정이 되어 있지 않으면 persistence timer를 사용할 수가
+                    없다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ignore-durable-timers-at-deploy" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 EJB가 deploy될 때에 이전에 제거되지 않은 persistence timer를 무시할지의 여부를
+                    지정한다. 만약 true로 무시되면 이 timer들은 deploy시에 제거된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="delete-durable-timers-at-undeploy" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]:  timer는 code상에서 명시적으로 remove()가 호출되지 않으면 일반적으로 제거되지 않는다.
+                    이 EJB가 undeploy될 때에 아직 제거되지 않은 persistence timer가 있다면 이를 제거하도록 하는 option이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="mdb-resource-adapterType">
+        <xs:sequence>
+            <xs:element name="resource-adapter-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: MDB가 사용할 resource adapter의 이름을 설정한다. 이 이름은 해당 resource adapter의
+                        jeus-connector-dd.xml에 지정되어 있는 module name이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="activation-config" type="activation-configType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: resource adapter를 설정할 activation config를 기록한다. 이 설정은
+                        ejb-jar.xml의 activation config를 override할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="durableType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="Durable"/>
+            <xs:enumeration value="NonDurable"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <!-- **************************************************** -->
+
+    <xs:complexType name="activation-configType">
+        <xs:annotation>
+            <xs:documentation>
+
+		The activation-configType defines information about the
+		expected configuration properties of the message-driven bean
+		in its operational environment. This may include information
+		about message acknowledgement, message selector, expected
+		destination type, etc.
+
+		The configuration information is expressed in terms of
+		name/value configuration properties.
+
+		The properties that are recognized for a particular
+		message-driven bean are determined by the messaging type.
+
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:sequence>
+            <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 activation config에 대한 설명을 적을 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="activation-config-property" type="activation-config-propertyType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 각 activation config property를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- **************************************************** -->
+
+    <!-- **************************************************** -->
+
+    <xs:complexType name="activation-config-propertyType">
+        <xs:annotation>
+            <xs:documentation>
+
+		The activation-config-propertyType contains a name/value
+		configuration property pair for a message-driven bean.
+
+		The properties that are recognized for a particular
+		message-driven bean are determined by the messaging type.
+
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:sequence>
+            <xs:element name="activation-config-property-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 지정하고자 하는 activation config property의 이름이다.JMS MDB의 경우에는
+                        acknowledgeMode, messageSelector, destinationType, subscriptionDurability의 기본적으로
+                        인식된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="activation-config-property-value" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation>
+                            [Description]: 지정하고자 하는 activation config property의 값을 설정한다.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- **************************************************** -->
+
+    <xs:complexType name="security-interopType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="integrity-confidentiality" type="security-interopElementType"
+                default="NotSupported">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 CSI 스펙에 정의된 "Integrity" 비트와 "Confidentiality" 비트를
+                        매핑한다. 설정은 여기에서 정의된 대로 두 개의 비트 모두에 대해서 설정을  적용된다.
+                        [Defined Value]:
+                            [NotSupported]:
+                            "TLS_SEC_TRANS.target_supports" 비트배열의 "Integrity" 과 "Confidentiality" 비트를
+                            0으로 설정한다(disable).
+                            [Supports]:
+                            "TLS_SEC_TRANS.target_supports"  비트배열의 "Integrity" 과 "Confidentiality" 비트를
+                            1로 설정한다(enable).
+                            [Requires]:
+                            "TLS_SEC_TRANS.target_requires"  비트배열의 "Integrity" 과 "Confidentiality" 비트를
+                            1로 설정한다(enable). 그리고 "TLS_SEC_TRANS. target_supports"  비트배열의 "Integrity"
+                            과 "Confidentiality" 비트를  1로 설정한다(enable).
+                        [Example]: <integrity-confidentiality>Requires</integrity-confidentiality>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="trust-in-client" type="security-interopElementType"
+                default="NotSupported">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 CSI 스펙에 정의된 "Trust in client" 비트를 매핑한다.
+                        [Defined Value]:
+                            [NotSupported]:
+                            "TLS_SEC_TRANS.target_supports" 비트배열의  "Client authentication"비트를 0으로
+                            설정한다 (disable).
+                            [Supports]:
+                            "TLS_SEC_TRANS.target_supports" 비트배열의  "Client authentication"비트를 1로
+                            설정한다 (enable).
+                            [Requires]:
+                            "TLS_SEC_TRANS.target_requires" 비트배열의  "Client authentication"비트를 1로
+                            설정한다 (enable). 그리고  "TLS_SEC_TRANS.target _supports" 비트배열의
+                            "Client authentication"비트를 1로 설정한다(enable).
+                        [Example]: <trust-in-client>Requires</trust-in-client>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="client-auth" type="security-interopElementType"
+                default="NotSupported">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 CSI 스펙에 정의된 "Client authentication" 비트를 매핑한다.
+                        [Defined Value]:
+                            [NotSupported]:
+                            "AS_ContextSec.target_supports"  비트 배열의 "Client authentication" 비트를 0 으로
+                            설정한다 (disable).
+                            [Supports]:
+                            "AS_ContextSec.target_supports"  비트 배열의 "Client authentication" 비트를 1 로
+                            설정한다 (enable).
+                            [Requires]:
+                            "AS_ContextSec.target_requires"  비트 배열의 "Client authentication" 비트를 1 로
+                            설정한다(enable). 그리고 "AS_ContextSec.target_supports"  비트 배열의 "Client
+                            authentication" 비트를 1 로 설정한다(enable).
+                        [Example]: <client-auth>Requires</client-auth>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="identity-assertion" type="security-interopElementRestrictedType"
+                default="NotSupported">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 CSI 스펙에 정의된 "Identity assertion" 비트를 매핑한다.
+                        [Defined Value]:
+                            [NotSupported]:
+                            "SAS_ContextSec.target_supports"  비트 배열의 "Client authentication" 비트를 0 으로
+                            설정한다 (disable).
+                            [Supports]:
+                            "SAS_ContextSec.target_supports"  비트 배열의 "Client authentication" 비트를 1 로
+                            설정한다 (enable).
+                        [Example]: <integrity-confidentiality>Requires</integrity-confidentiality>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="security-interopElementType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="NotSupported"/>
+            <xs:enumeration value="Supports"/>
+            <xs:enumeration value="Requires"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="security-interopElementRestrictedType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="NotSupported"/>
+            <xs:enumeration value="Supports"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="bean-poolType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="pool-min" type="nonNegativeIntType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 풀에 담을 수 있는 빈 인스턴스의 최소 개수.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="pool-max" type="nonNegativeIntType" default="100">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 풀에 있는 빈 인스턴스의 최대 개수.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="resizing-period" type="nonNegativeLongType" default="60000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 빈 풀의 사이즈가 재조정되는 시간 간격. 이 시간마다 사용되지 않는 인스턴스를
+                        풀에서 제거한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="clusteringType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="enable-clustering" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element를 true 로 설정하면 클러스터링 기능이 활성화된다.
+                        [Example]: <enable-clustering>true</enable-clustering>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="ejb-home-idempotent-method" type="methodParamType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는  "idempotent" 홈 메소드라는 것을 선언한다. 이 메소드는 수행 중에 어떤
+                        상태 즉 빈 그 자신이나 데이터베이스의 필드 내용 등이  변경되지 않음을 보장한다.  idempotent
+                        메소드는 기본적으로 어떤 업데이트나 설정의 변화 없이 결과값을 반환하는 getter 메소드이다.
+                        이런 메소드를 명시하는 이유는 어떤 메소드가 Idempotent 메소드라면 첫 번째 시도 했던 메소드 호출이
+                        실행 중에 실패했더라도 안전하게 다시 호출이 가능하다. 그러나 그 메소드가 Idempotent 메소드가 아니라면
+                        이런 경우 해결책이 없다. 같은 부작용을 가지게 되는 두 번의 연속적이고 중복적인 메소드 호출로 불일치
+                        상태에 이르는 위험을 감수해야 하며 이 경우 exception을 던지는 것이 더 합리적이다. 따라서 Idempotent
+                        method를 많이 사용할수록 EJB failover는 효율적으로 작동될  것이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="ejb-home-idempotent-exclude-method" type="methodParamType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는  "idempotent" 홈 메소드에서 제외할 메소드를 지정한다. 위의 <ejb-home-idempotent-method>에
+			우선한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="ejb-remote-idempotent-method" type="methodParamType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는  "idempotent"리모트 메소드라는 것을 선언한다. 이 메소드는 수행 중에
+                        어떤 상태 즉 빈 그 자신이나 데이터베이스의 필드 내용 등이  변경되지 않음을 보장한다.  idempotent
+                        메소드는 기본적으로 어떤 업데이트나 설정의 변화없이 결과값을 반환하는 getter 메소드이다. 이런
+                        메소드를 명시하는 이유는 어떤 메소드가 Idempotent 메소드라면 첫 번째 시도 했던 메소드 호출이
+                        실행 중에 실패했더라도 안전하게 다시 호출이 가능하다. 그러나 그 메소드가 Idempotent 메소드가
+                        아니라면 이런 경우 해결책이 없다. 같은 부작용을 가지게 되는 두 번의 연속적이고 중복적인 메소드
+                        호출로 불일치 상태에 이르는 위험을 감수해야 하며 이 경우 exception을 던지는 것이 더 합리적이다.
+                        따라서 Idempotent method를 많이 사용할수록 EJB failover는 효율적으로 작동될  것이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="ejb-remote-idempotent-exclude-method" type="methodParamType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는  "idempotent" 홈 메소드에서 제외할 메소드를 지정한다. 위의 <ejb-remote-idempotent-method>에
+			우선한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="object-managementType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="bean-pool" type="bean-poolType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 빈 풀은 EJB 빈의 구현 클래스 인스턴스를 가지고 있다. 인스턴스들은 클라이언트의
+                        요청을 처리하기 위해 EJB Context 와 빈 skeleton 구현 클래스에 연결되었을 때 풀에서 나와서
+                        서비스를 시작한다. 풀에 더 이상의 인스턴스가 남지 않았을 때 새로운 인스턴스가 생성되고 그것은
+                        빈 풀에 추가된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="connect-pool" type="bean-poolType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션 풀은 클라이언트와 빈 풀에서 가져온 EJB  인스턴스를 중개하는 EJB 리모트
+                        인터페이스 구현 클래스(EJB objects)를 가지고 있다. 이 풀에서 커넥션 인스턴스를 호출해서
+                        클라이언트의 요청과 연결을 맺는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="capacity" type="positiveIntType" default="10000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이것은 생성될 것으로 예상되는 빈 인스턴스의 최대 개수를 의미한다. 이 값은 EJB 와
+                        연계될 내부 클라이언트 세션 데이터의 효율적인 구성을 위해 사용된다.
+                        [Value Description]: bean의 갯수
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="passivation-timeout" type="off-longType" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element에서 명시한 특정 기간 동안 클라이언트의 요청을 받지 않은 빈을 EJB
+                        엔진에서 비활성화 한다. 비활성화 된 빈은 메모리로부터 제거되고 그 상태는 파일이나 DB에 저장된다.
+                        [Value Description]: millisecond 단위이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="disconnect-timeout" type="off-longType" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 여기서 설정된 시간 동안 클라이언트 의 요청을 받지 못하면 클라이언트와
+                        빈 인스턴스 사이의 연결을 취소하는데 사용된다. 그렇게 되면 커넥션 인스턴스(EJB object)는
+                        영구적으로 런타임 메모리에서 제거된다.
+                        [Value Description]: millisecond 단위이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="file-db-infoType">
+        <xs:choice>
+            <xs:element minOccurs="0" name="local-file-db" type="local-file-dbType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 비 활성화되는 상태유지 세션 빈의 상태를 저장하는 로컬
+                        파일 데이터베이스를 명시한다.
+                        [Performance Recommendation]: 클러스터링을 사용하지 않는다면 원격 File DB 대신
+                        이 element를 사용하는게 성능에 좋다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="remote-file-db" type="remote-file-dbType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 로컬 File DB의 대안이다. 만약 이 값이 설정된다면 빈의 상태는
+                        JEUSMain.xml에 설정된 세션 매니저에 저장되고 JEUS 매니저에 의해 실행될 것이다.
+                        상태유지 세션 빈이 클러스터링 되기를 원한다면 반드시 이 element를 설정해야 한다.
+                        클러스터링 되지 않은 환경에서는 이 값이 사용될 이유가 없다.
+                        [Performance Recommendation]: 성능상의 이유로 클러스터링을 하지 않는다면 이 값을
+                        사용하지 않기를 권장한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="local-file-dbType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="file-db-path" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 상태유지 세션 빈의 상태를 저장할 File DB를 생성할 디렉토리 경로를 명시한다.
+                        [Value Description]: 경로는 절대경로를 사용한다.
+                        [Example]: <file-db-path>c:\temp</file-db-path>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="file-db-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 여기에 File DB의 이름을 명시한다.  이 이름 뒤에는 숫자가 덧붙여지고 .fdb 라는
+                        확장자를 사용한다. 숫자는 실제 File DB와 백업 File DB를 구별하기 위해서 사용된다. 예를 들어
+                        File DB 이름이 "teller"인 경우 "teller1.fdb"와 "teller2.fdb"가 생성된다.
+                        [Value Description]: 확장자가 없는 임의의 파일 이름.
+                        [Example]: <file-db-name>teller</file-db-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="min-hole" type="nonNegativeIntType" default="1000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: File DB에 있는 빈을 재활성화할 때 그 빈이 사용하는 File DB에  "hole"이 생성된다.
+                        너무 많은 "hole"이 있을 때 그 File DB는 재구성될 수도 있다. min-hole과 packing-rate
+                        상태가 일치하면 File DB 는 재구성된다. 이 element에 명시된 값은 재구성이 요구되는 최소한의
+                        "hole" 개수를 의미한다.
+                        [Value Description]: "hole"의 최소개수.
+                        [Performance Recommendation]: File DB의 재구성은 시스템 자원의 낭비를 가져올 수 있다. 따라서
+                        이 값은 최대한 높게 설정하라.
+                        [Example]: <min-hole>5000</min-hole>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="packing-rate" type="fractionType" default="0.5">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 값은 0과 1 사이에 있는 값이다. min-hole 상태가  일치하고 "hole"에 의해
+                        사용되는 File DB의 총 비율이 이 값과 일치할 때 File DB는 재 구성된다.
+                        [Performance Recommendation]: File DB의 재구성은 시스템 자원의 낭비를 가져올 수 있다. 따라서
+                        이 값은 최대한 높게 설정하라.
+                        [Example]: <packing-rate>0.4</packing-rate>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="remote-file-dbType">
+        <xs:sequence>
+            <xs:element name="remote-primary-file-db" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 상태 영속성을 위해 사용될 주 Session Manager를 선택한다.
+                        [Value Description]: Session Manager의 JNDI 이름.
+                        [Example]: <remote-primary-file-db>MYSESSIONSERVER</remote-primary-file-db>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="remote-backup-file-db" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 상태 영속성을 위해 사용될 백업 Session Manager를 선택한다.
+                        Backup Session Manager는 Primary Session Manager가 다운 등의 이유로 사용이 불가능하게
+                        되었을 때 사용한다.
+                        [Value Description]: Session Manager의 JNDI 이름.
+                        [Example]: <remote-backup-file-db>MYSESSIONBACKUP</remote-backup-file-db>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="conn-pool-size" type="nonNegativeIntType" default="20">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 원격 세션 서버와의 커넥션을 캐시할 때 사용하는 풀의 사이즈를 설정한다.
+                        [Example]: <conn-pool-size>50</conn-pool-size>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="persistence-optimizeType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="engine-type" type="engineType" default="EXCLUSIVE_ACCESS">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이것은 EJB 엔진에 의해서 ejbLoad() 호출이 발생할 때 일어나는 행위를 결정하고
+                        최적화시킨다.
+                        [Performance Recommendation]: 만약 빈이 클러스터링 되지 않고 데이터베이스의 열에 접속할 다른
+                        요소가 없다면 항상  EXCLUSIVE_ACCESS 를 사용하라.
+                        [Example]: <engine-type>SINGLE_OBJECT</engine-type>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="non-modifying-method" type="methodParamType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Non-modifying 메소드란 빈과 연결된 데이터베이스에 어떤 변화도 주지 않는 메소드를
+                        의미한다(예 : non-modifying methods = "getter"/"read only" 메소드 ). 빈의 모든 read-only
+                        메소드는 ejbStore() 메소드 호출을 보다 효율적으로 사용하기 위해서 이 element에 명시된다.
+                        [Performance Recommendation]: 만약 빈이 클러스터링 되지 않고 데이터베이스의 열에 접속할 다른
+                        요소가 없다면 항상  EXCLUSIVE_ACCESS 를 사용하라.
+                        [Performance Recommendation]: 최적의 성능을 위해서 모든 read-only 메소드는 이 리스트에 등록되는 것이 좋다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="entity-cache-size" type="nonNegativeIntType" default="2000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 내부 캐시 메모리 안에 남아있는 Entity Bean 인스턴스의 최대 개수를
+                        명시한다. 최적의 성능을 위해 캐시 메모리 안에 비활성화된 빈 인스턴스를  가지고 있다.
+                        [Value Description]: 이 element는 내부 캐시 메모리 안에 남아있는 Entity Bean 인스턴스의 최대 개수.
+                        [Defined Value]:
+                            [0]:
+                            비활성화된 Entity Bean에 대한 캐싱을 하지 않는다.
+                        [Performance Recommendation]: 많은 시스템 메모리 사용을 감수한다면 이 값은 충분히 높게 설정할 때
+                        보다 최적의 성능을 기대할 수 있다. 반대로 시스템 메모리가 충분하지 못하다면 이 값을 낮게 설정하라.
+                        [Example]: <entity-cache-size>100</entity-cache-size>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="update-delay-till-tx" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 옵션을 “false”로 설정했다면 생성된 EJB 데이터베이스의 삽입과 갱신이 EJB
+                        setXXX()가 호출될 때 실행이 된다. 일반적으로 이 옵션을 “true”로 설정을 하며, “true”일
+                        경우에는 EJB 데이터의 삽입과 갱신은 트랜젝션이 커밋되었을 때 업데이트 된다. 개발자들이
+                        원하는 사항은 다음과 같은 것들이 있다.
+                            1. 트랜젝션을 시작한다.
+                            2. EJB 데이터 갱신을 한다.
+                            3. EJB 데이터를 읽어들인다.
+                            4. 트렌젝션을 커밋한다.
+                        설정된 값이 “false”이면, 스탭3. 에서 읽힌 데이터는 스탭 2. 에서 기록된 데이터일 것이다.
+                        설정된 값이 “true”이면, 스탭3가 아닌 스탭4. 에서 커밋후 보여지는 값을 읽어 스탭2. 에서
+                        기록한 데이터이다. 이 옵션은 CMP2.0에서만 사용된다.
+                        [Performance Recommendation]: “false”로 세팅하면 EJB의 insert, update 작업의 성능이
+                        악영향을 미친다. 모든 insert, update작업이 각각 실행되므로,  성능 저하를 가져온다.
+                        성능은 위해서는 “true”로 사용하는 것이 좋다.
+                        [Example]: <update-delay-till-tx>true</update-delay-till-tx>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="include-update" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: <schema-info>의 각 <find-method>마다 설정되는 <include-updates>값의
+                        default 값을 여기서 지정할 수 있다. 즉, <find-method>에 <include-update>가 지정되어
+                        있지 않은 경우 여기에 지정된 값으로 설정된다. “true”일 경우 finder 메소드 호출되는 동안에
+                        생성된 update가 commit되므로, finder 메소드가 실행될 동안 update된 정보를 볼 수 있다.
+                        [Performance Recommendation]: find method가 자신이 수행되는 transaction에서 변경된 내용을
+                        반영해야 할 필요가 없다면 false로 설정되어 있는게 성능에 도춤이 된다.
+                        [Example]: <include-updates>true</include-updates>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="schema-infoType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="table-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  EJB와 매핑되는 관계형 데이터베이스의 테이블 이름.
+                        Default Value: EJB 모듈이름 + EJB 빈 이름의 마지막 15 문자.
+                        [Example]: <table-name>ACCOUNT</table-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="cm-field" type="cm-fieldType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  Container가 관리하는 데이터베이스의 각 컬럼과 매핑하는 필드를 명시한다.
+                        [Dependency]: cm-filed/field = enterprise-beans/entity/cmp-field/field-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="creating-table" type="creating-tableType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  만약 이것을 활성화시키면 EJB 엔진이 부팅할 때 데이터베이스에 테이블이
+                        없다면 생성한다.  만약 이 element의 값이 "false" 라면 특별히 "schema check" 가
+                        활성화된다. 이것은 EJB 엔진이 부팅할 때 작동하고 schema-info element에 정의된 DB
+                        스키마가 올바른지 검사한다.  Engine Container의 JVM 파라미터를 명시함으로써 이것을
+                        Override할 수도 있다( 예 : -Djeus.ejb.checktable=false" )
+                        하위 element에 따라 table을 생성하는 방식이 달라진다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="deleting-table" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  이 것을 활성화시키면 EJB 엔진이 종료될 때 명명된 데이터베이스의
+                        테이블을 삭제한다. 의도하지 않은 DB table 삭제를 막기 위해 system property가
+                        설정되어 있고 <creating-table> 설정이 존재해야 table을 지운다.
+                        [Example]: <deleting-table>true</deleting-table>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <!-- the type of prim-key-field was string, but for consistency, I choose to use cm-fieldType, and it is convinent in deployment
+            In addition, user just sets only field name-->
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="prim-key-field" type="cm-fieldType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: ejb-jar.xml에 <prim-key-class>가 명시되어 있을 경우에만 사용된다.
+                        <prim-key-class>의 field 중 EJB 빈과 DB 테이블의 열에서 Primary Key를 구성하기 위해
+                        사용되는 모든 EJB 필드 이름을 명시한다.하위 element 중 <field>만 지정하면 된다.
+                        Default Value: 만약 이 값이 명시되지 않는다면<prim-key-class>의 모든 public 필드를
+                        가지고 Primary Key를 구성한다.
+                        [Example]: <prim-key-field>id</prim-key-field>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="find-method" type="find-methodType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: CMP 1.1 Entity Bean의 경우에 finder 메소드에 대해서 반드시 필요한 SQL
+                        문장을 명시해야 한다.CMP 2.0의 경우에는 ejb-jar.xml에 지정된 EJB-QL을 overriding할 수 있다.
+                        적용되는건 jeus-query와 같다.
+                        [Deprecated]: <jeus-query>를 사용하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="jeus-query" type="find-methodType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jeus-query 태그는 query 메소드(findXXX)에서 EJB-QL과 JEUS EJB-QL 확장을
+                        사용할 수 있도록 한다. 이것은 ejb-jar.xml의 query 태그와 비슷하다. 이 태그의 주 목적은
+                        BEA WebLogic 어플리케이션 서버를 JEUS 4.2로 마이그레이션할 때 용이하게 하기 위함이다.
+                        적용되는건 find-method와 같다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="db-vendor" type="db-vendorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Container가 SQL을 생성할 때 어떤 DBMS에 맞게 생성할 것인지를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="data-source-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터베이스와 연결할 때 사용하는 데이터베이스 커넥션 풀의 JNDI 이름. 이
+                        커넥션 풀은 일반적으로 JEUSMain.xml 에 설정되고 JEUS 매니저 JVM에 의해 실행된다.
+                        [Value Description]: JEUS DB 커넥션 풀의 JNDI 이름.
+                        [Example]: <data-source-name>MYDB</data-source-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="auto-key-generator" type="auto-key-generatorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 Primary Key를 설정하지 않고 create()를 호출할 때
+                        Primary Key를 자동으로 생성해 주는 외부 소스를 지정한다.
+                        이 외부 소스는 단일한 Primary Key를 생성할 필요가 있는 여러 EJB 엔진이 공유하는
+                        하나의 데이터베이스이어야만 한다. EJB 엔진이 데이터 베이스로부터 Primary Key를
+                        가져오고 난 뒤 DB 에 있는 Primary Key의 값은 항상 유일하고 다른 EJB 엔진에 의해
+                        사용될 수 있도록 값이 증가된다. Primary Key 값은 데이터베이스 안에서 항상 "int"
+                        형이며 빈 안에서는 반드시 java.lang.Integer 타입이어야만 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="creating-tableType">
+        <xs:choice>
+            <xs:element minOccurs="0" name="use-existing-table" type="emptyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  만약 DB에 지정된 이름의 table이 이미 존재한다면 이를 그대로 사용하고
+                        없는 경우에만 table을 생성한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="force-creating-table" type="emptyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  만약 DB에 지정된 이름의 table이 이미 존재한다면 이를 지우고 다시 table을
+                        생성한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="cm-fieldType">
+        <xs:sequence>
+            <xs:element name="field" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  데이터베이스의 컬럼과 매핑할 EJB필드의 이름.
+                        [Example]: <field>id</field>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="column-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  <field> 태그에 명시된 EJB 필드와 매핑하게 될 데이터베이스
+                        테이블의 컬럼이름을 명시한다.
+                        [Example]: <column-name>ID</column-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="type" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  이것은 데이터베이스 입장에서 테이블 컬럼의 데이터 타입을 의미한다
+                        ( 예 : "VARCHAR(20)", "NUMERIC" ). 만약 이 element가 명시되지 않는다면 기본값을 사용한다.
+                        오라클 DB의 경우에 "CLOB"과 "BLOB" 타입을 사용할 수도 있다. "CLOB" 타입은 EJB의
+                        java.lang.String 필드에 대응되고 "BLOB" 은 직렬화된 객체 필드에 대응된다.
+                        [Example]: <type>NUMERIC</type>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="exclude-field" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:  이 element를 "true"로 설정하면 위에서 지정된 필드에 대한 accessor method
+                        (set, get method)가 EJB server가 생성하는 concrete bean class에 생기지 않는다. 즉,
+                        이 bean을 사용하는 client가 이 field를 사용할수 없게 만든다. 이는 ejb-jar.xml에서 지정된
+                        cmp-field를 무시하는 결과가 된다. 이 설정은 오직 CMP 2.0 EntityBean에서만 작동된다.
+                        [Example]: <exclude-field>true</exclude-field>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="find-methodType">
+        <xs:sequence>
+            <xs:element name="query-method" type="methodParamType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Find 메소드의 이름과 파라미터.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="sql" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: EJB 1.1 에서 finder 메소드를 생성할 때 사용하는 SQL 문장의 일부분.
+                        EJB 2.0 에서는 이 element를 사용하지 않는다. 특수한 문자( “<” 같은)를 사용할 때는
+                    <![CDATA[sql]]&gt; 를 사용해야 한다.
+                        [Value Description]: 이것은 단지 where 절의 키워드를 명시한다. 이 SQL 문장에서
+                        "?"는 finder 메소드가 호출될 때 finder 메소드의 파라미터의 값으로 순서대로 대체된다.
+                        ?뒤에 숫자를 넣을수도 있는데 이는 몇번째 파라미터인지를 나타낸다. 즉, "?1"은 첫번째
+                        파라미터의 값이 들어가는 자리이다.
+                        이때 ? 뒤에 숫자를 넣는 형식과 ?만 사용하는 형식은 혼용될 수 없다.
+                        [Example]: <sql>customer_address=?</sql>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="include-updates" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: “true”일 경우 finder 메소드 호출되는 동안에 생성된 update가 commit되므로,
+                        finder 메소드가 실행될 동안 update된 정보를 볼 수 있다.
+                        Default Value: <persistence-optimize>의 <include-update>에 지정된 값이 default값이다.
+                        [Example]: <include-updates>true</include-updates>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="auto-key-generatorType">
+        <xs:sequence>
+            <xs:element name="generator-type" type="generator-typeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 Primary Key를 가지고 있는 데이터베이스의 타입과 벤더를 명시한다.
+                        [Example]: <generator-type>USER_KEY_TABLE</generator-type>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="generator-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Oracle 과 USER_KEY_TABLE 값을 사용하는 경우 사용한다. Oracle인 경우
+                        SEQUENCE 이름을 명시한다. USER_KEY_TABLE 인 경우 Primary Key를 가지고 있는 테이블
+                        이름을 명시한다.
+                        [Value Description]: Oracle 인 경우 SEQUENCE 이름, USER_KEY_TABLE인 경우 테이블 이름.
+                        [Example]: <generator-name>MYKEYTABLE</generator-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="sequence-column" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: USER_KEY_TABLE 인 경우에만 사용한다. 이 element는 Primary Key를
+                        가지고 있는 컬럼 이름을 명시한다.
+                        [Value Description]: 컬럼 이름.
+                        [Example]: <sequence-column>PRIMARYKEYCOLUMN</sequence-column>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="key-cache-size" type="nonNegativeIntType" default="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 EJB 엔진에 할당될 유일한 키의 개수를 설정한다. 이것은
+                        Primary Key 데이터베이스로부터 키를 넘겨받은 뒤 그 Primary Key의 값을 여기에 선언된
+                        값만큼 증가시킨다. 이것은 그만큼 Primary Key에 접속할 필요가 없어지므로 성능
+                        향상에 도움을 준다.
+                        [Value Description]: 로컬 EJB 엔진에 할당될 Primary Key의 개수. Oracle 데이터베이스인
+                        경우 이 값은 반드시 SEQUENCE 의 SEQUENCE INCREMENT 값과 일치해야 한다
+                        [Performance Recommendation]: 성능 최적화를 위해 이 값을 적당히 올린다.
+                        [Example]: <key-cache-size>20</key-cache-size>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="generator-typeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ORACLE">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Oracle DB인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="MSSQL">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: MS SQL DB 인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="USER_KEY_TABLE">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Oracle과 MSSQL을 제외한 다른 DB인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="database-insert-delayType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ejbCreate">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: ejbCreate 메소드 후에 EJB 데이터를 DB table에 추가한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ejbPostCreate">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: ejbPostCreate 메소드 후에 EJB 데이터를 DB table에 추가한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="cm-persistence-optimizeType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="subengine-type" type="subengine-typeType" default="ReadLocking">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 데이터베이스 테이블의 열에 접근할 때 ejbLoad()
+                        메소드가 가지는 데이터 베이스 락(lock)의 타입을 선언한다. 이 설정은 빈의 성격에 따라
+                        설정될 수 있다( 예: 빈이 쓰기보다 읽기 작업을 더 많이 수행하는 경우 아니면 그 반대로
+                        읽기보다 쓰기 작업을 더 많이 수행하는 경우 ).
+                        Oracle DB에 대해서는 WriteLock을 사용하는 경우 DB Isolation이 Serialization으로 설정되는
+                        효과를 얻을 수 있다.
+                        [Performance Recommendation]: 만약 EJB빈이 DB 테이블의 열에 대해서 쓰기보다 읽기 작업이 더
+                        많다면 "ReadLocking"을 사용한다. 반대로 읽기보다 쓰기 작업이 더 많다면 "WriteLocking"을 사용한다.
+                        [Example]: <subengine-type>WriteLocking</subengine-type>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="fetch-size" type="nonNegativeIntType" default="10">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 DB 에서 매우 큰 사이즈의 ResultSet를 리턴 받을 때 한번에 얼마나
+                        많은 열을 가지고 올 것인지를 명시한다.
+                        [Performance Recommendation]: 이 값을 높게 설정하면 시스템 메모리가 보다 많이 필요하겠지만
+                        데이터베이스 "select" 요청을 보다 효율적으로 실행한다.
+                        [Example]: <fetch-size>80</fetch-size>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="init-caching" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element를 "true"로 설정하면 EJB 엔진은 매핑하는 DB 테이블의 열에 대해서
+                        EJB Entity Bean을 미리 초기화한다. 이 작업은 엔진이 부팅될 때 실행된다. 이 element를
+                        "false"로 설정하면  EJB 인스턴스는 create(), findByPrimaryKey() 또는 이와 같은 기능을
+                        하는 홈 인터페이스의 메소드를 통해서 생성된다.
+                        [Performance Recommendation]: 이 값을 "true"로 설정하면 보다 많은 시스템 메모리가 필요하지만
+                        전체적인 성능은 향상된다. 시스템 메모리가 부족하다고 판단되면 이 값은 "false"로 설정한다.
+                        [Example]: <init-caching>true</init-caching>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="subengine-typeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ReadLocking">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 생성된 ejbLoad()는 데이터베이스 테이블의 열에 대해서 항상 "shared lock"을 가진다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="WriteLocking">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 생성된 ejbLoad()는 데이터베이스 테이블의 열에 대해서 항상 "exclusive lock"을 가진다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="WriteLockingFind">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 생성된 ejbLoad()와 ejbFind() 는 데이터베이스 테이블의 열에 대해서 항상 "exclusive lock"을 가진다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ack-modeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="Auto-acknowledge"/>
+            <xs:enumeration value="Dups-ok-acknowledge"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="jndi-spiType">
+        <xs:sequence>
+            <xs:element name="mq-vendor" type="mq-vendorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 다음 element에서 설정할 JNDI 이름 서비스를 통해서 MDB과 연결을 맺을 MQ/JMS 벤더의 이름.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="initial-context-factory" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: JMS 서비스와 연결할 때 JEUS Naming Service를 사용할 때 필요한 initial context
+                    factory 의 클래스 이름.
+                    [Example]: <initial-context-factory>acme.jndi.ACMEContextFactory</initial-context-factory>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="provider-url" type="xs:anyURI">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: JNDI 이름 서비스와 연결할 때 사용하는 URL 주소와 포트번호.
+                    [Example]: <provider-url> protocol://localhost:2345</provider-url>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="mq-vendorType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="SONICMQ">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Sonic MQ를 사용하는 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="IBMMQ">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ를 사용하는 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ejb-relation-mapType">
+        <xs:sequence>
+            <xs:element name="relation-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 표준 ejb-jar.xml에 정의된 EJB 2.0 Relation의 이름을 명시한다.
+                        [Example]: <relation-name>student-course</relation-name>
+                        [Dependency]: ejb-jar/relationships/ejb-relation/ejb-relation-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="table-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: EJB Relation이 다 대 다( M:M ) 관계라면 이 데이터 베이스 안에서 이
+                        다 대 다( M:M ) Relation을 표현하는 "join-table"이라는 것이 있다. 이 element는
+                        다 대 다( M:M ) Relation을 표현하는 "join-table"의 이름을 명시한다.
+                        [Example]: <table-name>studentcoursejoin</table-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="jeus-relationship-role" type="jeus-relationship-roleType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 하나의 EJB 와 다른 EJB 사이에 Relation을 명시한다. 각각의 element는
+                        단방향으로 Relation을 의미한다. 다대다 Relation ( M:M )인 경우 반드시 두 개의
+                        jeus-relationship-role element가 필요하다. 각각의 element는 "join-table"의
+                        각각의 Foreign Key와 EJB 의 실제 Primary Key를 매핑된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jeus-relationship-roleType">
+        <xs:sequence>
+            <xs:element name="relationship-role-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이것은 ejb-jar.xml 파일의 ejb-relationship-role-name element에 정의된
+                        relationship role의 이름이다.
+                        [Example]: <relationship-role-name>student-to-course</relationship-role-name>
+                        [Dependency]: ejb-jar/relationships/ejb-relation/ejb-relationship-role/ejb-relationship-role-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:choice>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="column-map" type="column-mapType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: 이 element는 하나의 테이블의 Foreign Key를 다른 EJB 의 Primary Key와
+                            매핑한다. 이 매핑은 단방향으로 Relation을 정의한다. 만약 Foreign Key나 Primary Key가
+                            여러 컬럼이나 EJB 필드를 복합하여 사용되었을 경우 이것들은 모두 column-map element에
+                            정의해야 한다.
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="column-mapType">
+        <xs:sequence>
+            <xs:element name="foreign-key-column" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 <column-map>이 선언된 EJB의 DB table에 존재하는 Foreign Key DB Column의 이름이다.
+                        이 키는 target-primary-key-column element에 정의된 상대 EJB의 Primary Key DB Column의 값이 매핑된다.
+                        만약 many-to-many relation인 경우는 relation table에 존재하는 foreign key 컬럼의 이름이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="target-primary-key-column" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Foreign Key 컬럼에 매핑될 상대 EJB의 Primary Key의 DB Column 이름이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
+

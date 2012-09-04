@@ -40,8 +40,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class Starter {
 	
-    private static Logger logger = LoggerFactory.getLogger(Starter.class);
+    private static final Logger logger = LoggerFactory.getLogger(Starter.class);
     
+    // zip, war, gz 등 소문자로 추가
     private static final String[] SUPPORT_ARCHIVE_FORMAT = {"zip"}; 
 
 	/**

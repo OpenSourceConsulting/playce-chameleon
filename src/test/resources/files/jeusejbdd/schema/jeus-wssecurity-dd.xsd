@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="EUC-KR"?>
+<xs:schema targetNamespace="http://www.tmaxsoft.com/xml/ns/jeus" xmlns="http://www.tmaxsoft.com/xml/ns/jeus" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="5.0">
+	<xs:complexType name="security-receiverType">
+		<xs:sequence>
+			<xs:element name="action-list" type="xs:string">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 받게 되는 메시지가 어떤 보안이 적용되어 있어야 하는지 설정한다. 
+										Timestamp, Encrypt, Signature, UsernameToken이 들어갈수 있다. 각각의 항목은 공백으로 분리한다.
+						[Example]: UsernameToken Signature Encrypt
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="observeActionOrder" type="xs:boolean" minOccurs="0" default="true">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: Sender가 사용한 Action List의 순서와 Receiver의 Action-List의 순서가 동일해야 하는지 여부.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="password-callback-class" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 패스워드 콜백 클래스의 이름을 풀 패키지 이름으로 입력한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="timeStamp" type="timeStampType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: timeStamp에 적용할 ttl(timeToLive) aberration(오차)를 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="decryption" type="decryptionType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 받는 메시지의 암호화 된 부분을 해독하기 위한 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="signature-verification" type="signature-verificationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 받는 메시지의 서명을 검증하기 위한 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="decryptionType">
+		<xs:sequence>
+			<xs:element name="keystore" type="keystoreType">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지의 암호를 해독하기 위한 키 스토어의 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="keystoreType">
+		<xs:sequence>
+			<xs:element name="key-type" type="xs:string">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 키 스토어에 저장되는 키의 타입이다. (JKS 혹은 pkcs12)
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="keystore-password" type="xs:string">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 키 스토어에 접근하기 위한 암호 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="keystore-filename" type="xs:string">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 키 스토어의 파일 이름이다. 파일 이름을 적거나 절대 경로를 포함하는 파일 이름을 적는다. 
+										파일 이름만 적을 경우, 클래스 경로 에서 찾게 된다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="signature-verificationType">
+		<xs:sequence>
+			<xs:element name="keystore" type="keystoreType">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 서명을 검증하기 위한 키 스토어 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="security-senderType">
+		<xs:sequence>
+			<xs:element name="action-list" type="xs:string">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 어떤 보안을 적용할 것인지를 String으로 나열한다.
+										Timestamp, Encrypt, Signature, UsernameToken이 들어갈수 있다. 각각의 항목은 공백으로 분리한다.
+                        [Example]: UsernameToken Signature Encrypt
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="password-callback-class" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 패스워드를 설정하는 콜백 클래스의 풀 패키지 명이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="user" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: UsernameToken에 들어갈 이름과 서명에 들어갈 키의 별칭을 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="timeStamp" type="timeStampType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: timeStamp에 적용할 ttl(timeToLive) aberration(오차), 서명여부를 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="userNameToken" type="userNameTokenSenderType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: UsernameToken을 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="signature-infos" type="signature-infosType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지에 서명을 하기 위한 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="encryption-infos" type="encryption-infosType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지를 암호화 하기 위한 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="userNameTokenSenderType">
+		<xs:sequence>
+			<xs:element name="password" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 사용할 패스워드를 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="passwordType" type="passwordTypeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: UsernameToken에 사용될 패스워드의 타입 설정이다.
+									"PasswordDigest" 혹은 "PasswordText"를 사용할 수 있다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="userTokenElements" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: UsernameToken에 추가될 엘리먼트의 리스트이다. 각 항목은 공백으로 분리된다. 
+									"nonce" 혹은 "created"가 사용될 수 있다. passwordType이 "PasswordDigest"일 경우에 사용가능하다.
+						]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="passwordTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PasswordDigest">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: UsernameToken에 설정되는 암호가 Base64 ( SHA-1 ( nonce + created + password ) ) -> base64 encoding된 상태로 메시지에 포함된다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PasswordText">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: UsernameToken에 설정되는 암호가 평문으로 메시지에 포함된다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="timeStampType">
+		<xs:sequence>
+			<xs:element name="timeToLive" type="xs:positiveInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 보내게 될 메시지의 유효기간을 초 단위로 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="aberration" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 표준시와의 차이를 설정한다. 기본값은 0초이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="requireSignature" type="xs:boolean" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: timestamp에 서명을 할지 여부이다. 기본값은 true이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="precision" type="xs:positiveInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 시스템 환경(네트워크,처리지연 등)을 고려한 여유시각을 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="signature-infosType">
+		<xs:sequence>
+			<xs:element name="signature-info" type="signature-infoType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지의 서명을 위한 설정이다. 복수 설정이 가능하다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="signature-infoType">
+		<xs:sequence>
+			<xs:element name="signatureParts" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지의 특정 부분을 서명하고자 할 때 사용한다.
+									"{}{http://schemas.xmlsoap.org/soap/envelope/}Body; Token"과 같은 방식으로 열거할 수 있다.
+									 기본적으로 설정하지 않았을 경우에는 SOAP몸체 전체를 서명하게 되어 있다.
+						]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="signatureAlgorithm" type="signatureAlgorithmType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 서명에 사용될 알고리즘을 명시한다.
+										SHA1withRSA,SHA1WithDSA,HMACSHA1 중의 하나를 사용한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="messageDigestAlogrithm" type="messageDigestAlgorithmType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지다이제스트에 사용될 알고리즘을 명시한다.
+									SHA1 중의 하나를 사용한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="canonicalization" type="canonicalizationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 사용될 canonicalization 방법을 명시한다.
+									Exclusive XML Canonicalization omit comments,
+									Exclusive XML Canonicalization with comments,
+									Inclusive XML Canonicalization omit comments, Inclusive XML Canonicalization with comments 중의 하나를 사용한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="keyIdentifier" type="sigKeyIdentifierType">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 서명에 사용될 키의 정보를 표현하는 방식이다.
+									IssuerSerial, DirectReference, SKIKeyIdentifier, X509KeyIdentifier 중의 하나를 사용한다.
+						]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="keystore" type="keystoreType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지의 서명을 위한 개인키를 저장하고 있는 키스토어의 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="sigKeyIdentifierType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IssuerSerial">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: X509 인증서의 발급 번호를 메시지에 포함하여 서명을 검증하기 위한 인증서를 지정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DirectReference">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: X509 인증서를 메시지에 포함하고 그것을 메시지 내부에서 참조하는 방식이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SKIKeyIdentifier">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: Subject Key Idenfication 방식이다. X509 인증서의 버전이 3 이상이어야 한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="X509KeyIdentifier">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지에 X509 인증서를 포함하고 서명 검증을 위해 사용하도록 한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="signatureAlgorithmType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="http://www.w3.org/2000/09/xmldsig#dsa-sha1">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: DSS(DSAWithSHA1)
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/2000/09/xmldsig#rsa-sha1">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: RSAWithSHA1
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/2000/09/xmldsig#hmac-sha1">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+[Description]: HMACSHA1
+]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="messageDigestAlgorithmType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="http://www.w3.org/2000/09/xmldsig#sha1">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: SHA1
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="canonicalizationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="http://www.w3.org/2001/10/xml-exc-c14n#">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: Exclusive XML Canonicalization omit comments
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/2001/10/xml-exc-c14n#WithComments">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: Exclusive XML Canonicalization with comments
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/TR/2001/REC-xml-c14n-20010315">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: Inclusive XML Canonicalization omit comments
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: Inclusive XML Canonicalization with comments
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="encryption-infosType">
+		<xs:sequence>
+			<xs:element name="encryption-info" type="encryption-infoType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 배치되는 웹서비스 클라이언트를 위한 설정들을 표시한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="encryption-infoType">
+		<xs:sequence>
+			<xs:element name="encryptionParts" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 특정 부분을 암호화 하기 위한 설정이다.
+									"{mode}{ns}{localname};{mode}{ns}{localname};…" 과 같은 형식이다. 기본 mode 값은 content이다.
+						[Example]:{Content}{http://example.org/payment}CreCard;{Element}{}UserName
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="keyTransportAlogrithm" type="keyTransportAlogrithmType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지다이제스트에 사용될 알고리즘을 명시한다. RSA1.5 중의 하나를 사용한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="encryptionAlgorithm" type="encryptionAlgorithmType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 암호화에 사용하는 알고리즘이다.
+									AES_128, AES_256, TRIPLE_DES, AES_192 를 지원한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="encryptionUser" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 암호화에 사용되는 키의 별칭이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="keyIdentifier" type="encKeyIdentifierType">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 암호화에 사용될 키의 정보를 표현하는 방식이다.
+									IssuerSerial, DirectReference, SKIKeyIdentifier, X509KeyIdentifier EmbeddedKeyName 중의 하나를 사용한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="keystore" type="keystoreType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 암호화에 사용될 키의 저장소 설정이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="embeddedKey" type="embeddedKeyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 웹서비스와 웹서비스 클라이언트가 공유하고 있는 키를 설정한다. keyIdentifier가 "EmbeddedKeyName"으로 설정되어야 사용할 수 있다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="encKeyIdentifierType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IssuerSerial">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: X509 인증서의 발급 번호를 메시지에 포함하여 서명을 검증하기 위한 인증서를 지정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DirectReference">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: X509 인증서를 메시지에 포함하고 그것을 메시지 내부에서 참조하는 방식이다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SKIKeyIdentifier">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: Subject Key Idenfication 방식이다. X509 인증서의 버전이 3 이상이어야 한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="X509KeyIdentifier">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 메시지에 암호화에 사용된 X509 인증서를 포함한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EmbeddedKeyName">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 웹서비스와 웹서비스 클라이언트가 공유하는 세션키를 사용할 때 사용한다. 
+									웹서비스와 클라이언트는 키의 이름만을 주고 받음으로써 어떤 키를 사용했는지를 알 수 있다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="encryptionAlgorithmType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="http://www.w3.org/2001/04/xmlenc#tripledes-cbc">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: DESEDE-CBC
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/2001/04/xmlenc#aes128-cbc">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: AES128-CBC
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/2001/04/xmlenc#aes192-cbc">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: AES192-CBC
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.w3.org/2001/04/xmlenc#aes256-cbc">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: AES256-CBC
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="http://www.tmaxsoft.com/xml/algorithms/xmlenc#seed-cbc">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: SEED-CBC
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="keyTransportAlogrithmType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="http://www.w3.org/2001/04/xmlenc#rsa-1">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: RSA1.5
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="embeddedKeyType">
+		<xs:sequence>
+			<xs:element name="embeddedKeyCallbackClass" type="xs:string">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 세션 키를 사용하려 할 경우, 키의 바이트 정보를 가지고 있는 콜백 클래스를 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="key-name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation><![CDATA[
+						[Description]: 세션 키의 이름을 설정한다.
+					]]></xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
