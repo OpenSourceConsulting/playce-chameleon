@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.athena.chameleon.engine.entity.xml.ejbjar.EjbNameType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbNameType;
 import com.athena.chameleon.engine.entity.xml.j2ee.JndiNameType;
 import com.athena.chameleon.engine.entity.xml.j2ee.XsdNonNegativeIntegerType;
 import com.athena.chameleon.engine.entity.xml.j2ee.XsdStringType;

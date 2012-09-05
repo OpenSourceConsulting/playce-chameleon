@@ -39,8 +39,6 @@ import org.springframework.stereotype.Component;
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.EjbJarType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar;
 import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
@@ -56,8 +54,12 @@ public class MigrationComponent {
 
     public String                   rootPath;
     public File                     webXmlFile;
+    public String                   webXmlVersion;
     public File                     applicationXmlFile;
+    public String                   applicationXmlVersion;
     public File                     ejbXmlFile;
+    public String                   ejbXmlVersion;
+    public File                     weblogicEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
     
     /**
@@ -104,12 +106,18 @@ public class MigrationComponent {
                         HashMap<Integer, String> lineMap = new LinkedHashMap<Integer, String>();
                         
                         //xml file pasing
+                        boolean webXmlFlag, applicationXmlFlag, ejbXmlFlag = false;
                         if(filePath.indexOf("WEB-INF/web.xml") > -1) {
                             webXmlFile = f;
+                            webXmlFlag = true;
                         } else if(filePath.indexOf("WEB-INF/application.xml") > -1) {
                         	applicationXmlFile = f;
+                        	applicationXmlFlag = true;
                         } else if(filePath.indexOf("META-INF/ejb-jar.xml") > -1) {
                             ejbXmlFile = f;
+                            ejbXmlFlag = true;
+                        } else if(filePath.indexOf("META-INF/weblogic-ejb-jar.xml") > -1) {
+                            weblogicEjbXmlFile = f;
                         }
                         
                         try {
@@ -126,6 +134,10 @@ public class MigrationComponent {
                                 match = p.matcher(lineStr);
                                 if(match.matches()) {
                                     lineMap.put(line, lineStr);
+                                }
+                                
+                                if(ejbXmlFlag){
+                                    
                                 }
                             }
                             fileEntity.setLineMap(lineMap);
@@ -272,7 +284,7 @@ public class MigrationComponent {
      * @param xmlFile ejb-jar.xml file
      * @return EjbJarType
      */
-    public EjbJarType ejbXmlPasing(File xmlFile) {
+    public Object ejbXmlPasing(File xmlFile) {
         this.ejbXmlFile = xmlFile;
         return ejbXmlPasing();
     }
@@ -283,18 +295,21 @@ public class MigrationComponent {
      *
      * @return EjbJarType
      */
-    public EjbJarType ejbXmlPasing() {
+    public Object ejbXmlPasing() {
         
     	if(ejbXmlFile == null)
     		return null;
     	
-        EjbJarType ejb = null;
+    	Object ejb = null;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_0");
-            //JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(ejbXmlFile);
-            EjbJar result = (EjbJar) unmarshaller.unmarshal(ejbXmlFile);
-            System.out.println(result.getDisplayName().getvalue());
-            //ejb = (EjbJarType)result.getValue();
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_1");
+            Object result = unmarshaller.unmarshal(ejbXmlFile);
+            
+            if(result instanceof JAXBElement<?>) {
+                return ((JAXBElement<?>) result).getValue();
+            } else {
+                return result;
+            }
             
         } catch(JAXBException je) {
             je.printStackTrace();
@@ -302,6 +317,47 @@ public class MigrationComponent {
             e.printStackTrace();
         }
         return ejb;
+    }
+
+    /**
+     * 
+     * weblogic-ejb-jar.xml pasing
+     *
+     * @param xmlFile weblogic-ejb-jar.xml file
+     * @return EjbJarType
+     */
+    public Object weblogicEjbXmlPasing(File xmlFile) {
+        this.weblogicEjbXmlFile = xmlFile;
+        return weblogicEjbXmlPasing();
+    }
+    
+    /**
+     * 
+     *  ejb-jar.xml pasing
+     *
+     * @return EjbJarType
+     */
+    public Object weblogicEjbXmlPasing() {
+        
+        if(weblogicEjbXmlFile == null)
+            return null;
+        
+        try {
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.weblogicejbjar");
+            Object result = unmarshaller.unmarshal(weblogicEjbXmlFile);
+            
+            if(result instanceof JAXBElement<?>) {
+                return ((JAXBElement<?>) result).getValue();
+            } else {
+                return result;
+            }
+            
+        } catch(JAXBException je) {
+            je.printStackTrace();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
        
     /**

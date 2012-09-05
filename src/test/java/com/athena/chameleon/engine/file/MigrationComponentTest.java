@@ -23,6 +23,7 @@ package com.athena.chameleon.engine.file;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,6 +35,7 @@ import javax.inject.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.util.SystemOutLogger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,10 +47,12 @@ import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.ModuleType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.EjbJarType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.EntityBeanType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.MessageDrivenBeanType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.SessionBeanType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EnterpriseBeans;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EntityBeanType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.MessageDrivenBeanType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType;
 import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleType;
 import com.athena.chameleon.engine.entity.xml.webapp.DescriptionType;
 import com.athena.chameleon.engine.entity.xml.webapp.DisplayNameType;
@@ -106,7 +110,7 @@ public class MigrationComponentTest {
         fileRead(list);
         webXmlPasing(component.webXmlPasing());
         applicationXmlPasing(component.applicationXmlPasing());
-        ejbXmlPasing(component.ejbXmlPasing());
+        ejbXmlPasing(component.ejbXmlPasing(), component.weblogicEjbXmlPasing());
         
         // 테스트 종료 후 압축해제 디렉토리 제거
         deleteDirectory(unzipFile);
@@ -234,56 +238,97 @@ public class MigrationComponentTest {
     }
 
     //ejb file pasing
-    public void ejbXmlPasing(EjbJarType ejb) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void ejbXmlPasing(Object ejb, Object weblogic) {
         
         try {
-        	/*
         	
-        	String message2 = "만약 EJB3.0 유형으로 변경을 하고 싶으시다면 아래의 내용을 참고하십시오.\n" +
-        			" 단계 0 : 이클립스의 EJB 프로젝트를 생서하십시오.\n" +
-        			" 단계 1 : @param@ 소스를 삭제하십시오.\n" +
-        			" 단계 2 : Remote 클래스를 다음이 순서로 변경하십시오.\n" +
-        			"        public interface @param@ extends Remote 부분의 extends Remote를 삭제하십시오.\n" +
-        			"        비즈니스 메소드의 throws RemoteException 을 삭제하십시오.\n" +
-        			"        클래스 레벨의 어노테이션으로 다음을 추가하십시오.\n" +
-        			"		@Stateless(mappedName=\"@param@\")\n" +
-        			"		@TransactionManagement(value=TransactionManagementType.CONTAINER)\n" +
-        			"		public class @param@ extends @param@ {\n" +
-        			"		}\n" +
-        			" 단계 3 : 위의 생성된 코드를 컴파일하신 후 압축하십시오.";
-        	*/		
         	if(ejb != null) {
+        	    Object enterpriseBean = ejb.getClass().getMethod("getEnterpriseBeans").invoke(ejb);
+                
+        	    if(enterpriseBean != null) {
+        	        
+            		for(Object o : (List) enterpriseBean.getClass().getMethod("getSessionOrEntityOrMessageDriven").invoke(enterpriseBean)){
+            		
+            		    if(o.getClass().toString().indexOf("Session") > -1) {
+            		        Class cls = o.getClass();
+            		        String ejbName = getValue(cls.getMethod("getEjbName").invoke(o));
+            		        
+                		    String[] param = new String[7];
+                            param[0] = ejbName;
+                            param[1] = ejbName;
+                            param[2] = getValue(cls.getMethod("getHome").invoke(o));
+                            param[3] = getValue(cls.getMethod("getRemote").invoke(o));
+                            param[4] = getValue(cls.getMethod("getEjbClass").invoke(o));
+                            param[5] = getValue(cls.getMethod("getSessionType").invoke(o));
+                            param[6] = getValue(cls.getMethod("getTransactionType").invoke(o));
+                            
+                            if (logger.isDebugEnabled()) {
+                                logger.debug(MessageUtil.getMessage("pdf.message.ejbjar.session", param));
+                            }
+                            
+                            if(weblogic != null) {
+                                
+                                for(Object o2 : (List) weblogic.getClass().getMethod("weblogicEnterpriseBean").invoke(weblogic)){
+                                    
+                                    Class cls2 = o.getClass();
+                                    if(ejbName.equals(getValue(cls2.getMethod("ejbName").invoke(o)))) {
+                                        String[] param2 = new String[5];
+                                        param2[0] = getValue(cls.getMethod("getHome").invoke(o));
+                                        param2[1] = getValue(cls.getMethod("getRemote").invoke(o));
+                                        param2[2] = getValue(cls2.getMethod("getJndiName").invoke(o));
+                                        param2[3] = getValue(cls.getMethod("getTransactionType").invoke(o)).toUpperCase();
+                                        param2[4] = getValue(cls.getMethod("getEjbClass").invoke(o)).substring(getValue(cls.getMethod("getEjbClass").invoke(o)).lastIndexOf("."), getValue(cls.getMethod("getEjbClass").invoke(o)).length());
+                                        param2[5] = getValue(cls.getMethod("getRemote").invoke(o)).substring(getValue(cls.getMethod("getRemote").invoke(o)).lastIndexOf("."), getValue(cls.getMethod("getRemote").invoke(o)).length());
+                                        
+                                        if (logger.isDebugEnabled()) {
+                                            logger.debug(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
+                                        }
+                                        
+                                        /*
+                                        
+                                        String message2 = "만약 EJB3.0 유형으로 변경을 하고 싶으시다면 아래의 내용을 참고하십시오.\n" +
+                                                " 단계 0 : 이클립스의 EJB 프로젝트를 생서하십시오.\n" +
+                                                " 단계 1 : {0} 소스를 삭제하십시오.\n" +
+                                                " 단계 2 : Remote 클래스를 다음이 순서로 변경하십시오.\n" +
+                                                "        public interface {1} extends Remote 부분의 extends Remote를 삭제하십시오.\n" +
+                                                "        비즈니스 메소드의 throws RemoteException 을 삭제하십시오.\n" +
+                                                "        클래스 레벨의 어노테이션으로 다음을 추가하십시오.\n" +
+                                                "       @Stateless(mappedName=\"{2}\")\n" +
+                                                "       @TransactionManagement(value=TransactionManagementType.CONTAINER)\n" +
+                                                "       public class {3} extends {4} {\n" +
+                                                "       }\n" +
+                                                " 단계 3 : 위의 생성된 코드를 컴파일하신 후 압축하십시오.";
+                                        */      
+                                        
+                                        
+                                    }
+                                    
+                                }
+                                
+                            }
+                            
+            		    } else if(o.getClass().toString().indexOf("MessageDriven") > -1) {
+            		        
+            			} else if(o.getClass().toString().indexOf("Entity") > -1) {
+            				
+            			}
+            		}
+        	    }
         		
-        		for(Object o : ejb.getEnterpriseBeans().getSessionOrEntityOrMessageDriven()){
-        			if(o instanceof MessageDrivenBeanType) {
-        				MessageDrivenBeanType bean = (MessageDrivenBeanType) o;
-        				
-        			} else if(o instanceof EntityBeanType) {
-        				EntityBeanType bean = (EntityBeanType) o;
-        				
-        			} else if(o instanceof SessionBeanType) {
-        				SessionBeanType bean = (SessionBeanType) o;
-        				String[] param = new String[7];
-        				param[0] = bean.getEjbName().getValue();
-        				param[1] = bean.getEjbName().getValue();
-        				param[2] = bean.getHome().getValue();
-        				param[3] = bean.getRemote().getValue();
-        				param[4] = bean.getEjbClass().getValue();
-        				param[5] = bean.getSessionType().getValue();
-        				param[6] = bean.getTransactionType().getValue();
-        				
-        				if (logger.isDebugEnabled()) {
-                            logger.debug(MessageUtil.getMessage("pdf.message.ejbjar.session", param));
-                        }
-        				
-        		        
-        			}
-        		}
         	}
         	
         } catch(Exception e) {
             e.printStackTrace();
             fail("application xml Pasing Error");
+        }
+    }
+    
+    public String getValue(Object o) throws Exception {
+        try { 
+            return (String) o.getClass().getMethod("getValue").invoke(o);
+        } catch(NoSuchMethodException se) {
+            return (String) o.getClass().getMethod("getvalue").invoke(o);
         }
     }
     
