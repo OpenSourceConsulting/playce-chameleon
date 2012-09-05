@@ -123,6 +123,53 @@ public class JaxbUtils {
 	}//end of marshal()
 
 	/**
+	 * JAXB DOM Object를 XML 파일로 마샬링 한다.
+	 * <p>
+	 * <pre>
+	 * Marshaller marshaller = JaxbUtils.createMarshaller("com.athena.chameleon.engine.entity");
+	 * Request requst = ...;
+	 * JaxbUtils.marshal(marshaller, request, "/home/tester/test.xml");
+	 * </pre>
+	 * </p>
+	 *
+	 * @param marshaller {@link javax.xml.bind.Marshaller} 인스턴스
+	 * @param object     XML의 JAXB DOM Object
+	 * @param filename   저장할 XML 파일명
+	 * @param schemaLocations
+	 * @throws javax.xml.bind.JAXBException  마샬링 할 수 없는 경우
+	 * @throws java.io.FileNotFoundException 해당 파일이 존재하지 않는 경우(예; 디렉토리)
+	 */
+	public static void marshal(Marshaller marshaller, Object object, String filename, String[] schemaLocations) throws JAXBException, FileNotFoundException {
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		FileOutputStream fileOutputStream = null;
+		try {
+			if(schemaLocations != null && schemaLocations.length > 0) {
+	            String schemaLocation = new String();
+	            
+	            for(int i = 0; i < schemaLocations.length; i++) {
+	                if(i > 0) {
+	                    schemaLocation += " ";
+	                }
+	                schemaLocation += schemaLocations[i];
+	            }
+	            
+	            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
+	        }
+			
+			fileOutputStream = new FileOutputStream(filename);
+			marshaller.marshal(object, fileOutputStream);
+		} finally {
+			if (fileOutputStream != null) {
+				try {
+					fileOutputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}//end of marshal()
+
+	/**
 	 * 해당 패키지에 대한 JAXB DOM Object를 XML 파일로 마샬링한다. 이 메소드는 XML에 대해서 UTF-8로 인코딩을 하며 XML의 Validation을 수행한다.
 	 * <p>
 	 * <pre>
@@ -198,6 +245,55 @@ public class JaxbUtils {
 	}//end of marshal()
 
 	/**
+	 * 해당 패키지에 대한 JAXB DOM Object를 XML 파일로 마샬링한다.
+	 * <p>
+	 * <pre>
+	 * Request requst = ...;
+	 * JaxbUtils.marshal(request, "com.athena.chameleon.engine.entity", "/home/tester/test.xml");
+	 * </pre>
+	 * </p>
+	 * <b>이 메소드를 반복적으로 호출하면 성능 문제가 발생한다. {@link javax.xml.bind.JAXBContext#createMarshaller()} 및 {@link javax.xml.bind.JAXBContext#createUnmarshaller()} 메소는
+	 * 반복적으로 호출하는 경우 성능 문제를 발생하기 때문이다.</b>
+	 *
+	 * @param object      XML의 JAXB DOM Object
+	 * @param packageName 패키지명
+	 * @param filename    저장할 XML 파일명
+	 * @param schemaLocations
+	 * @throws javax.xml.bind.JAXBException  마샬링 할 수 없는 경우
+	 * @throws java.io.FileNotFoundException 해당 파일이 존재하지 않는 경우(예; 디렉토리)
+	 */
+	public static void marshal(Object object, String packageName, String filename, String[] schemaLocations) throws JAXBException, FileNotFoundException {
+		JAXBContext jaxbContext = JAXBContext.newInstance(packageName);
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		FileOutputStream fileOutputStream = null;
+		try {
+			if(schemaLocations != null && schemaLocations.length > 0) {
+	            String schemaLocation = new String();
+	            
+	            for(int i = 0; i < schemaLocations.length; i++) {
+	                if(i > 0) {
+	                    schemaLocation += " ";
+	                }
+	                schemaLocation += schemaLocations[i];
+	            }
+	            
+	            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
+	        }
+			
+			fileOutputStream = new FileOutputStream(filename);
+			marshaller.marshal(object, fileOutputStream);
+		} finally {
+			if (fileOutputStream != null) {
+				try {
+					fileOutputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}//end of marshal()
+
+	/**
 	 * JAXB DOM Object를 XML로 변환한다.
 	 * <p>
 	 * <pre>
@@ -235,6 +331,54 @@ public class JaxbUtils {
 	 * <p>
 	 * <pre>
 	 * Request request = ...; // Request XML에 대한 JAXB DOM Root Object
+	 * String xml = JaxbUtils.marshal("com.athena.chameleon.engine.entity", request);
+	 * </pre>
+	 * </p>
+	 * <b>이 메소드를 반복적으로 호출하면 성능 문제가 발생한다. {@link javax.xml.bind.JAXBContext#createMarshaller()} 및 {@link javax.xml.bind.JAXBContext#createUnmarshaller()} 메소는
+	 * 반복적으로 호출하는 경우 성능 문제를 발생하기 때문이다.</b>
+	 *
+	 * @param packageName 패키지명 (예; "<tt>com.skt.isf.sal.jaxb.request</tt>")
+	 * @param object      XML로 변환하고자 하는 JAXB DOM Object
+	 * @param schemaLocations
+	 * @return String type의 XML데이터
+	 * @throws javax.xml.bind.JAXBException 마샬링 할 수 없는 경우
+	 * @throws java.io.IOException          XML 파일을 로딩할 수
+	 */
+	public static String marshal(String packageName, Object object, String[] schemaLocations) throws JAXBException, IOException {
+		Marshaller marshaller = null;
+		StringWriter writer = null;
+		try {
+			marshaller = createMarshaller(packageName);
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			
+			if(schemaLocations != null && schemaLocations.length > 0) {
+	            String schemaLocation = new String();
+	            
+	            for(int i = 0; i < schemaLocations.length; i++) {
+	                if(i > 0) {
+	                    schemaLocation += " ";
+	                }
+	                schemaLocation += schemaLocations[i];
+	            }
+	            
+	            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
+	        }
+			
+			writer = new StringWriter();
+			marshaller.marshal(object, writer);
+			return writer.toString();
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
+	}//end of marshal()
+
+	/**
+	 * JAXB DOM Object를 XML로 변환한다.
+	 * <p>
+	 * <pre>
+	 * Request request = ...; // Request XML에 대한 JAXB DOM Root Object
 	 * String xml = JaxbUtils.marshal(marshaller, request);
 	 * </pre>
 	 * </p>
@@ -249,6 +393,50 @@ public class JaxbUtils {
 		StringWriter writer = null;
 		try {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			writer = new StringWriter();
+			marshaller.marshal(object, writer);
+			return writer.toString();
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
+	}//end of marshal()
+
+	/**
+	 * JAXB DOM Object를 XML로 변환한다.
+	 * <p>
+	 * <pre>
+	 * Request request = ...; // Request XML에 대한 JAXB DOM Root Object
+	 * String xml = JaxbUtils.marshal(marshaller, request);
+	 * </pre>
+	 * </p>
+	 *
+	 * @param marshaller JAXB Marshaller
+	 * @param object     XML로 변환하고자 하는 JAXB DOM Object
+	 * @param schemaLocations
+	 * @return String type의 XML데이터
+	 * @throws javax.xml.bind.JAXBException 마샬링 할 수 없는 경우
+	 * @throws java.io.IOException          XML 파일을 로딩할 수
+	 */
+	public static String marshal(Marshaller marshaller, Object object, String[] schemaLocations) throws JAXBException, IOException {
+		StringWriter writer = null;
+		try {
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			
+			if(schemaLocations != null && schemaLocations.length > 0) {
+	            String schemaLocation = new String();
+	            
+	            for(int i = 0; i < schemaLocations.length; i++) {
+	                if(i > 0) {
+	                    schemaLocation += " ";
+	                }
+	                schemaLocation += schemaLocations[i];
+	            }
+	            
+	            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, schemaLocation);
+	        }
+			
 			writer = new StringWriter();
 			marshaller.marshal(object, writer);
 			return writer.toString();
