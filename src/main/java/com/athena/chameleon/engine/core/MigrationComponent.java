@@ -40,6 +40,7 @@ import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.EjbJarType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar;
 import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
@@ -289,10 +290,11 @@ public class MigrationComponent {
     	
         EjbJarType ejb = null;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar");
-            JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(ejbXmlFile);
-            
-            ejb = (EjbJarType)result.getValue();
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_0");
+            //JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(ejbXmlFile);
+            EjbJar result = (EjbJar) unmarshaller.unmarshal(ejbXmlFile);
+            System.out.println(result.getDisplayName().getvalue());
+            //ejb = (EjbJarType)result.getValue();
             
         } catch(JAXBException je) {
             je.printStackTrace();
