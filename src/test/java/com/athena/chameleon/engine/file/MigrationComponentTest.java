@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
@@ -236,16 +237,8 @@ public class MigrationComponentTest {
     public void ejbXmlPasing(EjbJarType ejb) {
         
         try {
-        	
-        	String message1 = "1. EJB - @param@\n" +
-        			" 1.1 EJB 정보\n" +
-        			" Bean Name : @param@\n" +
-        			" Home Class: @param@\n" +
-        			" Remote Class : @param@\n" +
-        			" Bean Class : @param@\n" +
-        			" EJB 유형 : @param@ Session Bean\n" +
-        			" 트랜잭션 유형 : @param@\n";
         	/*
+        	
         	String message2 = "만약 EJB3.0 유형으로 변경을 하고 싶으시다면 아래의 내용을 참고하십시오.\n" +
         			" 단계 0 : 이클립스의 EJB 프로젝트를 생서하십시오.\n" +
         			" 단계 1 : @param@ 소스를 삭제하십시오.\n" +
@@ -260,33 +253,32 @@ public class MigrationComponentTest {
         			" 단계 3 : 위의 생성된 코드를 컴파일하신 후 압축하십시오.";
         	*/		
         	if(ejb != null) {
-        		message1.replaceFirst("@param@", ejb.getId());
         		
         		for(Object o : ejb.getEnterpriseBeans().getSessionOrEntityOrMessageDriven()){
         			if(o instanceof MessageDrivenBeanType) {
         				MessageDrivenBeanType bean = (MessageDrivenBeanType) o;
-        				message1.replaceFirst("@param@", bean.getEjbName().getValue());
         				
         			} else if(o instanceof EntityBeanType) {
         				EntityBeanType bean = (EntityBeanType) o;
-        				message1.replaceFirst("@param@", bean.getEjbName().getValue());
         				
         			} else if(o instanceof SessionBeanType) {
         				SessionBeanType bean = (SessionBeanType) o;
-        				message1.replaceFirst("@param@", bean.getEjbName().getValue());
-        				message1.replaceFirst("@param@", bean.getHome().getValue());
-        				message1.replaceFirst("@param@", bean.getRemote().getValue());
-        				message1.replaceFirst("@param@", bean.getEjbClass().getValue());
-        				message1.replaceFirst("@param@", bean.getSessionType().getValue());
-        				message1.replaceFirst("@param@", bean.getTransactionType().getValue());
+        				String[] param = new String[7];
+        				param[0] = bean.getEjbName().getValue();
+        				param[1] = bean.getEjbName().getValue();
+        				param[2] = bean.getHome().getValue();
+        				param[3] = bean.getRemote().getValue();
+        				param[4] = bean.getEjbClass().getValue();
+        				param[5] = bean.getSessionType().getValue();
+        				param[6] = bean.getTransactionType().getValue();
+        				
+        				if (logger.isDebugEnabled()) {
+                            logger.debug(MessageUtil.getMessage("pdf.message.ejbjar.session", param));
+                        }
+        				
+        		        
         			}
         		}
-        		
-
-            	if (logger.isDebugEnabled()) {
-            		logger.debug(message1);
-            	}
-            	
         	}
         	
         } catch(Exception e) {
