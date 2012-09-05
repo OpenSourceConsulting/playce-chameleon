@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <jeus-ejb-dd xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.tmaxsoft.com/xml/ns/jeus" 
-             xsi:schemaLocation="http://www.tmaxsoft.com/xml/ns/jeus schema/jeus-ejb-dd.xsd">
+             xsi:schemaLocation="http://www.tmaxsoft.com/xml/ns/jeus schema/v5_0/jeus-ejb-dd.xsd">
 	<module-info>
 		<role-permission>
 			<principal>peter</principal>
