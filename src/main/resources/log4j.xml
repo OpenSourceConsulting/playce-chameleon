@@ -30,6 +30,10 @@
 	<!-- ================ -->
 
 	<category name="sample">
+		<priority value="INFO"/>
+	</category>
+
+	<category name="com.athena.chameleon">
 		<priority value="DEBUG"/>
 	</category>
 
@@ -38,7 +42,7 @@
 	</category>
 
 	<category name="org.springframework">
-		<priority value="DEBUG"/>
+		<priority value="INFO"/>
 	</category>
 	
 	<!-- ======================= -->
