@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
-import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
@@ -54,11 +53,8 @@ public class MigrationComponent {
 
     public String                   rootPath;
     public File                     webXmlFile;
-    public String                   webXmlVersion;
     public File                     applicationXmlFile;
-    public String                   applicationXmlVersion;
     public File                     ejbXmlFile;
-    public String                   ejbXmlVersion;
     public File                     weblogicEjbXmlFile;
     public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
@@ -107,16 +103,12 @@ public class MigrationComponent {
                         HashMap<Integer, String> lineMap = new LinkedHashMap<Integer, String>();
                         
                         //xml file pasing
-                        boolean webXmlFlag, applicationXmlFlag, ejbXmlFlag = false;
                         if(filePath.indexOf("WEB-INF/web.xml") > -1) {
                             webXmlFile = f;
-                            webXmlFlag = true;
                         } else if(filePath.indexOf("WEB-INF/application.xml") > -1) {
                         	applicationXmlFile = f;
-                        	applicationXmlFlag = true;
                         } else if(filePath.indexOf("META-INF/ejb-jar.xml") > -1) {
                             ejbXmlFile = f;
-                            ejbXmlFlag = true;
                         } else if(filePath.indexOf("META-INF/weblogic-ejb-jar.xml") > -1) {
                             weblogicEjbXmlFile = f;
                         } else if(filePath.indexOf("META-INF/jeus-ejb-dd.xml") > -1){
@@ -137,10 +129,6 @@ public class MigrationComponent {
                                 match = p.matcher(lineStr);
                                 if(match.matches()) {
                                     lineMap.put(line, lineStr);
-                                }
-                                
-                                if(ejbXmlFlag){
-                                    
                                 }
                             }
                             fileEntity.setLineMap(lineMap);
@@ -164,7 +152,7 @@ public class MigrationComponent {
      * @param xmlFile web.xml file
      * @return WebAppType
      */
-    public WebAppType webXmlPasing(File xmlFile) {
+    public Object webXmlPasing(File xmlFile) {
         this.webXmlFile = xmlFile;
         return webXmlPasing();
     }
@@ -175,73 +163,35 @@ public class MigrationComponent {
      *
      * @return WebAppType
      */
-    public WebAppType webXmlPasing() {
+    public Object webXmlPasing() {
         
     	if(webXmlFile == null)
     		return null;
     		
-        WebAppType webApp = null;
+    	Object webApp = null;
+        Unmarshaller unmarshaller;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp");
-            JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(webXmlFile);
-            
-            webApp = (WebAppType)result.getValue();
-            
-        } catch(JAXBException je) {
-            je.printStackTrace();
-        } catch(Exception e) {
-            e.printStackTrace();
+        	//web.xml 2.5
+            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp.v2_5");
+        	webApp = unmarshaller.unmarshal(webXmlFile);
+        } catch(Exception e1) {
+            try {
+            	//web.xml 2.4
+        		unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp.v2_4");
+                webApp = unmarshaller.unmarshal(webXmlFile);
+        	} catch(Exception e2) {
+        		try {
+        			//web.xml 2.3
+	        		unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp.v2_3");
+	                webApp = unmarshaller.unmarshal(webXmlFile);
+        		} catch(Exception e3) {
+        			e3.printStackTrace();
+        		}
+        	}
         }
         return webApp;
     }
     
-    /**
-     * 
-     * web.xml 안에 있는 element 가져오기
-     *
-     * @param webApp web.xml 최상위 객체
-     * @param elementEntity 가져올 elementEntity
-     * @return Object
-     */
-    public Object getWebXmlElementEntity(WebAppType webApp, Object elementEntity) {
-
-    	if(webApp == null)
-    		return null;
-    	
-        List<JAXBElement<?>> elementList = webApp.getDescriptionAndDisplayNameAndIcon();
-        Object entity = null;
-        
-        for(JAXBElement<?> element : elementList) {
-            if(element.getValue().getClass().equals(elementEntity.getClass())) {
-                entity = element.getValue();
-            }
-        }
-        return entity;
-    }
-
-    /**
-     * 
-     * web.xml 안에 있는 element list를 HashMap 가져오기
-     *
-     * @param webApp web.xml 최상위 객체
-     * @param elementEntityList 가져올 elementEntity List
-     * @return HashMap<?, ?>
-     */
-    public HashMap<?, ?> getWebXmlElementEntityMap(WebAppType webApp, List<Object> elementEntityList) {
-
-        List<JAXBElement<?>> elementList = webApp.getDescriptionAndDisplayNameAndIcon();
-        HashMap<Object, Object> entityMap = new HashMap<Object, Object>();
-        
-        for(JAXBElement<?> element : elementList) {
-            for(Object elementEntity : elementEntityList) {
-                if(element.getValue().getClass().equals(elementEntity.getClass())) {
-                    entityMap.put(elementEntity, element.getValue());
-                }
-            }
-        }
-        return entityMap;
-    }
-
     /**
      * 
      * application.xml pasing

@@ -23,19 +23,13 @@ package com.athena.chameleon.engine.file;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.util.SystemOutLogger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,29 +38,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.core.MigrationComponent;
+import com.athena.chameleon.engine.core.PDFDataDefinition;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.ModuleType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar;
-import com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EnterpriseBeans;
-import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EntityBeanType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.MessageDrivenBeanType;
-import com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType;
 import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleType;
-import com.athena.chameleon.engine.entity.xml.webapp.DescriptionType;
-import com.athena.chameleon.engine.entity.xml.webapp.DisplayNameType;
-import com.athena.chameleon.engine.entity.xml.webapp.ErrorPageType;
-import com.athena.chameleon.engine.entity.xml.webapp.FilterMappingType;
-import com.athena.chameleon.engine.entity.xml.webapp.ResourceRefType;
-import com.athena.chameleon.engine.entity.xml.webapp.ServletMappingType;
-import com.athena.chameleon.engine.entity.xml.webapp.ServletNameType;
-import com.athena.chameleon.engine.entity.xml.webapp.UrlPatternType;
-import com.athena.chameleon.engine.entity.xml.webapp.WebAppType;
-import com.athena.chameleon.engine.entity.xml.webapp.WelcomeFileListType;
 import com.athena.chameleon.engine.utils.ZipUtil;
-
-import freemarker.template.utility.StringUtil;
 
 /**
  * This FileUnzipTest class is a Test Case class for FileUnzip.
@@ -94,6 +71,10 @@ public class MigrationComponentTest {
     @Named("migrationComponent")
     private MigrationComponent component;
 
+	@Inject
+    @Named("pdfDataDefinition")
+    private PDFDataDefinition pdfData;
+
     @Test
     public void unzipTest() throws Exception  {
         String zipFilePath = this.getClass().getResource("/files/test.zip").getFile();
@@ -117,35 +98,27 @@ public class MigrationComponentTest {
     }
     
     public void fileAsset(List<MigrationFile> list) throws Exception {
-        for(MigrationFile file : list) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("[FileUnzipTest] FilePath :" + file.getFileName());
-            }
+        if (logger.isDebugEnabled()) {
+        	logger.debug(pdfData.getMigrationFileList(list));
         }
     }
 
     //FileRead 및 라인단위 패턴 매칭 Test Code
     public void fileRead(List<MigrationFile> list) throws Exception {
-    	for(MigrationFile file : list) {
-    	    
-    	    Iterator<Entry<Integer, String>> iterator = file.getLineMap().entrySet().iterator();
-
-            while (iterator.hasNext()) {
-                Entry<Integer, String> entry = (Entry<Integer, String>)iterator.next();
-                
-                if (logger.isDebugEnabled()) {
-                    logger.debug("["+file.getFileName()+"] " + entry.getKey() + " line : " + entry.getValue());
-                }
-                
-            }
-    	}
+    	if (logger.isDebugEnabled()) {
+        	logger.debug(pdfData.getMigrationFileCheckLine(list));
+        }
     }
     
     //xml file pasing
-    public void webXmlPasing(WebAppType webapp) {
+    public void webXmlPasing(Object webApp) {
         
         try {
-            
+        	System.out.println(webApp);
+        	if (logger.isDebugEnabled()) {
+        		logger.debug(pdfData.getWebXmlSettingInfo(webApp));
+        	}
+            /*
         	if(webapp == null)
         		return;
         	
@@ -185,7 +158,7 @@ public class MigrationComponentTest {
                 }
                 
             }
-            
+            */
         } catch(Exception e) {
             e.printStackTrace();
             fail("web xml Pasing Error");
@@ -374,71 +347,6 @@ public class MigrationComponentTest {
         				
         } catch(NoSuchMethodException se) {
             return (String) o.getClass().getMethod("getvalue").invoke(o);
-        }
-    }
-    
-    // filter mapping 정보
-    public void getFilterMappingType(FilterMappingType filterMapping) {
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("[filter mapping type]");
-            logger.debug("filter name : " + filterMapping.getFilterName().getValue());
-            
-            for(Object o : filterMapping.getUrlPatternOrServletName()) {
-
-                if(o instanceof UrlPatternType)
-                    logger.debug("url pattern : " + ((UrlPatternType)o).getValue());
-                else if (o instanceof ServletNameType)
-                    logger.debug("url pattern : " + ((ServletNameType)o).getValue());
-                    
-            }
-        }
-    }
-
-    //servlet mapping 정보
-    public void getServletMappingType(ServletMappingType servletMapping) {
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("[servlet mapping type]");
-            logger.debug("servlet name : " + servletMapping.getServletName().getValue());
-            
-            for(UrlPatternType pattern : servletMapping.getUrlPattern()) {
-                logger.debug("url pattern : " + pattern.getValue());
-            }
-        }
-    }
-    
-    //error page 정보
-    public void getErrorPageType(ErrorPageType errorPage) {
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("[error page type]");
-            logger.debug("error code : " + errorPage.getErrorCode().getValue());
-            logger.debug("location   : " + errorPage.getLocation().getValue());
-        }
-    }
-
-    //welcome file 정보
-    public void getWelcomFileListType(WelcomeFileListType welcomeFileList) {
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("[welcome file list type]");
-            for(String welcomeFile : welcomeFileList.getWelcomeFile())
-                logger.debug("welcome file : " + welcomeFile);
-        }
-    }
-
-    //resource reference 정보
-    public void getResourceRefType(ResourceRefType resourceRef) {
-        
-        if (logger.isDebugEnabled()) {
-            logger.debug("[resource reference type]");
-            for(DescriptionType desc : resourceRef.getDescription()) 
-                logger.debug("discription : " + desc.getValue());
-            
-            logger.debug("resource ref name : " + resourceRef.getResRefName().getValue());
-            logger.debug("resource type : " + resourceRef.getResType().getValue());
-            logger.debug("resource auth : " + resourceRef.getResAuth().getValue());
         }
     }
     
