@@ -114,7 +114,6 @@ public class MigrationComponentTest {
     public void webXmlPasing(Object webApp) {
         
         try {
-        	System.out.println(webApp);
         	if (logger.isDebugEnabled()) {
         		logger.debug(pdfData.getWebXmlSettingInfo(webApp));
         	}

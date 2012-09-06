@@ -107,9 +107,9 @@ public class PDFDataDefinition {
         for(Object o : (List)filterCls.getMethod("getUrlPatternOrServletName").invoke(filter)) {
         	Class cls = o.getClass();
         	if(cls.toString().indexOf("UrlPattern") > -1)
-        		buf.append("url pattern : " + getValue(cls)+delimiter);
+        		buf.append("url pattern : " + getValue(o)+delimiter);
             else if(cls.toString().indexOf("ServletName") > -1)
-            	buf.append("url pattern : " + getValue(cls)+delimiter);
+            	buf.append("url pattern : " + getValue(o)+delimiter);
                 
         }
         return buf.toString();
@@ -190,13 +190,13 @@ public class PDFDataDefinition {
     		return "";
         
     	try { 
-        	if(o instanceof java.lang.String)
-        		return (String) o;
+    		if(o instanceof java.lang.String)
+        		return String.valueOf(o);
         	else
-        		return (String) o.getClass().getMethod("getValue").invoke(o);
+        		return String.valueOf(o.getClass().getMethod("getValue").invoke(o));
         				
-        } catch(NoSuchMethodException se) {
-            return (String) o.getClass().getMethod("getvalue").invoke(o);
+        } catch(NoSuchMethodException se1) {
+    		return String.valueOf(o.getClass().getMethod("getvalue").invoke(o));
         }
     }
     
