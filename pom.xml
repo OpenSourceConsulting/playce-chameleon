@@ -106,8 +106,8 @@
 				<version>2.5.1</version>
 				<configuration>
 					<source>1.6</source>
-                       <target>1.6</target>
-                       <encoding>${project.build.sourceEncoding}</encoding>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
 			
@@ -222,6 +222,58 @@
 				</executions>
 			</plugin>
 			
+			<!-- 
+			<plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.athena.chameleon.engine.Starter</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assembly</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.7.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${artifactId}-jar-with-dependencies</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.athena.chameleon.engine.Starter</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+			
 			<!-- Ant plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -314,10 +366,10 @@
 						        </copy>
 							
 								<echo>Athena Chameleon 패키징을 수행합니다.</echo>
-								<jar destfile="target/athena-chameleon.jar" basedir="${target.dir}">
+								<jar destfile="target/athena-chameleon.jar" basedir="${target.dir}" duplicate="preserve" filesetmanifest="merge">
 									<!-- 
 									<restrict>
-										<name name="**/*.class" />
+										<name name="**/*" />
 										<archives>
 											<zips>
 												<fileset dir="${base.dir}/lib" includes="*.jar" />
@@ -325,10 +377,11 @@
 										</archives>
 									</restrict> 
 									-->
-									<zipgroupfileset dir="${base.dir}/lib" includes="*.jar"/>
+									<zipgroupfileset dir="${base.dir}/lib" includes="*.jar" />
 									<manifest>
 										<attribute name="Main-Class" value="com.athena.chameleon.engine.Starter" />
 									</manifest>
+									<metainf dir="target/${artifactId}-${version}/META-INF" includes="spring.*" />
 								</jar>
 								
 								<echo>Athena Chameleon 실행 스크립트를 복사합니다.</echo>

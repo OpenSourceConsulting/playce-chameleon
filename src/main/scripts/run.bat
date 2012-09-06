@@ -18,18 +18,18 @@ IF NOT DEFINED JAVA_HOME (
 SET FQFN=%1
 
 :: Display our environment
-echo
+echo.
 echo =========================================================================
-echo 
+echo.
 echo   Athena Chameleon Bootstrap Environment
-echo 
+echo.
 echo   JAVA: %JAVA%
-echo 
+echo.
 echo   JAVA_OPTS: %JAVA_OPTS%
-echo 
+echo.
 echo   Parameter: %FQFN%
-echo 
+echo.
 echo =========================================================================
-echo 
+echo.
 
 %JAVA% %JAVA_OPTS% -jar athena-chameleon.jar %FQFN%
