@@ -110,7 +110,7 @@ public class MigrationComponentTest {
         fileRead(list);
         webXmlPasing(component.webXmlPasing());
         applicationXmlPasing(component.applicationXmlPasing());
-        ejbXmlPasing(component.ejbXmlPasing(), component.weblogicEjbXmlPasing());
+        ejbXmlPasing(component.ejbXmlPasing(), component.weblogicEjbXmlPasing(), component.jeusEjbXmlPasing());
         
         // 테스트 종료 후 압축해제 디렉토리 제거
         deleteDirectory(unzipFile);
@@ -239,7 +239,7 @@ public class MigrationComponentTest {
 
     //ejb file pasing
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void ejbXmlPasing(Object ejb, Object weblogic) {
+    public void ejbXmlPasing(Object ejb, Object weblogic, Object jeus) {
         
         try {
         	
@@ -269,17 +269,17 @@ public class MigrationComponentTest {
                             
                             if(weblogic != null) {
                                 
-                                for(Object o2 : (List) weblogic.getClass().getMethod("weblogicEnterpriseBean").invoke(weblogic)){
+                                for(Object o2 : (List) weblogic.getClass().getMethod("getWeblogicEnterpriseBean").invoke(weblogic)){
                                     
-                                    Class cls2 = o.getClass();
-                                    if(ejbName.equals(getValue(cls2.getMethod("ejbName").invoke(o)))) {
-                                        String[] param2 = new String[5];
+                                    Class cls2 = o2.getClass();
+                                    if(ejbName.equals(getValue(cls2.getMethod("getEjbName").invoke(o2)))) {
+                                        String[] param2 = new String[6];
                                         param2[0] = getValue(cls.getMethod("getHome").invoke(o));
                                         param2[1] = getValue(cls.getMethod("getRemote").invoke(o));
-                                        param2[2] = getValue(cls2.getMethod("getJndiName").invoke(o));
+                                        param2[2] = getValue(cls2.getMethod("getJndiName").invoke(o2));
                                         param2[3] = getValue(cls.getMethod("getTransactionType").invoke(o)).toUpperCase();
-                                        param2[4] = getValue(cls.getMethod("getEjbClass").invoke(o)).substring(getValue(cls.getMethod("getEjbClass").invoke(o)).lastIndexOf("."), getValue(cls.getMethod("getEjbClass").invoke(o)).length());
-                                        param2[5] = getValue(cls.getMethod("getRemote").invoke(o)).substring(getValue(cls.getMethod("getRemote").invoke(o)).lastIndexOf("."), getValue(cls.getMethod("getRemote").invoke(o)).length());
+                                        param2[4] = getValue(cls.getMethod("getEjbClass").invoke(o)).substring(getValue(cls.getMethod("getEjbClass").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getEjbClass").invoke(o)).length());
+                                        param2[5] = getValue(cls.getMethod("getRemote").invoke(o)).substring(getValue(cls.getMethod("getRemote").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getRemote").invoke(o)).length());
                                         
                                         if (logger.isDebugEnabled()) {
                                             logger.debug(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
@@ -308,6 +308,47 @@ public class MigrationComponentTest {
                                 
                             }
                             
+                            if(jeus != null) {
+
+                            	Object beanList = jeus.getClass().getMethod("getBeanlist").invoke(jeus);
+                            	for(Object o2 : (List) beanList.getClass().getMethod("getJeusBean").invoke(beanList)){
+                                    
+                                    Class cls2 = o2.getClass();
+                                    if(ejbName.equals(getValue(cls2.getMethod("getEjbName").invoke(o2)))) {
+                                        String[] param2 = new String[6];
+                                        param2[0] = getValue(cls.getMethod("getHome").invoke(o));
+                                        param2[1] = getValue(cls.getMethod("getRemote").invoke(o));
+                                        param2[2] = getValue(cls2.getMethod("getExportName").invoke(o2));
+                                        param2[3] = getValue(cls.getMethod("getTransactionType").invoke(o)).toUpperCase();
+                                        param2[4] = getValue(cls.getMethod("getEjbClass").invoke(o)).substring(getValue(cls.getMethod("getEjbClass").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getEjbClass").invoke(o)).length());
+                                        param2[5] = getValue(cls.getMethod("getRemote").invoke(o)).substring(getValue(cls.getMethod("getRemote").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getRemote").invoke(o)).length());
+                                        
+                                        if (logger.isDebugEnabled()) {
+                                            logger.debug(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
+                                        }
+                                        
+                                        /*
+                                        
+                                        String message2 = "만약 EJB3.0 유형으로 변경을 하고 싶으시다면 아래의 내용을 참고하십시오.\n" +
+                                                " 단계 0 : 이클립스의 EJB 프로젝트를 생서하십시오.\n" +
+                                                " 단계 1 : {0} 소스를 삭제하십시오.\n" +
+                                                " 단계 2 : Remote 클래스를 다음이 순서로 변경하십시오.\n" +
+                                                "        public interface {1} extends Remote 부분의 extends Remote를 삭제하십시오.\n" +
+                                                "        비즈니스 메소드의 throws RemoteException 을 삭제하십시오.\n" +
+                                                "        클래스 레벨의 어노테이션으로 다음을 추가하십시오.\n" +
+                                                "       @Stateless(mappedName=\"{2}\")\n" +
+                                                "       @TransactionManagement(value=TransactionManagementType.CONTAINER)\n" +
+                                                "       public class {3} extends {4} {\n" +
+                                                "       }\n" +
+                                                " 단계 3 : 위의 생성된 코드를 컴파일하신 후 압축하십시오.";
+                                        */      
+                                        
+                                        
+                                    }
+                                    
+                                }
+                                
+                            }
             		    } else if(o.getClass().toString().indexOf("MessageDriven") > -1) {
             		        
             			} else if(o.getClass().toString().indexOf("Entity") > -1) {
@@ -326,7 +367,11 @@ public class MigrationComponentTest {
     
     public String getValue(Object o) throws Exception {
         try { 
-            return (String) o.getClass().getMethod("getValue").invoke(o);
+        	if(o instanceof java.lang.String)
+        		return (String) o;
+        	else
+        		return (String) o.getClass().getMethod("getValue").invoke(o);
+        				
         } catch(NoSuchMethodException se) {
             return (String) o.getClass().getMethod("getvalue").invoke(o);
         }

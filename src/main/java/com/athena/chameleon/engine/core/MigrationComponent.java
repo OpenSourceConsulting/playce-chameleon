@@ -60,6 +60,7 @@ public class MigrationComponent {
     public File                     ejbXmlFile;
     public String                   ejbXmlVersion;
     public File                     weblogicEjbXmlFile;
+    public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
     
     /**
@@ -118,6 +119,8 @@ public class MigrationComponent {
                             ejbXmlFlag = true;
                         } else if(filePath.indexOf("META-INF/weblogic-ejb-jar.xml") > -1) {
                             weblogicEjbXmlFile = f;
+                        } else if(filePath.indexOf("META-INF/jeus-ejb-dd.xml") > -1){
+                        	jeusEjbXmlFile = f;
                         }
                         
                         try {
@@ -333,7 +336,7 @@ public class MigrationComponent {
     
     /**
      * 
-     *  ejb-jar.xml pasing
+     *  weblogic-ejb-jar.xml pasing
      *
      * @return EjbJarType
      */
@@ -359,7 +362,49 @@ public class MigrationComponent {
         }
         return null;
     }
+
+    /**
+     * 
+     * jeus-ejb-dd.xml pasing
+     *
+     * @param xmlFile jeus-ejb-dd.xml file
+     * @return Object
+     */
+    public Object jeusEjbXmlPasing(File xmlFile) {
+        this.jeusEjbXmlFile = xmlFile;
+        return jeusEjbXmlPasing();
+    }
+    
+    /**
+     * 
+     *  jeus-ejb-dd.xml pasing
+     *
+     * @return Object
+     */
+    public Object jeusEjbXmlPasing() {
+        
+        if(jeusEjbXmlFile == null)
+            return null;
+        
+        try {
+            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.jeusejbdd.v6_0");
+            Object result = unmarshaller.unmarshal(jeusEjbXmlFile);
+            
+            if(result instanceof JAXBElement<?>) {
+                return ((JAXBElement<?>) result).getValue();
+            } else {
+                return result;
+            }
+            
+        } catch(JAXBException je) {
+            je.printStackTrace();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
        
+    
     /**
      * @return the migrationFileList
      */
