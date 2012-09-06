@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-ejb-jar xmlns="http://www.bea.com/ns/weblogic/90" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="http://www.bea.com/ns/weblogic/90 http://www.bea.com/ns/weblogic/90/weblogic-ejb-jar.xsd">
+	<weblogic-enterprise-bean>
+		<ejb-name>HbHubInfoEJB</ejb-name>
+		<jndi-name>JNDI_HUB_SVC_HbHubInfoEJB</jndi-name>
+		<local-jndi-name>JNDI_HUB_SVC_HbHubInfoEJB_Local</local-jndi-name>
+	</weblogic-enterprise-bean>
+	<enable-bean-class-redeploy>true</enable-bean-class-redeploy>
+</weblogic-ejb-jar>
