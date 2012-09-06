@@ -117,47 +117,6 @@ public class MigrationComponentTest {
         	if (logger.isDebugEnabled()) {
         		logger.debug(pdfData.getWebXmlSettingInfo(webApp));
         	}
-            /*
-        	if(webapp == null)
-        		return;
-        	
-            FilterMappingType mappingType = new FilterMappingType(); 
-            mappingType = (FilterMappingType) component.getWebXmlElementEntity(webapp, mappingType);
-            getFilterMappingType(mappingType);
-            
-            List<Object> entityList = new ArrayList<Object>();
-            entityList.add(new ServletMappingType());
-            entityList.add(new DisplayNameType());
-            entityList.add(new ErrorPageType());
-            entityList.add(new WelcomeFileListType());
-            entityList.add(new ResourceRefType());
-            
-            HashMap<Object, Object> pasingMap = (HashMap<Object, Object>) component.getWebXmlElementEntityMap(webapp, entityList);
-            Iterator<Entry<Object, Object>> iterator = pasingMap.entrySet().iterator();
-            
-            while (iterator.hasNext()) {
-                Entry<Object, Object> entry = (Entry<Object, Object>)iterator.next();
-                
-                if(entry.getKey() instanceof ServletMappingType) {
-                    //servlet mapping 정보
-                    getServletMappingType((ServletMappingType) entry.getValue());
-                } else if(entry.getKey() instanceof DisplayNameType) {
-                    //display name 정보
-                    if (logger.isDebugEnabled()) 
-                        logger.debug("[display name] " + ((DisplayNameType)entry.getValue()).getValue());
-                } else if(entry.getKey() instanceof ErrorPageType) {
-                    //error page 정보
-                    getErrorPageType((ErrorPageType) entry.getValue());
-                } else if(entry.getKey() instanceof WelcomeFileListType) {
-                    //welcome file 정보
-                    getWelcomFileListType((WelcomeFileListType) entry.getValue());
-                } else if(entry.getKey() instanceof ResourceRefType) {
-                    //resource reference 정보
-                    getResourceRefType((ResourceRefType) entry.getValue());
-                }
-                
-            }
-            */
         } catch(Exception e) {
             e.printStackTrace();
             fail("web xml Pasing Error");

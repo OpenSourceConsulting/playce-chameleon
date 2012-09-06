@@ -64,6 +64,21 @@ public class PDFDataDefinition {
 			buf.append(getResourceRefType(getWebXmlElementEntity(webApp, "ResourceRef")));
 			
 		} else {
+
+			for(Object o : (List) webApp.getClass().getMethod("getFilterMapping").invoke(webApp))
+				buf.append(getFilterMappingType(o));
+			
+			for(Object o : (List) webApp.getClass().getMethod("getServletMapping").invoke(webApp))
+				buf.append(getServletMappingType(o));
+			
+			for(Object o : (List) webApp.getClass().getMethod("getErrorPage").invoke(webApp))
+				buf.append(getErrorPageType(o));
+			
+			for(Object o : (List) webApp.getClass().getMethod("getWelcomeFileList").invoke(webApp))
+				buf.append(getWelcomeFileListType(o));
+			
+			for(Object o : (List) webApp.getClass().getMethod("getResourceRef").invoke(webApp))
+				buf.append(getResourceRefType(o));
 			
 		}
 		return buf.toString();
