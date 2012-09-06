@@ -21,9 +21,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.athena.chameleon.engine.entity.xml.j2ee.DescriptionType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EmptyType;
-
 
 /**
  * 
@@ -106,7 +103,7 @@ public class EjbRelationshipRoleType {
 
     protected List<DescriptionType> description;
     @XmlElement(name = "ejb-relationship-role-name")
-    protected com.athena.chameleon.engine.entity.xml.j2ee.String ejbRelationshipRoleName;
+    protected String ejbRelationshipRoleName;
     @XmlElement(required = true)
     protected MultiplicityType multiplicity;
     @XmlElement(name = "cascade-delete")
@@ -155,10 +152,10 @@ public class EjbRelationshipRoleType {
      * 
      * @return
      *     possible object is
-     *     {@link com.athena.chameleon.engine.entity.xml.j2ee.String }
+     *     {@link String }
      *     
      */
-    public com.athena.chameleon.engine.entity.xml.j2ee.String getEjbRelationshipRoleName() {
+    public String getEjbRelationshipRoleName() {
         return ejbRelationshipRoleName;
     }
 
@@ -167,10 +164,10 @@ public class EjbRelationshipRoleType {
      * 
      * @param value
      *     allowed object is
-     *     {@link com.athena.chameleon.engine.entity.xml.j2ee.String }
+     *     {@link String }
      *     
      */
-    public void setEjbRelationshipRoleName(com.athena.chameleon.engine.entity.xml.j2ee.String value) {
+    public void setEjbRelationshipRoleName(String value) {
         this.ejbRelationshipRoleName = value;
     }
 

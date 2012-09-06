@@ -106,7 +106,7 @@ public class EjbRelationType {
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link DescriptionType }{@code >}
-     * {@link JAXBElement }{@code <}{@link com.athena.chameleon.engine.entity.xml.ejbjar.String }{@code >}
+     * {@link JAXBElement }{@code <}{@link com.athena.chameleon.engine.entity.xml.application.v1_4.String }{@code >}
      * {@link JAXBElement }{@code <}{@link EjbRelationshipRoleType }{@code >}
      * 
      * 

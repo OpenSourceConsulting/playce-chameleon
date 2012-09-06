@@ -40,9 +40,9 @@ import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDataDefinition;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
-import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
-import com.athena.chameleon.engine.entity.xml.application.ModuleType;
-import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleType;
+import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
+import com.athena.chameleon.engine.entity.xml.application.v1_4.ModuleType;
+import com.athena.chameleon.engine.entity.xml.application.v1_4.SecurityRoleType;
 import com.athena.chameleon.engine.utils.ZipUtil;
 
 /**
@@ -152,7 +152,7 @@ public class MigrationComponentTest {
         		buf.append(" [Security Role type] \n");
         		
         	for(SecurityRoleType securityRole : securityRoleList) {
-        		for(com.athena.chameleon.engine.entity.xml.j2ee.DescriptionType desc : securityRole.getDescription()) 
+        		for(com.athena.chameleon.engine.entity.xml.application.v1_4.DescriptionType desc : securityRole.getDescription()) 
         			buf.append("discription : " + desc.getValue() + "\n");
         		
         		buf.append("role name : " + securityRole.getRoleName().getValue() + "\n");

@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "transaction-typeType")
 public class TransactionTypeType
-    extends com.athena.chameleon.engine.entity.xml.j2ee.String
+    extends com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.String
 {
 
 

@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
-import com.athena.chameleon.engine.entity.xml.application.ApplicationType;
+import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**

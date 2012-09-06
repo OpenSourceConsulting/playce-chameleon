@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "method-intfType")
 public class MethodIntfType
-    extends com.athena.chameleon.engine.entity.xml.j2ee.String
+    extends String
 {
 
 

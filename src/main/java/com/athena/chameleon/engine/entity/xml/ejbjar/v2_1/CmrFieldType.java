@@ -21,8 +21,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.athena.chameleon.engine.entity.xml.j2ee.DescriptionType;
-
 
 /**
  * 
@@ -69,7 +67,7 @@ public class CmrFieldType {
 
     protected List<DescriptionType> description;
     @XmlElement(name = "cmr-field-name", required = true)
-    protected com.athena.chameleon.engine.entity.xml.j2ee.String cmrFieldName;
+    protected String cmrFieldName;
     @XmlElement(name = "cmr-field-type")
     protected CmrFieldTypeType cmrFieldType;
     @XmlAttribute(name = "id")
@@ -112,10 +110,10 @@ public class CmrFieldType {
      * 
      * @return
      *     possible object is
-     *     {@link com.athena.chameleon.engine.entity.xml.j2ee.String }
+     *     {@link String }
      *     
      */
-    public com.athena.chameleon.engine.entity.xml.j2ee.String getCmrFieldName() {
+    public String getCmrFieldName() {
         return cmrFieldName;
     }
 
@@ -124,10 +122,10 @@ public class CmrFieldType {
      * 
      * @param value
      *     allowed object is
-     *     {@link com.athena.chameleon.engine.entity.xml.j2ee.String }
+     *     {@link String }
      *     
      */
-    public void setCmrFieldName(com.athena.chameleon.engine.entity.xml.j2ee.String value) {
+    public void setCmrFieldName(String value) {
         this.cmrFieldName = value;
     }
 

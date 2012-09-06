@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "session-typeType")
 public class SessionTypeType
-    extends com.athena.chameleon.engine.entity.xml.j2ee.String
+    extends String
 {
 
 

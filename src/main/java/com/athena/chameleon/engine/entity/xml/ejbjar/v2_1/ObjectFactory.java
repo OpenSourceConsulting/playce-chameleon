@@ -13,56 +13,6 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
-import com.athena.chameleon.engine.entity.xml.j2ee.DescriptionType;
-import com.athena.chameleon.engine.entity.xml.j2ee.DisplayNameType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EjbLinkType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EjbLocalRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EjbRefNameType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EjbRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EjbRefTypeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EmptyType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EnvEntryType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EnvEntryTypeValuesType;
-import com.athena.chameleon.engine.entity.xml.j2ee.FullyQualifiedClassType;
-import com.athena.chameleon.engine.entity.xml.j2ee.GenericBooleanType;
-import com.athena.chameleon.engine.entity.xml.j2ee.HomeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.IconType;
-import com.athena.chameleon.engine.entity.xml.j2ee.JavaIdentifierType;
-import com.athena.chameleon.engine.entity.xml.j2ee.JavaTypeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.JndiNameType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ListenerType;
-import com.athena.chameleon.engine.entity.xml.j2ee.LocalHomeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.LocalType;
-import com.athena.chameleon.engine.entity.xml.j2ee.MessageDestinationLinkType;
-import com.athena.chameleon.engine.entity.xml.j2ee.MessageDestinationRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.MessageDestinationType;
-import com.athena.chameleon.engine.entity.xml.j2ee.MessageDestinationTypeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.MessageDestinationUsageType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ParamValueType;
-import com.athena.chameleon.engine.entity.xml.j2ee.PathType;
-import com.athena.chameleon.engine.entity.xml.j2ee.PortComponentRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.RemoteType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ResAuthType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ResSharingScopeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ResourceEnvRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ResourceRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.RoleNameType;
-import com.athena.chameleon.engine.entity.xml.j2ee.RunAsType;
-import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ServiceRefHandlerType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ServiceRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.TrueFalseType;
-import com.athena.chameleon.engine.entity.xml.j2ee.UrlPatternType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdAnyURIType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdBooleanType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdIntegerType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdNMTOKENType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdNonNegativeIntegerType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdPositiveIntegerType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdQNameType;
-import com.athena.chameleon.engine.entity.xml.j2ee.XsdStringType;
-
 
 /**
  * This object contains factory methods for each 

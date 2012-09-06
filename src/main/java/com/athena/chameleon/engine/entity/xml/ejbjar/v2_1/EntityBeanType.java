@@ -21,25 +21,6 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.athena.chameleon.engine.entity.xml.j2ee.DescriptionType;
-import com.athena.chameleon.engine.entity.xml.j2ee.DisplayNameType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EjbLocalRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EjbRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.EnvEntryType;
-import com.athena.chameleon.engine.entity.xml.j2ee.FullyQualifiedClassType;
-import com.athena.chameleon.engine.entity.xml.j2ee.HomeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.IconType;
-import com.athena.chameleon.engine.entity.xml.j2ee.JavaIdentifierType;
-import com.athena.chameleon.engine.entity.xml.j2ee.LocalHomeType;
-import com.athena.chameleon.engine.entity.xml.j2ee.LocalType;
-import com.athena.chameleon.engine.entity.xml.j2ee.MessageDestinationRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.RemoteType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ResourceEnvRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ResourceRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.SecurityRoleRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.ServiceRefType;
-import com.athena.chameleon.engine.entity.xml.j2ee.TrueFalseType;
-
 
 /**
  * 
@@ -223,7 +204,7 @@ public class EntityBeanType {
     @XmlElement(name = "cmp-field")
     protected List<CmpFieldType> cmpField;
     @XmlElement(name = "primkey-field")
-    protected com.athena.chameleon.engine.entity.xml.j2ee.String primkeyField;
+    protected String primkeyField;
     @XmlElement(name = "env-entry")
     protected List<EnvEntryType> envEntry;
     @XmlElement(name = "ejb-ref")
@@ -634,10 +615,10 @@ public class EntityBeanType {
      * 
      * @return
      *     possible object is
-     *     {@link com.athena.chameleon.engine.entity.xml.j2ee.String }
+     *     {@link String }
      *     
      */
-    public com.athena.chameleon.engine.entity.xml.j2ee.String getPrimkeyField() {
+    public String getPrimkeyField() {
         return primkeyField;
     }
 
@@ -646,10 +627,10 @@ public class EntityBeanType {
      * 
      * @param value
      *     allowed object is
-     *     {@link com.athena.chameleon.engine.entity.xml.j2ee.String }
+     *     {@link String }
      *     
      */
-    public void setPrimkeyField(com.athena.chameleon.engine.entity.xml.j2ee.String value) {
+    public void setPrimkeyField(String value) {
         this.primkeyField = value;
     }
 

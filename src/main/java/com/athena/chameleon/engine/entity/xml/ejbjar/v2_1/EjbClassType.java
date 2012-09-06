@@ -12,8 +12,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import com.athena.chameleon.engine.entity.xml.j2ee.FullyQualifiedClassType;
-
 
 /**
  * 
