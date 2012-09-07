@@ -26,6 +26,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.jeusejbdd.v5_0.JeusEjbDdType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType;
 import com.athena.chameleon.engine.entity.xml.weblogicejbjar.v9_0.WeblogicEjbJarType;
@@ -51,6 +52,24 @@ public class JaxbUtilsTest {
             System.out.println(obj.getClass().getCanonicalName());
             
             String xmlData = JaxbUtils.marshal(WebAppType.class.getPackage().getName(), obj, new String[]{"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"});
+            System.out.println(xmlData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error");
+        }
+    }
+
+    @Test
+    public void appV14Test() {
+        String xml = this.getClass().getResource("/files/application/application.xml").getFile();
+        File file = new File(xml);
+        
+        try {
+            Object obj = JaxbUtils.unmarshal(ApplicationType.class.getPackage().getName(), this.getClass().getResource("/files/application/").getFile(), file.getName());
+            
+            System.out.println(obj.getClass().getCanonicalName());
+            
+            String xmlData = JaxbUtils.marshal(ApplicationType.class.getPackage().getName(), obj, new String[]{"http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application_1_4.xsd"});
             System.out.println(xmlData);
         } catch (Exception e) {
             e.printStackTrace();

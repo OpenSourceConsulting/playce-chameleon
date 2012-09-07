@@ -36,13 +36,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDataDefinition;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
-import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
-import com.athena.chameleon.engine.entity.xml.application.v1_4.ModuleType;
-import com.athena.chameleon.engine.entity.xml.application.v1_4.SecurityRoleType;
 import com.athena.chameleon.engine.utils.ZipUtil;
 
 /**
@@ -114,6 +110,9 @@ public class MigrationComponentTest {
     public void webXmlPasing(Object webApp) {
         
         try {
+            if(webApp == null)
+                return;
+                
         	if (logger.isDebugEnabled()) {
         		logger.debug(pdfData.getWebXmlSettingInfo(webApp));
         	}
@@ -124,42 +123,14 @@ public class MigrationComponentTest {
     }
 
     //application file pasing
-    public void applicationXmlPasing(ApplicationType app) {
+    public void applicationXmlPasing(Object app) {
         
         try {
         	if(app == null)
         		return;
         	
-        	List<ModuleType> moduleList = app.getModule();
-        	
-        	StringBuffer buf = new StringBuffer();
-        	buf.append("\n[application.xml] \n");
-        	if(moduleList != null) 
-        		buf.append(" [module type] \n");
-        		
-        	for(ModuleType module : moduleList) {
-        		if(module.getEjb() != null)
-        			buf.append("ejb : " + module.getEjb().getValue() + "\n");
-        		else if(module.getJava() != null) 
-        			buf.append("java : " + module.getJava().getValue() + "\n");
-        		else if(module.getWeb() != null) 
-        			buf.append("web url : " + module.getWeb().getWebUri().getValue() + "\n" +
-        					"web context root : " + module.getWeb().getContextRoot().getValue() + "\n");
-        	}
-        	
-        	List<SecurityRoleType> securityRoleList = app.getSecurityRole();
-        	if(securityRoleList != null) 
-        		buf.append(" [Security Role type] \n");
-        		
-        	for(SecurityRoleType securityRole : securityRoleList) {
-        		for(com.athena.chameleon.engine.entity.xml.application.v1_4.DescriptionType desc : securityRole.getDescription()) 
-        			buf.append("discription : " + desc.getValue() + "\n");
-        		
-        		buf.append("role name : " + securityRole.getRoleName().getValue() + "\n");
-        	}
-        	
         	if (logger.isDebugEnabled()) {
-        		logger.debug(buf.toString());
+        		logger.debug(pdfData.getApplicationXmlSettingInfo(app));
         	}
         	
         } catch(Exception e) {
@@ -169,142 +140,19 @@ public class MigrationComponentTest {
     }
 
     //ejb file pasing
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void ejbXmlPasing(Object ejb, Object weblogic, Object jeus) {
         
         try {
         	
-        	if(ejb != null) {
-        	    Object enterpriseBean = ejb.getClass().getMethod("getEnterpriseBeans").invoke(ejb);
-                
-        	    if(enterpriseBean != null) {
-        	        
-            		for(Object o : (List) enterpriseBean.getClass().getMethod("getSessionOrEntityOrMessageDriven").invoke(enterpriseBean)){
-            		
-            		    if(o.getClass().toString().indexOf("Session") > -1) {
-            		        Class cls = o.getClass();
-            		        String ejbName = getValue(cls.getMethod("getEjbName").invoke(o));
-            		        
-                		    String[] param = new String[7];
-                            param[0] = ejbName;
-                            param[1] = ejbName;
-                            param[2] = getValue(cls.getMethod("getHome").invoke(o));
-                            param[3] = getValue(cls.getMethod("getRemote").invoke(o));
-                            param[4] = getValue(cls.getMethod("getEjbClass").invoke(o));
-                            param[5] = getValue(cls.getMethod("getSessionType").invoke(o));
-                            param[6] = getValue(cls.getMethod("getTransactionType").invoke(o));
-                            
-                            if (logger.isDebugEnabled()) {
-                                logger.debug(MessageUtil.getMessage("pdf.message.ejbjar.session", param));
-                            }
-                            
-                            if(weblogic != null) {
-                                
-                                for(Object o2 : (List) weblogic.getClass().getMethod("getWeblogicEnterpriseBean").invoke(weblogic)){
-                                    
-                                    Class cls2 = o2.getClass();
-                                    if(ejbName.equals(getValue(cls2.getMethod("getEjbName").invoke(o2)))) {
-                                        String[] param2 = new String[6];
-                                        param2[0] = getValue(cls.getMethod("getHome").invoke(o));
-                                        param2[1] = getValue(cls.getMethod("getRemote").invoke(o));
-                                        param2[2] = getValue(cls2.getMethod("getJndiName").invoke(o2));
-                                        param2[3] = getValue(cls.getMethod("getTransactionType").invoke(o)).toUpperCase();
-                                        param2[4] = getValue(cls.getMethod("getEjbClass").invoke(o)).substring(getValue(cls.getMethod("getEjbClass").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getEjbClass").invoke(o)).length());
-                                        param2[5] = getValue(cls.getMethod("getRemote").invoke(o)).substring(getValue(cls.getMethod("getRemote").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getRemote").invoke(o)).length());
-                                        
-                                        if (logger.isDebugEnabled()) {
-                                            logger.debug(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
-                                        }
-                                        
-                                        /*
-                                        
-                                        String message2 = "만약 EJB3.0 유형으로 변경을 하고 싶으시다면 아래의 내용을 참고하십시오.\n" +
-                                                " 단계 0 : 이클립스의 EJB 프로젝트를 생서하십시오.\n" +
-                                                " 단계 1 : {0} 소스를 삭제하십시오.\n" +
-                                                " 단계 2 : Remote 클래스를 다음이 순서로 변경하십시오.\n" +
-                                                "        public interface {1} extends Remote 부분의 extends Remote를 삭제하십시오.\n" +
-                                                "        비즈니스 메소드의 throws RemoteException 을 삭제하십시오.\n" +
-                                                "        클래스 레벨의 어노테이션으로 다음을 추가하십시오.\n" +
-                                                "       @Stateless(mappedName=\"{2}\")\n" +
-                                                "       @TransactionManagement(value=TransactionManagementType.CONTAINER)\n" +
-                                                "       public class {3} extends {4} {\n" +
-                                                "       }\n" +
-                                                " 단계 3 : 위의 생성된 코드를 컴파일하신 후 압축하십시오.";
-                                        */      
-                                        
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-                            
-                            if(jeus != null) {
-
-                            	Object beanList = jeus.getClass().getMethod("getBeanlist").invoke(jeus);
-                            	for(Object o2 : (List) beanList.getClass().getMethod("getJeusBean").invoke(beanList)){
-                                    
-                                    Class cls2 = o2.getClass();
-                                    if(ejbName.equals(getValue(cls2.getMethod("getEjbName").invoke(o2)))) {
-                                        String[] param2 = new String[6];
-                                        param2[0] = getValue(cls.getMethod("getHome").invoke(o));
-                                        param2[1] = getValue(cls.getMethod("getRemote").invoke(o));
-                                        param2[2] = getValue(cls2.getMethod("getExportName").invoke(o2));
-                                        param2[3] = getValue(cls.getMethod("getTransactionType").invoke(o)).toUpperCase();
-                                        param2[4] = getValue(cls.getMethod("getEjbClass").invoke(o)).substring(getValue(cls.getMethod("getEjbClass").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getEjbClass").invoke(o)).length());
-                                        param2[5] = getValue(cls.getMethod("getRemote").invoke(o)).substring(getValue(cls.getMethod("getRemote").invoke(o)).lastIndexOf(".")+1, getValue(cls.getMethod("getRemote").invoke(o)).length());
-                                        
-                                        if (logger.isDebugEnabled()) {
-                                            logger.debug(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
-                                        }
-                                        
-                                        /*
-                                        
-                                        String message2 = "만약 EJB3.0 유형으로 변경을 하고 싶으시다면 아래의 내용을 참고하십시오.\n" +
-                                                " 단계 0 : 이클립스의 EJB 프로젝트를 생서하십시오.\n" +
-                                                " 단계 1 : {0} 소스를 삭제하십시오.\n" +
-                                                " 단계 2 : Remote 클래스를 다음이 순서로 변경하십시오.\n" +
-                                                "        public interface {1} extends Remote 부분의 extends Remote를 삭제하십시오.\n" +
-                                                "        비즈니스 메소드의 throws RemoteException 을 삭제하십시오.\n" +
-                                                "        클래스 레벨의 어노테이션으로 다음을 추가하십시오.\n" +
-                                                "       @Stateless(mappedName=\"{2}\")\n" +
-                                                "       @TransactionManagement(value=TransactionManagementType.CONTAINER)\n" +
-                                                "       public class {3} extends {4} {\n" +
-                                                "       }\n" +
-                                                " 단계 3 : 위의 생성된 코드를 컴파일하신 후 압축하십시오.";
-                                        */      
-                                        
-                                        
-                                    }
-                                    
-                                }
-                                
-                            }
-            		    } else if(o.getClass().toString().indexOf("MessageDriven") > -1) {
-            		        
-            			} else if(o.getClass().toString().indexOf("Entity") > -1) {
-            				
-            			}
-            		}
-        	    }
-        		
-        	}
+        	if(ejb == null) 
+        	    return;
         	
+        	if (logger.isDebugEnabled()) {
+                logger.debug(pdfData.getEjbXmlSettingInfo(ejb, weblogic, jeus));
+            }
         } catch(Exception e) {
             e.printStackTrace();
             fail("application xml Pasing Error");
-        }
-    }
-    
-    public String getValue(Object o) throws Exception {
-        try { 
-        	if(o instanceof java.lang.String)
-        		return (String) o;
-        	else
-        		return (String) o.getClass().getMethod("getValue").invoke(o);
-        				
-        } catch(NoSuchMethodException se) {
-            return (String) o.getClass().getMethod("getvalue").invoke(o);
         }
     }
     

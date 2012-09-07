@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBElement;
 
 import org.springframework.stereotype.Component;
 
+import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 
 @Component("pdfDataDefinition")
@@ -84,6 +85,115 @@ public class PDFDataDefinition {
 		return buf.toString();
 	}
 
+    //application file pasing
+	public String getApplicationXmlSettingInfo(Object app) throws Exception{
+        
+        StringBuffer buf = new StringBuffer();
+        buf.append("*****application.xml Setting Info*****"+delimiter);
+        
+        
+        List moduleList = (List) app.getClass().getMethod("getModule").invoke(app);
+        
+        if(moduleList != null) {
+            buf.append(" [module type]"+delimiter);
+            
+            for(Object module : moduleList) {
+                Object moduleEjb = module.getClass().getMethod("getEjb").invoke(module);
+                Object moduleJava = module.getClass().getMethod("getJava").invoke(module);
+                Object moduleWeb = module.getClass().getMethod("getWeb").invoke(module);
+                
+                if(moduleEjb != null)
+                    buf.append("ejb : " + getValue(moduleEjb) + delimiter);
+                else if(moduleJava != null) 
+                    buf.append("java : " + getValue(moduleJava) + delimiter);
+                else if(moduleWeb != null) 
+                    buf.append("web url : " + getValue(moduleWeb.getClass().getMethod("getWebUri").invoke(moduleWeb)) + delimiter +
+                            "web context root : " + getValue(moduleWeb.getClass().getMethod("getContextRoot").invoke(moduleWeb)) + delimiter);
+            }
+        }
+        
+        List securityRoleList = (List) app.getClass().getMethod("getSecurityRole").invoke(app);;
+        if(securityRoleList != null) {
+                buf.append(" [Security Role type]"+delimiter);
+                
+            for(Object securityRole : securityRoleList) {
+                for(Object desc : (List) securityRole.getClass().getMethod("getDescription").invoke(securityRole)) 
+                    buf.append("discription : " + getValue(desc) + delimiter);
+                
+                buf.append("role name : " + getValue(securityRole.getClass().getMethod("getRoleName").invoke(securityRole)) + delimiter);
+            }
+        }
+        
+        return buf.toString();
+    }
+
+    //ejb file pasing
+	public String getEjbXmlSettingInfo(Object ejb, Object weblogic, Object jeus) throws Exception{
+        
+	    StringBuffer buf = new StringBuffer();
+        buf.append("*****ejb-jar.xml Setting Info*****"+delimiter);
+
+        Object enterpriseBean = ejb.getClass().getMethod("getEnterpriseBeans").invoke(ejb);
+        
+        if(enterpriseBean != null) {
+            
+            for(Object o : (List) enterpriseBean.getClass().getMethod("getSessionOrEntityOrMessageDriven").invoke(enterpriseBean)){
+            
+                if(o.getClass().toString().indexOf("Session") > -1) {
+                    Class cls = o.getClass();
+                    String ejbName = getValue(cls.getMethod("getEjbName").invoke(o));
+                    String homeName = getValue(cls.getMethod("getHome").invoke(o));
+                    String remoteName = getValue(cls.getMethod("getRemote").invoke(o));
+                    String ejbclass = getValue(cls.getMethod("getEjbClass").invoke(o));
+                    String transaction = getValue(cls.getMethod("getTransactionType").invoke(o));
+                    
+                    String[] param = new String[]{ejbName, ejbName, homeName, remoteName, ejbclass, 
+                        getValue(cls.getMethod("getSessionType").invoke(o)), transaction};
+                        
+                    buf.append(MessageUtil.getMessage("pdf.message.ejbjar.session", param));
+                    
+                    if(weblogic != null) {
+                        
+                        for(Object o2 : (List) weblogic.getClass().getMethod("getWeblogicEnterpriseBean").invoke(weblogic)){
+                            
+                            Class cls2 = o2.getClass();
+                            if(ejbName.equals(getValue(cls2.getMethod("getEjbName").invoke(o2)))) {
+                                String[] param2 = new String[]{homeName, remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length()), getValue(cls2.getMethod("getJndiName").invoke(o2)), 
+                                        transaction.toUpperCase(), ejbclass.substring(ejbclass.lastIndexOf(".")+1, ejbclass.length()), remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length())};
+                                
+                                    buf.append(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    if(jeus != null) {
+
+                        Object beanList = jeus.getClass().getMethod("getBeanlist").invoke(jeus);
+                        for(Object o2 : (List) beanList.getClass().getMethod("getJeusBean").invoke(beanList)){
+                            
+                            Class cls2 = o2.getClass();
+                            if(ejbName.equals(getValue(cls2.getMethod("getEjbName").invoke(o2)))) {
+                                String[] param2 = new String[]{homeName, remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length()), getValue(cls2.getMethod("getExportName").invoke(o2)), 
+                                        transaction.toUpperCase(), ejbclass.substring(ejbclass.lastIndexOf(".")+1, ejbclass.length()), remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length())};
+                                
+                                buf.append(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
+                            }
+                            
+                        }
+                        
+                    }
+                } else if(o.getClass().toString().indexOf("MessageDriven") > -1) {
+                    
+                } else if(o.getClass().toString().indexOf("Entity") > -1) {
+                    
+                }
+            }
+        }
+        return buf.toString();
+    }
+    
     /**
      * 
      * web.xml 안에 있는 element 가져오기

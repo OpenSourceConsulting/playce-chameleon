@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<application xmlns="http://java.sun.com/xml/ns/j2ee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+             http://java.sun.com/xml/ns/j2ee/application_1_4.xsd"
+             version="1.4">
+
+  <display-name>Ear Security</display-name>
+  <module>
+    <web>
+      <web-uri>admin.war</web-uri>
+      <context-root>admin</context-root>
+    </web>
+  </module>
+  <module>
+    <ejb>ejb1.jar</ejb>
+  </module>
+  <module>
+    <ejb>ejb2.jar</ejb>
+  </module>
+  <module>
+    <web>
+      <web-uri>web.war</web-uri>
+      <context-root>web</context-root>
+    </web>
+  </module>
+  <module>
+    <ejb>ejb.jar</ejb>
+    <alt-dd>altdd.xml</alt-dd>
+  </module>
+  <security-role>
+    <role-name>admin</role-name>
+  </security-role>
+</application>
+    

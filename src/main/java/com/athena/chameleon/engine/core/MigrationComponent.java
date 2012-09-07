@@ -38,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
-import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
@@ -197,9 +196,9 @@ public class MigrationComponent {
      * application.xml pasing
      *
      * @param xmlFile application.xml file
-     * @return ApplicationType
+     * @return Object
      */
-    public ApplicationType applicationXmlPasing(File xmlFile) {
+    public Object applicationXmlPasing(File xmlFile) {
         this.applicationXmlFile = xmlFile;
         return applicationXmlPasing();
     }
@@ -208,24 +207,21 @@ public class MigrationComponent {
      * 
      * application.xml pasing
      *
-     * @return ApplicationType
+     * @return Object
      */
-    public ApplicationType applicationXmlPasing() {
+    public Object applicationXmlPasing() {
         
     	if(applicationXmlFile == null)
     		return null;
-    	
-    	ApplicationType app = null;
+
+        Object app = null;
+        Unmarshaller unmarshaller;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application");
-            JAXBElement<?> result = (JAXBElement<?>) unmarshaller.unmarshal(applicationXmlFile);
-            
-            app = (ApplicationType)result.getValue();
-            
-        } catch(JAXBException je) {
-            je.printStackTrace();
-        } catch(Exception e) {
-            e.printStackTrace();
+            //application.xml 1.4
+            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application.v1_4");
+            app = ((JAXBElement<?>) unmarshaller.unmarshal(applicationXmlFile)).getValue();
+        } catch(Exception e1) {
+            e1.printStackTrace();
         }
         return app;
     }
@@ -252,22 +248,21 @@ public class MigrationComponent {
         
     	if(ejbXmlFile == null)
     		return null;
-    	
-    	Object ejb = null;
+            
+        Object ejb = null;
+        Unmarshaller unmarshaller;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_1");
-            Object result = unmarshaller.unmarshal(ejbXmlFile);
-            
-            if(result instanceof JAXBElement<?>) {
-                return ((JAXBElement<?>) result).getValue();
-            } else {
-                return result;
+            //ejb-jar.xml 2.1
+            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_1");
+            ejb = ((JAXBElement<?>) unmarshaller.unmarshal(ejbXmlFile)).getValue();
+        } catch(Exception e1) {
+            try {
+                //ejb-jar.xml 2.0
+                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_0");
+                ejb = unmarshaller.unmarshal(ejbXmlFile);
+            } catch(Exception e2) {
+                e2.printStackTrace();
             }
-            
-        } catch(JAXBException je) {
-            je.printStackTrace();
-        } catch(Exception e) {
-            e.printStackTrace();
         }
         return ejb;
     }
@@ -295,22 +290,18 @@ public class MigrationComponent {
         if(weblogicEjbXmlFile == null)
             return null;
         
+        Object result = null;
+        Unmarshaller unmarshaller;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.weblogicejbjar");
-            Object result = unmarshaller.unmarshal(weblogicEjbXmlFile);
-            
-            if(result instanceof JAXBElement<?>) {
-                return ((JAXBElement<?>) result).getValue();
-            } else {
-                return result;
-            }
-            
+            //weblogic-ejb-jar.xml 9.0
+            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.weblogicejbjar.v9_0");
+            result = ((JAXBElement<?>) unmarshaller.unmarshal(weblogicEjbXmlFile)).getValue();
         } catch(JAXBException je) {
             je.printStackTrace();
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return result;
     }
 
     /**
@@ -336,22 +327,22 @@ public class MigrationComponent {
         if(jeusEjbXmlFile == null)
             return null;
         
+        Object result = null;
+        Unmarshaller unmarshaller;
         try {
-            Unmarshaller unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.jeusejbdd.v6_0");
-            Object result = unmarshaller.unmarshal(jeusEjbXmlFile);
-            
-            if(result instanceof JAXBElement<?>) {
-                return ((JAXBElement<?>) result).getValue();
-            } else {
-                return result;
+            //jeus-ejb-jar.xml 6.0
+            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.jeusejbdd.v6_0");
+            result = ((JAXBElement<?>) unmarshaller.unmarshal(jeusEjbXmlFile)).getValue();
+        } catch(Exception e1) {
+            try {
+                //jeus-ejb-jar.xml 5.0
+                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.jeusejbdd.v5_0");
+                result = ((JAXBElement<?>) unmarshaller.unmarshal(jeusEjbXmlFile)).getValue();
+            } catch(Exception e2) {
+                e2.printStackTrace();
             }
-            
-        } catch(JAXBException je) {
-            je.printStackTrace();
-        } catch(Exception e) {
-            e.printStackTrace();
         }
-        return null;
+        return result;
     }
        
     
