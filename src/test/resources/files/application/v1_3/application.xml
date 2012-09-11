@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE application PUBLIC "-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN" "http://java.sun.com/dtd/application_1_3.dtd"> 
+
+<application> 
+
+  <display-name>Shark EAR</display-name> 
+  <description>shark ear</description> 
+
+  <module> 
+    <ejb>sharkBeans.jar</ejb> 
+  </module> 
+  
+  <module> 
+    <java>client1.jar</java> 
+  </module> 
+  
+  <module> 
+     <web> 
+        <web-uri>client2.war</web-uri> 
+        <context-root>shark</context-root> 
+     </web> 
+  </module> 
+
+</application> 
