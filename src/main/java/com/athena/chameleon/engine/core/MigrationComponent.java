@@ -78,6 +78,7 @@ public class MigrationComponent {
      * @param file diractory file
      * @throws Exception
      */
+    @SuppressWarnings("resource")
     public void setMigrationFileList(File file) throws Exception {
 
         Pattern p = Pattern.compile(".*test.*"); //추후 pattern 변경

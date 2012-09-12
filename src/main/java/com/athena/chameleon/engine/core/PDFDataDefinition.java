@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @Component("pdfDataDefinition")
 public class PDFDataDefinition {
 
