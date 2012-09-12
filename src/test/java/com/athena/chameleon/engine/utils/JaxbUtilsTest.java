@@ -28,9 +28,9 @@ import org.junit.Test;
 
 import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType;
-import com.athena.chameleon.engine.entity.xml.jeusejbdd.v5_0.JeusEjbDdType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType;
+import com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType;
-import com.athena.chameleon.engine.entity.xml.weblogicejbjar.v9_0.WeblogicEjbJarType;
 
 /**
  * <pre>
