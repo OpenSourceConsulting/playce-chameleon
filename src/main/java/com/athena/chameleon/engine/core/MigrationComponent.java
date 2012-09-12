@@ -300,7 +300,7 @@ public class MigrationComponent {
         Unmarshaller unmarshaller;
         try {
             //weblogic-ejb-jar.xml 9.0
-            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.weblogicejbjar.v9_0");
+            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0");
             result = ((JAXBElement<?>) unmarshaller.unmarshal(weblogicEjbXmlFile)).getValue();
         } catch(JAXBException je) {
             je.printStackTrace();
@@ -337,12 +337,12 @@ public class MigrationComponent {
         Unmarshaller unmarshaller;
         try {
             //jeus-ejb-jar.xml 6.0
-            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.jeusejbdd.v6_0");
+            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v6_0");
             result = ((JAXBElement<?>) unmarshaller.unmarshal(jeusEjbXmlFile)).getValue();
         } catch(Exception e1) {
             try {
                 //jeus-ejb-jar.xml 5.0
-                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.jeusejbdd.v5_0");
+                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0");
                 result = ((JAXBElement<?>) unmarshaller.unmarshal(jeusEjbXmlFile)).getValue();
             } catch(Exception e2) {
                 e2.printStackTrace();
