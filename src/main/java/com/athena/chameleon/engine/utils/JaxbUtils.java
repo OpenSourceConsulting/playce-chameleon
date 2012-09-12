@@ -379,6 +379,44 @@ public class JaxbUtils {
 	 * <p>
 	 * <pre>
 	 * Request request = ...; // Request XML에 대한 JAXB DOM Root Object
+	 * String xml = JaxbUtils.marshal("com.athena.chameleon.engine.entity", request);
+	 * </pre>
+	 * </p>
+	 * <b>이 메소드를 반복적으로 호출하면 성능 문제가 발생한다. {@link javax.xml.bind.JAXBContext#createMarshaller()} 및 {@link javax.xml.bind.JAXBContext#createUnmarshaller()} 메소는
+	 * 반복적으로 호출하는 경우 성능 문제를 발생하기 때문이다.</b>
+	 *
+	 * @param packageName 패키지명 (예; "<tt>com.skt.isf.sal.jaxb.request</tt>")
+	 * @param object      XML로 변환하고자 하는 JAXB DOM Object
+	 * @param header	  헤더 정보(any additional PIs, comments, DOCTYPE etc.)
+	 * @return String type의 XML데이터
+	 * @throws javax.xml.bind.JAXBException 마샬링 할 수 없는 경우
+	 * @throws java.io.IOException          XML 파일을 로딩할 수
+	 */
+	public static String marshal(String packageName, Object object, String header) throws JAXBException, IOException {
+		Marshaller marshaller = null;
+		StringWriter writer = null;
+		try {
+			marshaller = createMarshaller(packageName);
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			
+            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
+            marshaller.setProperty("com.sun.xml.bind.xmlHeaders", header + "\n");
+			
+			writer = new StringWriter();
+			marshaller.marshal(object, writer);
+			return writer.toString();
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
+	}//end of marshal()
+
+	/**
+	 * JAXB DOM Object를 XML로 변환한다.
+	 * <p>
+	 * <pre>
+	 * Request request = ...; // Request XML에 대한 JAXB DOM Root Object
 	 * String xml = JaxbUtils.marshal(marshaller, request);
 	 * </pre>
 	 * </p>
