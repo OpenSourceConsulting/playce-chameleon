@@ -10,14 +10,9 @@
     <bean id="rejectedExecutionHandler" class="com.athena.chameleon.engine.threadpool.handler.ChameleonRejectedExecutionHandler"/>
     
 	<bean id="taskExecutor" class="com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor">
-        <property name="corePoolSize" value="1" />
-        <property name="maxPoolSize" value="1" />
-        <property name="queueCapacity" value="5" />
-        <!-- 
         <property name="corePoolSize" value="100" />
         <property name="maxPoolSize" value="1000" />
         <property name="queueCapacity" value="10000" />
-        -->
         <property name="rejectedExecutionHandler" ref="rejectedExecutionHandler" />
         <property name="monitor" ref="threadPoolMonitor" />
     </bean>  

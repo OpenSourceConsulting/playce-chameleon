@@ -43,12 +43,21 @@ import com.athena.chameleon.engine.threadpool.task.BaseTask;
 public class ChameleonThreadPoolExecutorTest {
 	
 	private ChameleonThreadPoolExecutor executor;
+	
 	private static final int CNT = 10;
+	private int corePoolSize = 1;
+	private int maxPoolSize = 1;
+	private int queueCapacity = 5;
 
 	@Before
 	public void setUp() throws Exception {
 		ApplicationContext context = new FileSystemXmlApplicationContext("file:./src/main/resources/spring/context-threadpool.xml");
     	executor = (ChameleonThreadPoolExecutor)context.getBean("taskExecutor");
+    	
+    	executor.setCorePoolSize(corePoolSize);
+    	executor.setMaxPoolSize(maxPoolSize);
+    	executor.setQueueCapacity(queueCapacity);
+    	executor.initialize();
 	}
 
 	@Test
