@@ -35,7 +35,6 @@ import com.athena.chameleon.engine.threadpool.task.BaseTask;
 /**
  * <pre>
  * ChameleonTaskExecutor를 위한 JUnit Test 클래스
- * JUnit Test로 실행되는 것과 Java Application으로 실행되는 것에 차이가 있음.
  * </pre>
  * 
  * @author Sang-cheon Park
@@ -44,12 +43,21 @@ import com.athena.chameleon.engine.threadpool.task.BaseTask;
 public class ChameleonThreadPoolExecutorTest {
 	
 	private ChameleonThreadPoolExecutor executor;
+	
 	private static final int CNT = 10;
+	private int corePoolSize = 1;
+	private int maxPoolSize = 1;
+	private int queueCapacity = 5;
 
 	@Before
 	public void setUp() throws Exception {
 		ApplicationContext context = new FileSystemXmlApplicationContext("file:./src/main/resources/spring/context-threadpool.xml");
     	executor = (ChameleonThreadPoolExecutor)context.getBean("taskExecutor");
+    	
+    	executor.setCorePoolSize(corePoolSize);
+    	executor.setMaxPoolSize(maxPoolSize);
+    	executor.setQueueCapacity(queueCapacity);
+    	executor.initialize();
 	}
 
 	@Test
@@ -63,6 +71,10 @@ public class ChameleonThreadPoolExecutorTest {
 			executor.execute(taskList);
 
 			executor.getExecutor().shutdown();
+			
+			while(!executor.getExecutor().isTerminated()) {
+				Thread.sleep(100);
+			}
 		} catch (Exception e) {
 			fail("test failed.");
 		}
@@ -76,6 +88,10 @@ public class ChameleonThreadPoolExecutorTest {
 			}
 
 			executor.getExecutor().shutdown();
+			
+			while(!executor.getExecutor().isTerminated()) {
+				Thread.sleep(100);
+			}
 		} catch (Exception e) {
 			fail("test failed.");
 		}
@@ -121,14 +137,14 @@ class MockTask extends BaseTask {
 	protected void taskRun() {
 		try {
 			Thread.sleep(5000);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			logger.error("[{}] is not completed!", this.taskName);
 			
 			if(e instanceof InterruptedException) {
 				logger.error("InterruptedException has occurred.", e);
 			} else {
-				// exception propagate to catch at ChameleonTaskExceptionHandler
-				throw new RuntimeException(e.getMessage());
+				// exception propagate to handle at ChameleonTaskExceptionHandler
+				throw new RuntimeException(e);
 			}
 		}		
 	}

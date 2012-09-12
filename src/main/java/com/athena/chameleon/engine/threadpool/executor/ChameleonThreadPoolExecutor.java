@@ -138,13 +138,22 @@ public class ChameleonThreadPoolExecutor implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		initialize();
+	}//end of afterPropertiesSet()
+	
+	/**
+	 * <pre>
+	 * executor 초기화
+	 * </pre> 
+	 */
+	public void initialize() {
 		executor = new ThreadPoolExecutor(corePoolSize, maxPoolSize,
 				keepAliveTime, TimeUnit.SECONDS,
 				new ArrayBlockingQueue<Runnable>(queueCapacity),
 				rejectedExecutionHandler);
 		
 		monitor.setExecutor(executor);
-	}//end of afterPropertiesSet()
+	}//end of initialize()
     
     /**
      * <pre>
