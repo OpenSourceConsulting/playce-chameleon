@@ -337,14 +337,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MethodParamsType }
-     * 
-     */
-    public MethodParamsType createMethodParamsType2() {
-        return new MethodParamsType();
-    }
-
-    /**
      * Create an instance of {@link PropertyNamevalueType }
      * 
      */
@@ -462,14 +454,6 @@ public class ObjectFactory {
      */
     public JmsClientIdType createJmsClientIdType() {
         return new JmsClientIdType();
-    }
-
-    /**
-     * Create an instance of {@link TrueFalseType }
-     * 
-     */
-    public TrueFalseType createTrueFalseType2() {
-        return new TrueFalseType();
     }
 
     /**

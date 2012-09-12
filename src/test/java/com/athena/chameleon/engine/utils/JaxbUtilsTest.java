@@ -27,6 +27,7 @@ import java.io.File;
 import org.junit.Test;
 
 import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
+import com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType;
 import com.athena.chameleon.engine.entity.xml.jeusejbdd.v5_0.JeusEjbDdType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType;
 import com.athena.chameleon.engine.entity.xml.weblogicejbjar.v9_0.WeblogicEjbJarType;
@@ -106,6 +107,24 @@ public class JaxbUtilsTest {
             System.out.println(obj.getClass().getCanonicalName());
             
             String xmlData = JaxbUtils.marshal(WeblogicEjbJarType.class.getPackage().getName(), obj, new String[]{"http://www.bea.com/ns/weblogic/90 http://www.bea.com/ns/weblogic/910/weblogic-ejb-jar.xsd"});
+            System.out.println(xmlData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error");
+        }
+    }
+
+    @Test
+    public void weblogicApplicationV10Test() {
+        String xml = this.getClass().getResource("/files/application/weblogic/weblogic-application.xml").getFile();
+        File file = new File(xml);
+        
+        try {
+            Object obj = JaxbUtils.unmarshal(WeblogicApplicationType.class.getPackage().getName(), this.getClass().getResource("/files/application/weblogic/").getFile(), file.getName());
+            
+            System.out.println(obj.getClass().getCanonicalName());
+            
+            String xmlData = JaxbUtils.marshal(WeblogicApplicationType.class.getPackage().getName(), obj, new String[]{"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_5.xsd", "http://www.bea.com/ns/weblogic/weblogic-application http://www.bea.com/ns/weblogic/weblogic-application/1.0/weblogic-application.xsd"});
             System.out.println(xmlData);
         } catch (Exception e) {
             e.printStackTrace();
