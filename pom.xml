@@ -256,7 +256,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>${artifactId}-jar-with-dependencies</finalName>
+                            <finalName>${project.artifactId}-jar-with-dependencies</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/spring.handlers</resource>
@@ -381,7 +381,7 @@
 									<manifest>
 										<attribute name="Main-Class" value="com.athena.chameleon.engine.Starter" />
 									</manifest>
-									<metainf dir="target/${artifactId}-${version}/META-INF" includes="spring.*" />
+									<metainf dir="target/${project.artifactId}-${project.version}/META-INF" includes="spring.*" />
 								</jar>
 								
 								<echo>Athena Chameleon 실행 스크립트를 복사합니다.</echo>
