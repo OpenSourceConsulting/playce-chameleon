@@ -219,9 +219,15 @@ public class MigrationComponent {
         try {
             //application.xml 1.4
             unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application.v1_4");
-            app = ((JAXBElement<?>) unmarshaller.unmarshal(applicationXmlFile)).getValue();
+            app = unmarshaller.unmarshal(applicationXmlFile);
         } catch(Exception e1) {
-            e1.printStackTrace();
+            try {
+                //application.xml 1.3
+                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application.v1_3");
+                app = unmarshaller.unmarshal(applicationXmlFile);
+            } catch(Exception e2) {
+                e2.printStackTrace();
+            }
         }
         return app;
     }

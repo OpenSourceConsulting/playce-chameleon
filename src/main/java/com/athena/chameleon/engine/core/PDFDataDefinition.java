@@ -91,39 +91,72 @@ public class PDFDataDefinition {
         StringBuffer buf = new StringBuffer();
         buf.append("*****application.xml Setting Info*****"+delimiter);
         
-        
-        List moduleList = (List) app.getClass().getMethod("getModule").invoke(app);
-        
-        if(moduleList != null) {
-            buf.append(" [module type]"+delimiter);
+        if(app instanceof JAXBElement<?>) {
+            app = ((JAXBElement<?>) app).getValue();
             
-            for(Object module : moduleList) {
-                Object moduleEjb = module.getClass().getMethod("getEjb").invoke(module);
-                Object moduleJava = module.getClass().getMethod("getJava").invoke(module);
-                Object moduleWeb = module.getClass().getMethod("getWeb").invoke(module);
+            List moduleList = (List) app.getClass().getMethod("getModule").invoke(app);
+            
+            if(moduleList != null) {
+                buf.append(" [module type]"+delimiter);
                 
-                if(moduleEjb != null)
-                    buf.append("ejb : " + getValue(moduleEjb) + delimiter);
-                else if(moduleJava != null) 
-                    buf.append("java : " + getValue(moduleJava) + delimiter);
-                else if(moduleWeb != null) 
-                    buf.append("web url : " + getValue(moduleWeb.getClass().getMethod("getWebUri").invoke(moduleWeb)) + delimiter +
-                            "web context root : " + getValue(moduleWeb.getClass().getMethod("getContextRoot").invoke(moduleWeb)) + delimiter);
+                for(Object module : moduleList) {
+                    Object moduleEjb = module.getClass().getMethod("getEjb").invoke(module);
+                    Object moduleJava = module.getClass().getMethod("getJava").invoke(module);
+                    Object moduleWeb = module.getClass().getMethod("getWeb").invoke(module);
+                    
+                    if(moduleEjb != null)
+                        buf.append("ejb : " + getValue(moduleEjb) + delimiter);
+                    else if(moduleJava != null) 
+                        buf.append("java : " + getValue(moduleJava) + delimiter);
+                    else if(moduleWeb != null) 
+                        buf.append("web url : " + getValue(moduleWeb.getClass().getMethod("getWebUri").invoke(moduleWeb)) + delimiter +
+                                "web context root : " + getValue(moduleWeb.getClass().getMethod("getContextRoot").invoke(moduleWeb)) + delimiter);
+                }
+            }
+            
+            List securityRoleList = (List) app.getClass().getMethod("getSecurityRole").invoke(app);
+            if(securityRoleList != null) {
+                    buf.append(" [Security Role type]"+delimiter);
+                    
+                for(Object securityRole : securityRoleList) {
+                    for(Object desc : (List) securityRole.getClass().getMethod("getDescription").invoke(securityRole)) 
+                        buf.append("discription : " + getValue(desc) + delimiter);
+                    
+                    buf.append("role name : " + getValue(securityRole.getClass().getMethod("getRoleName").invoke(securityRole)) + delimiter);
+                }
+            }
+        } else {
+
+            List moduleList = (List) app.getClass().getMethod("getModule").invoke(app);
+            
+            if(moduleList != null) {
+                buf.append(" [module type]"+delimiter);
+                
+                for(Object module : moduleList) {
+                    
+                        for(Object o : (List) module.getClass().getMethod("getConnectorOrEjbOrJavaOrWeb").invoke(module)) {
+                            
+                            if(o.getClass().toString().indexOf("Ejb") > -1) 
+                                buf.append("ejb : " + getValue(o) + delimiter);
+                            else if(o.getClass().toString().indexOf("Java") > -1)
+                                buf.append("java : " + getValue(o) + delimiter);
+                            else if(o.getClass().toString().indexOf("Web") > -1)
+                                buf.append("web url : " + getValue(o.getClass().getMethod("getWebUri").invoke(o)) + delimiter +
+                                        "web context root : " + getValue(o.getClass().getMethod("getContextRoot").invoke(o)) + delimiter);
+                        }
+                }
+            }
+            
+            List securityRoleList = (List) app.getClass().getMethod("getSecurityRole").invoke(app);
+            if(securityRoleList != null) {
+                    buf.append(" [Security Role type]"+delimiter);
+                    
+                for(Object securityRole : securityRoleList) {
+                    buf.append("discription : " + getValue(securityRole.getClass().getMethod("getDescription").invoke(securityRole)) + delimiter);
+                    buf.append("role name : " + getValue(securityRole.getClass().getMethod("getRoleName").invoke(securityRole)) + delimiter);
+                }
             }
         }
-        
-        List securityRoleList = (List) app.getClass().getMethod("getSecurityRole").invoke(app);;
-        if(securityRoleList != null) {
-                buf.append(" [Security Role type]"+delimiter);
-                
-            for(Object securityRole : securityRoleList) {
-                for(Object desc : (List) securityRole.getClass().getMethod("getDescription").invoke(securityRole)) 
-                    buf.append("discription : " + getValue(desc) + delimiter);
-                
-                buf.append("role name : " + getValue(securityRole.getClass().getMethod("getRoleName").invoke(securityRole)) + delimiter);
-            }
-        }
-        
         return buf.toString();
     }
 
@@ -185,9 +218,9 @@ public class PDFDataDefinition {
                         
                     }
                 } else if(o.getClass().toString().indexOf("MessageDriven") > -1) {
-                    
+                    //pdf 출력 양식 나오면 작업
                 } else if(o.getClass().toString().indexOf("Entity") > -1) {
-                    
+                  //pdf 출력 양식 나오면 작업
                 }
             }
         }
