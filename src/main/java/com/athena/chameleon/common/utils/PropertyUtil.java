@@ -54,7 +54,7 @@ public class PropertyUtil {
         	prop.load(PropertyUtil.class.getResourceAsStream("/filtering.properties"));
         	properties = (Properties[])ArrayUtils.add(properties, prop);
         	
-        	File file = new File(PropertyUtil.class.getClass().getResource("/config/").getFile());
+        	File file = new File(PropertyUtil.class.getResource("/config/").getFile());
         	File[] files = null;
         	
         	if(file != null && file.isDirectory()) {

@@ -64,15 +64,13 @@ public class MigrationComponent {
 	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
 	public String unzipDirPath;
 
-	@Value("#{contextProperties['unzip.en.encoding']}")
-	public String enEncoding;
-
     public void unzipFile(String zipFilePath) throws Exception {
     	String tmpFileDir = unzipDirPath + File.separator + System.currentTimeMillis();
-        String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir, enEncoding);
+        String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir);
         
-        this.rootPath = unzipPath;
         this.unzipFile = new File(unzipPath);
+        this.rootPath = unzipFile.getAbsolutePath();
+        
     }
 
     /**

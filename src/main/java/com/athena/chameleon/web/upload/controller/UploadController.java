@@ -83,10 +83,13 @@ public class UploadController {
     		return "redirect:/upload.do?method=show";
         }
     	
+    	System.out.println(upload.toString());
+    	
         File projectFile = null;
+        File deployFile = null;
+        String defaultPath = uploadPath+File.separator+System.currentTimeMillis()+File.separator;
         try {
-        	projectFile = new File(uploadPath+upload.getProjectSrc().getOriginalFilename());
-
+        	projectFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
             if (!projectFile.exists()) {
                 if (!projectFile.mkdirs()) {
                     throw new Exception("Fail to create a directory for attached file [" + projectFile + "]");
@@ -97,12 +100,21 @@ public class UploadController {
             upload.getProjectSrc().transferTo(projectFile);
             
             component = new MigrationComponent();
-        	System.out.println("aaaaa:::"+projectFile);
-        	System.out.println("aaaaa:::"+projectFile.getAbsolutePath());
         	component.unzipFile(projectFile.getAbsolutePath());
         	component.setMigrationFileList();
 
             List<MigrationFile> list = component.getMigrationFileList();
+            System.out.println(pdfData.getMigrationFileList(list));
+
+        	deployFile = new File(defaultPath+upload.getDeploySrc().getOriginalFilename());
+        	deployFile.deleteOnExit();
+            upload.getDeploySrc().transferTo(deployFile);
+            
+            component = new MigrationComponent();
+        	component.unzipFile(deployFile.getAbsolutePath());
+        	component.setMigrationFileList();
+
+            list = component.getMigrationFileList();
             System.out.println(pdfData.getMigrationFileList(list));
 
         }
