@@ -32,6 +32,7 @@ public class Genre implements Serializable {
     private Set<Movie> movies = new HashSet<Movie>(0);
 
     public Genre() {
+    	
     }
 
     public Genre(String genreId, String name) {
