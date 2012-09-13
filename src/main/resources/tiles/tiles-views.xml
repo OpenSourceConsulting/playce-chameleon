@@ -36,8 +36,8 @@
 
     <!-- empty -->
     <definition name=".emptyTemplate" template="/WEB-INF/jsp/layout/empty.jsp">
-        <put-attribute name="css" value="/WEB-INF/jsp/layout/css/jss-css.jsp" />
-        <put-attribute name="js" value="/WEB-INF/jsp/layout/js/jss-js.jsp" />
+        <put-attribute name="css" value="/WEB-INF/jsp/layout/css/chameleon-css.jsp" />
+        <put-attribute name="js" value="/WEB-INF/jsp/layout/js/chameleon-js.jsp" />
         <put-attribute name="contents" value="/WEB-INF/jsp/layout/part/blank.jsp" />
     </definition>
         
@@ -102,6 +102,10 @@
     
     <definition name="/ifrm/*/*/*" extends=".emptyTemplate">
         <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="/ifrm/*/*" extends=".emptyTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}.jsp" />
     </definition>
     
     <definition name="/error/*" extends=".emptyTemplate">

@@ -44,9 +44,9 @@ import com.ibm.icu.text.CharsetDetector;
  * @version 1.0
  */
 
-public class ZipUtil {
+public class FileUtil {
 
-    private static final Log logger = LogFactory.getLog(ZipUtil.class);
+    private static final Log logger = LogFactory.getLog(FileUtil.class);
     
     /**
      * 
@@ -197,5 +197,5 @@ public class ZipUtil {
             }
         }
     }
-    
+   
 }

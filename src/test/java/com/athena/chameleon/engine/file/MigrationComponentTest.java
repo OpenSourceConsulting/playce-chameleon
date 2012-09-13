@@ -39,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDataDefinition;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
-import com.athena.chameleon.engine.utils.ZipUtil;
+import com.athena.chameleon.engine.utils.FileUtil;
 
 /**
  * This FileUnzipTest class is a Test Case class for FileUnzip.
@@ -75,7 +75,7 @@ public class MigrationComponentTest {
     public void unzipTest() throws Exception  {
         String zipFilePath = this.getClass().getResource("/files/test.zip").getFile();
         String tmpFileDir = unzipDirPath + File.separator + System.currentTimeMillis();
-        String unzipPath = ZipUtil.extract(zipFilePath, tmpFileDir);
+        String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir);
         
         File unzipFile = new File(unzipPath);
         component = new MigrationComponent();

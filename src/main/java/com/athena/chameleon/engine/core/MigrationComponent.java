@@ -34,11 +34,13 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.chameleon.engine.utils.FileUtil;
 
 /**
  * Migration 을 위한 Context
@@ -51,12 +53,38 @@ import com.athena.chameleon.engine.utils.JaxbUtils;
 public class MigrationComponent {
 
     public String                   rootPath;
+    public File						unzipFile;
     public File                     webXmlFile;
     public File                     applicationXmlFile;
     public File                     ejbXmlFile;
     public File                     weblogicEjbXmlFile;
     public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
+    
+	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
+	public String unzipDirPath;
+
+	@Value("#{contextProperties['unzip.en.encoding']}")
+	public String enEncoding;
+
+    public void unzipFile(String zipFilePath) throws Exception {
+    	String tmpFileDir = unzipDirPath + File.separator + System.currentTimeMillis();
+        String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir, enEncoding);
+        
+        this.rootPath = unzipPath;
+        this.unzipFile = new File(unzipPath);
+    }
+
+    /**
+     * 
+     * file diractory 안에 있는 file list setting 
+     *
+     * @param rootPath 최상위 path
+     * @throws Exception
+     */
+    public void setMigrationFileList() throws Exception {
+    	setMigrationFileList(this.unzipFile, this.rootPath);
+    }
     
     /**
      * 
