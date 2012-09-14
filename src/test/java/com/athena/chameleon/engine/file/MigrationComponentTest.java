@@ -23,6 +23,7 @@ package com.athena.chameleon.engine.file;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,6 +41,12 @@ import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDataDefinition;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.utils.FileUtil;
+import com.athena.chameleon.engine.utils.PDFWriterUtil;
+import com.itextpdf.text.Chapter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Section;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * This FileUnzipTest class is a Test Case class for FileUnzip.
@@ -91,6 +98,44 @@ public class MigrationComponentTest {
         
         // 테스트 종료 후 압축해제 디렉토리 제거
         deleteDirectory(unzipFile);
+    }
+    
+    @Test
+    public void pdfWriterTest() throws Exception {
+
+        Document pdf = new Document(PageSize.A4);
+        PdfWriter.getInstance(pdf, new FileOutputStream(unzipDirPath+File.separator+"test.pdf"));
+        pdf.open();
+        
+        Chapter chapter1 = PDFWriterUtil.getChapter("마이그레이션의개요", 1);
+        chapter1.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));
+        chapter1.add(PDFWriterUtil.getDefault("WAS서버에서작동되는업무애플리케이션을공개 SW기반의 "));
+        chapter1.add(PDFWriterUtil.getDefault("WAS에서작동이되는변경작업에대한결과산출물로툴에의해자동으로생성된보고서입니다."));
+        
+        Section section1_1 =  PDFWriterUtil.getSection(chapter1, "목표기대치");
+        section1_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));
+        section1_1.add(PDFWriterUtil.getDefault("작동을목표로하고있습니다"));
+        
+        Section section1_2 =  PDFWriterUtil.getSection(chapter1, "보고서의범위");
+        section1_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
+        
+        pdf.add(chapter1);
+
+        Chapter chapter2 = PDFWriterUtil.getChapter("마이그레이션의개요", 2);
+        chapter2.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));
+        chapter2.add(PDFWriterUtil.getDefault("WAS서버에서작동되는업무애플리케이션을공개 SW기반의 "));
+        chapter2.add(PDFWriterUtil.getDefault("WAS에서작동이되는변경작업에대한결과산출물로툴에의해자동으로생성된보고서입니다."));
+        
+        Section section2_1 =  PDFWriterUtil.getSection(chapter2, "목표기대치");
+        section2_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));
+        section2_1.add(PDFWriterUtil.getDefault("작동을목표로하고있습니다"));
+        
+        Section section2_2 =  PDFWriterUtil.getSection(chapter2, "보고서의범위");
+        section2_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
+        
+        pdf.add(chapter2);
+        
+        pdf.close();
     }
     
     public void fileAsset(List<MigrationFile> list) throws Exception {
