@@ -56,6 +56,7 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
 
     public void onChapter(PdfWriter writer, Document document,
             float position, Paragraph title) {
+        
         titles.add(new Paragraph(title.getContent(), new Font(bfKorean, 10)));
     }
 

@@ -84,6 +84,7 @@ public class MigrationComponentTest {
     public void unzipTest() throws Exception  {
         String zipFilePath = this.getClass().getResource("/files/test.zip").getFile();
         String tmpFileDir = unzipDirPath + File.separator + System.currentTimeMillis();
+        /*
         String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir);
         
         File unzipFile = new File(unzipPath);
@@ -99,7 +100,7 @@ public class MigrationComponentTest {
         ejbXmlPasing(component.ejbXmlPasing(), component.weblogicEjbXmlPasing(), component.jeusEjbXmlPasing());
         
         // 테스트 종료 후 압축해제 디렉토리 제거
-        deleteDirectory(unzipFile);
+        deleteDirectory(unzipFile);*/
     }
     
     @Test

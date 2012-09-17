@@ -27,10 +27,10 @@ import com.athena.chameleon.engine.core.ChapterSectionTOC;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPageEvent;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
@@ -86,9 +86,13 @@ public class PDFWriterUtil {
     public static void setChapterSectionTOC(Document doc, PdfWriter writer, ChapterSectionTOC event) throws Exception {
         
         doc.newPage();
+        
         int toc = writer.getPageNumber();
         for(Paragraph p : event.titles)
             doc.add(p);
+        
+        for(int i=0;i<50;i++)
+            doc.add(new Paragraph("aaa:"+i));
         
         doc.newPage();
         int total = writer.reorderPages(null);
@@ -101,7 +105,7 @@ public class PDFWriterUtil {
         }
         // apply the new order
         writer.reorderPages(order);
-
+        //writer.
     }
 }
 //end of PDFUtil.java
