@@ -46,6 +46,7 @@ import com.athena.chameleon.engine.utils.PDFWriterUtil;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -139,7 +140,24 @@ public class MigrationComponentTest {
         section2_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
         
         pdf.add(chapter2);
+
+        pdf.newPage();
+        int toc = writer.getPageNumber();
+        for(Paragraph p : tocEvent.titles)
+            pdf.add(p);
         
+        pdf.newPage();
+        int total = writer.reorderPages(null);
+        
+        int[] order = new int[total];
+        for (int i = 0; i < total; i++) {
+            order[i] = i + toc;
+            if (order[i] > total)
+                order[i] -= total;
+        }
+        // apply the new order
+        writer.reorderPages(order);
+
         pdf.close();
     }
     

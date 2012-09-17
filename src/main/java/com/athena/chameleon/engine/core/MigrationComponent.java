@@ -30,21 +30,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
-import com.athena.chameleon.engine.utils.JaxbUtils;
 import com.athena.chameleon.engine.utils.FileUtil;
+import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
  * Migration 을 위한 Context
@@ -64,11 +61,7 @@ public class MigrationComponent {
     public File                     weblogicEjbXmlFile;
     public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
-/*
-    @Inject
-    @Named("pdfDataDefinition")
-    private PDFDataDefinition pdfData;
-*/
+
 	public Migration executeMigration(CommonsMultipartFile commFile) {
 	    
 	    if(commFile == null || commFile.getSize() == 0L)
