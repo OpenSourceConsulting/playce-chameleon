@@ -23,11 +23,15 @@ package com.athena.chameleon.engine.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.athena.chameleon.engine.core.ChapterSectionTOC;
 import com.itextpdf.text.Chapter;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPageEvent;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * PDF Writer 유틸 클래스
@@ -77,6 +81,27 @@ public class PDFWriterUtil {
         Section section = chapter.addSection(sectionPh);
         
         return section;
+    }
+    
+    public static void setChapterSectionTOC(Document doc, PdfWriter writer, ChapterSectionTOC event) throws Exception {
+        
+        doc.newPage();
+        int toc = writer.getPageNumber();
+        for(Paragraph p : event.titles)
+            doc.add(p);
+        
+        doc.newPage();
+        int total = writer.reorderPages(null);
+        
+        int[] order = new int[total];
+        for (int i = 0; i < total; i++) {
+            order[i] = i + toc;
+            if (order[i] > total)
+                order[i] -= total;
+        }
+        // apply the new order
+        writer.reorderPages(order);
+
     }
 }
 //end of PDFUtil.java

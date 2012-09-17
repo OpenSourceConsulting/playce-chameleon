@@ -71,7 +71,7 @@ public class UploadController {
     @RequestMapping(params = "method=upload")
     public String upload(Upload upload, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
 
-    	String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
+        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
     	if(loginFlag == null || !loginFlag.equals("Y"))
     		return "redirect:/login.do?method=show";
     	
@@ -84,12 +84,18 @@ public class UploadController {
                 component = new MigrationComponent();
                 Migration entity = component.executeMigration(upload.getProjectSrc());
                 System.out.println(entity.getFileListStr());
+                System.out.println(entity.getWebXmlStr());
+                System.out.println(entity.getApplicationXmlStr());
+                System.out.println(entity.getEjbXmlStr());
             }
             
             if(upload.getDeploySrc() != null && upload.getDeploySrc().getSize() > 0 ) {
                 component = new MigrationComponent();
                 Migration entity = component.executeMigration(upload.getDeploySrc());
                 System.out.println(entity.getFileListStr());
+                System.out.println(entity.getWebXmlStr());
+                System.out.println(entity.getApplicationXmlStr());
+                System.out.println(entity.getEjbXmlStr());
             }
         }
         catch (Exception ex) {
