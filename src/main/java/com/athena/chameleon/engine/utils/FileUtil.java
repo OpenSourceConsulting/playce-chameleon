@@ -198,4 +198,26 @@ public class FileUtil {
         }
     }
    
+
+    /**
+     * <pre>
+     * 생성된 임시 디렉토리를 삭제하기 위해 추가
+     * </pre>
+     * @param path
+     * @return
+     */
+    public static boolean deleteDirectory(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    deleteDirectory(files[i]);
+                } else {
+                    files[i].delete();
+                }
+            }
+        }
+        
+        return (path.delete());
+    }
 }

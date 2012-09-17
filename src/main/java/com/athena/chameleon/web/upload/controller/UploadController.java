@@ -20,10 +20,6 @@
  */
 package com.athena.chameleon.web.upload.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
@@ -37,7 +33,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDataDefinition;
-import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.web.upload.vo.Upload;
 
 /**
@@ -83,51 +79,20 @@ public class UploadController {
     		return "redirect:/upload.do?method=show";
         }
     	
-    	System.out.println(upload.toString());
-    	
-        File projectFile = null;
-        File deployFile = null;
-        List<MigrationFile> list = null;
-        String defaultPath = uploadPath+File.separator+System.currentTimeMillis()+File.separator;
-        try {
+    	try {
             if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
-            	projectFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
-                if (!projectFile.exists()) {
-                    if (!projectFile.mkdirs()) {
-                        throw new Exception("Fail to create a directory for attached file [" + projectFile + "]");
-                    }
-                }
-                
-            	projectFile.deleteOnExit();
-                upload.getProjectSrc().transferTo(projectFile);
-                
                 component = new MigrationComponent();
-            	component.unzipFile(projectFile.getAbsolutePath());
-            	component.setMigrationFileList();
-    
-                list = component.getMigrationFileList();
-                System.out.println(pdfData.getMigrationFileList(list));
+                Migration entity = component.executeMigration(upload.getProjectSrc());
+                System.out.println(entity.getFileListStr());
             }
             
             if(upload.getDeploySrc() != null && upload.getDeploySrc().getSize() > 0 ) {
-            	deployFile = new File(defaultPath+upload.getDeploySrc().getOriginalFilename());
-            	if (!deployFile.exists()) {
-                    if (!deployFile.mkdirs()) {
-                        throw new Exception("Fail to create a directory for attached file [" + deployFile + "]");
-                    }
-                }
-            	deployFile.deleteOnExit();
-                upload.getDeploySrc().transferTo(deployFile);
-                
                 component = new MigrationComponent();
-            	component.unzipFile(deployFile.getAbsolutePath());
-            	component.setMigrationFileList();
-    
-                list = component.getMigrationFileList();
-                System.out.println(pdfData.getMigrationFileList(list));
+                Migration entity = component.executeMigration(upload.getDeploySrc());
+                System.out.println(entity.getFileListStr());
             }
         }
-        catch (IOException ex) {
+        catch (Exception ex) {
         	ex.printStackTrace();
         }
         

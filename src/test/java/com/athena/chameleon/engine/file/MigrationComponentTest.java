@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.athena.chameleon.engine.core.ChapterSectionTOC;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDataDefinition;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
@@ -104,8 +105,12 @@ public class MigrationComponentTest {
     public void pdfWriterTest() throws Exception {
 
         Document pdf = new Document(PageSize.A4);
-        PdfWriter.getInstance(pdf, new FileOutputStream(unzipDirPath+File.separator+"test.pdf"));
+        PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(unzipDirPath+File.separator+"test.pdf"));
+        writer.setLinearPageMode();
+        ChapterSectionTOC tocEvent = new ChapterSectionTOC();
+        writer.setPageEvent(tocEvent);
         pdf.open();
+        
         
         Chapter chapter1 = PDFWriterUtil.getChapter("마이그레이션의개요", 1);
         chapter1.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));

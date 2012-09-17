@@ -30,14 +30,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
+import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 import com.athena.chameleon.engine.utils.FileUtil;
@@ -60,12 +64,58 @@ public class MigrationComponent {
     public File                     weblogicEjbXmlFile;
     public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
-    
-	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
-	public String unzipDirPath;
-
+/*
+    @Inject
+    @Named("pdfDataDefinition")
+    private PDFDataDefinition pdfData;
+*/
+	public Migration executeMigration(CommonsMultipartFile commFile) {
+	    
+	    if(commFile == null || commFile.getSize() == 0L)
+            return null;
+        
+	    Migration entity = null;
+	    
+        try {
+            String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis() + File.separator;
+            
+            File migrationFile = new File(defaultPath+commFile.getOriginalFilename());
+            if (!migrationFile.exists()) {
+                if (!migrationFile.mkdirs()) {
+                    throw new Exception("Fail to create a directory for attached file [" + migrationFile + "]");
+                }
+            }
+            
+            migrationFile.deleteOnExit();
+            commFile.transferTo(migrationFile);
+            
+            String unzipPath = FileUtil.extract(migrationFile.getAbsolutePath(), defaultPath);
+            
+            this.unzipFile = new File(unzipPath);
+            this.rootPath = unzipFile.getAbsolutePath();
+            setMigrationFileList();
+            
+            entity = new Migration();
+            
+            PDFDataDefinition pdfData = new PDFDataDefinition();
+            entity.setFileListStr(pdfData.getMigrationFileList(migrationFileList));
+            entity.setCheckFileListStr(pdfData.getMigrationFileCheckLine(migrationFileList));
+            entity.setWebXmlStr(pdfData.getWebXmlSettingInfo(webXmlPasing()));
+            entity.setApplicationXmlStr(pdfData.getApplicationXmlSettingInfo(applicationXmlPasing()));
+            entity.setEjbXmlStr(pdfData.getEjbXmlSettingInfo(ejbXmlPasing(), weblogicEjbXmlPasing(), jeusEjbXmlPasing()));
+            
+            FileUtil.deleteDirectory(this.unzipFile);
+                
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        return entity;
+            
+	}
+	
     public void unzipFile(String zipFilePath) throws Exception {
-    	String tmpFileDir = unzipDirPath + File.separator + System.currentTimeMillis();
+    	String tmpFileDir = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis();
         String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir);
         
         this.unzipFile = new File(unzipPath);
@@ -80,8 +130,8 @@ public class MigrationComponent {
      * @param rootPath 최상위 path
      * @throws Exception
      */
-    public void setMigrationFileList() throws Exception {
-    	setMigrationFileList(this.unzipFile, this.rootPath);
+    public List<MigrationFile> setMigrationFileList() throws Exception {
+    	return setMigrationFileList(this.unzipFile, this.rootPath);
     }
     
     /**
@@ -92,9 +142,9 @@ public class MigrationComponent {
      * @param rootPath 최상위 path
      * @throws Exception
      */
-    public void setMigrationFileList(File file, String rootPath) throws Exception {
+    public List<MigrationFile> setMigrationFileList(File file, String rootPath) throws Exception {
         this.rootPath = rootPath;
-        setMigrationFileList(file);
+        return setMigrationFileList(file);
     }
     
     /**
@@ -105,7 +155,7 @@ public class MigrationComponent {
      * @throws Exception
      */
     @SuppressWarnings("resource")
-    public void setMigrationFileList(File file) throws Exception {
+    public List<MigrationFile> setMigrationFileList(File file) throws Exception {
 
         Pattern p = Pattern.compile(".*test.*"); //추후 pattern 변경
         Matcher match = null;
@@ -169,6 +219,8 @@ public class MigrationComponent {
                 }
             }
         }
+        
+        return migrationFileList;
     }
 
     /**

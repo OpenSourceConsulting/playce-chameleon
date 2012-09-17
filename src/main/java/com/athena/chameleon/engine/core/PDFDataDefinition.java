@@ -24,6 +24,10 @@ public class PDFDataDefinition {
 	 * @return
 	 */
 	public String getMigrationFileList(List<MigrationFile> fileList) {
+	    
+	    if(fileList == null)
+	        return "";
+	    
 		StringBuffer buf = new StringBuffer();
 		buf.append("*****Migration File List*****"+delimiter);
 		
@@ -34,6 +38,10 @@ public class PDFDataDefinition {
 	}
 	
 	public String getMigrationFileCheckLine(List<MigrationFile> fileList) {
+	    
+	    if(fileList == null)
+            return "";
+	    
 		StringBuffer buf = new StringBuffer();
 		buf.append("*****Migration File Check*****"+delimiter);
 		
@@ -53,6 +61,10 @@ public class PDFDataDefinition {
 	}
 	
 	public String getWebXmlSettingInfo(Object webApp) throws Exception{
+	    
+	    if(webApp == null)
+            return "";
+	    
 		StringBuffer buf = new StringBuffer();
 		buf.append("*****Web.xml Setting Info*****"+delimiter);
 		
@@ -88,6 +100,9 @@ public class PDFDataDefinition {
 
     //application file pasing
 	public String getApplicationXmlSettingInfo(Object app) throws Exception{
+
+        if(app == null)
+            return "";
         
         StringBuffer buf = new StringBuffer();
         buf.append("*****application.xml Setting Info*****"+delimiter);
@@ -163,6 +178,9 @@ public class PDFDataDefinition {
 
     //ejb file pasing
 	public String getEjbXmlSettingInfo(Object ejb, Object weblogic, Object jeus) throws Exception{
+
+        if(ejb == null)
+            return "";
         
 	    StringBuffer buf = new StringBuffer();
         buf.append("*****ejb-jar.xml Setting Info*****"+delimiter);
