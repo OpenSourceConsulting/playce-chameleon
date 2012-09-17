@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="EUC-KR"?>
+<xs:schema
+    xmlns="http://www.tmaxsoft.com/xml/ns/jeus"
+    targetNamespace="http://www.tmaxsoft.com/xml/ns/jeus"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    version="6.0">
+
+	
+	<xs:include schemaLocation="jeus-wssecurity-dd.xsd"/>
+	
+	<xs:complexType name="jeus-webservices-client-ddType">
+	    <xs:sequence>
+			<xs:element name="service-client" type="serviceClientType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 배치되는 웹서비스 클라이언트를 위한 설정들을 표시한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+	    </xs:sequence>
+	</xs:complexType>
+		    
+	<xs:complexType name="serviceClientType">
+		<xs:sequence>
+			<xs:element name="service-ref-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: WSDL 파일에서 관련된 웹서비스 엔드포인트 이름이다.
+                                <service-ref-name>은 표준 배치 서술자 web.xml 혹은 ejb-jar.xml의 <service-ref-name>에 상응한다. 
+                        [Dependency]:/web-app/service-ref/service-ref-name
+                                     /ejb-jar/enterprise-beans/session/service-ref/service-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+			<xs:element name="port-info" type="portInfoType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 배치되는 웹서비스 클라이언트가 호출하는 웹서비스 포트 정보를 표시한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+			<!-- service-impl-class : determined in the deployment time -->
+			<xs:element name="service-impl-class" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 웹서비스 클라이언트를 위한 서비스 구현체를 표시한다.
+                                배치 시에 자동 생성되므로 웹서비스 배치자가 설정할 필요가 없다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+			<xs:element name="wsdl-override" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: <service-ref>의 <wsdl-file>을 대체하기 위한 WSDL 파일의 위치를 표시한다.
+                                표시된 위치는 유효한 URL이어야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+			<xs:element name="require-dynamic-proxy" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: port component link 사용시에 ServiceReferenceFactory에서 dynamic proxy를 쓰도록 지시한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+			<!-- service-qname : determined in the deployment time -->
+			<xs:element name="service-qname" type="xs:QName" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: WSDL의 WSDL service정의를 표시한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+			<xs:element name="call-property" type="nameValueType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: WSDL service에서 사용하는 모든 javax.xml.rpc.Call 객체에 설정하는 property들을 표시한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="portInfoType">
+	    <xs:sequence>
+			<xs:element name="service-endpoint-interface" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: WSDL port의 서비스 엔드포인드 인터페이스를 나타내는 클래스를 표시한다.
+                            <service-ref>에서 <port-component-ref>의 <service-endpoint-interface>에 상응한다.
+                        [Dependency]:/web-app/service-ref/port-component-ref/service-endpoint-interface
+                                     /ejb-jar/enterprise-beans/session/service-ref/port-component-ref/service-endpoint-interface
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+	        <xs:element name="wsdl-port" type="xs:QName" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: <port-info>와 연결된 WSDL port 정의를 표시한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="stub-property" type="nameValueType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 특정 port에서 사용하는 javax.xml.rpc.Stub 객체에 설정하는 property들을 표시한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="call-property" type="nameValueType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 특정 port에서 사용하는 javax.xml.rpc.Call 객체에 설정하는 property들을 표시한다.
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="security" type="webservice-securityType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 웹서비스의 보안(WS-Security)을 위한 웹 서비스 클라이언트 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>            
+	    </xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="nameValueType">
+	    <xs:sequence>
+	        <xs:element name="name" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: javax.xml.rpc.Stub 또는 javax.xml.rpc.Call에 프로퍼티를 설정하기 위한 키(key) 이름을 나타낸다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+	        <xs:element name="value" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: javax.xml.rpc.Stub 또는 javax.xml.rpc.Call에 프로퍼티를 설정하기 위한 키(key)에 상응하는 값(value)이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+	    </xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="webservice-securityType">
+	    <xs:sequence>
+	        <xs:element name="request-sender" type="security-senderType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 웹서비스를 호출하는 메시지에 보안을 적용하기 위한 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+	        <xs:element name="response-receiver" type="security-receiverType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 웹서비스 응답 메시지가 보안 적용이 되어있을 경우, 처리하기 위한 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+	    </xs:sequence>
+	</xs:complexType>	
+	
+</xs:schema>

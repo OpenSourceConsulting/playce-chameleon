@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="EUC-KR"?>
+<xs:schema
+        xmlns="http://www.tmaxsoft.com/xml/ns/jeus"
+        targetNamespace="http://www.tmaxsoft.com/xml/ns/jeus"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        version="6.0">
+
+    <xs:include schemaLocation="jeus-common.xsd"/>
+	 
+    <xs:element name="security-manager" type="security-managerType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                        [Description]: security-manager element는 JEUS security 정보 관리에 대한 설명이다.
+                    ]]></xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:complexType name="security-managerType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="use-nio" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: security manager Nonblocking I/O를 사용해서 통신을 할지의 여부를 지정한다.
+                        [Performance Recommendation]: 많은 수의 Engine Container 및 client를 사용할 경우에는
+                        Nonblocking I/O가 더 좋은 효율을 보인다. security manager를 사용하는 client의 수가 적다면
+                        Blocking I/O가 더 효율적일수 있다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="connect-retries" type="xs:int" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Security Network service중 connection retry count값을 정의함.
+                     ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="security-domains" type="security-domainsType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 JEUS Manager에서 사용할 security domain들을 설정한다. 자세한 것은
+                        JEUS Security 메뉴얼을 참고하기 바란다.
+                     ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="security-domainsType">
+        <xs:sequence>
+            <xs:element name="security-domain" type="security-domainType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: JEUS에서 사용할 security domain들을 설정한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="security-domainType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: Domain에 대한 name을 설정한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="cache-config" type="cache-configType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS Security Framwrok에서 적용하는 cache관련 설정을 함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="keystore-config" type="keystore-configType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: keystore/truststore file에 대한 설정을 함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:choice>
+                <xs:group ref="SecurityServices"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="custom-service" type="SecurityServiceType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: 해당 domain에 JEUS Security Framework에서 제공하는 서비스 속성에 상관없이
+                                       JEUS Security SPI를 implement한 서비스 속성에 별도의 보안 서비스 등록할 수 있다.
+                   ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:group name="SecurityServices">
+        <xs:sequence>
+            <xs:element name="authentication" type="authenticationType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: authenticaiton service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="authorization" type="authorizationType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: authorizaiton service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="login" type="login-serviceType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: Login service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="identity-assertion" type="identity-assertionType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: identity assertion service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="credential-mapping" type="credential-mappingType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: credential mapping service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="credential-verification" type="credential-verificationType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: credential verification service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="audit" type="auditType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: audit service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="subject-validation" type="subject-validationType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: subject valdation service를 정의한다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:complexType name="authenticationType">
+        <xs:sequence>
+            <xs:element name="repository-service" type="repository-serviceType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: repository service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="custom-authentication-service" type="SecurityServiceType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: custom authentication service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="repository-serviceType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="xml-file-repository" type="xml-file-repositoryType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: authentication 혹은 authorization service를 위한 xml repository service 관련 정의
+                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="database-repository" type="database-repositoryType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: authentication 혹은 authorization service를 위한 db repository service 관련 정의
+                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="custom-repository" type="SecurityServiceType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: custom repository service를 정의.
+                                       jeus.security.spi.AuthenticationRepositoryService 혹은 jeus.security.spi.AuthorizationRepositoryService를
+                                       implement한 repository 서비스를 등록하면 해당 서비스가 create 될때 필요한 property값들을 정의할 수 있다.
+                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="xml-file-repositoryType">
+        <xs:sequence>
+            <xs:element name="config-file" type="config-fileType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: xml repository 파일 정보 정의
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="database-repositoryType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="datasource-export-name" type="xs:token">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                           [Description]: db authentication repository service를 위한 db export-name 설정.
+                       ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="dbdriver-config" type="dbdriver-configType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                           [Description]: db authentication repository service를 위한 db export-name 설정.
+                       ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+             </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="dbdriver-configType">
+        <xs:sequence>
+            <xs:element name="vendor" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: db authentication repository service를 위한 db vendor 설정.
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="driver" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: db authentication repository service를 위한 db driver 설정.
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="url" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: db authentication repository service를 위한 db url 설정.
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="username" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: db authentication repository service를 위한 db connection시 적용되는 username 설정.
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="password" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: db authentication repository service를 위한 db connection시 적용되는 password 설정.
+                                          password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="config-fileType">
+        <xs:sequence>
+            <xs:element name="filename" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                               [Description]: user/group security 정보를 포함한 xml configuration file 이름
+                           ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="filepath" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                               [Description]: user/group security 정보를 포함한 xml configuration file 경로
+                           ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="cache-configType">
+        <xs:sequence>
+            <xs:element name="min" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: authentication service에 적용할 cache min size값
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="max" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: authentication service에 적용할 cache max size값
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="timeout" type="off-longType" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: authentication service에 적용할 cache timeout size값
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="identity-assertionType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="default-identity-assertion-service" type="default-identity-assertionType"
+                            minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                           [Description]: 현 도메인에 default로 적용할 Identity Assertion Service 설정.
+                       ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="custom-identity-assertion-service" type="SecurityServiceType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                           [Description]: certificate와 user간의 mapping 정보를 정의한 configuration 파일 경로
+                       ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="default-identity-assertionType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="x509-identity-assertion" type="x509-identity-assertionType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                           [Description]: X509Certificate에 대한 Identity Assertion Service 설정.
+                       ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="x509-identity-assertionType">
+        <xs:sequence>
+            <xs:element name="config-file" type="config-fileType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: X509Certificate 파일 경로 정의
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:choice>
+                <xs:element name="default-user-mapper" type="default-user-mapperType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                                        [Description]: X509Certificate token에 대한 user mapping을 하기 위한 정보 정의
+                                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="custom-user-mapper" type="custom-propertyType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                                        [Description]: X509Certificate token에 대한 user mapping을 하기 위한 추가 속성 정의
+                                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="custom-propertyType">
+        <xs:sequence>
+            <xs:element name="property" type="SecurityServicePropertyType" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: credential을 mapping하기 위한 관련 정보들을 property 값으로 정의한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="default-user-mapperType">
+        <xs:sequence>
+            <xs:element name="cert-attr-type" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: credential을 mapping하기 위한 관련 정보들을 property 값으로 정의한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="attribute-type" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: credential을 mapping하기 위한 관련 정보들을 property 값으로 정의한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="attribute-value-delimiter" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: credential을 mapping하기 위한 관련 정보들을 property 값으로 정의한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="login-serviceType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="jaas-login-config" type="jaas-login-configType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: jaas login service를 정의한다.
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="custom-login-service" type="SecurityServiceType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: custom login service를 정의함.
+                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jaas-login-configType">
+        <xs:sequence>
+            <xs:element name="callback-handler-classname" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                            [Description]: JAAS callback handler factory 클래스 이름
+                                            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="login-module" type="login-moduleType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                            [Description]: login module 설정
+                                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="login-moduleType">
+        <xs:sequence>
+            <xs:element name="login-module-classname" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: LoginModule를 implements한 패키지를 포함한 클래스 이름
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="control-flag" type="control-flagType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: authentication 적용 방식에 대한 정의
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: LoginModule 초기화 시에 적용하고자 하는 속성을 정의한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="control-flagType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="required">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: 로그인이 성공하려면 이 LoginModule의 허가가 필요하다. LoginModule 수행이 성공 혹은 실패인 경우 계속적으로 LoginModule List를 차래로 수행한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="requisite">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: 로그인이 성공하려면 이 LoginModule의 허가가 필요하다. LoginModule 수행이 성공한 경우 계속적으로 LoginModule List를 차례로 수행한다. 만약 실패한 경우엔 이후 LoginModule List를 수행하지 않고 application으로 control를 리턴한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="sufficient">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: 로그인이 성공하려면 이 LoginModule의 허가가 필요하지 않다. 만약 성공한다면 LoginModule List를 수행하지 않고 application으로 control를 리턴한다. 만약 실패한다면 다음 LoginModule List에 대해서 계속적으로 authentication을 수행한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="optional">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: 로그인이 성공하려면 이 LoginModule의 허가가 필요하지 않다. 만약 성공 혹은 실패 한다면 LoginModule List에 대한 authentication을 계속적으로 수행한다.
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="optionType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: LoginModule 초기화 시에 적용될 속성 이름
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                        [Description]: LoginModule 초기화 시에 적용될 속성 값
+                                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="credential-mappingType">
+        <xs:sequence>
+            <xs:element name="default-credential-mapping-service" type="default-credential-mapping-serviceType"
+                        minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: default credential mapping service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="custom-credential-mapping-service" type="SecurityServiceType" minOccurs="0"
+                        maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: custom credential mapping service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="default-credential-mapping-serviceType">
+        <xs:sequence>
+            <xs:element name="x509-credential-mapping" type="x509-credential-mappingType"
+                        minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: X509Certificate에 대한 Identity Assertion Service 설정.
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="x509-credential-mappingType">
+        <xs:sequence>
+            <xs:element name="truststore-path" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현 도메인에 적용할 truststore file 경로를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="truststore-password" type="xs:token" minOccurs="0" default="changeit">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현 도메인에 적용할 truststore file에 대한 password를 정의함..
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="credential-verificationType">
+        <xs:sequence>
+            <xs:element name="default-credential-verification-service"
+                        type="default-credential-verification-serviceType"
+                        minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: default credential verification service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="custom-credential-verification-service" type="SecurityServiceType" minOccurs="0"
+                        maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: custom credential verification service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="default-credential-verification-serviceType">
+        <xs:sequence>
+            <xs:element name="password-verification" type="emptyType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: PasswordFactory 클래스에 대한 credential verification 설정.
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="jeus-certificate-verification" type="emptyType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: X509Certificate에 대한 credential verification 설정.
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="subject-validationType">
+        <xs:sequence>
+            <xs:element name="default-subject-validation-service" type="emptyType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: default subject-validation service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="custom-subject-validation-service" type="SecurityServiceType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: custom subject-validation service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="auditType">
+        <xs:sequence>
+            <xs:element name="default-audit-service" type="default-audit-serviceType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: default audit service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="custom-audit-service" type="SecurityServiceType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: custom audit service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="default-audit-serviceType">
+        <xs:sequence>
+            <xs:element name="config-file" type="config-fileType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: audit log 파일 정보 정의
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="audit-level" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                           [Description]: audit log level
+                       ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="authorizationType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="repository-service" type="repository-serviceType" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: default repository service를 정의함.
+                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="jacc-service" type="emptyType" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: JACC Service 사용 유무를 정의함.
+                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+            <xs:element name="custom-authorization-service" type="SecurityServiceType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: custom authorization service를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

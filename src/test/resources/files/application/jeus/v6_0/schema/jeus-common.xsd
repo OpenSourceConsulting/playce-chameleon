@@ -1,0 +1,1784 @@
+<?xml version="1.0" encoding="EUC-KR"?>
+<xs:schema
+        xmlns="http://www.tmaxsoft.com/xml/ns/jeus"
+        targetNamespace="http://www.tmaxsoft.com/xml/ns/jeus"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+        jaxb:version="2.0"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        version="6.0">
+
+    <xs:include schemaLocation="jeus-webservices-client-dd.xsd"/>
+
+    <xs:simpleType name="jeus-versionType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="5.0"/>
+            <xs:enumeration value="6.0"/>
+        </xs:restriction>
+    </xs:simpleType>
+  
+    <xs:group name="loggingGroup">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: logger에 대해 설정을 적용할 때 해당 logger name을 지정한다. logger의 이름을 알고 싶을 때는 logger 페이지를 따로 참고한다.
+                  이 Element가 생략될 때 logging 설정이 <node>나 <engine-container>에 있는 경우 name은 jeus logger이다.
+                  engine 아래 설정된 경우에는 항상 각 엔진의 로거 설정을 말하므로 name은 무시된다.
+                  default container의 경우는 node의 logging 설정을 따르므로 logger를 설정해도 무시되고 엔진에 로거 설정이 있다면 그대로 설정된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="level" type="loggingLevelType" default="INFO">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: logging의 level을 설정한다. 각 level의 의미는 J2SE의 logging API의 Level class를
+                  참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="use-parent-handlers" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: parent logger의 handler들을 이 logger에서도 사용할지를 결정한다.
+                  default값은 true이고 "jeus" logger의 경우는 root logger이기 때문에 fasle이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="filter-class" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: logger에 지정할 filer class의 fully qualified class name을 설정한다.
+                  [Example]: <filter-class>com.tmax.logging.filter.MyFilter</filter-class>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="handler" type="handlerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: logger에서 사용할 handler를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:complexType name="handlerType">
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="console-handler" type="console-handlerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: logging을 화면에 남기고자 하는 경우에 사용하는 handler이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="file-handler" type="file-handlerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: logging을 file로 출력하고자 하는 경우에 사용하는 handler이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="smtp-handler" type="smtp-handlerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: logging을 email로 보내고자 하는 경우에 사용하는 handler이다.
+                      [Performance Recommandation]: logging message 하나가 하나의 email로 전송되므로
+                      적절한 filter없이 사용하는 것은 엄청난 양의 email을 발생시켜 아주 위험하므로 주의를 요한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="socket-handler" type="socket-handlerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: logging을 지정된 socket으로 보내고자 하는 경우에 사용하는 handler이다.
+                      [Performance Recommandation]: logging message 하나당 Socket으로 전송이 되므로
+                      적절한 filter없이 사용하는 것은 성능 저하를 가져온다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="user-handler" type="user-handlerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: User가 Java SE logging API에 따라 만든 handler를 사용할 경우의 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="common-handlerType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: handler의 이름을 설정한다. 이름은 하나의 logger 내에서만 unique하게
+                      설정되면 된다. 설정된 이름은 tool 등에서 handler를 지칭할 때 사용한다.
+                      [Example]: <name>handler1</name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="level" type="loggingLevelType" default="FINEST">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: handler의 level을 설정한다. logger를 통과한 message의 level이 해당 handler
+                      level에 포함될 경우에만 handler에 의해 출력된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="encoding" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: 이 handler가 message를 남길때 사용할 encoding을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="filter-class" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 handler에 지정할 filer class의 fully qualified class name을 설정한다.
+                        [Example]: <filter-class>com.tmax.logging.filter.MyFilter</filter-class>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="console-handlerType">
+        <xs:complexContent>
+            <xs:extension base="common-handlerType"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="file-handlerType">
+        <xs:complexContent>
+            <xs:extension base="common-handlerType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="file-name" type="xs:token">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 사용할 file name을 설정한다. 만약 user가 이 설정을 하지 않으면
+                        각 logger의 default file name이 사용된다. 각각의 default file name은 JEUS Server 매뉴얼을
+                        참고하기 바란다.
+                        [Example]: <file-name>C:\logs\mylog.log</file-name>
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+
+                    <xs:element minOccurs="0" name="enable-rotation" type="xs:boolean" default="false">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 사용하는 file이 log file rotation기능을 사용할지 여부를 설정한다.
+                        만약 user가 이 설정을 하지 않으면 이 값을 false이고 JEUS Logging 기본방식이 사용된다.
+                        log file rotation 기능을 사용하고 싶다면 이 값을 true로 설정하도록 한다.
+                        [Value Description]: boolean type이고 default값은 false이다..
+                        [Example]: <enable-rotation>true</enable-rotation>
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+
+                    <xs:element minOccurs="0" name="rotation-count" type="off-intType">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 사용하는 file이 log file rotation기능을 사용할때 backup할 file의 개수를 설정한다.
+                        만약 이 설정을 하지 않고 file size로 rotation을 할 경우는 99999개 까지 쌓이고,
+                        날짜나 시간으로 rotation하는 경우에는 rotation된 file은 계속 쌓인다.
+                        [Example]: <rotation-count>10</rotation-count>
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+
+                    <xs:element minOccurs="0" name="rotation-dir" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 사용하는 file이 log file rotation기능을 사용할때 rotation된 file이 저장될 위치를 설정한다.
+                        만약 이 설정을 하지 않으면 현재 logging을 하고 있는 file의 디렉토리에 저장된다.
+                        [Example]: <rotation-dir>C:\backup\jeus\manager_logs</rotation-dir>
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+
+                    <xs:choice minOccurs="0" maxOccurs="1">
+                        <xs:element name="valid-day" type="off-intType">
+                            <xs:annotation>
+                                <xs:documentation><![CDATA[
+                          [Description]: 이 handler가 사용하는 file을 valid-day에 지정된 기간동안만 사용하고 계속 갱신할
+                          경우에 사용한다. 이 설정은 날짜 단위로 file을 바꿀때 사용한다. 이 경우 handler가 사용하는 file 이름
+                          뒤에 file이 사용된 날짜가 자동으로 붙게 된다.
+                          [Value Description]: 날짜를 나타내는 값으로 정수이다.
+                          [Example]: <valid-day>1</valid-day>
+                        ]]></xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="valid-hour" type="off-intType">
+                            <xs:annotation>
+                                <xs:documentation><![CDATA[
+                          [Description]: 이 handler가 사용하는 file을 valid-hour에 지정된 기간동안만 사용하고 계속 갱신할
+                          경우에 사용한다. 이 설정은 시간 단위로 file을 바꿀때 사용한다. 이 경우 handler가 사용하는 file 이름
+                          뒤에 file이 사용된 날짜와 시간이 자동으로 붙게 된다.
+                          [Value Description]: 시간을 나타내는 값으로 정수이다.
+                          일정한 시간에 rotation 할 수 있도록 하기 위해 24의 약수나, 24로 나눈 나머지 값이 24의 약수가 되도록 설정해야 한다.   
+                          [Example]: <valid-hour>3</valid-hour>
+                        ]]></xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="valid-size" type="off-intType"  default="1024">
+                            <xs:annotation>
+                                <xs:documentation><![CDATA[
+                          [Description]: 이 handler가 사용하는 file이 valid-size에 지정한 사이즈보다 작을 때까지만 사용하고
+                          계속 갱신할 경우에 사용한다. 이 설정은 사이즈 단위로 file을 바꿀때 사용한다.
+                          이 경우 handler가 사용하는 file 이름 뒤에 순차적으로 index가 붙게된다.
+                          [Value Description]: 사이즈를 나타내며 단위는 kb이다. default값은 1024kb로
+                          log file rotation기능을 사용할 때 valid-day, valid-hour를 설정하지 않으면
+                          이값을 default로 하여 file size가 1024kb가 되면 log file rotation이 동작한다.
+                          [Example]: <valid-size>1024</valid-size>
+                        ]]></xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:choice>
+                    <xs:element minOccurs="0" name="buffer-size" type="nonNegativeIntType" default="1024">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 file에 출력할때 사용하는 buffer의 크기를 지정한다.
+                        [Value Description]: byte단위이고 default 값은 1024byte이다.
+                        [Performance Recommandation]: 이 값이 클수록 file에 출력되는 message는 지연되어 출력되지만
+                        logging 성능은 좋아진다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="append" type="xs:boolean" default="true">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 사용하는 file이 이미 존재하는 경우 file 뒤에 덧붙여 쓸지를 결정한다.
+                        이 값이 false로 설정되어 있다면 enable-rotation을 true인 경우는 boot-time에 rotation을 하고
+                        enable-rotation이 false로 설정된 경우는 기존의 file에 덮어쓴다.
+                        [Value Description]: booleat type이고 default값은 true이다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="smtp-handlerType">
+        <xs:complexContent>
+            <xs:extension base="common-handlerType">
+                <xs:sequence>
+                    <xs:group ref="smtp-propertyGroup"/>
+                    <xs:element minOccurs="0" name="send-for-all-messages" type="xs:boolean" default="false">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 등록한 logger의 log() method를 통해 들어온 message들이 이
+                        handler로 들어왔을때 이를 email로 보낼 대상으로 여길지를 설정한다. 만약 false로 설정되어
+                        있으면 logger의 특별한 send() method로 호출된 message들만 email로 전송된다.
+                        즉, 처음부터 email로 보낼 의도로 지정된 message들만 email로 전송된다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="smtp-senderType">
+        <xs:sequence>
+            <xs:group ref="smtp-propertyGroup"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:group name="smtp-propertyGroup">
+        <xs:sequence>
+            <xs:element name="smtp-host-address" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: email을 보낼 smtp server의 주소를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="from-address" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: email을 보내는 사람의 address를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="to-address" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: email을 받는 사람의 address를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="cc-address" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: email을 참조로 받는 사람의 address를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="bcc-address" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: email을 숨은 참조로 받는 사람의 address를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:complexType name="socket-handlerType">
+        <xs:complexContent>
+            <xs:extension base="common-handlerType">
+                <xs:sequence>
+                    <xs:element name="address" type="xs:token">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 생성될때 message들을 보낼 곳의 IP address를 설정한다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="port" type="nonNegativeIntType">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 생성될때 message들을 보낼 곳의 port를 설정한다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="off-intType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+               [Value Type Description]: 기본적으로 non-negative int 형이지만 -1인 경우에는 미설정 상태이다. 즉, off된다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="-1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeIntType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+               [Value Type Description]: 0 이상의 int type이다. 즉, int 범위에서
+               0 이상의 값들을 포함한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeLongType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+               [Value Type Description]: 0 이상의 long type이다. 즉, long 범위에서
+               0 이상의 값들을 포함한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:long">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveLongType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Value Type Description]: 0 이상의 long type이다. 즉, long 범위에서 1 이상의 값들을 포함한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:long">
+            <xs:minExclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveIntType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Value Type Description]: 기본적으로 non-negative int 형이지만 1 이상의 값만 허용한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:int">
+            <xs:minExclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveShortType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Value Type Description]: JMS broker 의 borkerID 로 사용된다. 0 은 local brokerID 로 예약되어 있다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:short">
+            <xs:minExclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="off-longType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Value Type Description]: 기본적으로 unsigned long 형이지만 -1인 경우에는 설정을 하지 않은게 된다.즉, off된다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:long">
+            <xs:minInclusive value="-1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="fractionType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Value Type Description]: 0과 1사이의 float 형으로 비율을 나타낸다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:float">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="user-handlerType">
+        <xs:complexContent>
+            <xs:extension base="common-handlerType">
+                <xs:sequence>
+                    <xs:element name="handler-class" type="xs:token">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: user가 만든 handler의 fully qualified class name을 설정한다.이 클래스는
+                        java.util.logging.Handler를 상속받고 jeus.util.logging.JeusHandler를 구현해야 한다.
+                        [Example]: <handler-class>com.tmax.logging.handler.MyHandler</handler-class>
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="handler-property" type="handlerPropertySetType">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: handler가 생성될 때 넘겨줄 property를 설정한다. 이 property들은
+                        key-value로 Map 객체에 저장되어 JeusHandler.setProperty() method를 통해 handler로
+                        전달된다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="formatter-class" type="xs:token"
+                                default="jeus.util.logging.SimpleFormatter">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 이 handler가 사용할 formatter의 fully qualified class name을 설정한다.이 클래스는
+                        java.util.logging.Formatter를 상속받고 jeus.util.logging.JeusFormatter를 구현해야 한다.
+                        [Example]: <formatter-class>com.tmax.logging.handler.MyHandler</formatter-class>
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="formatter-property" type="handlerPropertySetType">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: handler가 생성될 때 만들어진 formatter에게 넘겨줄 property를 설정한다.
+                        이 property들은 key-value로 Map 객체에 저장되어 JeusFormatter.setProperty() method를 통해
+                        formatter로 전달된다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="handlerPropertySetType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="property" type="propertyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: handler 등에게 전달할 property들을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="propertyType">
+        <xs:sequence>
+            <xs:element name="key" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: property의 key값이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: property의 value값이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>        
+    <xs:complexType name="propertiesType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="property" type="propertyType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="loggingLevelType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="FATAL">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: SEVERE에 해당하는 level이다. JEUS 4.x대의 logger의 level로 compatibility를 위해 지원한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="NOTICE">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: WARNING에 해당하는 level이다. JEUS 4.x대의 logger의 level로 compatibility를 위해 지원한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="INFORMATION">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: INFO에 해당하는 level이다. JEUS 4.x대의 logger의 level로 compatibility를 위해 지원한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="DEBUG">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: FINE에 해당하는 level이다. JEUS 4.x대의 logger의 level로 compatibility를 위해 지원한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="OFF">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="SEVERE">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="WARNING">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="INFO">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CONFIG">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="FINE">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="FINER">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="FINEST">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="ALL">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Java SE Logging API의 Level class documentation을 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="securityPermissionType">
+        <xs:sequence>
+            <xs:element name="description" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: 이 security permission 설정에 대한 설명을 적을 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="security-permission-spec" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: security permission을 기술한다. 형식은 Java policy file을 따른다.
+                  [Example]: grant {
+                                permission java.lang.RuntimePermission "foo";
+                            }
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="rolePermissionType">
+        <xs:sequence>
+            <xs:element name="principal" type="xs:token" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: role에 해당하는 user principal을 지정한다.
+                        [Value Description]: security의 accounts.xml에서 지정되어 있는 principal 이름 (user, group)
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="role" type="xs:token" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: principal들에게 부여할 role 이름을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="actions" type="xs:token" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 role permission 객체에 대한 action을 정의한다. default로 사용되는
+                        role permission은 정해진 action이 없다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="classname" type="xs:token" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 사용할 role permission class name을 지정한다. 지정하지 않으면 JEUS에서
+                    기본적으로 제공하는 class가 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="excluded" minOccurs="0" maxOccurs="1" type="emptyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: role을 사용하지 못하도록 만든다.
+                        [Example]: <excluded/>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="unchecked" minOccurs="0" maxOccurs="1" type="emptyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 아무런 체크없이 role을 사용가능하도록 만든다.
+                        [Example]: <unchecked/>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="emptyType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Value Type Description]: 하위 element가 없는 type으로 self-closing element 형태로 설정된다. (ex. <unchecked/>)
+            ]]></xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+
+    <xs:simpleType name="db-vendorType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="oracle">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Oracle DBMS 인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="informix">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Informix DBMS 인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="db2">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM DB2 DBMS인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="mssql">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Microsoft SQL Server DBMS 인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="sybase">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Sybase DBMS인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="hsql">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: HSQL DBMS 인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="cloudscape">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Cloudscape DBMS인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="mysql">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: MySQL DBMS인 경우
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="engineType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EXCLUSIVE_ACCESS">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 각각의 엔터티 빈 인스턴스는 그것이 나타내는 데이터베이스의 열과 일대일 관계를 가지고 그에
+                    대해서 독점적인 접근을 한다. 이것은 하나의 인스턴스가 살아있는 동안 다른 엔터티 빈은
+                    데이터에 접근하거나 변경할 수 없다는 사실을 의미하기 때문에 EJB 엔진은 ejbLoad() 호출을
+                    모두 생략할 수 있다는 것을 나타낸다. 엔진은 빈이 생성될 때 한 번  ejbLoad() 호출을 실행하고
+                    빈이 살아있는 동안 데이터베이스에 더 이상의 어떤 변화도 없다고 가정하고 ejbLoad() 호출을 하지
+                    않는다. 이 빈은 이것이 클러스터링된 빈의 일부일 때 사용할 수 없다. 데이터베이스는 WAS에
+                    의해서만 변경이 허락된다는 점을 반드시 기억하기 바란다( WAS 가 아닌 접근은 허용되지 않는다).
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="SINGLE_OBJECT">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: element의 값을 이것으로 설정한다면 다른 EJB 엔진의 여러 EJB들이 같은 데이터베이스 열에 매핑될
+                    수 있다. ejbLoad()는 엔터티 빈으로 요청이 들어오기 앞서서 항상 호출된다.  SINGLE_OBJECT와
+                    MULTIPLE_OBJECT는 같은 종류의 EJB를 클러스터링할 때 필요하다. SINGLE_OBJECT와
+                    MULTIPLE_OBJECT의 차이점은 SINGLE_OBJECT인 경우 각각의 EJB 엔진 안에서 오직 하나의 EJB
+                    엔터티 빈이 EJB 클라이언트의 모든 요청을 처리한다. 즉 같은 EJB 엔진으로 다른 EJB
+                    클라이언트의 요청이 도착한다면 먼저 연결을 맺고 있는 다른 클라이언트의 요청이 끝날 때까지
+                    대기상태에 있어야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="MULTIPLE_OBJECT">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: element의 값을 이것으로 설정한다면 다른 EJB 엔진의 여러 EJB 들이 같은 데이터베이스 열에 매핑될
+                    수 있다. ejbLoad()는 엔터티 빈으로 요청이 들어오기 앞서서 항상 호출된다.  SINGLE_OBJECT 과
+                    MULTIPLE_OBJECT는 같은 종류의 EJB를 클러스터링할 때 필요하다. SINGLE_OBJECT와
+                    MULTIPLE_OBJECT의 차이점은 MULTIPLE_OBJECT 인 경우 각각의 EJB 엔진 안에서 모든 EJB
+                    클라이언트의 요청을 동시에 처리할 여러 EJB 엔터티 빈 인스턴스가 생성된다.즉 SINGLE_OBJECT 모드와
+                    달리 EJB 클라이언트의 요청은 먼저 처리하고 있는 다른 요청이 끝날 때까지 대기하지 않아도 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- CAUTION : this type is shared by JNDI server, local, session server,
+                  JDBC connection pool, so be careful to modify default value
+                  or the name of element -->
+    <xs:complexType name="poolingType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="min" type="nonNegativeIntType" default="2">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: pooling되는 객체의 최소값을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="max" type="nonNegativeIntType" default="30">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: pooling되는 객체의 최대값을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="period" type="xs:long" default="3600000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: pool에 있는 객체의 갯수를 min값에 지정된 갯수만큼 줄인다.
+                        [Performance Recommendation]: 이 값이 클수록 정리하는 주기가 길어져 server 운영에는 부하가
+                        적게 가해지나 그만큼 메모리가 누수될 수 있으므로 적당한 값으로 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="oldPoolingType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="min" type="nonNegativeIntType" default="2">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: pooling되는 객체의 최소값을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="max" type="nonNegativeIntType" default="30">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: pooling되는 객체의 최대값을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="step" type="nonNegativeIntType" default="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 풀에 커넥션이 부족할 경우 현재 만들어진 커넥션이 max 이하인 경우 새로 만든다.
+                        이때 생성되는 커넥션의 갯수를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="period" type="xs:long" default="3600000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 해당 주기가 되면 min size를 초과하는 커넥션들은 닫아주고,
+                        만약 커넥션 풀의 크기가 min size 미만일 경우에는 커넥션을 새로 맺어서 채워준다.
+                        [Performance Recommendation]: 이 값이 클수록 정리하는 주기가 길어져 서버 운영에는 부하가
+                        적게 가해지나 그만큼 메모리가 누수될 수 있으므로 적당한 값으로 지정한다. 이 값을 작게 지정할 경우에는
+                        물리적 커넥션에 대한 close가 자주 일어나게 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="methodParamType">
+        <!-- Originally, we took methodName(Arg1,Arg2..) type, but now we use J2EE style -->
+        <xs:sequence>
+            <xs:element name="method-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: method의 이름을 지정한다.
+                            [Example]: foo
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="method-params" type="method-paramsType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: method의 parameter들을 순서대로 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="method-paramsType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="method-param" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: method의 parameter의 fully qualified class name을 지정한다.
+                            [Example]: java.lang.String
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jndi-infoType">
+        <xs:sequence>
+            <xs:element name="ref-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 소스코드상에서 사용할 수 있는 참조 이름을 선언할 수 있다.
+                        [Value Description]: 실제 JNDI 이름에 bind될 참조 이름. 이것은 해당하는 J2EE 표준 descriptor element의 ref-name에 대응된다.
+                        [Example]: <ref-name>ejb/AccountEJB</ref-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS DD 에 정의된 실제 JNDI 이름.
+                        [Example]: <export-name>ACCEJB</export-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:group name="jndiEnvironmentMappingGroup">
+        <xs:annotation>
+            <xs:documentation>
+                This group keeps the usage of the contained JNDI environment
+                reference mapping elements consistent across JEUS deployment descriptors.
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="env" type="envType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 표준 DD 정의된 <env-entry>값을 Override 하기 위해 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ejb-ref" type="jndi-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 코드에서 사용하는 EJB 참조를 실제 EJB JNDI 이름으로 bind한다.
+                    [Dependency]: ejb-ref/jndi-info/ref-name = ejb-ref/ejb-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="res-ref" type="jndi-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 소스코드 상에서 사용할 수 있는 외부 자원(예: 데이터베이스) 참조 이름을 선언할 수 있다.
+                    [Dependency]: res-ref/jndi-info/ref-name = ejb-jar/enterprise-beans/ * /resource-ref/res-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="res-env-ref" type="jndi-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 코드에서 사용하는 외부자원 참조를 실제 JNDI 이름으로 bind한다.
+                    이 element는 표준 EJB DD의 <resource-env-ref>에 대응한다.
+                    [Dependency]: res-env-ref/jndi-info/ref-name = ejb-jar/enterprise-beans/ * /resource-env-ref/resource-env-ref-name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="message-destination-ref" type="jndi-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 element는 코드에서 사용하는 외부자원 참조를 실제 JNDI 이름으로 mapping 한다.
+                    이 element는 표준 DD의 <message-destination-ref>에 대응된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="service-ref" type="jeus-webservices-client-ddType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: JEUS 웹 서비스 클라이언트 설정 문서의 루트 엘리먼트(root element).
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+        </xs:sequence>
+    </xs:group>
+
+    <xs:complexType name="envType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 코드에서 사용하는 환경 변수의 이름.
+                        [Example]: <name>minAmount</name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 환경 변수의 자바 타입.
+                        [Value Description]: 다음의 자바 타입 중 하나를 선택해야 한다. java.lang.Boolean,
+                        java.lang.String, java.lang.Integer, java.lang.Double, java.lang.Byte, java.lang.Short,
+                        java.lang.Long, java.lang.Float, java.lang.Character.
+                        [Example]: <type>java.lang.Integer</type>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 값은 대응하는 wrapper 클래스 생성자의 파라미터로서 사용 된다.
+                        [Example]: <value>100</value>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jndi-refType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="jndi-info" type="jndi-infoType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Environment entry에 사용되는 logical 이름을 실제 JNDI 이름으로 mapping 한다.
+                        예를 들면 "jdbc/myDataSource"로 사용된 environment entry 이름을 실제 JNDI 이름인
+                        "DataSource1"으로 mapping 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="invoke-httpType">
+        <xs:sequence>
+            <xs:element name="url" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: HTTP-RMI stub에 의해 호출될 RMI Handler Servlet (jeus.rmi.http.ServletHandler)
+                        의 URI 경로가 반드시 설정되어야 한다. 이 URL은 프로토콜, 웹 서버 IP, 포트번호를 제외하고 오직
+                        Servlet 요청 경로만을 설정해야 한다.  프로토콜은 HTTP, RMI 실행환경과 웹 서버는 같은 IP 주소를
+                        가지고 있다고 가정 한다(이것은 웹 서버와 웹 컨테이너는 반드시 HTTP-RMI 요청을 같은 머신에서
+                        받는다는 것을 의미한다). 포트번호는 다음에 설명할 element(HTTP-port)에서 설정한다.
+                        [Value Description]: RMI Handler Servlet을 명시한 Servlet 컨텍스트 경로
+                        [Example]: <url>/mycontext/RMIHandlerServlet</url>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="http-port" type="nonNegativeIntType" default="80">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: HTTP-RMI 요청을 받고 처리할 웹 서버의 포트번호를 설정한다. 이 웹 서버/웹
+                        컨테이너에서는 반드시 RMI Handler Servlet이 Deploy되어 있고 이미 실행 중이어야만 한다.
+                        [Value Description]: HTTP-RMI stub가 연결할 웹 서버의 포트번호.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="res-refType">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="jndi-info" type="jndi-infoType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 Engine Container의 JNDI에 등록할 각 resource reference의 export name과 reference name을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="system-loggingType">
+        <xs:sequence>
+            <xs:group ref="loggingGroup"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="user-logType">
+        <xs:complexContent>
+            <xs:extension base="system-loggingType"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="jsp-engineType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="keep-generated" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 JSP페이지로부터 생성된 자바 소스 파일을 컴파일하여 Servlet클래스 파일을 생성한 이후에 자바 소스 파일의 저장 여부를 결정한다.
+                                                디버깅 목적으로 이 파일들은 유용하다.
+                        [Value Description]: Boolean값으로 이 설정을 활성화 또는 비활성화 한다.
+                        [Value Type Description]: Boolean
+                        [Defined Value]: default : true
+                                                     true : 자바 소스 파일을 유지한다.
+                                                     false : 자바 소스 파일을 삭제한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="java-compiler" type="xs:token" default="com.sun.tools.javac">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JSP의 자바 소스를 Servlet 클래스 파일로 컴파일하기 위한 자바 컴파일러를 지정한다.
+                                                디폴트설정이 가장 효율적이기 때문에 이 element를 사용하지 않는 것을 권장한다.
+                        [Value Description]: 자바 컴파일러를 지정하는 문자열. 컴파일러는 시스템 경로에 반드시 포함되어야만 실행 가능하다.
+                        [Defined Value]: default : com.sun.tools.javac
+                                                    sun.tools.javac : JDK1.4에서 deprecated 됨. 패키지가 명시되지 않는 클래스를 jsp에서 참조하는 경우에 사용한다.
+                                                    javac : 시스템 패스에 포함된 외부 "javac" 컴파일러를 지정한다.
+                                                    com.sun.tools.javac: JDK1.4 디폴트 컴파일러. sun.tools.javac 보다 효율적이고 보다 안정적이므로 우선시하는 옵션이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="jsp-work-dir" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JSP workdir은 Servlet 소스 파일과 클래스파일들이 저장되는 위치다. 개발자 또는 관리자는 디버깅목적으로 해당 디렉토리를 사용할 수 있다.
+                                                본  element는 일반적으로 사용할 필요가 없다.
+                        [Value Description]: JSP 컴파일을 위해서 사용되는 절대 경로.
+                        [Defined Value]: default : %SERVLET_HOME%\jspwork \enginename\GroupDocBase\DocBase
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="compile-output-dir" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 속성을 설정하여 JSP 파일에 의해 생성된 클래스 파일들을 <jsp-work-dir> 디렉토리가 아닌 다른 디렉토리에 둘 수 있다.
+                                                이 속성을 설정하지 않으면 클래스 파일들은 jspwork 디렉토리에 위치한다. 본  element는 보통 사용되지 않는다.
+                        [Value Description]: JSP 클래스 파일들을 저장하는데 사용되는 절대 경로.
+                        [Defined Value]: default : %SERVLET_HOME%\jspwork \enginename\GroupDocBase\DocBase
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="compile-option" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Servlet 컴파일러로 사용되는 옵션으로, 일반적으로는 사용되지 않는다.
+                        [Value Description]: 컴파일에 사용되는 적절한 컴파일 옵션(<java-compiler>element를 참조)
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="compile-encoding" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 본 속성은 JSP파일들이 파싱되어 생성된 Servlet 소스 파일을 compile할 때 encoding 옵션에 지정하는 값이다.
+                                                본 설정은 좀처럼 사용되지 않는다. Web Container는 적합한 설정을 자동으로 선택한다.
+                        [Value Description]: 사용할 인코딩 scheme를 표시하는 문자열. 더 자세한 정보에 대해서는 javac 컴파일러 문서를 참조한다.
+                        [Defined Value]: default : Web Container에서 자동으로 선택한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-included-jspfile" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 속성이 “true”로 설정되면, “include” directive 방식으로 include된 JSP파일의 변경 여부를 include한 JSP파일이 실행될 때 체크하여
+                                                변경된 경우 해당 JSP파일을 recompile 하도록 하는 기능이다. false로 하면 include되는 JSP 파일에 대해서 변경여부를 검사하지 않는다.
+                        [Value Description]: Boolean값으로 이 설정을 활성화 또는 비활성화 한다.
+                        [Value Type Description]: Boolean
+                        [Defined Value]: default : false
+                                                    true : 해당 설정을 활성화 한다.
+                                                    false :해당 설정을 비활성화 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="schedulerType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="enabled" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Scheduler Service의 구동 여부를 지정한다.
+                        [Defined Value]: default : true
+                                                    true : 활성화 한다.
+                                                    false : 비활성화 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="thread-pool" type="poolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: scheduler에서 multi-thread로 job을 실행할때 사용하는 thread pool을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="job-list" type="job-listType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: scheduler에 등록할 job list을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="job-listType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="job" type="jobType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: scheduler에 등록할 하나의 job을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jobType">
+        <xs:sequence>
+            <xs:element name="class-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: job을 수행하는 class의 fully qualified name이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 job의 이름을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="description" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 job의 설명을 적을 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="begin-time" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 job의 시작 시간을 지정한다. 만약 시작 시간이 주어지지 않으면 job은 바로 시작된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="end-time" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 job의 종료 시간을 지정한다. 만약 종료 시간이 주어지지 않으면 job은 종료되지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="1" name="interval" type="intervalType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 job이 수행되는 주기를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="count" type="xs:long" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 job이 수행되는 횟수를 지정한다.
+                        [Defined Value]: [-1]:
+                                        수행되는 횟수를 제한하지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="intervalType">
+        <xs:choice>
+            <xs:element name="millisecond" type="xs:long">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 주기를 millisecond 단위로 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="minutely" type="nonNegativeIntType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 주기를 분 단위로 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="hourly" type="nonNegativeIntType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 주기를 시간 단위로 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="daily" type="nonNegativeIntType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 주기를 날짜 단위로 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:simpleType name="vendorType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="oracle">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Oracle JDBC driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="sybase">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Sybase JDBC driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="mssql">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS MS SQL JDBC driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="db2">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: DB2 JDBC driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="tibero">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Tibero JDBC driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="informix">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Informix JDBC driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="mysql">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: MySQL JDBC driver(Connector/J)
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="others">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Other JDBC drivers
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="run-as-identityType">
+        <xs:sequence>
+            <xs:element name="principal-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: ejb-jar.xml 또는 web.xml안에서 run-as-specified-identity의 role로 사용되는 principal 이름.
+                    [Value Description]: security의 subjects.xml에서 지정되어 있는 principal 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SecurityServiceType">
+        <xs:sequence>
+            <xs:element name="classname" type="xs:token" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jeus.security.spi의 클래스들 중 하나를 확장한 Java 클래스명
+                        [Value Description]: Java 클래스명
+                        [Example]: <classname>mypackage.MyAutenticationService</classname>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="property" type="SecurityServicePropertyType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 선택사항으로 해당 보안 서비스에 name-value쌍으로 속성을 정의한다. 정의할 수 있는 속성과 각 속성에 대한 설명은 서비스 클래스에 대한 문서를 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SecurityServicePropertyType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 속성명
+                        [Value Description]: 속성명
+                        [Example]: <name>filename</name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="xs:token" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 선택사항으로 속성에 대한 값.
+                        [Value Description]: 속성 값
+                        [Example]: <value>c:\security\myAccounts.xml</value>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="keystore-configType">
+        <xs:sequence>
+            <xs:element name="keystore-path" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현 도메인에 적용할 keystore file경로를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="keystore-alias" type="xs:token" minOccurs="0" default="changeit">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: keystore 파일의 keyEntry 타입의 인증서가 여러개인 경우 명시적으로 alias값으로
+                                       해당 서버 인증에 필요한 인증서를 가리키도록 함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="keystore-password" type="xs:token" minOccurs="0" default="changeit">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현 도메인에 적용할 keystore file에 대한 password를 정의함.
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="keystore-keypassword" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현 도메인에 적용할 keystore file 안의 key들에 대한 keypassword를 정의함.
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="truststore-path" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현 도메인에 적용할 truststore file 경로를 정의함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="truststore-password" type="xs:token" minOccurs="0" default="changeit">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현 도메인에 적용할 truststore file에 대한 password를 정의함..
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="encodingSubType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="default" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 만일 사용자가 Servlet API를 통해 인코딩을 설정하지 않았고, <forced> 속성도 사용하지 않아서 HTTP요청 헤더에 지정된 인코딩이 없으면 이 속성의 인코딩을 사용한다.
+                        [Value Description]: 표준 캐릭터 인코딩.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="forced" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 속성이 지정되면, HTTP데이터를 java.lang.String 객체로 변환할 때 항상 여기에 설정한 인코딩으로 사용된다. 따라서 가장 높은 우선순위를 가지고 있다.
+                        [Value Description]: 표준 캐릭터 인코딩.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:group name="library-ref-group">
+        <xs:sequence>
+            <xs:element name="library-ref" minOccurs="0" maxOccurs="unbounded" type="library-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: application에서 사용할 shared library를 정보를 명기한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group> 
+
+    <xs:complexType name="library-refType">
+        <xs:sequence>
+
+            <xs:element name="library-name" minOccurs="1" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: shared library 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="specification-version" minOccurs="0" type="library-ref-versionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 사용할 shared library 스펙(specification) 버젼
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="implementation-version" minOccurs="0" type="library-ref-versionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 사용할 shared library 구현(implementation) 버젼
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+        </xs:sequence>
+
+        <xs:attribute name="failonerror" type="xs:boolean">
+            <xs:annotation>
+                <xs:documentation><![CDATA[
+                    [Description]: 해당 shared library를 찾지 못할 경우 deploy를 실패할 지 여부. 기본값은 false.
+                ]]></xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="library-ref-versionType">
+        <xs:simpleContent>
+            <xs:extension base="xs:token">
+                <xs:attribute name="exact-match" type="xs:boolean">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: 정확히 매치되는 version이 필요한지 여부. 기본값은 false. 
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:group name="ssl-config-group">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="client-auth" type="xs:token" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: client의 인증 여부를 설정한다.
+                        [Value Description]: true 또는 false 또는 want의 String 값을 줄수 있다.
+                                             true이면 server가 client에게 인증서를 요청하여 client에 대한 인증을 수행하고,
+                                             false이면 client에 대한 인증과정을 수행하지 않는다.
+                                             want일 경우 client가 자신의 인증서를 제공할때만 인증을 수행한다.
+                                             일반적으로 B2B를 제외한 보통의 경우에는 client 인증을 수행하지 않는다.
+                                             기본 값은 false 이다.
+                     ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ssl-protocol" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 암호화/복호화하는데 사용되는 SSL 프로토콜을 지정한다.
+                        [Value Description]: Sun JVM을 사용한다면 TLS,
+                                             IBM JVM을 사용할때는 SSL을 설정해야 한다.
+                                             기본 값은 Sun JVM에서는 TLS, IBM JVM에서는 SSL 이다.
+                     ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="cipher-suite" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: SSL handshaking후에 실제 데이타를 보낼때 사용하는 암호슈트들을 지정한다.
+                        [Value Description]: 일반적으로 JDK에서 제공하는 cipher-suite를 사용하며,
+                                             default로 제공되지 않는 cipher suite를 사용할 때 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keystore-file" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: key와 인증서를 저장하고 있는 파일을 지정한다.
+                        [Value Description]: 절대경로, 상대경로 모두 허용된다.
+                                             만일 상대경로가 사용된다면 jeus_home/config/nodename 아래에서 해당 파일을 찾는다.
+                                             그리고 JVM인자로 jeus.ssl.keystore과 javax.net.ssl.keyStore을
+                                             이용해서 설정할 수 있다.
+                                             우선순위는 설정 태그 값 > jeus > javax 이다.
+                                             기본 값은 jeus_home/config/nodename/keystore 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keystore-pass" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: keystore파일을 열기 위한 password이다.
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                        [Value Description]: 이 설정은 JVM인자로 jeus.ssl.keypass과 javax.net.ssl.keyStorePassword를
+                                             이용해서 설정할 수 있다.
+                                             우선순위는 태그 설정 값 > jeus > javax 이다.
+                                             기본 값은 changeit 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keystore-keypassword" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: keystore파일 안의 key들에 대한 password이다.
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                        [Value Description]: 이 설정은 keystore의 keypassword를 설정한다.
+                        `                    해당 값을 설정하지 않으면 디폴드로 jeus.ssl.keypass과
+                                             javax.net.ssl.keyStorePassword를 이용해서 설정할 수 있다.
+                                             우선순위는 태그 설정 값 > jeus > javax 이다.
+                                             기본 값은 jeuskeypass 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keystore-type" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: keystore의 타입을 지정한다.
+                        [Value Description]: Sun의 keytool에 의해서 keystore를 생성한다면 JKS(Java's Key Store)를,
+                                             OpenSSL이나 Microsoft KeyManager로 keystore를 생성한다면 PKCS12를 사용해야된다.
+                                             이 설정은 JVM인자로 javax.net.ssl.keyStoreType을 이용해서 설정할 수 있다.
+                                             우선 순위는 태그 설정 값 > javax 이다.
+                                             기본 값은 JKS 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="key-management-algorithm" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: keystore에 저장할 key에 대한 관리 알고리즘을 설정한다.
+                        [Value Description]: Sun JVM을 사용할 경우 SunX509를,
+                                             IBM JVM을 사용할 경우에는 IbmX509를 사용해야 된다.
+                                             이 설정은 JVM인자로 ssl.KeyManagerFactory.algorithm을
+                                             이용해서 설정할 수 있다.
+                                             우선 순위는 태그 설정 값 > javax 이다.
+                                             기본 값은 Sun JVM에서는 SunX509, IBM JVM에서는 IbmX509 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="key-alias" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: SSL을 사용할때 이용되는 서버 인증서의 키 Alias이름을 설정한다. 
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="truststore-file" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: client 인증서를 저장하고 있는 파일을 지정한다.
+                        [Value Description]: 절대경로, 상대경로 모두 허용된다.
+                                             만일 상대경로가 사용된다면 jeus_home/config/nodename 아래에서 해당 파일을 찾는다.
+                                             그리고 JVM인자로 jeus.ssl.truststore과 javax.net.ssl.trustStore을
+                                             이용해서 설정할 수 있다.
+                                             우선순위는 태그 설정 값 > jeus > javax 이다.
+                                             기본 값은 jeus_home/config/nodename/truststore 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="truststore-pass" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: truststore파일을 열기 위한 password이다.
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                        [Value Description]: 이 설정은 JVM인자로 jeus.ssl.trustpass과 javax.net.ssl.trustStorePassword를
+                                             이용해서 설정할 수 있다.
+                                             우선순위는 태그 설정 값 > jeus > javax 이다.
+                                             기본 값은 changeit 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="truststore-type" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: truststore의 타입을 지정한다.
+                        [Value Description]: Sun의 keytool에 의해서 keystore를 생성한다면 JKS(Java's Key Store)를,
+                                             OpenSSL이나 Microsoft KeyManager로 keystore를 생성한다면 PKCS12를 사용해야된다.
+                                             이 설정은 JVM인자로 javax.net.ssl.trustStoreType을 이용해서 설정할 수 있다.
+                                             우선 순위는 webmain > javax 이다.
+                                             기본 값은 JKS 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="trust-management-algorithm" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: truststore에 저장할 trust에 대한 관리 알고리즘을 설정한다.
+                        [Value Description]: Sun JVM을 사용할 경우 SunX509를,
+                                             IBM JVM을 사용할 경우에는 IbmX509를 사용해야 된다.
+                                             이 설정은 JVM인자로 ssl.TrustManagerFactory.algorithm을
+                                             이용해서 설정할 수 있다.
+                                             우선 순위는 webmain > javax 이다.
+                                             기본 값은 Sun JVM에서는 SunX509, IBM JVM에서는 IbmX509 이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="crl-file" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Certificate Revocation Lists를 저장하고 있는 파일을 지정한다.
+                        [Value Description]: 절대경로, 상대경로 모두 허용된다.
+                                             만일 상대경로가 사용된다면 jeus_home/config/nodename 아래에서 해당 파일을 찾는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    <xs:simpleType name="action-on-resource-leakType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="NoAction">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 아무 작업을 하지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="Warning">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 컴포넌트 호출시 반환되지 않은 리소스에 대한 로그를 남긴다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="AutoClose">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 컴포넌트 호출시 반환되지 않은 리소스에 대한 로그를 남기고 이를 닫아준다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="typePropertyType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 프로퍼티의 이름.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 프로퍼티의 값의 타입.
+                        [Value Description]: Java primitive 타입이 올 수 있다. 또한 java.util.Properties는 value의 값을 property에 넣는다.
+                        [Example]: <type>java.lang.Integer</type>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: property의 값. type이 java.util.Properties이면 value는 key=value[,key=value]* 형식이 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

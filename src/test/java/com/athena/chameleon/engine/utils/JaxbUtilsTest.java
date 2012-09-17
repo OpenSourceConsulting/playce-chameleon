@@ -26,6 +26,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import com.athena.chameleon.engine.entity.xml.application.jeus.v5_0.JeusSystemType;
 import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType;
@@ -125,6 +126,42 @@ public class JaxbUtilsTest {
             System.out.println(obj.getClass().getCanonicalName());
             
             String xmlData = JaxbUtils.marshal(WeblogicApplicationType.class.getPackage().getName(), obj, new String[]{"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/javaee_5.xsd", "http://www.bea.com/ns/weblogic/weblogic-application http://www.bea.com/ns/weblogic/weblogic-application/1.0/weblogic-application.xsd"});
+            System.out.println(xmlData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error");
+        }
+    }
+
+    @Test
+    public void jeusMainV50Test() {
+        String xml = this.getClass().getResource("/files/application/jeus/v5_0/jeus-main.xml").getFile();
+        File file = new File(xml);
+        
+        try {
+            Object obj = JaxbUtils.unmarshal(JeusSystemType.class.getPackage().getName(), this.getClass().getResource("/files/application/jeus/v5_0/").getFile(), file.getName());
+            
+            System.out.println(obj.getClass().getCanonicalName());
+            
+            String xmlData = JaxbUtils.marshal(JeusSystemType.class.getPackage().getName(), obj, new String[]{"http://www.tmaxsoft.com/xml/ns/jeus schema/jeus-main.xsd"});
+            System.out.println(xmlData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error");
+        }
+    }
+
+    @Test
+    public void jeusMainV60Test() {
+        String xml = this.getClass().getResource("/files/application/jeus/v6_0/jeus-main.xml").getFile();
+        File file = new File(xml);
+        
+        try {
+            Object obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.jeus.v6_0.JeusSystemType.class.getPackage().getName(), this.getClass().getResource("/files/application/jeus/v6_0/").getFile(), file.getName());
+            
+            System.out.println(obj.getClass().getCanonicalName());
+            
+            String xmlData = JaxbUtils.marshal(com.athena.chameleon.engine.entity.xml.application.jeus.v6_0.JeusSystemType.class.getPackage().getName(), obj, new String[]{"http://www.tmaxsoft.com/xml/ns/jeus schema/jeus-main.xsd"});
             System.out.println(xmlData);
         } catch (Exception e) {
             e.printStackTrace();
