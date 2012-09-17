@@ -114,8 +114,8 @@ public class MigrationComponentTest {
         
         Chapter chapter1 = PDFWriterUtil.getChapter("마이그레이션의개요", 1);
         chapter1.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));
-        chapter1.add(PDFWriterUtil.getDefault("WAS서버에서작동되는업무애플리케이션을공개 SW기반의 "));
-        chapter1.add(PDFWriterUtil.getDefault("WAS에서작동이되는변경작업에대한결과산출물로툴에의해자동으로생성된보고서입니다."));
+        chapter1.add(PDFWriterUtil.getDefault("WAS서버에서 작동되는업무 애플리케이션을 공개SW기반의 "));
+        chapter1.add(PDFWriterUtil.getDefault("WAS에서 작동이 되는 변경 작업에 대한 결과 산출물로 툴에의해 자동으로 생성된 보고서입니다."));
         
         Section section1_1 =  PDFWriterUtil.getSection(chapter1, "목표기대치");
         section1_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));
@@ -128,8 +128,8 @@ public class MigrationComponentTest {
 
         Chapter chapter2 = PDFWriterUtil.getChapter("마이그레이션의개요", 2);
         chapter2.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));
-        chapter2.add(PDFWriterUtil.getDefault("WAS서버에서작동되는업무애플리케이션을공개 SW기반의 "));
-        chapter2.add(PDFWriterUtil.getDefault("WAS에서작동이되는변경작업에대한결과산출물로툴에의해자동으로생성된보고서입니다."));
+        chapter2.add(PDFWriterUtil.getDefault("WAS서버에서 작동되는 업무애플리케이션을 공개 SW기반의 "));
+        chapter2.add(PDFWriterUtil.getDefault("WAS에서 작동이 되는 변경작업에 대한 결과 산출물로 툴에 의해 자동으로 생성된 보고서입니다."));
         
         Section section2_1 =  PDFWriterUtil.getSection(chapter2, "목표기대치");
         section2_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));

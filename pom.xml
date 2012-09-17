@@ -117,7 +117,7 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.15</version>
 				<configuration>
-					<contextPath>/api</contextPath>
+					<contextPath>/chameleon</contextPath>
 					<scanIntervalSeconds>30</scanIntervalSeconds>
 					<jettyEnvXml>src/main/resources/config/jetty-env.xml</jettyEnvXml>
 					<connectors>
