@@ -79,9 +79,14 @@ public class UploadController {
     		return "redirect:/upload.do?method=show";
         }
     	
+    	// Upload 내의 projectSrc, deploySrc는 이 시점에서 local repository에 저장되어야 하며 
+    	// component.executeMigration() 실행 시 파라메타로 저장된 파일에 대한 FQFN(Full Qualified File Name, Full Path + File Name)을 인자로 받는다.
+    	// 그 이유는 Starter.java로 실행된 경우 compoent.executeMigration()에 CommonsMultipartFile을 넘겨줄 수 없기 때문임.
+    	
     	try {
             if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
-                component = new MigrationComponent();
+            	// component는 @Inject를 통해 MigrationComponent가 injection 되었기 때문에 별도의 인스턴스 생성이 불필요함.
+                //component = new MigrationComponent();
                 Migration entity = component.executeMigration(upload.getProjectSrc());
                 System.out.println(entity.getFileListStr());
                 System.out.println(entity.getWebXmlStr());
@@ -90,7 +95,8 @@ public class UploadController {
             }
             
             if(upload.getDeploySrc() != null && upload.getDeploySrc().getSize() > 0 ) {
-                component = new MigrationComponent();
+            	// component는 @Inject를 통해 MigrationComponent가 injection 되었기 때문에 별도의 인스턴스 생성이 불필요함.
+                //component = new MigrationComponent();
                 Migration entity = component.executeMigration(upload.getDeploySrc());
                 System.out.println(entity.getFileListStr());
                 System.out.println(entity.getWebXmlStr());
