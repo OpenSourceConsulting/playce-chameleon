@@ -21,8 +21,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -34,17 +34,21 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
  */
 public class MovieFinderExceptionResolver extends SimpleMappingExceptionResolver {
 
+    private static final Logger logger = LoggerFactory.getLogger(MovieFinderExceptionResolver.class);
+
     @Inject
     private MessageSource messageSource;
 
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
-        Log logger = LogFactory.getLog(handler.getClass());
         MovieFinderException movieFinderException;
 
         if (!(ex instanceof MovieFinderException)) {
-            String className = handler.getClass().getSimpleName().toLowerCase();
+        	String className = null;
+        	if(handler != null) {
+        		className = handler.getClass().getSimpleName().toLowerCase();
+        	}
             logger.error(ex.getMessage(), ex);
 
             try {

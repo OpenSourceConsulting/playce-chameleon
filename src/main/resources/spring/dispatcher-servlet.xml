@@ -54,7 +54,7 @@
     
     <bean name="jsonView" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
 
-    <bean id="exceptionResolver" class="sample.common.MovieFinderExceptionResolver">
-        <property name="defaultErrorView" value="forward:/sample/error.jsp" />
-    </bean>
+<!--     <bean id="exceptionResolver" class="sample.common.MovieFinderExceptionResolver"> -->
+<!--         <property name="defaultErrorView" value="forward:/sample/error.jsp" /> -->
+<!--     </bean> --> 
 </beans>

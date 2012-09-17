@@ -61,10 +61,9 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
     }
 
     public void onChapterEnd(PdfWriter writer, Document document,
-            float position) {/*
+            float position) {
         drawLine(writer.getDirectContent(),
                 document.left(), document.right(), position - 5);
-                */
     }
 
     public void onSection(PdfWriter writer, Document document,
@@ -76,10 +75,8 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
 
     public void onSectionEnd(PdfWriter writer, Document document,
             float position) {
-        /*
         drawLine(writer.getDirectContent(),
                 document.left(), document.right(), position - 3);
-                */
     }
 
     public void drawLine(PdfContentByte cb, float x1, float x2, float y) {
