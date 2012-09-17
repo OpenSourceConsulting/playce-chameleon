@@ -88,8 +88,12 @@ public class PDFDataDefinition {
 			for(Object o : (List) webApp.getClass().getMethod("getErrorPage").invoke(webApp))
 				buf.append(getErrorPageType(o));
 			
-			for(Object o : (List) webApp.getClass().getMethod("getWelcomeFileList").invoke(webApp))
-				buf.append(getWelcomeFileListType(o));
+			try {
+    			for(Object o : (List) webApp.getClass().getMethod("getWelcomeFileList").invoke(webApp))
+    				buf.append(getWelcomeFileListType(o));
+			} catch(ClassCastException c) {
+                buf.append(getWelcomeFileListType(webApp.getClass().getMethod("getWelcomeFileList").invoke(webApp)));
+			}
 			
 			for(Object o : (List) webApp.getClass().getMethod("getResourceRef").invoke(webApp))
 				buf.append(getResourceRefType(o));
@@ -303,8 +307,12 @@ public class PDFDataDefinition {
         buf.append("[servlet mapping type]"+delimiter);
         buf.append("servlet name : " + getValue(Cls.getMethod("getServletName").invoke(servlet))+delimiter);
         
-        for(Object pattern : (List) Cls.getMethod("getUrlPattern").invoke(servlet)) {
-            buf.append("url pattern : " + getValue(pattern)+delimiter);
+        try {
+            for(Object pattern : (List) Cls.getMethod("getUrlPattern").invoke(servlet)) {
+                buf.append("url pattern : " + getValue(pattern)+delimiter);
+            }
+        } catch(ClassCastException c) {
+            buf.append("url pattern : " + getValue(Cls.getMethod("getUrlPattern").invoke(servlet))+delimiter);
         }
         return buf.toString();
     }

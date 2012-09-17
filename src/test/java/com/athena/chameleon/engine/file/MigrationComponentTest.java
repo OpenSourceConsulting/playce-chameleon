@@ -140,24 +140,9 @@ public class MigrationComponentTest {
         section2_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
         
         pdf.add(chapter2);
-
-        pdf.newPage();
-        int toc = writer.getPageNumber();
-        for(Paragraph p : tocEvent.titles)
-            pdf.add(p);
         
-        pdf.newPage();
-        int total = writer.reorderPages(null);
+        PDFWriterUtil.setChapterSectionTOC(pdf, writer, tocEvent);
         
-        int[] order = new int[total];
-        for (int i = 0; i < total; i++) {
-            order[i] = i + toc;
-            if (order[i] > total)
-                order[i] -= total;
-        }
-        // apply the new order
-        writer.reorderPages(order);
-
         pdf.close();
     }
     
