@@ -12,13 +12,9 @@
 				alert('담당자를 입력하세요.');
 				$('#person').focus();
 				return false;
-			} else if(!$('#projectSrc').val()) {
-				alert('Project Source를 업로드하세요.');
+			} else if((!$('#projectSrc').val()) && (!$('#deploySrc').val())) {
+				alert('Project Source 나 Deploy Source 중 한 항목 이상 업로드하세요.');
 				$('#projectSrc').focus();
-				return false;
-			} else if(!$('#deploySrc').val()) {
-				alert('Deploy Source를 업로드하세요.');
-				$('#deploySrc').focus();
 				return false;
 			} else {
 				var form = $("#uploadForm").get(0);

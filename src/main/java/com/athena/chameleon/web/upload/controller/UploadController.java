@@ -87,36 +87,45 @@ public class UploadController {
     	
         File projectFile = null;
         File deployFile = null;
+        List<MigrationFile> list = null;
         String defaultPath = uploadPath+File.separator+System.currentTimeMillis()+File.separator;
         try {
-        	projectFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
-            if (!projectFile.exists()) {
-                if (!projectFile.mkdirs()) {
-                    throw new Exception("Fail to create a directory for attached file [" + projectFile + "]");
+            if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
+            	projectFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
+                if (!projectFile.exists()) {
+                    if (!projectFile.mkdirs()) {
+                        throw new Exception("Fail to create a directory for attached file [" + projectFile + "]");
+                    }
                 }
+                
+            	projectFile.deleteOnExit();
+                upload.getProjectSrc().transferTo(projectFile);
+                
+                component = new MigrationComponent();
+            	component.unzipFile(projectFile.getAbsolutePath());
+            	component.setMigrationFileList();
+    
+                list = component.getMigrationFileList();
+                System.out.println(pdfData.getMigrationFileList(list));
             }
             
-        	projectFile.deleteOnExit();
-            upload.getProjectSrc().transferTo(projectFile);
-            
-            component = new MigrationComponent();
-        	component.unzipFile(projectFile.getAbsolutePath());
-        	component.setMigrationFileList();
-
-            List<MigrationFile> list = component.getMigrationFileList();
-            System.out.println(pdfData.getMigrationFileList(list));
-
-        	deployFile = new File(defaultPath+upload.getDeploySrc().getOriginalFilename());
-        	deployFile.deleteOnExit();
-            upload.getDeploySrc().transferTo(deployFile);
-            
-            component = new MigrationComponent();
-        	component.unzipFile(deployFile.getAbsolutePath());
-        	component.setMigrationFileList();
-
-            list = component.getMigrationFileList();
-            System.out.println(pdfData.getMigrationFileList(list));
-
+            if(upload.getDeploySrc() != null && upload.getDeploySrc().getSize() > 0 ) {
+            	deployFile = new File(defaultPath+upload.getDeploySrc().getOriginalFilename());
+            	if (!deployFile.exists()) {
+                    if (!deployFile.mkdirs()) {
+                        throw new Exception("Fail to create a directory for attached file [" + deployFile + "]");
+                    }
+                }
+            	deployFile.deleteOnExit();
+                upload.getDeploySrc().transferTo(deployFile);
+                
+                component = new MigrationComponent();
+            	component.unzipFile(deployFile.getAbsolutePath());
+            	component.setMigrationFileList();
+    
+                list = component.getMigrationFileList();
+                System.out.println(pdfData.getMigrationFileList(list));
+            }
         }
         catch (IOException ex) {
         	ex.printStackTrace();

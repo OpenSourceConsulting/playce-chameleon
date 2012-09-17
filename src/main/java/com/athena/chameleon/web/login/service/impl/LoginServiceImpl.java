@@ -36,7 +36,6 @@ import com.athena.chameleon.web.login.vo.Login;
  * @version 1.0
  */
 @Service("coreLoginService")
-@Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
 public class LoginServiceImpl implements LoginService {
 
     @Value("#{filteringProperties['chameleon.login.id']}")
