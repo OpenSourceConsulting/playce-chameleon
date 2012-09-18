@@ -23,6 +23,11 @@ package com.athena.chameleon.engine.utils;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.bind.JAXBElement;
 
 import org.junit.Test;
 
@@ -31,7 +36,14 @@ import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType;
+import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterMappingType;
+import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterNameType;
+import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterType;
+import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FullyQualifiedClassType;
+import com.athena.chameleon.engine.entity.xml.webapp.v2_5.ObjectFactory;
+import com.athena.chameleon.engine.entity.xml.webapp.v2_5.ParamValueType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType;
+import com.athena.chameleon.engine.entity.xml.webapp.v2_5.XsdStringType;
 
 /**
  * <pre>
@@ -166,6 +178,91 @@ public class JaxbUtilsTest {
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error");
+        }
+    }
+    
+    @Test
+    public void webAppFilterTest() {
+        String xml = this.getClass().getResource("/files/webapp/web1.xml").getFile();
+        File file = new File(xml);
+        InputStream is = null;
+        
+        try {
+        	is = new FileInputStream(file);
+        	int cnt = 0;
+        	byte[] buf = new byte[1024]; 
+        
+        	System.out.println("==============================================================");
+        	System.out.println("*                  Original File Contents                    *");
+        	System.out.println("==============================================================");
+        	while((cnt = is.read(buf)) != -1) {
+        		System.out.write(buf, 0, cnt);
+        	}
+        	
+            Object obj = JaxbUtils.unmarshal(WebAppType.class.getPackage().getName(), this.getClass().getResource("/files/webapp/").getFile(), file.getName());
+            
+            WebAppType webApp = (WebAppType) ((JAXBElement<?>)obj).getValue();
+            
+            // <filter> element 추가
+            FilterType filter = new FilterType();
+            
+            FilterNameType filterName = new FilterNameType();
+            filterName.setValue("UTF_EncodingFilter");
+            filter.setFilterName(filterName);
+            
+            FullyQualifiedClassType filterClass = new FullyQualifiedClassType();
+            filterClass.setValue("com.osc.filters.SetCharacterEncodingFilter");
+            filter.setFilterClass(filterClass);
+            
+            // <init-param> element 추가
+            ParamValueType paramValue = new ParamValueType();
+            com.athena.chameleon.engine.entity.xml.webapp.v2_5.String strName = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.String();
+            strName.setValue("encoding");
+            XsdStringType strValue = new XsdStringType();
+            strValue.setValue("UTF-8");
+            paramValue.setParamName(strName);
+            paramValue.setParamValue(strValue);
+            
+            filter.getInitParam().add(paramValue);
+            
+            paramValue = new ParamValueType();
+            strName = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.String();
+            strName.setValue("forceEncoding");
+            strValue = new XsdStringType();
+            strValue.setValue("UTF-8");
+            paramValue.setParamName(strName);
+            paramValue.setParamValue(strValue);
+            
+            filter.getInitParam().add(paramValue);
+            
+            // <filter-mapping> elemnet 추가
+            FilterMappingType filterMapping = new FilterMappingType();
+            com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType urlPattern = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType();
+            urlPattern.setValue("*");
+            filterMapping.getUrlPatternOrServletName().add(urlPattern);
+            filterMapping.setFilterName(filterName);
+            
+            // <web-app>에 filter 및 filter-mapping 추가
+            ObjectFactory factory = new ObjectFactory();
+            webApp.getDescriptionAndDisplayNameAndIcon().add(5, factory.createWebAppTypeFilter(filter));
+            webApp.getDescriptionAndDisplayNameAndIcon().add(6, factory.createWebAppTypeFilterMapping(filterMapping));
+            
+            String xmlData = JaxbUtils.marshal(WebAppType.class.getPackage().getName(), obj, new String[]{"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"});
+            
+        	System.out.println("\n\n==============================================================");
+        	System.out.println("*                  Modified File Contents                    *");
+        	System.out.println("==============================================================");
+            System.out.println(xmlData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error");
+        } finally {
+        	try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+	            fail("Error");
+			}
         }
     }
 
