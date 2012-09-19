@@ -39,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.athena.chameleon.engine.core.ChapterSectionTOC;
 import com.athena.chameleon.engine.core.MigrationComponent;
-import com.athena.chameleon.engine.core.PDFDataDefinition;
+import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.utils.FileUtil;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
@@ -78,7 +78,7 @@ public class MigrationComponentTest {
 
 	@Inject
     @Named("pdfDataDefinition")
-    private PDFDataDefinition pdfData;
+    private PDFDocGenerator pdfData;
 
     @Test
     public void unzipTest() throws Exception  {
@@ -111,8 +111,14 @@ public class MigrationComponentTest {
         writer.setLinearPageMode();
         ChapterSectionTOC tocEvent = new ChapterSectionTOC();
         writer.setPageEvent(tocEvent);
+        
         pdf.open();
         
+        //HeaderFooter header = new HeaderFooter(phrase1, true);
+        //HeaderFooter footer = new HeaderFooter(phrase2, true);
+        //pdf.setHeader(header);
+        //pdf.setFooter(footer);
+
         
         Chapter chapter1 = PDFWriterUtil.getChapter("마이그레이션의개요", 1);
         chapter1.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));

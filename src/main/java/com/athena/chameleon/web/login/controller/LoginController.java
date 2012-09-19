@@ -48,12 +48,31 @@ public class LoginController {
     @Named("coreLoginService")
     private LoginService loginService;
 
+    /**
+     * 
+     * 로그인 페이지 호출
+     *
+     * @param model
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(params = "method=show")
     public String showLogin(Model model) throws Exception {
     	model.addAttribute(new Login());
     	return "/ifrm/login/show";
     }
 
+    /**
+     *  로그인
+     *
+     * @param login
+     * @param modelMap
+     * @param results
+     * @param status
+     * @param session
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(params = "method=login")
     public String login(Login login, ModelMap modelMap, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
 

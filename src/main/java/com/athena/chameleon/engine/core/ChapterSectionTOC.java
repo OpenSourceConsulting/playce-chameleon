@@ -34,9 +34,7 @@ import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * <pre>
- * 
- * </pre>
+ * Chapter 및 Section 목차 Event Helper
  * 
  * @author Hyo-jeong Lee
  * @version 1.0
@@ -54,8 +52,11 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
     }
     
     /** List with the titles. */
-    public static List<Paragraph> titles = new ArrayList<Paragraph>();
+    public List<Paragraph> titles = new ArrayList<Paragraph>();
 
+    /**
+     * chapter write 시 실행
+     */
     public void onChapter(PdfWriter writer, Document document,
             float position, Paragraph title) {
         
@@ -63,6 +64,9 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
         
     }
 
+    /**
+     * Section write 시 실행
+     */
     public void onSection(PdfWriter writer, Document document,
             float position, int depth, Paragraph title) {
         title = getTocParagraph(title.getContent(), writer.getPageNumber(), depth, document.left(), document.right());
@@ -76,6 +80,17 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
         cb.stroke();
     }
 
+    /**
+     * 
+     * 목차용 Paragraph 생성.(Navigation 기능 및 출력 title 입력) 
+     *
+     * @param title 
+     * @param pageNumber 
+     * @param depth 
+     * @param x1 document left 좌표
+     * @param x2 document right 좌표
+     * @return Paragraph
+     */
     public Paragraph getTocParagraph(String title, int pageNumber, int depth, float x1, float x2) {
         
         Font tocFont = new Font(bfKorean, 10);

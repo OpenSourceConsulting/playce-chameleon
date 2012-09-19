@@ -13,14 +13,16 @@ import com.athena.chameleon.engine.entity.file.MigrationFile;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @Component("pdfDataDefinition")
-public class PDFDataDefinition {
+public class PDFDocGenerator {
 
 	//retrun type 추후 변경 예정
 	String delimiter = "\n";
 	
 	/**
 	 * 
-	 * @param fileList
+	 * 압축을 푼 파일 목록을 PDF 출력 형식으로 변환
+	 *
+	 * @param fileList 압축을 푼 파일목록
 	 * @return
 	 */
 	public String getMigrationFileList(List<MigrationFile> fileList) {
@@ -37,6 +39,13 @@ public class PDFDataDefinition {
 		return buf.toString();
 	}
 	
+	/**
+	 * 
+	 * 압축을 푼 파일 중 마이그레이션 대상 파일 목록을 PDF 출력 형식으로 변환 (file.getLineMap()이 존재할 경우 마이그레이션 대상)
+	 *
+	 * @param fileList 압축을 푼 파일목록
+	 * @return
+	 */
 	public String getMigrationFileCheckLine(List<MigrationFile> fileList) {
 	    
 	    if(fileList == null)
@@ -60,6 +69,14 @@ public class PDFDataDefinition {
 		return buf.toString();
 	}
 	
+	/**
+	 * 
+	 * web.xml pasing 정보를 PDF 출력 형식으로 변환
+	 *
+	 * @param webApp web.xml root Pojo
+	 * @return
+	 * @throws Exception
+	 */
 	public String getWebXmlSettingInfo(Object webApp) throws Exception{
 	    
 	    if(webApp == null)
@@ -102,7 +119,14 @@ public class PDFDataDefinition {
 		return buf.toString();
 	}
 
-    //application file pasing
+    /**
+     * 
+     * application.xml pasing 정보를 PDF 출력 형식으로 변환
+     *
+     * @param app application.xml root Pojo
+     * @return
+     * @throws Exception
+     */
 	public String getApplicationXmlSettingInfo(Object app) throws Exception{
 
         if(app == null)
@@ -180,7 +204,16 @@ public class PDFDataDefinition {
         return buf.toString();
     }
 
-    //ejb file pasing
+    /**
+     * 
+     * ejb 관련 pasing 정보를 PDF 출력 형식으로 변환
+     *
+     * @param ejb ejb.xml root Pojo
+     * @param weblogic weblogic-ejb.xml root Pojo
+     * @param jeus jeus-ejb.xml root Pojo
+     * @return
+     * @throws Exception
+     */
 	public String getEjbXmlSettingInfo(Object ejb, Object weblogic, Object jeus) throws Exception{
 
         if(ejb == null)
@@ -274,7 +307,14 @@ public class PDFDataDefinition {
         return entity;
     }
 
-    // filter mapping 정보
+    /**
+     * 
+     * web.xml 의 filter mapping 정보를 PDF 출력 형식으로 변환 
+     *
+     * @param filter
+     * @return
+     * @throws Exception
+     */
     private String getFilterMappingType(Object filter) throws Exception {
     	
     	if(filter == null)
@@ -296,7 +336,14 @@ public class PDFDataDefinition {
         return buf.toString();
     }
 
-    //servlet mapping 정보
+    /**
+     * 
+     * web.xml 의 servlet mapping 정보를 PDF 출력 형식으로 변환
+     *
+     * @param servlet
+     * @return
+     * @throws Exception
+     */
     private String getServletMappingType(Object servlet) throws Exception {
 
     	if(servlet == null)
@@ -317,7 +364,14 @@ public class PDFDataDefinition {
         return buf.toString();
     }
 
-    //error page 정보
+    /**
+     * 
+     * web.xml 의 error page 정보를 PDF 출력 형식으로 변환
+     *
+     * @param errorPage
+     * @return
+     * @throws Exception
+     */
     private String getErrorPageType(Object errorPage) throws Exception {
         
     	if(errorPage == null)
@@ -333,7 +387,14 @@ public class PDFDataDefinition {
     	return buf.toString();
     }
 
-    //welcome file 정보
+    /**
+     * 
+     * web.xml 의 welcome file 정보를 PDF 출력 형식으로 변환
+     *
+     * @param welcomeFile
+     * @return
+     * @throws Exception
+     */
     private String getWelcomeFileListType(Object welcomeFile) throws Exception {
         
     	if(welcomeFile == null)
@@ -349,7 +410,14 @@ public class PDFDataDefinition {
         return buf.toString();
     }
 
-    //resource reference 정보
+    /**
+     * 
+     * web.xml 의 resource reference 정보를 PDF 출력 형식으로 변환
+     *
+     * @param resourceRef
+     * @return
+     * @throws Exception
+     */
     private String getResourceRefType(Object resourceRef) throws Exception {
 
     	if(resourceRef == null)
@@ -369,6 +437,14 @@ public class PDFDataDefinition {
         return buf.toString();
     }
     
+    /**
+     * 
+     * object의 value값 반환
+     *
+     * @param o value를 반환할 object 객체
+     * @return String
+     * @throws Exception
+     */
     private String getValue(Object o) throws Exception {
     	
     	if(o == null)

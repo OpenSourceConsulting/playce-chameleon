@@ -62,6 +62,13 @@ public class MigrationComponent {
     public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
 
+    /**
+     * 
+     * Migration 실행 메소드
+     *
+     * @param commFile
+     * @return
+     */
 	public Migration executeMigration(CommonsMultipartFile commFile) {
 	    
 	    if(commFile == null || commFile.getSize() == 0L)
@@ -88,9 +95,10 @@ public class MigrationComponent {
             this.rootPath = unzipFile.getAbsolutePath();
             setMigrationFileList();
             
+            //test를 위한 임시 Pojo. 추후 삭제 및 다른 Pojo로 변경 예정
             entity = new Migration();
             
-            PDFDataDefinition pdfData = new PDFDataDefinition();
+            PDFDocGenerator pdfData = new PDFDocGenerator();
             entity.setFileListStr(pdfData.getMigrationFileList(migrationFileList));
             entity.setCheckFileListStr(pdfData.getMigrationFileCheckLine(migrationFileList));
             entity.setWebXmlStr(pdfData.getWebXmlSettingInfo(webXmlPasing()));
@@ -107,6 +115,13 @@ public class MigrationComponent {
             
 	}
 	
+	/**
+	 * 
+	 * 입력된 path의 압축파일을 unzip
+	 *
+	 * @param zipFilePath 압축파일 path
+	 * @throws Exception
+	 */
     public void unzipFile(String zipFilePath) throws Exception {
     	String tmpFileDir = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis();
         String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir);

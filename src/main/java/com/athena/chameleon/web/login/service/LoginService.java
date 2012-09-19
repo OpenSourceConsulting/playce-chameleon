@@ -30,6 +30,13 @@ import com.athena.chameleon.web.login.vo.Login;
  */
 public interface LoginService {
 
+    /**
+     * 로그인 체크 Service
+     *
+     * @param login
+     * @return
+     * @throws Exception
+     */
 	boolean login(Login login) throws Exception;
 
 }

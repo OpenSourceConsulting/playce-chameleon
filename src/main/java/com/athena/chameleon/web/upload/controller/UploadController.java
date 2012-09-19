@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.athena.chameleon.engine.core.MigrationComponent;
-import com.athena.chameleon.engine.core.PDFDataDefinition;
+import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.web.upload.vo.Upload;
 
@@ -52,11 +52,20 @@ public class UploadController {
 
 	@Inject
     @Named("pdfDataDefinition")
-    private PDFDataDefinition pdfData;
+    private PDFDocGenerator pdfData;
 
 	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
 	public String uploadPath;
 
+	/**
+	 * 
+	 * 업로드 입력정보 화면 호출
+	 *
+	 * @param model
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
     @RequestMapping(params = "method=show")
     public String showUpload(Model model, HttpSession session) throws Exception {
     	
@@ -68,6 +77,17 @@ public class UploadController {
     	return "/ifrm/upload/show";
     }
 
+    /**
+     * 
+     * 업로드 실행
+     *
+     * @param upload
+     * @param results
+     * @param status
+     * @param session
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(params = "method=upload")
     public String upload(Upload upload, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
 

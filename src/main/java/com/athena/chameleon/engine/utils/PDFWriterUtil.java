@@ -20,19 +20,14 @@
  */
 package com.athena.chameleon.engine.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.athena.chameleon.engine.core.ChapterSectionTOC;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
@@ -44,8 +39,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 public class PDFWriterUtil {
 
-    private static final Log logger = LogFactory.getLog(PDFWriterUtil.class);
-
     private static BaseFont bfKorean;
     
     static {
@@ -56,6 +49,12 @@ public class PDFWriterUtil {
         }
     }
     
+    /**
+     * Default 출력 형식
+     *
+     * @param text 입력 text
+     * @return Paragraph
+     */
     public static Paragraph getDefault(String text) {
         Font fnNormal = new Font(bfKorean, 10);
         Paragraph ph = new Paragraph(text, fnNormal);
@@ -64,6 +63,13 @@ public class PDFWriterUtil {
         return ph;
     }
     
+    /**
+     * Chapter 출력 형식
+     *
+     * @param text Chapter title
+     * @param chapterNo Chapter Number
+     * @return Chapter
+     */
     public static Chapter getChapter(String text, int chapterNo) {
         Font fnChapter = new Font(bfKorean, 14, Font.BOLD);
         
@@ -80,6 +86,15 @@ public class PDFWriterUtil {
 
     }
     
+    /**
+     * 
+     * Section 출력 형식
+     *
+     * @param chapter section이 들어갈 chapter 객체
+     * @param text section title
+     * @param sectionNo section Number
+     * @return Section
+     */
     public static Section getSection(Chapter chapter, String text, int sectionNo) {
         Font fnSection = new Font(bfKorean, 12, Font.BOLD);
         
@@ -97,6 +112,14 @@ public class PDFWriterUtil {
         return section;
     }
     
+    /**
+     * 목차 생성
+     *
+     * @param doc 
+     * @param writer 
+     * @param event
+     * @throws Exception
+     */
     public static void setChapterSectionTOC(Document doc, PdfWriter writer, ChapterSectionTOC event) throws Exception {
         
         doc.newPage();

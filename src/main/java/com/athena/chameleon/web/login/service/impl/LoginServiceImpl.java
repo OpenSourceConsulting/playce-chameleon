@@ -44,7 +44,9 @@ public class LoginServiceImpl implements LoginService {
     @Value("#{filteringProperties['chameleon.login.password']}")
 	String passWord;
 
-	
+	/**
+	 * 로그인 체크 Service Impl
+	 */
 	public boolean login(Login login) throws Exception {
 		
 		boolean result = false;
