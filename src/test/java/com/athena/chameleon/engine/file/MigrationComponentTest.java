@@ -119,11 +119,11 @@ public class MigrationComponentTest {
         chapter1.add(PDFWriterUtil.getDefault("WAS서버에서 작동되는업무 애플리케이션을 공개SW기반의 "));
         chapter1.add(PDFWriterUtil.getDefault("WAS에서 작동이 되는 변경 작업에 대한 결과 산출물로 툴에의해 자동으로 생성된 보고서입니다."));
         
-        Section section1_1 =  PDFWriterUtil.getSection(chapter1, "목표기대치");
+        Section section1_1 =  PDFWriterUtil.getSection(chapter1, "목표기대치", 1);
         section1_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));
         section1_1.add(PDFWriterUtil.getDefault("작동을목표로하고있습니다"));
         
-        Section section1_2 =  PDFWriterUtil.getSection(chapter1, "보고서의범위");
+        Section section1_2 =  PDFWriterUtil.getSection(chapter1, "보고서의범위", 2);
         section1_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
         
         pdf.add(chapter1);
@@ -133,11 +133,11 @@ public class MigrationComponentTest {
         chapter2.add(PDFWriterUtil.getDefault("WAS서버에서 작동되는 업무애플리케이션을 공개 SW기반의 "));
         chapter2.add(PDFWriterUtil.getDefault("WAS에서 작동이 되는 변경작업에 대한 결과 산출물로 툴에 의해 자동으로 생성된 보고서입니다."));
         
-        Section section2_1 =  PDFWriterUtil.getSection(chapter2, "목표기대치");
+        Section section2_1 =  PDFWriterUtil.getSection(chapter2, "목표기대치", 1);
         section2_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));
         section2_1.add(PDFWriterUtil.getDefault("작동을목표로하고있습니다"));
         
-        Section section2_2 =  PDFWriterUtil.getSection(chapter2, "보고서의범위");
+        Section section2_2 =  PDFWriterUtil.getSection(chapter2, "보고서의범위", 2);
         section2_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
         
         pdf.add(chapter2);

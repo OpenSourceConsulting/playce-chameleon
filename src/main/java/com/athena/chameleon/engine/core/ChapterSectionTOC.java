@@ -23,10 +23,12 @@ package com.athena.chameleon.engine.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -57,32 +59,54 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
     public void onChapter(PdfWriter writer, Document document,
             float position, Paragraph title) {
         
-        titles.add(new Paragraph(title.getContent(), new Font(bfKorean, 10)));
-    }
-
-    public void onChapterEnd(PdfWriter writer, Document document,
-            float position) {
-        drawLine(writer.getDirectContent(),
-                document.left(), document.right(), position - 5);
+        titles.add(getTocParagraph(title.getContent(), writer.getPageNumber(), 0, document.left(), document.right()));
+        
     }
 
     public void onSection(PdfWriter writer, Document document,
             float position, int depth, Paragraph title) {
-        title = new Paragraph(title.getContent(), new Font(bfKorean, 10));
-        title.setIndentationLeft(18 * depth);
+        title = getTocParagraph(title.getContent(), writer.getPageNumber(), depth, document.left(), document.right());
+        title.setIndentationLeft(12 * depth);
         titles.add(title);
-    }
-
-    public void onSectionEnd(PdfWriter writer, Document document,
-            float position) {
-        drawLine(writer.getDirectContent(),
-                document.left(), document.right(), position - 3);
     }
 
     public void drawLine(PdfContentByte cb, float x1, float x2, float y) {
         cb.moveTo(x1, y);
         cb.lineTo(x2, y);
         cb.stroke();
+    }
+
+    public Paragraph getTocParagraph(String title, int pageNumber, int depth, float x1, float x2) {
+        
+        Font tocFont = new Font(bfKorean, 10);
+        if(depth == 0)
+            tocFont.setStyle(Font.BOLD);
+        
+        Paragraph p = new Paragraph();
+        p.setSpacingAfter(5);
+            
+        Chunk tit = new Chunk(title+" ", tocFont);
+        tit.setAction(PdfAction.gotoLocalPage(title, false));
+        
+        Chunk point = new Chunk(".", tocFont);
+        
+        Chunk number = new Chunk(" "+pageNumber, tocFont);
+        number.setAction(PdfAction.gotoLocalPage(title, false));
+        
+        p.add(tit);
+        
+        float width = x2-x1-tit.getWidthPoint()-number.getWidthPoint()-(depth*12);
+        
+        float i=point.getWidthPoint();
+        while(i < width) {
+            p.add(point);
+            i += point.getWidthPoint();
+        }
+        
+        p.add(number);
+        
+        
+        return p;
     }
 }
 //end of ChapterSectionTOC.java

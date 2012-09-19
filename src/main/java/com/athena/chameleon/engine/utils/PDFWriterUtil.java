@@ -25,12 +25,14 @@ import org.apache.commons.logging.LogFactory;
 
 import com.athena.chameleon.engine.core.ChapterSectionTOC;
 import com.itextpdf.text.Chapter;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
@@ -64,22 +66,34 @@ public class PDFWriterUtil {
     
     public static Chapter getChapter(String text, int chapterNo) {
         Font fnChapter = new Font(bfKorean, 14, Font.BOLD);
-                
-        Paragraph chapterPh = new Paragraph(text, fnChapter);
+        
+        Chapter chapter = new Chapter(text, chapterNo);
+        String title = chapter.getTitle().getContent();
+        
+        Chunk c = new Chunk(text, fnChapter);
+        c.setLocalDestination(title);
+        Paragraph chapterPh = new Paragraph();
+        chapterPh.add(c);
         chapterPh.setSpacingAfter(12);
-        Chapter chapter = new Chapter(chapterPh, chapterNo);
+        chapter.setTitle(chapterPh);
         return chapter;
 
     }
     
-    public static Section getSection(Chapter chapter, String text) {
+    public static Section getSection(Chapter chapter, String text, int sectionNo) {
         Font fnSection = new Font(bfKorean, 12, Font.BOLD);
         
-        Paragraph sectionPh = new Paragraph(text, fnSection);
+        Section section = chapter.addSection(text);
+        String title = section.getTitle().getContent();
+        
+        Chunk c = new Chunk(text, fnSection);
+        c.setLocalDestination(title);
+        
+        Paragraph sectionPh = new Paragraph();
+        sectionPh.add(c);
         sectionPh.setSpacingBefore(8);
         sectionPh.setSpacingAfter(3);
-        Section section = chapter.addSection(sectionPh);
-        
+        section.setTitle(sectionPh);
         return section;
     }
     
@@ -87,12 +101,13 @@ public class PDFWriterUtil {
         
         doc.newPage();
         
+        Paragraph title = new Paragraph("TABLE OF CONTENTS", new Font(bfKorean, 13, Font.BOLD));
+        title.setSpacingAfter(8);
+        doc.add(title);
+        
         int toc = writer.getPageNumber();
         for(Paragraph p : event.titles)
             doc.add(p);
-        
-        for(int i=0;i<50;i++)
-            doc.add(new Paragraph("aaa:"+i));
         
         doc.newPage();
         int total = writer.reorderPages(null);
@@ -105,7 +120,7 @@ public class PDFWriterUtil {
         }
         // apply the new order
         writer.reorderPages(order);
-        //writer.
+
     }
 }
 //end of PDFUtil.java
