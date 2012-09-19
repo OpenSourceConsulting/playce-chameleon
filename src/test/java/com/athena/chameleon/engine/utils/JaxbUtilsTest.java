@@ -26,9 +26,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 
 import com.athena.chameleon.engine.entity.xml.application.jeus.v5_0.JeusSystemType;
@@ -203,49 +205,89 @@ public class JaxbUtilsTest {
             
             WebAppType webApp = (WebAppType) ((JAXBElement<?>)obj).getValue();
             
-            // <filter> element 추가
-            FilterType filter = new FilterType();
+            // webApp에 <filter />, <filter-mapping />이 존재하는지 확인
+            List<JAXBElement<?>> elementList = webApp.getDescriptionAndDisplayNameAndIcon();
             
-            FilterNameType filterName = new FilterNameType();
-            filterName.setValue("UTF_EncodingFilter");
-            filter.setFilterName(filterName);
+            Object o = null;
+            List<ParamValueType> paramList = null;
+            String[] charSet = {"UTF-8", "EUC-KR", "ISO-8859", "ISO-8859-1", "MS949"};
+            boolean hasEncodingFilter = false;
+            for(JAXBElement<?> element : elementList) {
+            	o = element.getValue();
+            	
+            	if(o instanceof FilterType) {
+            		
+            		// filter-name에 encoding 문자열이 있는지 확인.
+            		if(((FilterType)o).getFilterName().getValue().toLowerCase().indexOf("encoding") > -1) {
+            			hasEncodingFilter = true;
+            			break;
+            		} 
+            		
+            		// param-name에 encoding, param-value에 UTF-8, EUC-KR, ISO-8859, MS949 등의 문자열이 있는지 확인
+            		paramList = ((FilterType)o).getInitParam();
+            		for(ParamValueType param : paramList) {
+            			if(param.getParamName().getValue().toLowerCase().indexOf("encoding") > -1) {
+                			hasEncodingFilter = true;
+                			break;
+            			}
+            			if(ArrayUtils.contains(charSet, param.getParamValue().getValue().toUpperCase())) {
+                			hasEncodingFilter = true;
+                			break;
+            				
+            			}
+            		}
+            		
+            		if(hasEncodingFilter) {
+            			break;
+            		}
+            	}
+            }
             
-            FullyQualifiedClassType filterClass = new FullyQualifiedClassType();
-            filterClass.setValue("com.osc.filters.SetCharacterEncodingFilter");
-            filter.setFilterClass(filterClass);
-            
-            // <init-param> element 추가
-            ParamValueType paramValue = new ParamValueType();
-            com.athena.chameleon.engine.entity.xml.webapp.v2_5.String strName = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.String();
-            strName.setValue("encoding");
-            XsdStringType strValue = new XsdStringType();
-            strValue.setValue("UTF-8");
-            paramValue.setParamName(strName);
-            paramValue.setParamValue(strValue);
-            
-            filter.getInitParam().add(paramValue);
-            
-            paramValue = new ParamValueType();
-            strName = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.String();
-            strName.setValue("forceEncoding");
-            strValue = new XsdStringType();
-            strValue.setValue("UTF-8");
-            paramValue.setParamName(strName);
-            paramValue.setParamValue(strValue);
-            
-            filter.getInitParam().add(paramValue);
-            
-            // <filter-mapping> elemnet 추가
-            FilterMappingType filterMapping = new FilterMappingType();
-            com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType urlPattern = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType();
-            urlPattern.setValue("*");
-            filterMapping.getUrlPatternOrServletName().add(urlPattern);
-            filterMapping.setFilterName(filterName);
-            
-            // <web-app>에 filter 및 filter-mapping 추가
-            ObjectFactory factory = new ObjectFactory();
-            webApp.getDescriptionAndDisplayNameAndIcon().add(5, factory.createWebAppTypeFilter(filter));
-            webApp.getDescriptionAndDisplayNameAndIcon().add(6, factory.createWebAppTypeFilterMapping(filterMapping));
+            if(!hasEncodingFilter) {
+	            // <filter> element 추가
+	            FilterType filter = new FilterType();
+	            
+	            FilterNameType filterName = new FilterNameType();
+	            filterName.setValue("UTF_EncodingFilter");
+	            filter.setFilterName(filterName);
+	            
+	            FullyQualifiedClassType filterClass = new FullyQualifiedClassType();
+	            filterClass.setValue("com.osc.filters.SetCharacterEncodingFilter");
+	            filter.setFilterClass(filterClass);
+	            
+	            // <init-param> element 추가
+	            ParamValueType paramValue = new ParamValueType();
+	            com.athena.chameleon.engine.entity.xml.webapp.v2_5.String strName = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.String();
+	            strName.setValue("encoding");
+	            XsdStringType strValue = new XsdStringType();
+	            strValue.setValue("UTF-8");
+	            paramValue.setParamName(strName);
+	            paramValue.setParamValue(strValue);
+	            
+	            filter.getInitParam().add(paramValue);
+	            
+	            paramValue = new ParamValueType();
+	            strName = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.String();
+	            strName.setValue("forceEncoding");
+	            strValue = new XsdStringType();
+	            strValue.setValue("UTF-8");
+	            paramValue.setParamName(strName);
+	            paramValue.setParamValue(strValue);
+	            
+	            filter.getInitParam().add(paramValue);
+            	
+	            // <filter-mapping> elemnet 추가
+	            FilterMappingType filterMapping = new FilterMappingType();
+	            com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType urlPattern = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType();
+	            urlPattern.setValue("*");
+	            filterMapping.getUrlPatternOrServletName().add(urlPattern);
+	            filterMapping.setFilterName(filterName);
+
+	            // <web-app>에 filter 추가
+            	ObjectFactory factory = new ObjectFactory();
+	            webApp.getDescriptionAndDisplayNameAndIcon().add(factory.createWebAppTypeFilter(filter));
+	            webApp.getDescriptionAndDisplayNameAndIcon().add(factory.createWebAppTypeFilterMapping(filterMapping));
+            }
             
             String xmlData = JaxbUtils.marshal(WebAppType.class.getPackage().getName(), obj, new String[]{"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"});
             
