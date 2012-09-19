@@ -210,30 +210,28 @@ public class JaxbUtilsTest {
             
             Object o = null;
             List<ParamValueType> paramList = null;
-            String[] charSet = {"UTF-8", "EUC-KR", "ISO-8859", "ISO-8859-1", "MS949"};
+            String[] charSet = {"UTF-8", "UTF8"};
             boolean hasEncodingFilter = false;
+            boolean hasUTF8EncodingFilter = false;
+            FilterNameType filtername = null;
+            
             for(JAXBElement<?> element : elementList) {
             	o = element.getValue();
             	
             	if(o instanceof FilterType) {
+            		filtername = ((FilterType)o).getFilterName();
             		
-            		// filter-name에 encoding 문자열이 있는지 확인.
-            		if(((FilterType)o).getFilterName().getValue().toLowerCase().indexOf("encoding") > -1) {
-            			hasEncodingFilter = true;
-            			break;
-            		} 
-            		
-            		// param-name에 encoding, param-value에 UTF-8, EUC-KR, ISO-8859, MS949 등의 문자열이 있는지 확인
             		paramList = ((FilterType)o).getInitParam();
             		for(ParamValueType param : paramList) {
-            			if(param.getParamName().getValue().toLowerCase().indexOf("encoding") > -1) {
+                		// init-param의 param-name이 encoding이 존재하는지 확인
+            			if(param.getParamName().getValue().toLowerCase().equals("encoding")) {
                 			hasEncodingFilter = true;
-                			break;
-            			}
-            			if(ArrayUtils.contains(charSet, param.getParamValue().getValue().toUpperCase())) {
-                			hasEncodingFilter = true;
-                			break;
-            				
+                			
+                    		// param-value가 UTF-8인지 확인
+            				if(ArrayUtils.contains(charSet, param.getParamValue().getValue().toUpperCase())) {
+            					hasUTF8EncodingFilter = true;
+                    			break;
+                			}
             			}
             		}
             		
@@ -243,7 +241,30 @@ public class JaxbUtilsTest {
             	}
             }
             
-            if(!hasEncodingFilter) {
+            // encoding filter는 존재하지만 UTF-8이 아닐 경우 해당 filter 및 filter-mapping 엘리먼트를 삭제한다.
+            if(hasEncodingFilter && !hasUTF8EncodingFilter) {
+                JAXBElement<?> f = null;
+                JAXBElement<?> fm = null;
+                
+	            for(JAXBElement<?> element : elementList) {
+	            	o = element.getValue();
+	            	
+	            	if(o instanceof FilterType) {
+	            		if(((FilterType)o).getFilterName().getValue().equals(filtername.getValue())) {
+	            			f = element;
+	            		}
+	            	} else if(o instanceof FilterMappingType) {
+	            		if(((FilterMappingType)o).getFilterName().getValue().equals(filtername.getValue())) {
+	            			fm = element;
+	            		}
+	            	}
+	            }
+	            
+	            webApp.getDescriptionAndDisplayNameAndIcon().remove(f);
+	            webApp.getDescriptionAndDisplayNameAndIcon().remove(fm);
+            }
+            
+            if(!hasUTF8EncodingFilter) {
 	            // <filter> element 추가
 	            FilterType filter = new FilterType();
 	            
@@ -279,7 +300,7 @@ public class JaxbUtilsTest {
 	            // <filter-mapping> elemnet 추가
 	            FilterMappingType filterMapping = new FilterMappingType();
 	            com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType urlPattern = new com.athena.chameleon.engine.entity.xml.webapp.v2_5.UrlPatternType();
-	            urlPattern.setValue("*");
+	            urlPattern.setValue("/*");
 	            filterMapping.getUrlPatternOrServletName().add(urlPattern);
 	            filterMapping.setFilterName(filterName);
 
