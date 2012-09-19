@@ -53,6 +53,7 @@ import com.athena.chameleon.engine.utils.JaxbUtils;
 @Component("migrationComponent")
 public class MigrationComponent {
 
+    public String                   defaultPath;
     public String                   rootPath;
     public File						unzipFile;
     public File                     webXmlFile;
@@ -62,14 +63,22 @@ public class MigrationComponent {
     public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
 
+    {
+        try {
+            defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis() + File.separator;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+     
     /**
      * 
-     * Migration 실행 메소드
+     * Migration 실행 메소드(CommonsMultipartFile 용)
      *
      * @param commFile
      * @return
      */
-	public Migration executeMigration(CommonsMultipartFile commFile) {
+	public Migration executeMigrationForMultipartFile(CommonsMultipartFile commFile) {
 	    
 	    if(commFile == null || commFile.getSize() == 0L)
             return null;
@@ -77,8 +86,6 @@ public class MigrationComponent {
 	    Migration entity = null;
 	    
         try {
-            String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis() + File.separator;
-            
             File migrationFile = new File(defaultPath+commFile.getOriginalFilename());
             if (!migrationFile.exists()) {
                 if (!migrationFile.mkdirs()) {
@@ -89,6 +96,28 @@ public class MigrationComponent {
             migrationFile.deleteOnExit();
             commFile.transferTo(migrationFile);
             
+            entity = executeMigration(migrationFile);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return entity;
+	}
+
+    /**
+     * 
+     * Migration 실행 메소드
+     *
+     * @param commFile
+     * @return
+     */
+    public Migration executeMigration(File migrationFile) {
+        
+        if(migrationFile == null)
+            return null;
+        
+        Migration entity = null;
+        
+        try {
             String unzipPath = FileUtil.extract(migrationFile.getAbsolutePath(), defaultPath);
             
             this.unzipFile = new File(unzipPath);
@@ -113,8 +142,8 @@ public class MigrationComponent {
         
         return entity;
             
-	}
-	
+    }
+    
 	/**
 	 * 
 	 * 입력된 path의 압축파일을 unzip
@@ -258,17 +287,17 @@ public class MigrationComponent {
         Unmarshaller unmarshaller;
         try {
         	//web.xml 2.5
-            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp.v2_5");
+            unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType.class.getPackage().getName());
         	webApp = unmarshaller.unmarshal(webXmlFile);
         } catch(Exception e1) {
             try {
             	//web.xml 2.4
-        		unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp.v2_4");
+                unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.webapp.v2_4.WebAppType.class.getPackage().getName());
                 webApp = unmarshaller.unmarshal(webXmlFile);
         	} catch(Exception e2) {
         		try {
         			//web.xml 2.3
-	        		unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.webapp.v2_3");
+        		    unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.webapp.v2_3.WebApp.class.getPackage().getName());
 	                webApp = unmarshaller.unmarshal(webXmlFile);
         		} catch(Exception e3) {
         			e3.printStackTrace();
@@ -305,12 +334,12 @@ public class MigrationComponent {
         Unmarshaller unmarshaller;
         try {
             //application.xml 1.4
-            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application.v1_4");
+            unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType.class.getPackage().getName());
             app = unmarshaller.unmarshal(applicationXmlFile);
         } catch(Exception e1) {
             try {
                 //application.xml 1.3
-                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.application.v1_3");
+                unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.application.v1_3.Application.class.getPackage().getName());
                 app = unmarshaller.unmarshal(applicationXmlFile);
             } catch(Exception e2) {
                 e2.printStackTrace();
@@ -346,12 +375,12 @@ public class MigrationComponent {
         Unmarshaller unmarshaller;
         try {
             //ejb-jar.xml 2.1
-            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_1");
+            unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType.class.getPackage().getName());
             ejb = ((JAXBElement<?>) unmarshaller.unmarshal(ejbXmlFile)).getValue();
         } catch(Exception e1) {
             try {
                 //ejb-jar.xml 2.0
-                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.v2_0");
+                unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar.class.getPackage().getName());
                 ejb = unmarshaller.unmarshal(ejbXmlFile);
             } catch(Exception e2) {
                 e2.printStackTrace();
@@ -387,7 +416,7 @@ public class MigrationComponent {
         Unmarshaller unmarshaller;
         try {
             //weblogic-ejb-jar.xml 9.0
-            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0");
+            unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType.class.getPackage().getName());
             result = ((JAXBElement<?>) unmarshaller.unmarshal(weblogicEjbXmlFile)).getValue();
         } catch(JAXBException je) {
             je.printStackTrace();
@@ -424,12 +453,12 @@ public class MigrationComponent {
         Unmarshaller unmarshaller;
         try {
             //jeus-ejb-jar.xml 6.0
-            unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v6_0");
+            unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v6_0.JeusEjbDdType.class.getPackage().getName());
             result = ((JAXBElement<?>) unmarshaller.unmarshal(jeusEjbXmlFile)).getValue();
         } catch(Exception e1) {
             try {
                 //jeus-ejb-jar.xml 5.0
-                unmarshaller = JaxbUtils.createUnmarshaller("com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0");
+                unmarshaller = JaxbUtils.createUnmarshaller(com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType.class.getPackage().getName());
                 result = ((JAXBElement<?>) unmarshaller.unmarshal(jeusEjbXmlFile)).getValue();
             } catch(Exception e2) {
                 e2.printStackTrace();
