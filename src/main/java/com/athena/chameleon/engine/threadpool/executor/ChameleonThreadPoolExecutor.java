@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.threadpool.handler.ChameleonRejectedExecutionHandler;
 import com.athena.chameleon.engine.threadpool.monitor.ChameleonThreadPoolMonitor;
 import com.athena.chameleon.engine.threadpool.task.BaseTask;
@@ -163,10 +164,8 @@ public class ChameleonThreadPoolExecutor implements InitializingBean {
      */
     public void execute(Runnable task) {
     	Assert.notNull(task, "task must not be null.");
-    	
-    	if(!monitor.isAlive()) {
-    		monitor.start();
-    	}
+
+    	checkExecutor();
     	executor.execute(task);
     }//end of execute()
     
@@ -178,10 +177,8 @@ public class ChameleonThreadPoolExecutor implements InitializingBean {
      */
     public void execute(BaseTask task) {
     	Assert.notNull(task, "task must not be null.");
-
-    	if(!monitor.isAlive()) {
-    		monitor.start();
-    	}
+    	
+    	checkExecutor();
     	executor.execute(task);
     }//end of execute()
     
@@ -194,11 +191,35 @@ public class ChameleonThreadPoolExecutor implements InitializingBean {
     public void execute(List<BaseTask> taskList) {
     	Assert.notNull(taskList, "taskList must not be null.");
 
-    	if(!monitor.isAlive()) {
-    		monitor.start();
-    	}
+    	checkExecutor();
         for(BaseTask task : taskList) {
         	executor.execute(task);
         }
     }//end of execute()
+    
+    /**
+     * <pre>
+     * executor가 terminated 되었을 경우 executor 초기화 및 monitor가 중지 되었을 경우 monitor 초기화
+     * </pre>
+     * 
+     */
+    private void checkExecutor() {
+		try {
+			if(executor.isTerminated()) {
+				initialize();
+			}
+			
+			if(!monitor.isAlive()) {
+				if(monitor.getState().equals(Thread.State.TERMINATED)) {
+					monitor =  new ChameleonThreadPoolMonitor();
+					monitor.setMonitoringPeriod(Long.parseLong(PropertyUtil.getProperty("chameleon.threadpool.monitoring.period")));
+					monitor.setExecutor(executor);
+				}
+				
+				monitor.start();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+    }//end of checkExecutor()
 }//end of ChameleonTaskExecutor.java

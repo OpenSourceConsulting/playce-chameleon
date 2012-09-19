@@ -43,7 +43,7 @@ public abstract class BaseTask implements Runnable {
 	 * @return the taskName
 	 */
 	public String getTaskName() {
-		return taskName == null ? this.toString() : taskName;
+		return taskName == null ? super.toString() : taskName;
 	}
 
 	/**

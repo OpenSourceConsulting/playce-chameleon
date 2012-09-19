@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
          
 	<bean id="threadPoolMonitor" class="com.athena.chameleon.engine.threadpool.monitor.ChameleonThreadPoolMonitor">
-		<property name="monitoringPeriod" value="1" />
+		<property name="monitoringPeriod" value="${chameleon.threadpool.monitoring.period}" />
 	</bean>
                
     <bean id="rejectedExecutionHandler" class="com.athena.chameleon.engine.threadpool.handler.ChameleonRejectedExecutionHandler"/>
