@@ -77,7 +77,7 @@ public class MigrationComponentTest {
     private MigrationComponent component;
 
 	@Inject
-    @Named("pdfDataDefinition")
+    @Named("pdfDocGenerator")
     private PDFDocGenerator pdfData;
 
     @Test

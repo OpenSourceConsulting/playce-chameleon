@@ -20,6 +20,8 @@
  */
 package com.athena.chameleon.web.upload.controller;
 
+import java.io.File;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
@@ -31,6 +33,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
+import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.Migration;
@@ -51,7 +54,7 @@ public class UploadController {
     private MigrationComponent component;
 
 	@Inject
-    @Named("pdfDataDefinition")
+    @Named("pdfDocGenerator")
     private PDFDocGenerator pdfData;
 
 	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
@@ -100,8 +103,21 @@ public class UploadController {
         }
     	
     	try {
-            if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
-                Migration entity = component.executeMigrationForMultipartFile(upload.getProjectSrc());
+    	    String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator;
+    	    File migrationFile;
+    	    if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
+                
+                migrationFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
+                if (!migrationFile.exists()) {
+                    if (!migrationFile.mkdirs()) {
+                        throw new Exception("Fail to create a directory for attached file [" + migrationFile + "]");
+                    }
+                }
+                
+                migrationFile.deleteOnExit();
+                upload.getProjectSrc().transferTo(migrationFile);
+                
+                Migration entity = component.executeMigration(migrationFile);
                 System.out.println(entity.getFileListStr());
                 System.out.println(entity.getWebXmlStr());
                 System.out.println(entity.getApplicationXmlStr());
@@ -109,7 +125,18 @@ public class UploadController {
             }
             
             if(upload.getDeploySrc() != null && upload.getDeploySrc().getSize() > 0 ) {
-                Migration entity = component.executeMigrationForMultipartFile(upload.getDeploySrc());
+                
+                migrationFile = new File(defaultPath+upload.getDeploySrc().getOriginalFilename());
+                if (!migrationFile.exists()) {
+                    if (!migrationFile.mkdirs()) {
+                        throw new Exception("Fail to create a directory for attached file [" + migrationFile + "]");
+                    }
+                }
+                
+                migrationFile.deleteOnExit();
+                upload.getDeploySrc().transferTo(migrationFile);
+                
+                Migration entity = component.executeMigration(migrationFile);
                 System.out.println(entity.getFileListStr());
                 System.out.println(entity.getWebXmlStr());
                 System.out.println(entity.getApplicationXmlStr());

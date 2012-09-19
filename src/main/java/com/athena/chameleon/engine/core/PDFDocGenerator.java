@@ -12,7 +12,7 @@ import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-@Component("pdfDataDefinition")
+@Component("pdfDocGenerator")
 public class PDFDocGenerator {
 
 	//retrun type 추후 변경 예정

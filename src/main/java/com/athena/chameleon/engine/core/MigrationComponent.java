@@ -73,38 +73,6 @@ public class MigrationComponent {
      
     /**
      * 
-     * Migration 실행 메소드(CommonsMultipartFile 용)
-     *
-     * @param commFile
-     * @return
-     */
-	public Migration executeMigrationForMultipartFile(CommonsMultipartFile commFile) {
-	    
-	    if(commFile == null || commFile.getSize() == 0L)
-            return null;
-        
-	    Migration entity = null;
-	    
-        try {
-            File migrationFile = new File(defaultPath+commFile.getOriginalFilename());
-            if (!migrationFile.exists()) {
-                if (!migrationFile.mkdirs()) {
-                    throw new Exception("Fail to create a directory for attached file [" + migrationFile + "]");
-                }
-            }
-            
-            migrationFile.deleteOnExit();
-            commFile.transferTo(migrationFile);
-            
-            entity = executeMigration(migrationFile);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return entity;
-	}
-
-    /**
-     * 
      * Migration 실행 메소드
      *
      * @param commFile
