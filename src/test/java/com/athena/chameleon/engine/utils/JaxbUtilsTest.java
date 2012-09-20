@@ -376,8 +376,8 @@ public class JaxbUtilsTest {
 			context = doc.getRootElement().getChild("context-root", doc.getRootElement().getNamespace()).getText();
 			
 			String jbossWeb = fileToString("./src/main/resources/jbossweb/jboss-web.xml");
-			jbossWeb = jbossWeb.replaceAll("#contextRoot#", context);
-			jbossWeb = jbossWeb.replaceAll("#loaderRepository#", "com.athena.chameleon:loader=" + projectName);
+			jbossWeb = jbossWeb.replaceAll("\\$\\{contextRoot\\}", context);
+			jbossWeb = jbossWeb.replaceAll("\\$\\{loaderRepository\\}", "com.athena.chameleon:loader=" + projectName);
 			
 			System.out.println(jbossWeb);
         } catch (Exception e) {
@@ -394,8 +394,8 @@ public class JaxbUtilsTest {
 			context = doc.getRootElement().getChild("context-path", doc.getRootElement().getNamespace()).getText();
 			
 			String jbossWeb = fileToString("./src/main/resources/jbossweb/jboss-web.xml");
-			jbossWeb = jbossWeb.replaceAll("#contextRoot#", context);
-			jbossWeb = jbossWeb.replaceAll("#loaderRepository#", "com.athena.chameleon:loader=" + projectName);
+			jbossWeb = jbossWeb.replaceAll("\\$\\{contextRoot\\}", context);
+			jbossWeb = jbossWeb.replaceAll("\\$\\{loaderRepository\\}", "com.athena.chameleon:loader=" + projectName);
 			
 			System.out.println(jbossWeb);
         } catch (Exception e) {

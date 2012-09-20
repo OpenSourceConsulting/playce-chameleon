@@ -3,9 +3,9 @@
 <jboss-web>
     <class-loading java2ClassLoadingCompliance="false">
         <loader-repository>
-            #loaderRepository#
+            ${loaderRepository}
             <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
         </loader-repository>
     </class-loading>
-    <context-root>#contextRoot#</context-root>
+    <context-root>${contextRoot}</context-root>
 </jboss-web>
