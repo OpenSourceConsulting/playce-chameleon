@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jeus-web-dd xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.tmaxsoft.com/xml/ns/jeus"
+			 xsi:schemaLocation="http://www.tmaxsoft.com/xml/ns/jeus jeus-web-dd.xsd">
+    <context-path>/jeus-root</context-path>
+    <enable-jsp>true</enable-jsp>
+    <auto-reload>
+        <enable-reload>false</enable-reload>
+        <check-on-demand>false</check-on-demand>
+    </auto-reload>
+    <max-instance-pool-size>-1</max-instance-pool-size>
+    <url-rewriting>false</url-rewriting>
+    <enable-default-login>false</enable-default-login>
+    <webinf-first>false</webinf-first>
+    <jndi-properties>
+        <local-bindings>false</local-bindings>
+    </jndi-properties>
+</jeus-web-dd>

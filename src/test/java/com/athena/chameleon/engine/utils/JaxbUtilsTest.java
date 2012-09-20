@@ -32,6 +32,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.jdom2.Document;
+import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.JbossApp;
@@ -41,6 +43,8 @@ import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType;
+import com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.ClassLoading;
+import com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.JbossWeb;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterMappingType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterNameType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterType;
@@ -354,6 +358,67 @@ public class JaxbUtilsTest {
 			e.printStackTrace();
             fail("Error");
 		}
+    }
+    
+    @Test
+    public void jbossWepV50CrreateTest() {
+    	String projectName = "athena-chameleon";
+    	String docType = "<!DOCTYPE jboss-web PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-web_5_0.dtd\">";
+    	
+    	SAXBuilder builder = null;
+    	Document doc = null;
+    	String context = null;
+    	
+    	// Test Case 1 (weblogic-web-aap.xml 파싱 후 jboss-web.xml 로 변환)
+        try {
+        	builder = new SAXBuilder();
+        	doc = builder.build(this.getClass().getResourceAsStream("/files/webdd/weblogic-web-app.xml"));
+
+			context = doc.getRootElement().getChild("context-root", doc.getRootElement().getNamespace()).getText();
+			
+			JbossWeb jbossWeb = new JbossWeb();
+			
+			ClassLoading classLoading = new ClassLoading();
+			com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository loaderRepository = new com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository();
+			loaderRepository.setvalue("com.athena.chameleon:loader=" + projectName);
+			classLoading.setLoaderRepository(loaderRepository);
+			classLoading.setJava2ClassLoadingCompliance("false");
+			
+			jbossWeb.setClassLoading(classLoading);
+			jbossWeb.setContextRoot(context);
+			
+			String xmlData = JaxbUtils.marshal(JbossWeb.class.getPackage().getName(), jbossWeb, docType);
+			System.out.println(xmlData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error");
+        }
+        
+        System.out.println("===================================================\n");
+    	
+    	// Test Case 2 (jeus-web-dd.xml 파싱 후 jboss-web.xml 로 변환)
+        try {
+        	builder = new SAXBuilder();
+        	doc = builder.build(this.getClass().getResourceAsStream("/files/webdd/jeus-web-dd.xml"));
+			context = doc.getRootElement().getChild("context-path", doc.getRootElement().getNamespace()).getText();
+			
+			JbossWeb jbossWeb = new JbossWeb();
+			
+			ClassLoading classLoading = new ClassLoading();
+			com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository loaderRepository = new com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository();
+			loaderRepository.setvalue("com.athena.chameleon:loader=" + projectName);
+			classLoading.setLoaderRepository(loaderRepository);
+			classLoading.setJava2ClassLoadingCompliance("false");
+			
+			jbossWeb.setClassLoading(classLoading);
+			jbossWeb.setContextRoot(context);
+			
+			String xmlData = JaxbUtils.marshal(JbossWeb.class.getPackage().getName(), jbossWeb, docType);
+			System.out.println(xmlData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Error");
+        }
     }
 
 }
