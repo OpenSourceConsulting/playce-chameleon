@@ -29,10 +29,13 @@ import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 
+import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.JbossApp;
+import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.LoaderRepository;
 import com.athena.chameleon.engine.entity.xml.application.jeus.v5_0.JeusSystemType;
 import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType;
@@ -327,6 +330,30 @@ public class JaxbUtilsTest {
 	            fail("Error");
 			}
         }
+    }
+    
+    @Test
+    public void jbossAppV50CrreateTest() {
+    	try {
+			String projectName = "athena-chameleon";
+			String docType = "<!DOCTYPE jboss-app PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd\">";
+			
+			JbossApp jbossApp = new JbossApp();
+			
+			LoaderRepository loaderRepository = new LoaderRepository();
+			loaderRepository.setvalue("com.athena.chameleon:loader=" + projectName);
+			
+			jbossApp.setLoaderRepository(loaderRepository);
+			
+			String xmlData = JaxbUtils.marshal(JbossApp.class.getPackage().getName(), jbossApp, docType);
+			System.out.println(xmlData);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+            fail("Error");
+		} catch (IOException e) {
+			e.printStackTrace();
+            fail("Error");
+		}
     }
 
 }
