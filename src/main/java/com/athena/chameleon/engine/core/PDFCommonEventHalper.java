@@ -20,39 +20,88 @@
  */
 package com.athena.chameleon.engine.core;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.athena.chameleon.common.utils.MessageUtil;
+import com.athena.chameleon.engine.utils.PDFWriterUtil;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.ExceptionConverter;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Chapter 및 Section 목차 Event Helper
+ * PDF 관련 Event Helper
  * 
  * @author Hyo-jeong Lee
  * @version 1.0
  */
-public class ChapterSectionTOC extends PdfPageEventHelper {
+public class PDFCommonEventHalper extends PdfPageEventHelper {
 
     private static BaseFont bfKorean;
+    private boolean	pagingFlag = true;
     
+	public List<Paragraph> titles = new ArrayList<Paragraph>();
+
     static {
         try {
-            bfKorean = BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.NOT_EMBEDDED);
+            bfKorean = PDFWriterUtil.bfKorean;
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
     
-    /** List with the titles. */
-    public List<Paragraph> titles = new ArrayList<Paragraph>();
+    /**
+     * header 및 footer 구현 
+     */
+    public void onEndPage(PdfWriter writer, Document document) { 
+
+    	Font font = new Font(bfKorean, 9);
+    	PdfPTable hTable = new PdfPTable(1);
+        PdfPTable ftable = new PdfPTable(3); 
+        try { 
+        	
+        	hTable.setWidths(new int[]{100});
+        	hTable.setTotalWidth(490); 
+        	hTable.setLockedWidth(true); 
+        	hTable.getDefaultCell().setFixedHeight(15); 
+        	hTable.getDefaultCell().setBorder(Rectangle.BOTTOM); 
+        	hTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        	hTable.addCell(new Phrase(MessageUtil.getMessage("pdf.message.header.title"), font)); 
+        	hTable.writeSelectedRows(0, -1, 50, 803, writer.getDirectContent());
+        	
+        	ftable.setWidths(new int[]{100, 100, 100}); 
+        	ftable.setTotalWidth(490); 
+        	ftable.setLockedWidth(true); 
+        	ftable.getDefaultCell().setBorder(Rectangle.TOP); 
+        	ftable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT); 
+        	ftable.addCell(new Phrase(MessageUtil.getMessage("pdf.message.footer.left"), font)); 
+        	ftable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        	if(pagingFlag)
+	        	ftable.addCell(new Phrase(MessageUtil.getMessage("pdf.message.footer.center", String.valueOf(writer.getPageNumber())), font));
+        	else 
+        		ftable.addCell("");
+        	
+        	ftable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT); 
+        	ftable.addCell(new Phrase(String.valueOf(new SimpleDateFormat("yyyy/MM/dd").format(new Date())), font)); 
+        	ftable.writeSelectedRows(0, -1, 50, 55, writer.getDirectContent());
+        } 
+        catch(Exception de) { 
+        	throw new ExceptionConverter(de); 
+        } 
+    } 
 
     /**
      * chapter write 시 실행
@@ -123,5 +172,13 @@ public class ChapterSectionTOC extends PdfPageEventHelper {
         
         return p;
     }
+    
+    /**
+	 * @param pagingFlag the pagingFlag to set
+	 */
+	public void setPagingFlag(boolean pagingFlag) {
+		this.pagingFlag = pagingFlag;
+	}
+
 }
 //end of ChapterSectionTOC.java

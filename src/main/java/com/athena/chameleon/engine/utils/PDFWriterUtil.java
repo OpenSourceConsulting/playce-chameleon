@@ -20,7 +20,8 @@
  */
 package com.athena.chameleon.engine.utils;
 
-import com.athena.chameleon.engine.core.ChapterSectionTOC;
+import com.athena.chameleon.common.utils.MessageUtil;
+import com.athena.chameleon.engine.core.PDFCommonEventHalper;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -39,7 +40,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 public class PDFWriterUtil {
 
-    private static BaseFont bfKorean;
+    public static BaseFont bfKorean;
     
     static {
         try {
@@ -120,11 +121,12 @@ public class PDFWriterUtil {
      * @param event
      * @throws Exception
      */
-    public static void setChapterSectionTOC(Document doc, PdfWriter writer, ChapterSectionTOC event) throws Exception {
+    public static void setChapterSectionTOC(Document doc, PdfWriter writer, PDFCommonEventHalper event) throws Exception {
         
-        doc.newPage();
+    	doc.newPage();
+        event.setPagingFlag(false);
         
-        Paragraph title = new Paragraph("TABLE OF CONTENTS", new Font(bfKorean, 13, Font.BOLD));
+        Paragraph title = new Paragraph(MessageUtil.getMessage("pdf.message.toc.title"), new Font(bfKorean, 13, Font.BOLD));
         title.setSpacingAfter(8);
         doc.add(title);
         
