@@ -337,7 +337,7 @@ public class JaxbUtilsTest {
     }
     
     @Test
-    public void jbossAppV50CrreateTest() {
+    public void jbossAppV50CreateTest() {
     	try {
 			String projectName = "athena-chameleon";
 			String docType = "<!DOCTYPE jboss-app PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd\">";
@@ -361,7 +361,7 @@ public class JaxbUtilsTest {
     }
     
     @Test
-    public void jbossWepV50CrreateTest() {
+    public void jbossWepV50CreateTest() {
     	String projectName = "athena-chameleon";
     	String docType = "<!DOCTYPE jboss-web PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-web_5_0.dtd\">";
     	
