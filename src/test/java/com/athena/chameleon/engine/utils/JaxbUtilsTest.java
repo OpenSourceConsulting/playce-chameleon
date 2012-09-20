@@ -22,6 +22,7 @@ package com.athena.chameleon.engine.utils;
 
 import static org.junit.Assert.fail;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
@@ -43,8 +45,6 @@ import com.athena.chameleon.engine.entity.xml.application.v1_4.ApplicationType;
 import com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType;
 import com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType;
-import com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.ClassLoading;
-import com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.JbossWeb;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterMappingType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterNameType;
 import com.athena.chameleon.engine.entity.xml.webapp.v2_5.FilterType;
@@ -363,7 +363,6 @@ public class JaxbUtilsTest {
     @Test
     public void jbossWepV50CreateTest() {
     	String projectName = "athena-chameleon";
-    	String docType = "<!DOCTYPE jboss-web PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-web_5_0.dtd\">";
     	
     	SAXBuilder builder = null;
     	Document doc = null;
@@ -376,25 +375,17 @@ public class JaxbUtilsTest {
 
 			context = doc.getRootElement().getChild("context-root", doc.getRootElement().getNamespace()).getText();
 			
-			JbossWeb jbossWeb = new JbossWeb();
+			String jbossWeb = fileToString("./src/main/resources/jbossweb/jboss-web.xml");
+			jbossWeb = jbossWeb.replaceAll("#contextRoot#", context);
+			jbossWeb = jbossWeb.replaceAll("#loaderRepository#", "com.athena.chameleon:loader=" + projectName);
 			
-			ClassLoading classLoading = new ClassLoading();
-			com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository loaderRepository = new com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository();
-			loaderRepository.setvalue("com.athena.chameleon:loader=" + projectName);
-			classLoading.setLoaderRepository(loaderRepository);
-			classLoading.setJava2ClassLoadingCompliance("false");
-			
-			jbossWeb.setClassLoading(classLoading);
-			jbossWeb.setContextRoot(context);
-			
-			String xmlData = JaxbUtils.marshal(JbossWeb.class.getPackage().getName(), jbossWeb, docType);
-			System.out.println(xmlData);
+			System.out.println(jbossWeb);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error");
         }
         
-        System.out.println("===================================================\n");
+        System.out.println("\n===================================================\n");
     	
     	// Test Case 2 (jeus-web-dd.xml 파싱 후 jboss-web.xml 로 변환)
         try {
@@ -402,23 +393,33 @@ public class JaxbUtilsTest {
         	doc = builder.build(this.getClass().getResourceAsStream("/files/webdd/jeus-web-dd.xml"));
 			context = doc.getRootElement().getChild("context-path", doc.getRootElement().getNamespace()).getText();
 			
-			JbossWeb jbossWeb = new JbossWeb();
+			String jbossWeb = fileToString("./src/main/resources/jbossweb/jboss-web.xml");
+			jbossWeb = jbossWeb.replaceAll("#contextRoot#", context);
+			jbossWeb = jbossWeb.replaceAll("#loaderRepository#", "com.athena.chameleon:loader=" + projectName);
 			
-			ClassLoading classLoading = new ClassLoading();
-			com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository loaderRepository = new com.athena.chameleon.engine.entity.xml.webapp.jboss.v5_0.LoaderRepository();
-			loaderRepository.setvalue("com.athena.chameleon:loader=" + projectName);
-			classLoading.setLoaderRepository(loaderRepository);
-			classLoading.setJava2ClassLoadingCompliance("false");
-			
-			jbossWeb.setClassLoading(classLoading);
-			jbossWeb.setContextRoot(context);
-			
-			String xmlData = JaxbUtils.marshal(JbossWeb.class.getPackage().getName(), jbossWeb, docType);
-			System.out.println(xmlData);
+			System.out.println(jbossWeb);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error");
         }
+    }
+	
+    private String fileToString(String file) {
+        String result = null;
+        DataInputStream in = null;
+
+        try {
+            File f = new File(file);
+            byte[] buffer = new byte[(int) f.length()];
+            in = new DataInputStream(new FileInputStream(f));
+            in.readFully(buffer);
+            result = new String(buffer);
+            IOUtils.closeQuietly(in);
+        } catch (IOException e) {
+            throw new RuntimeException("IO problem in fileToString", e);
+        }
+        
+        return result;
     }
 
 }
