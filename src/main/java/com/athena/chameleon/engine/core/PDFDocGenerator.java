@@ -10,14 +10,155 @@ import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.web.upload.vo.Upload;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @Component("pdfDocGenerator")
 public class PDFDocGenerator {
 
+    public static BaseFont bfKorean;
+    
+    static {
+        try {
+            bfKorean = BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.NOT_EMBEDDED);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 	//retrun type 추후 변경 예정
 	String delimiter = "\n";
 	
+	/**
+	 * 
+	 * PDF Title Page 구성
+	 *
+	 * @param doc
+	 * @param writer
+	 */
+	public static void setTitleMainPage(Document doc, PdfWriter writer, PDFCommonEventHalper event, Upload upload) throws Exception {
+	    
+	    Font fnTitle = new Font(bfKorean, 20, Font.BOLD);
+	    Font fnLabel = new Font(bfKorean, 11, Font.BOLD);
+	    Font fnText  = new Font(bfKorean, 11);
+	    LineSeparator UNDERLINE = new LineSeparator(1, 80, null, Element.ALIGN_CENTER, -5);
+	    doc.newPage();
+	    doc.add(Chunk.NEWLINE); 
+
+	    event.setTitleFlag(true);
+        
+	    int toc = writer.getPageNumber();
+        Image img = Image.getInstance(PDFDocGenerator.class.getResource("/image/title.gif"));
+        img.setAlignment(Element.ALIGN_CENTER);
+	    img.scalePercent(80, 80);
+	    doc.add(img);
+	    
+	    Paragraph titlePh = new Paragraph(MessageUtil.getMessage("pdf.message.main.title"), fnTitle);
+        titlePh.setAlignment(Element.ALIGN_CENTER);
+        titlePh.setSpacingBefore(50);
+        titlePh.setSpacingAfter(30);
+	    doc.add(titlePh);
+	    
+	    doc.add(UNDERLINE);
+	    
+	    PdfPTable t1 = new PdfPTable(2);
+	    t1.setSpacingBefore(20);
+	    t1.setWidths(new int[]{100, 300});
+	    t1.getDefaultCell().setBorder(0);
+        t1.getDefaultCell().setFixedHeight(32); 
+        
+	    t1.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.label.project_name"), fnLabel));
+	    t1.addCell(new Phrase(upload.getProjectNm(), fnText));
+	    t1.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.label.department"), fnLabel));
+        t1.addCell(new Phrase(upload.getDepartment(), fnText));
+        t1.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.label.focus_name"), fnLabel));
+        t1.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.text.focus_name"), fnText));
+        t1.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.label.product"), fnLabel));
+        t1.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.text.product", upload.getBeforeWas(), upload.getAfterWas()), fnText));
+        doc.add(t1);
+	    
+        doc.add(UNDERLINE);
+
+        Paragraph executedPh = new Paragraph(MessageUtil.getMessage("pdf.message.main.label.executed"), fnLabel);
+        executedPh.setSpacingBefore(30);
+        executedPh.setSpacingAfter(15);
+        executedPh.setIndentationLeft(50);
+        doc.add(executedPh);
+
+        PdfPTable t2 = new PdfPTable(2);
+        t2.getDefaultCell().setFixedHeight(28);
+        t2.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+        
+        t2.getDefaultCell().setBackgroundColor(new BaseColor(217, 217, 217));
+        t2.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.label.owner"), fnLabel));
+        t2.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.label.project_role"), fnLabel));
+        t2.getDefaultCell().setBackgroundColor(new BaseColor(255, 255, 255));
+        t2.addCell(new Phrase(upload.getPerson(), fnText));
+        t2.addCell(new Phrase(upload.getOrgRole(), fnText));
+        doc.add(t2);
+        
+	    doc.newPage();
+	    int total = writer.reorderPages(null);
+        
+        int[] order = new int[total];
+        for (int i = 0; i < total; i++) {
+            order[i] = i + toc;
+            if (order[i] > total)
+                order[i] -= total;
+        }
+        // apply the new order
+        writer.reorderPages(order);
+
+	}
+
+    /**
+     * 목차 생성
+     *
+     * @param doc 
+     * @param writer 
+     * @param event
+     * @throws Exception
+     */
+    public static void setChapterSectionTOC(Document doc, PdfWriter writer, PDFCommonEventHalper event) throws Exception {
+        
+        doc.newPage();
+        event.setPagingFlag(false);
+        
+        Paragraph title = new Paragraph(MessageUtil.getMessage("pdf.message.toc.title"), new Font(bfKorean, 13, Font.BOLD));
+        title.setSpacingAfter(8);
+        doc.add(title);
+        
+        int toc = writer.getPageNumber();
+        for(Paragraph p : event.titles)
+            doc.add(p);
+        
+        doc.newPage();
+        int total = writer.reorderPages(null);
+        
+        int[] order = new int[total];
+        for (int i = 0; i < total; i++) {
+            order[i] = i + toc;
+            if (order[i] > total)
+                order[i] -= total;
+        }
+        // apply the new order
+        writer.reorderPages(order);
+
+    }
+    
 	/**
 	 * 
 	 * 압축을 푼 파일 목록을 PDF 출력 형식으로 변환

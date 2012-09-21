@@ -51,6 +51,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 public class PDFCommonEventHalper extends PdfPageEventHelper {
 
     private static BaseFont bfKorean;
+    private boolean titleFlag = false;
     private boolean	pagingFlag = true;
     
 	public List<Paragraph> titles = new ArrayList<Paragraph>();
@@ -68,13 +69,16 @@ public class PDFCommonEventHalper extends PdfPageEventHelper {
      */
     public void onEndPage(PdfWriter writer, Document document) { 
 
+        if(titleFlag)
+            return;
+        
     	Font font = new Font(bfKorean, 9);
     	PdfPTable hTable = new PdfPTable(1);
         PdfPTable ftable = new PdfPTable(3); 
         try { 
         	
         	hTable.setWidths(new int[]{100});
-        	hTable.setTotalWidth(490); 
+        	hTable.setTotalWidth(500); 
         	hTable.setLockedWidth(true); 
         	hTable.getDefaultCell().setFixedHeight(15); 
         	hTable.getDefaultCell().setBorder(Rectangle.BOTTOM); 
@@ -83,7 +87,7 @@ public class PDFCommonEventHalper extends PdfPageEventHelper {
         	hTable.writeSelectedRows(0, -1, 50, 803, writer.getDirectContent());
         	
         	ftable.setWidths(new int[]{100, 100, 100}); 
-        	ftable.setTotalWidth(490); 
+        	ftable.setTotalWidth(500); 
         	ftable.setLockedWidth(true); 
         	ftable.getDefaultCell().setBorder(Rectangle.TOP); 
         	ftable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT); 
@@ -172,7 +176,14 @@ public class PDFCommonEventHalper extends PdfPageEventHelper {
         
         return p;
     }
-    
+
+    /**
+     * @param titleFlag the titleFlag to set
+     */
+    public void setTitleFlag(boolean titleFlag) {
+        this.titleFlag = titleFlag;
+    }
+
     /**
 	 * @param pagingFlag the pagingFlag to set
 	 */

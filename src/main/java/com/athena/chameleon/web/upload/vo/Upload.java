@@ -20,11 +20,8 @@
  */
 package com.athena.chameleon.web.upload.vo;
 
-import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -38,7 +35,9 @@ public class Upload implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String projectNm;
+    private String department;
     private String person;
+    private String orgRole;
     private String beforeWas;
     private String afterWas;
     private CommonsMultipartFile   projectSrc;
@@ -72,7 +71,14 @@ public class Upload implements Serializable {
 	 * @return the beforeWas
 	 */
 	public String getBeforeWas() {
-		return beforeWas;
+	    if(beforeWas == null)
+	        return "";
+	    else if(beforeWas.equals("W"))
+	        return "WEB LOGIC";
+	    else if(beforeWas.equals("J"))
+	        return "JEUS";
+	    else 
+	        return beforeWas;
 	}
 	/**
 	 * @param beforeWas the beforeWas to set
@@ -84,7 +90,14 @@ public class Upload implements Serializable {
 	 * @return the afterWas
 	 */
 	public String getAfterWas() {
-		return afterWas;
+	    if(afterWas == null)
+            return "";
+        else if(afterWas.equals("B"))
+            return "JBoss";
+        else if(afterWas.equals("T"))
+            return "Tomcat";
+        else
+            return afterWas;
 	}
 	/**
 	 * @param afterWas the afterWas to set
@@ -116,6 +129,30 @@ public class Upload implements Serializable {
 	public void setDeploySrc(CommonsMultipartFile deploySrc) {
 		this.deploySrc = deploySrc;
 	}
+	/**
+     * @return the department
+     */
+    public String getDepartment() {
+        return department;
+    }
+    /**
+     * @param department the department to set
+     */
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+    /**
+     * @return the orgRole
+     */
+    public String getOrgRole() {
+        return orgRole;
+    }
+    /**
+     * @param orgRole the orgRole to set
+     */
+    public void setOrgRole(String orgRole) {
+        this.orgRole = orgRole;
+    }
     
 	public String toString() {
 		return getReflectionToString(this);

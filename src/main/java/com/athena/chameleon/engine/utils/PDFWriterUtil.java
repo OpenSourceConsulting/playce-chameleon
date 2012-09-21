@@ -20,16 +20,12 @@
  */
 package com.athena.chameleon.engine.utils;
 
-import com.athena.chameleon.common.utils.MessageUtil;
-import com.athena.chameleon.engine.core.PDFCommonEventHalper;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * PDF Writer 유틸 클래스
@@ -113,39 +109,5 @@ public class PDFWriterUtil {
         return section;
     }
     
-    /**
-     * 목차 생성
-     *
-     * @param doc 
-     * @param writer 
-     * @param event
-     * @throws Exception
-     */
-    public static void setChapterSectionTOC(Document doc, PdfWriter writer, PDFCommonEventHalper event) throws Exception {
-        
-    	doc.newPage();
-        event.setPagingFlag(false);
-        
-        Paragraph title = new Paragraph(MessageUtil.getMessage("pdf.message.toc.title"), new Font(bfKorean, 13, Font.BOLD));
-        title.setSpacingAfter(8);
-        doc.add(title);
-        
-        int toc = writer.getPageNumber();
-        for(Paragraph p : event.titles)
-            doc.add(p);
-        
-        doc.newPage();
-        int total = writer.reorderPages(null);
-        
-        int[] order = new int[total];
-        for (int i = 0; i < total; i++) {
-            order[i] = i + toc;
-            if (order[i] > total)
-                order[i] -= total;
-        }
-        // apply the new order
-        writer.reorderPages(order);
-
-    }
 }
 //end of PDFUtil.java

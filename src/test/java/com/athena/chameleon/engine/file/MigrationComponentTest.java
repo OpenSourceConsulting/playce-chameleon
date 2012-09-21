@@ -43,6 +43,7 @@ import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.utils.FileUtil;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
+import com.athena.chameleon.web.upload.vo.Upload;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
@@ -106,7 +107,7 @@ public class MigrationComponentTest {
     @Test
     public void pdfWriterTest() throws Exception {
 
-        Document pdf = new Document(PageSize.A4, 36, 36, 65, 65); 
+        Document pdf = new Document(PageSize.A4, 40, 40, 70, 65); 
         PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(unzipDirPath+File.separator+"test.pdf"));
         writer.setLinearPageMode();
         PDFCommonEventHalper event = new PDFCommonEventHalper();
@@ -142,8 +143,16 @@ public class MigrationComponentTest {
         
         pdf.add(chapter2);
         
-        PDFWriterUtil.setChapterSectionTOC(pdf, writer, event);
+        PDFDocGenerator.setChapterSectionTOC(pdf, writer, event);
         
+        Upload upload = new Upload();
+        upload.setProjectNm("Video Hub Project");
+        upload.setDepartment("삼성전자");
+        upload.setBeforeWas("W");
+        upload.setAfterWas("T");
+        upload.setPerson("홍길동");
+        upload.setOrgRole("개발팀");
+        PDFDocGenerator.setTitleMainPage(pdf, writer, event, upload);
         pdf.close();
     }
     
