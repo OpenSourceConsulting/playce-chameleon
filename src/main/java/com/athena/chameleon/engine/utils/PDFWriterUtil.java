@@ -55,8 +55,9 @@ public class PDFWriterUtil {
     public static Paragraph getDefault(String text) {
         Font fnNormal = new Font(bfKorean, 10);
         Paragraph ph = new Paragraph(text, fnNormal);
-        ph.setIndentationLeft(30);
-        ph.setSpacingAfter(2);
+        ph.setMultipliedLeading(1.8F);
+        ph.setIndentationLeft(23);
+        ph.setSpacingAfter(14);
         return ph;
     }
     
