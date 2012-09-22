@@ -37,12 +37,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.core.PDFCommonEventHalper;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.utils.FileUtil;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
+import com.athena.chameleon.web.upload.vo.Upload;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
@@ -106,14 +108,30 @@ public class MigrationComponentTest {
     @Test
     public void pdfWriterTest() throws Exception {
 
-        Document pdf = new Document(PageSize.A4, 36, 36, 65, 65); 
+        Document pdf = new Document(PageSize.A4, 40, 40, 70, 65); 
         PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(unzipDirPath+File.separator+"test.pdf"));
         writer.setLinearPageMode();
         PDFCommonEventHalper event = new PDFCommonEventHalper();
         writer.setPageEvent(event);
         
         pdf.open();
+        int cNum = 1, sNum = 1;
         
+        Chapter chapter;
+        Section section;
+        
+        chapter = PDFWriterUtil.getChapter(MessageUtil.getMessage("pdf.message.chapter.jboss.title"), cNum);
+        cNum++;
+        
+        section = PDFWriterUtil.getSection(chapter, MessageUtil.getMessage("pdf.message.chapter.jboss.section.install.title"), sNum);
+        sNum++;
+        
+        section.add(PDFWriterUtil.getDefault(MessageUtil.getMessage("pdf.message.chapter.jboss.section.install.text1")));
+        section.add(PDFWriterUtil.getDefault(MessageUtil.getMessage("pdf.message.chapter.jboss.section.install.text2")));
+        pdf.add(chapter);
+        
+        
+        /*
         Chapter chapter1 = PDFWriterUtil.getChapter("마이그레이션의개요", 1);
         chapter1.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));
         chapter1.add(PDFWriterUtil.getDefault("WAS서버에서 작동되는업무 애플리케이션을 공개SW기반의 "));
@@ -141,9 +159,18 @@ public class MigrationComponentTest {
         section2_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
         
         pdf.add(chapter2);
+        */
         
-        PDFWriterUtil.setChapterSectionTOC(pdf, writer, event);
+        PDFDocGenerator.setChapterSectionTOC(pdf, writer, event);
         
+        Upload upload = new Upload();
+        upload.setProjectNm("Video Hub Project");
+        upload.setDepartment("삼성전자");
+        upload.setBeforeWas("W");
+        upload.setAfterWas("T");
+        upload.setPerson("홍길동");
+        upload.setOrgRole("개발팀");
+        PDFDocGenerator.setTitleMainPage(pdf, writer, event, upload);
         pdf.close();
     }
     
