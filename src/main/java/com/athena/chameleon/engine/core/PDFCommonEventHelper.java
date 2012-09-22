@@ -48,7 +48,7 @@ import com.itextpdf.text.pdf.PdfWriter;
  * @author Hyo-jeong Lee
  * @version 1.0
  */
-public class PDFCommonEventHalper extends PdfPageEventHelper {
+public class PDFCommonEventHelper extends PdfPageEventHelper {
 
     private static BaseFont bfKorean;
     private boolean titleFlag = false;

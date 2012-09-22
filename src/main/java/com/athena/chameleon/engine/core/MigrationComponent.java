@@ -35,7 +35,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.entity.file.Migration;
@@ -98,9 +97,9 @@ public class MigrationComponent {
             PDFDocGenerator pdfData = new PDFDocGenerator();
             entity.setFileListStr(pdfData.getMigrationFileList(migrationFileList));
             entity.setCheckFileListStr(pdfData.getMigrationFileCheckLine(migrationFileList));
-            entity.setWebXmlStr(pdfData.getWebXmlSettingInfo(webXmlPasing()));
-            entity.setApplicationXmlStr(pdfData.getApplicationXmlSettingInfo(applicationXmlPasing()));
-            entity.setEjbXmlStr(pdfData.getEjbXmlSettingInfo(ejbXmlPasing(), weblogicEjbXmlPasing(), jeusEjbXmlPasing()));
+            entity.setWebXmlStr(pdfData.getWebXmlSettingInfo(webXmlParsing()));
+            entity.setApplicationXmlStr(pdfData.getApplicationXmlSettingInfo(applicationXmlParsing()));
+            entity.setEjbXmlStr(pdfData.getEjbXmlSettingInfo(ejbXmlParsing(), weblogicEjbXmlParsing(), jeusEjbXmlParsing()));
             
             FileUtil.deleteDirectory(this.unzipFile);
                 
@@ -183,7 +182,7 @@ public class MigrationComponent {
                     
                         HashMap<Integer, String> lineMap = new LinkedHashMap<Integer, String>();
                         
-                        //xml file pasing
+                        //xml file parsing
                         if(filePath.indexOf("WEB-INF/web.xml") > -1) {
                             webXmlFile = f;
                         } else if(filePath.indexOf("WEB-INF/application.xml") > -1) {
@@ -230,23 +229,23 @@ public class MigrationComponent {
 
     /**
      * 
-     * web.xml pasing
+     * web.xml parsing
      *
      * @param xmlFile web.xml file
      * @return WebAppType
      */
-    public Object webXmlPasing(File xmlFile) {
+    public Object webXmlParsing(File xmlFile) {
         this.webXmlFile = xmlFile;
-        return webXmlPasing();
+        return webXmlParsing();
     }
     
     /**
      * 
-     * web.xml pasing
+     * web.xml parsing
      *
      * @return WebAppType
      */
-    public Object webXmlPasing() {
+    public Object webXmlParsing() {
         
     	if(webXmlFile == null)
     		return null;
@@ -277,23 +276,23 @@ public class MigrationComponent {
     
     /**
      * 
-     * application.xml pasing
+     * application.xml parsing
      *
      * @param xmlFile application.xml file
      * @return Object
      */
-    public Object applicationXmlPasing(File xmlFile) {
+    public Object applicationXmlParsing(File xmlFile) {
         this.applicationXmlFile = xmlFile;
-        return applicationXmlPasing();
+        return applicationXmlParsing();
     }
     
     /**
      * 
-     * application.xml pasing
+     * application.xml parsing
      *
      * @return Object
      */
-    public Object applicationXmlPasing() {
+    public Object applicationXmlParsing() {
         
     	if(applicationXmlFile == null)
     		return null;
@@ -318,23 +317,23 @@ public class MigrationComponent {
 
     /**
      * 
-     * ejb-jar.xml pasing
+     * ejb-jar.xml parsing
      *
      * @param xmlFile ejb-jar.xml file
      * @return EjbJarType
      */
-    public Object ejbXmlPasing(File xmlFile) {
+    public Object ejbXmlParsing(File xmlFile) {
         this.ejbXmlFile = xmlFile;
-        return ejbXmlPasing();
+        return ejbXmlParsing();
     }
     
     /**
      * 
-     *  ejb-jar.xml pasing
+     *  ejb-jar.xml parsing
      *
      * @return EjbJarType
      */
-    public Object ejbXmlPasing() {
+    public Object ejbXmlParsing() {
         
     	if(ejbXmlFile == null)
     		return null;
@@ -359,23 +358,23 @@ public class MigrationComponent {
 
     /**
      * 
-     * weblogic-ejb-jar.xml pasing
+     * weblogic-ejb-jar.xml parsing
      *
      * @param xmlFile weblogic-ejb-jar.xml file
      * @return EjbJarType
      */
-    public Object weblogicEjbXmlPasing(File xmlFile) {
+    public Object weblogicEjbXmlParsing(File xmlFile) {
         this.weblogicEjbXmlFile = xmlFile;
-        return weblogicEjbXmlPasing();
+        return weblogicEjbXmlParsing();
     }
     
     /**
      * 
-     *  weblogic-ejb-jar.xml pasing
+     *  weblogic-ejb-jar.xml parsing
      *
      * @return EjbJarType
      */
-    public Object weblogicEjbXmlPasing() {
+    public Object weblogicEjbXmlParsing() {
         
         if(weblogicEjbXmlFile == null)
             return null;
@@ -396,23 +395,23 @@ public class MigrationComponent {
 
     /**
      * 
-     * jeus-ejb-dd.xml pasing
+     * jeus-ejb-dd.xml parsing
      *
      * @param xmlFile jeus-ejb-dd.xml file
      * @return Object
      */
-    public Object jeusEjbXmlPasing(File xmlFile) {
+    public Object jeusEjbXmlParsing(File xmlFile) {
         this.jeusEjbXmlFile = xmlFile;
-        return jeusEjbXmlPasing();
+        return jeusEjbXmlParsing();
     }
     
     /**
      * 
-     *  jeus-ejb-dd.xml pasing
+     *  jeus-ejb-dd.xml parsing
      *
      * @return Object
      */
-    public Object jeusEjbXmlPasing() {
+    public Object jeusEjbXmlParsing() {
         
         if(jeusEjbXmlFile == null)
             return null;

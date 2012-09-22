@@ -38,7 +38,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.athena.chameleon.common.utils.MessageUtil;
-import com.athena.chameleon.engine.core.PDFCommonEventHalper;
+import com.athena.chameleon.engine.core.PDFCommonEventHelper;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
@@ -111,7 +111,7 @@ public class MigrationComponentTest {
         Document pdf = new Document(PageSize.A4, 40, 40, 70, 65); 
         PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(unzipDirPath+File.separator+"test.pdf"));
         writer.setLinearPageMode();
-        PDFCommonEventHalper event = new PDFCommonEventHalper();
+        PDFCommonEventHelper event = new PDFCommonEventHelper();
         writer.setPageEvent(event);
         
         pdf.open();

@@ -48,7 +48,7 @@ public class PDFDocGenerator {
 	 * @param doc
 	 * @param writer
 	 */
-	public static void setTitleMainPage(Document doc, PdfWriter writer, PDFCommonEventHalper event, Upload upload) throws Exception {
+	public static void setTitleMainPage(Document doc, PdfWriter writer, PDFCommonEventHelper event, Upload upload) throws Exception {
 	    
 	    Font fnTitle = new Font(bfKorean, 20, Font.BOLD);
 	    Font fnLabel = new Font(bfKorean, 11, Font.BOLD);
@@ -131,7 +131,7 @@ public class PDFDocGenerator {
      * @param event
      * @throws Exception
      */
-    public static void setChapterSectionTOC(Document doc, PdfWriter writer, PDFCommonEventHalper event) throws Exception {
+    public static void setChapterSectionTOC(Document doc, PdfWriter writer, PDFCommonEventHelper event) throws Exception {
         
         doc.newPage();
         event.setPagingFlag(false);
