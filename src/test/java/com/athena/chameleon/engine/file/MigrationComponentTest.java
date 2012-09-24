@@ -23,7 +23,9 @@ package com.athena.chameleon.engine.file;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,6 +33,7 @@ import javax.inject.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,11 +48,17 @@ import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.utils.FileUtil;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
 import com.athena.chameleon.web.upload.vo.Upload;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Section;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
@@ -108,61 +117,6 @@ public class MigrationComponentTest {
     @Test
     public void pdfWriterTest() throws Exception {
 
-        Document pdf = new Document(PageSize.A4, 40, 40, 70, 65); 
-        PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(unzipDirPath+File.separator+"test.pdf"));
-        writer.setLinearPageMode();
-        PDFCommonEventHelper event = new PDFCommonEventHelper();
-        writer.setPageEvent(event);
-        
-        pdf.open();
-        int cNum = 1, sNum = 1;
-        
-        Chapter chapter;
-        Section section;
-        
-        chapter = PDFWriterUtil.getChapter(MessageUtil.getMessage("pdf.message.chapter.jboss.title"), cNum);
-        cNum++;
-        
-        section = PDFWriterUtil.getSection(chapter, MessageUtil.getMessage("pdf.message.chapter.jboss.section.install.title"), sNum);
-        sNum++;
-        
-        section.add(PDFWriterUtil.getDefault(MessageUtil.getMessage("pdf.message.chapter.jboss.section.install.text1")));
-        section.add(PDFWriterUtil.getDefault(MessageUtil.getMessage("pdf.message.chapter.jboss.section.install.text2")));
-        pdf.add(chapter);
-        
-        
-        /*
-        Chapter chapter1 = PDFWriterUtil.getChapter("마이그레이션의개요", 1);
-        chapter1.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));
-        chapter1.add(PDFWriterUtil.getDefault("WAS서버에서 작동되는업무 애플리케이션을 공개SW기반의 "));
-        chapter1.add(PDFWriterUtil.getDefault("WAS에서 작동이 되는 변경 작업에 대한 결과 산출물로 툴에의해 자동으로 생성된 보고서입니다."));
-        
-        Section section1_1 =  PDFWriterUtil.getSection(chapter1, "목표기대치", 1);
-        section1_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));
-        section1_1.add(PDFWriterUtil.getDefault("작동을목표로하고있습니다"));
-        
-        Section section1_2 =  PDFWriterUtil.getSection(chapter1, "보고서의범위", 2);
-        section1_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
-        
-        pdf.add(chapter1);
-
-        Chapter chapter2 = PDFWriterUtil.getChapter("마이그레이션의개요", 2);
-        chapter2.add(PDFWriterUtil.getDefault("본 문서의 목적은 정부통합전산센터의 상용"));
-        chapter2.add(PDFWriterUtil.getDefault("WAS서버에서 작동되는 업무애플리케이션을 공개 SW기반의 "));
-        chapter2.add(PDFWriterUtil.getDefault("WAS에서 작동이 되는 변경작업에 대한 결과 산출물로 툴에 의해 자동으로 생성된 보고서입니다."));
-        
-        Section section2_1 =  PDFWriterUtil.getSection(chapter2, "목표기대치", 1);
-        section2_1.add(PDFWriterUtil.getDefault("본자동화도구를활용하여변경된애플리케이션이기존 WAS대비 50% "));
-        section2_1.add(PDFWriterUtil.getDefault("작동을목표로하고있습니다"));
-        
-        Section section2_2 =  PDFWriterUtil.getSection(chapter2, "보고서의범위", 2);
-        section2_2.add(PDFWriterUtil.getDefault("본보고서는다음의결과물을포함하고있습니다."));
-        
-        pdf.add(chapter2);
-        */
-        
-        PDFDocGenerator.setChapterSectionTOC(pdf, writer, event);
-        
         Upload upload = new Upload();
         upload.setProjectNm("Video Hub Project");
         upload.setDepartment("삼성전자");
@@ -170,8 +124,9 @@ public class MigrationComponentTest {
         upload.setAfterWas("T");
         upload.setPerson("홍길동");
         upload.setOrgRole("개발팀");
-        PDFDocGenerator.setTitleMainPage(pdf, writer, event, upload);
-        pdf.close();
+        
+        PDFDocGenerator.cratePDF(unzipDirPath+File.separator+"test.pdf", upload);
+        
     }
     
     public void fileAsset(List<MigrationFile> list) throws Exception {

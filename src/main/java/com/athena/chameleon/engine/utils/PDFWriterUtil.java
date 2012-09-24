@@ -20,12 +20,21 @@
  */
 package com.athena.chameleon.engine.utils;
 
+import java.util.ArrayList;
+
+import org.jdom2.Element;
+
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 
 /**
  * PDF Writer 유틸 클래스
@@ -37,10 +46,26 @@ import com.itextpdf.text.pdf.BaseFont;
 public class PDFWriterUtil {
 
     public static BaseFont bfKorean;
+    public static Font     fnNormal;
+    public static Font     fnNormalBold;
+    public static Font     fnBox;
+    public static Font     fnBoxRed;
+    public static Font     fnChapter;
+    public static Font     fnSection;
+    public static Font     fnSection2;
     
     static {
         try {
             bfKorean = BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.NOT_EMBEDDED);
+            
+            fnNormal     = new Font(bfKorean, 10);
+            fnBox        = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(40, 40, 40));
+            fnBoxRed     = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(255, 0, 0));
+            fnNormalBold = new Font(bfKorean, 10, Font.BOLD);
+            fnChapter    = new Font(bfKorean, 14, Font.BOLD);
+            fnSection    = new Font(bfKorean, 12, Font.BOLD);
+            fnSection2   = new Font(bfKorean, 11, Font.BOLD);
+            
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -53,10 +78,43 @@ public class PDFWriterUtil {
      * @return Paragraph
      */
     public static Paragraph getDefault(String text) {
-        Font fnNormal = new Font(bfKorean, 10);
         Paragraph ph = new Paragraph(text, fnNormal);
         ph.setMultipliedLeading(1.8F);
         ph.setIndentationLeft(23);
+        ph.setSpacingAfter(14);
+        return ph;
+    }
+
+    /**
+     * Default 출력 형식(Bold)
+     *
+     * @param text 입력 text
+     * @return Paragraph
+     */
+    public static Paragraph getDefaultPoint(String text) {
+        Font font = new Font(bfKorean, 10, Font.BOLD);
+        
+        Paragraph ph = new Paragraph("· "+text, font);
+        ph.setMultipliedLeading(1.8F);
+        ph.setIndentationLeft(45);
+        ph.setSpacingAfter(14);
+        return ph;
+    }
+    
+    /**
+     * Default 출력 형식(RED)
+     *
+     * @param text 입력 text
+     * @param style Font style
+     * @return Paragraph
+     */
+    public static Paragraph getDefaultRed(String text, int style) {
+        Font font = new Font(bfKorean, 10, style);
+        font.setColor(new BaseColor(255,0,0));
+        
+        Paragraph ph = new Paragraph(text, font);
+        ph.setMultipliedLeading(1.8F);
+        ph.setIndentationLeft(45);
         ph.setSpacingAfter(14);
         return ph;
     }
@@ -69,7 +127,6 @@ public class PDFWriterUtil {
      * @return Chapter
      */
     public static Chapter getChapter(String text, int chapterNo) {
-        Font fnChapter = new Font(bfKorean, 14, Font.BOLD);
         
         Chapter chapter = new Chapter(text, chapterNo);
         String title = chapter.getTitle().getContent();
@@ -93,21 +150,187 @@ public class PDFWriterUtil {
      * @param sectionNo section Number
      * @return Section
      */
-    public static Section getSection(Chapter chapter, String text, int sectionNo) {
-        Font fnSection = new Font(bfKorean, 12, Font.BOLD);
-        
+    public static Section getSection(Section chapter, String text) {
         Section section = chapter.addSection(text);
         String title = section.getTitle().getContent();
         
-        Chunk c = new Chunk(text, fnSection);
+        Chunk c;
+        if(section.getDepth() == 3) {
+            c = new Chunk(text, fnSection2);
+        } else {
+            c = new Chunk(text, fnSection);
+        }
         c.setLocalDestination(title);
         
         Paragraph sectionPh = new Paragraph();
         sectionPh.add(c);
         sectionPh.setSpacingBefore(8);
         sectionPh.setSpacingAfter(3);
+        if(section.getDepth() == 3)
+            sectionPh.setIndentationLeft(23);
+        
         section.setTitle(sectionPh);
         return section;
+    }
+    
+    public static Section setSectionElement(Section parent, Element e) throws Exception {
+
+        Section section = getSection(parent, e.getAttributeValue("title"));
+        
+        for(org.jdom2.Element e1 : e.getChildren()) {
+            
+            if(e1.getName().equals("section")) {
+                setSectionElement(section, e1);
+                
+            } else if(e1.getName().equals("text")) {
+                
+                if(e1.getAttributeValue("padding") != null) {
+                    Paragraph text = getDefault(e1.getText());
+                    text.setIndentationLeft(text.getIndentationLeft()+Float.parseFloat(e1.getAttributeValue("padding")));
+                    
+                    section.add(text);
+                } else {
+                    section.add(getDefault(e1.getText()));
+                }
+            
+            } else if(e1.getName().equals("table")) {
+                setTable(section, e1);
+                
+            } else if(e1.getName().equals("textR")) {
+                section.add(getDefaultRed(e1.getText(), Font.ITALIC));
+                
+            } else if(e1.getName().equals("textP")) {
+                section.add(getDefaultPoint(e1.getText()));
+                
+            } else if(e1.getName().equals("box")) {
+                setBox(section, e1);
+                
+            }
+        }
+        
+        return section;
+    
+    }
+    
+    /**
+     * 
+     * 기본 Table 구성
+     *
+     * @param section table이 들어갈 section 객체
+     * @param e table 정보가 들어있는 element
+     * @throws Exception
+     */
+    public static void setTable(Section section, Element e) throws Exception {
+        
+        int colSize = Integer.parseInt(e.getAttributeValue("size"));
+        
+        PdfPTable t = new PdfPTable(colSize);
+        if(e.getAttributeValue("width") != null)
+            t.setTotalWidth(Float.parseFloat(e.getAttributeValue("width")));
+        
+        t.setSpacingAfter(12);
+        t.getDefaultCell().setFixedHeight(22); 
+        t.getDefaultCell().setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
+        
+        setTableHeader(e, t, colSize);
+        setTableRow(e, t);
+        
+        section.add(t);
+    }
+    
+    /**
+     * 
+     * 기본 box 구성
+     *
+     * @param section table이 들어갈 section 객체
+     * @param e box 정보가 들어있는 element
+     * @throws Exception
+     */
+    public static void setBox(Section section, Element e) throws Exception {
+
+        PdfPTable t = new PdfPTable(1);
+        t.setSpacingBefore(1);
+        t.setSpacingAfter(12);
+        
+        if(e.getAttributeValue("width") != null)
+            t.setTotalWidth(Float.parseFloat(e.getAttributeValue("width")));
+        
+        PdfPCell cell = new PdfPCell();
+        if(e.getAttributeValue("option") != null) {
+            
+            ColumnText col = new ColumnText(null);
+            for(Element e1 : e.getChildren()) {
+                 if(e1.getAttributeValue("type").equals("red"))
+                     col.addText(new Phrase(e1.getText(), fnBoxRed));
+                 else
+                     col.addText(new Phrase(e1.getText(), fnBox));
+            }
+            cell.setColumn(col);
+            
+        } else {
+            cell.setPhrase(new Phrase(e.getText(), fnBox));    
+        }
+        
+        cell.setPaddingLeft(10);
+        cell.setLeading(0.0F, 1.8F);
+        cell.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
+        cell.setBackgroundColor(new BaseColor(238, 236, 225));
+        
+        t.addCell(cell);
+        
+        section.add(t);
+        
+    }
+    
+    /**
+     * 
+     * 테이블의 header 구성
+     *
+     * @param e table 정보가 들어있는 element
+     * @param t header를 구성할 table 객체
+     * @param colCount column 갯수
+     * @throws Exception
+     */
+    public static void setTableHeader(Element e, PdfPTable t, int colCount) throws Exception {
+
+        t.getDefaultCell().setBackgroundColor(new BaseColor(217, 217, 217));
+        t.getDefaultCell().setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+        
+        ArrayList<Integer> colWidth = new ArrayList<Integer>();
+        for(Element e1 : e.getChild("header").getChildren()) {
+            t.addCell(new Phrase(e1.getText(), fnNormalBold));
+            
+            if(e1.getAttributeValue("width") != null)
+                colWidth.add(Integer.parseInt(e1.getAttributeValue("width")));
+        }
+        
+        if(colCount == colWidth.size()) {
+            int[] col = new int[colCount]; 
+            for(int i=0;i<colCount;i++)
+                col[i] = colWidth.get(i);
+                
+            t.setWidths(col);
+        }
+        
+    }
+
+    /**
+     * 
+     * 테이블의 row 구성
+     *
+     * @param e table 정보가 들어있는 element
+     * @param t header를 구성할 table 객체
+     * @throws Exception
+     */
+    public static void setTableRow(Element e, PdfPTable t) throws Exception {
+
+        t.getDefaultCell().setBackgroundColor(new BaseColor(255, 255, 255));
+        t.getDefaultCell().setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_LEFT);
+        
+        for(Element e1 : e.getChild("row").getChildren()) {
+            t.addCell(new Phrase(e1.getText(), fnNormal));
+        }
+        
     }
     
 }

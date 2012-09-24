@@ -1,24 +1,31 @@
 package com.athena.chameleon.engine.core;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 
+import org.jdom2.input.SAXBuilder;
 import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.utils.PDFWriterUtil;
 import com.athena.chameleon.web.upload.vo.Upload;
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -40,6 +47,52 @@ public class PDFDocGenerator {
     
 	//retrun type 추후 변경 예정
 	String delimiter = "\n";
+	
+	/**
+	 * 
+	 * PDF File을 생성
+	 * 
+	 * @param filePath PDF 파일이 생설될 File Path
+	 *  
+	 */
+	public static void cratePDF(String filePath, Upload upload) throws Exception{
+
+        Document pdf = new Document(PageSize.A4, 50, 50, 70, 65); 
+        PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(filePath));
+        writer.setLinearPageMode();
+        PDFCommonEventHelper event = new PDFCommonEventHelper();
+        writer.setPageEvent(event);
+        
+        pdf.open();
+        int cNum = 1;
+        Chapter chapter;
+        
+        SAXBuilder builder = new SAXBuilder();
+        File listXml = new File(PDFDocGenerator.class.getResource("/xml/chapter.xml").getFile());
+        org.jdom2.Document listDoc = builder.build(listXml);
+        
+        for(org.jdom2.Element chapterE : listDoc.getRootElement().getChildren()) {
+            File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
+            org.jdom2.Document chapterDoc = builder.build(chapterXml);
+            
+            org.jdom2.Element root = chapterDoc.getRootElement();
+            chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
+                
+            for(org.jdom2.Element e1 : root.getChildren()) {
+                
+                if(e1.getName().equals("section")) {
+                    PDFWriterUtil.setSectionElement(chapter, e1);
+                }
+            }
+            
+            pdf.add(chapter);
+            cNum++;
+        }
+
+        setChapterSectionTOC(pdf, writer, event);
+        setTitleMainPage(pdf, writer, event, upload);
+        pdf.close();
+	}
 	
 	/**
 	 * 
@@ -75,7 +128,7 @@ public class PDFDocGenerator {
 	    
 	    PdfPTable t1 = new PdfPTable(2);
 	    t1.setSpacingBefore(20);
-	    t1.setWidths(new int[]{100, 300});
+	    t1.setWidths(new int[]{110, 290});
 	    t1.getDefaultCell().setBorder(0);
         t1.getDefaultCell().setFixedHeight(32); 
         

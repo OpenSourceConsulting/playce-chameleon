@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="JBoss 설정 방법">
+	<section title ="JBoss의 설치">
+		<text>JBoss의 가장 큰 장점은 설치시 인스톨러를 별도로 실행하지 않아도 됩니다. 그냥 압축만 풀면 설치가 완료되는 것으로 보면 됩니다. JEMS라는 별도의 인스톨러를 가지긴 했으나 99%의 사용자와 거의 모든 JBoss 엔지니어는 압축을 풀어 사용하고 있습니다.
+			
+			통합전산센터에서는 레드햇과의 계약에 의해 엔터프라이즈 버전을 사용하고 있으며, WAS 설치에 대한 부분은 담당자에게 요청을 하시면 됩니다.
+			
+			JBoss AS를 설치할 때 윈도우 레지스트리 같은 설치 세부 사항을 감추는 어떠한 숨김 파일이나 설정들도 존재하지 않습니다. JBoss AS의 모든 설정 파일들은 단일 디렉터리 하부에 모두 저장되어 있습니다. 만약 설치된 JBoss AS 를 제거하려고 한다면, 단지 전체 설치 디렉터리를 삭제하기만 하면 됩니다. 만약 설치된 소프트웨어를 어딘가 다른 곳으로 이동하려고 한다면, 전체 디렉터리 구조를 이동시키기만 하면 됩니다. 하나의 머신에서 애플리케이션 서버 설정 수정을 완료한 이후에는, 다른 서버에서 다시 한번 수정 작업을 실행하거나 인스톨러를 사용하여 재 설치할 필요 없이, 수정된 설정을 가지고 있는 전체 애플리케이션 서버 디렉터리를 다른 서버로 복사해주기만 하면 됩니다.
+			
+			이 방식을 사용하는 경우의 가장 큰 장점은 전체 서버 설치 디렉터리를 형상 관리 시스템 (ex, CVS/Subversion) 을 사용해서 관리할 수도 있다는 것입니다. (최소한으로 적용한다면 설정 디렉터리만을 관리할 수도 있다.).
+		</text>
+	</section>
+	<section title="JBoss 인스턴스 디렉토리 구성 정보">
+		<text>각 인스턴스의 디렉토리 하위 정보는 다음과 같이 구성됩니다.</text>
+		<table size="2" width="400">
+			<header>
+				<col width="100">디렉터리</col>
+				<col width="300">설명</col>
+			</header>
+			<row>
+				<col>*.sh</col>
+				<col>Shell script files to start or stop JBoss</col>
+				<col>conf</col>
+				<col>JBoss 메인구성 파일</col>
+				<col>deploy</col>
+				<col>JBoss automatic deployment directory: JARs, EJB JARs, WARs, EARs, SARs, XML files, directories 등</col>
+				<col>lib</col>
+				<col>서버가 구동될 때 로딩하는 static JAR파일 디렉터리.</col>
+				<col>log</col>
+				<col>JBoss 로그 파일 디렉터리</col>
+				<col>tmp</col>
+				<col>Deploy등에서 JBoss가 사용하는 임시 디렉터리</col>
+			</row>
+		</table>
+	</section>
+	<section title="Setup 쉘 스크립트">
+		<text>각 Domains의 하위 인스턴스들은 각각 env.sh, start.sh, stop.sh등의 구동에 필요한 스크립트 정보를 가집니다.</text>
+		<section title="env.sh">
+			<textR>모든 설정이 env.sh를 통해서 이루어지며 JVM 옵션 등은 start.sh를 이용하므로 이 두 개의 파일만 조작하시면 됩니다.</textR>
+			<box>#!/bin/sh
+				# jboss-env.sh - starts a new shell with instance variables set
+				
+				## set jboss base env
+				DOMAIN_DIR=/engn001/jbsadm/jboss51/domains
+				JBOSS_DIR=/opt/jboss-eap-5.1
+				JBOSS_HOME=$JBOSS_DIR/jboss-as
+				SERVER_HOME=$DOMAIN_DIR/stmsDomain
+				APPS_DIR=/sorc001/stmsadm/applications/mainWebApp.war
+				LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JBOSS_DIR/lib
+				export DOMAIN_DIR JBOSS_DIR JBOSS_HOME SERVER_HOME LD_LIBRARY_PATH
+				
+				JBOSS_USER=root
+				SERVER_NAME=stms_10_8080
+				DOMAIN_IP=0.0.0.0
+				export JBOSS_USER SERVER_NAME DOMAIN_IP
+				
+				#JMX_CONSOLE_ID=`cat $SERVER_HOME/$SERVER_NAME/conf/props/jmx-console-users.properties | grep admin | awk -F '=' '{print $1}'`
+				#JMX_CONSOLE_PW=`cat $SERVER_HOME/$SERVER_NAME/conf/props/jmx-console-users.properties | grep admin | awk -F '=' '{print $2}'`
+				#JMX_CONSOLE_PORT=1099
+				#JMX_IP=$DOMAIN_IP:$JMX_CONSOLE_PORT
+				#export JMX_CONSOLE_ID JMX_CONSOLE_PW JMX_CONSOLE_PORT JMX_IP
+				
+				#export JAVA_HOME=/usr/java/jdk1.6.0_24
+				
+				PATH=$JAVA_HOME/bin:$JBOSS_HOME/bin:$PATH
+				export PATH
+				
+				if [ "x$JAVA_OPTS" = "x" ]; then
+				   JAVA_OPTS="-server"
+				   JAVA_OPTS="$JAVA_OPTS -Dserver=$SERVER_NAME"
+				   JAVA_OPTS="$JAVA_OPTS -Djboss.server.base.dir=$SERVER_HOME"
+				   JAVA_OPTS="$JAVA_OPTS -Djboss.server.base.url=file://$SERVER_HOME"
+				   JAVA_OPTS="$JAVA_OPTS -Djboss.server.log.dir=$SERVER_HOME/$SERVER_NAME/logs"
+				   JAVA_OPTS="$JAVA_OPTS -Djboss.server.app.dir=$APPS_DIR"
+				   JBOSS_OPTS="$JBOSS_OPTS -Dprofile.home.dir=$APPS_DIR"
+				   JBOSS_OPTS="$JBOSS_OPTS -Dprofile.server.name=$SERVER_NAME"
+				
+				#   JAVA_OPTS="$JAVA_OPTS -Djboss.partition.name=cluster01"
+				#   JAVA_OPTS="$JAVA_OPTS -Djboss.partition.udpGroup=228.2.2.1"
+				#   JAVA_OPTS="$JAVA_OPTS -Djboss.hapartition.mcast_port=44551"
+				   JAVA_OPTS="$JAVA_OPTS -Djboss.messaging.ServerPeerID=1"
+				   JAVA_OPTS="$JAVA_OPTS -Djboss.service.binding.set=ports-default"
+				#   JAVA_OPTS="$JAVA_OPTS -Dorg.apache.tomcat.util.http.ServerCookie.ALLOW_EQUALS_IN_VALUE=true"
+				
+				#   JAVA_OPTS="$JAVA_OPTS -Djgroups.bind_addr=10.10.10.41"
+				
+				#   JAVA_OPTS="$JAVA_OPTS -noverify"
+				   JAVA_OPTS="$JAVA_OPTS -Xms256m"
+				   JAVA_OPTS="$JAVA_OPTS -Xmx512m"
+				   JAVA_OPTS="$JAVA_OPTS -XX:PermSize=256m"
+				   JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=256m"
+				#   JAVA_OPTS="$JAVA_OPTS -Xss128k"
+				
+				   JAVA_OPTS="$JAVA_OPTS -verbose:gc"
+				   JAVA_OPTS="$JAVA_OPTS -Xloggc:$SERVER_HOME/$SERVER_NAME/logs/gc.log"
+				   JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails"
+				   JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCTimeStamps"
+				   JAVA_OPTS="$JAVA_OPTS -XX:+PrintHeapAtGC"
+				   JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
+				   JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=$SERVER_HOME/$SERVER_NAME/logs/java_pid.hprof"
+				
+				#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote"
+				#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.port=8186"
+				#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.ssl=false"
+				#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
+				
+				   JAVA_OPTS="$JAVA_OPTS -Dorg.jboss.resolver.warning=true"
+				   JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
+				   JAVA_OPTS="$JAVA_OPTS -Dsun.rmi.dgc.client.gcInterval=3600000"
+				   JAVA_OPTS="$JAVA_OPTS -Dsun.rmi.dgc.server.gcInterval=3600000"
+				   JAVA_OPTS="$JAVA_OPTS -Dsun.lang.ClassLoader.allowArraySyntax=true "
+				fi
+				
+				export JBOSS_OPTS JAVA_OPTS
+				
+				echo "================================================"
+				echo "JBOSS_HOME=$JBOSS_HOME"
+				echo "SERVER_HOME=$SERVER_HOME"
+				echo "SERVER_NAME=$SERVER_NAME"
+				echo "APPS_DIR=$APPS_DIR"
+				echo "================================================"
+				
+			</box>
+		</section>
+		<section title="start.sh">
+			<textR>start.sh는 인스턴스를 구동시킬 때 사용하며 JVM 옵션, JBoss 구동 옵션 등을 이 파일에서 조작할 수 있습니다.</textR>
+			<box><![CDATA[#!/bin/sh
+				. ./env.sh
+				
+				DATE=`date +%Y%m%d%H%M%S`
+				
+				# ------------------------------------
+				PID=`ps -ef | grep java | grep "=$SERVER_NAME" | awk '{print $2}'`
+				echo $PID 
+				
+				if [ e$PID != "e" ]
+				then
+				    echo "JBOSS($SERVER_NAME) is already RUNNING..."
+				    exit; 
+				fi
+				# ------------------------------------
+				#UNAME=`id -u -n`
+				UNAME=`/usr/ucb/whoami`
+				if [ e$UNAME != "e$JBOSS_USER" ]
+				then
+				    echo "$JBOSS_USER USER to start JBoss SERVER - $SERVER_NAME..."
+				    exit;
+				fi
+				# ------------------------------------
+				
+				mv $SERVER_HOME/$SERVER_NAME/logs/$SERVER_NAME.out $SERVER_HOME/$SERVER_NAME/logs/$SERVER_NAME.$DATE
+				mv $SERVER_HOME/$SERVER_NAME/logs/gc.log $SERVER_HOME/$SERVER_NAME/logs/gc.log.$DATE
+				
+				
+				nohup $JBOSS_HOME/bin/run.sh -c $SERVER_NAME -b $DOMAIN_IP >> $SERVER_HOME/$SERVER_NAME/logs/$SERVER_NAME.out 2>&1 &
+				
+				# ------------------------------------
+				if [ e$1 = "enotail" ]
+				then
+				    echo "Starting... $SERVER_NAME"
+				    exit;
+				fi
+				# ------------------------------------
+				tail -f $SERVER_HOME/$SERVER_NAME/logs/$SERVER_NAME.out
+				]]>
+			</box>
+			<textR>GC로그에 대한 내용을 확인할 수 있도록 gclog 파일을 남기는 옵션 을 추가하였습니다.</textR>
+		</section>
+		<section title="stop.sh">
+			<text>stop.sh 파일은 인스턴스를 종료할 때 사용합니다.</text>
+			<textR>한 장비에 여러 인스턴스를 구성할 경우에는 해당 인스턴스의 JNDI 포트번호로 변경하여야 합니다.</textR>
+			<box><![CDATA[#!/bin/bash
+				. ./env.sh
+				
+				unset JAVA_OPTS
+				
+				JMX_IP=localhost:1099
+				export JMX_IP
+				
+				$JBOSS_HOME/bin/shutdown.sh -S -s $JMX_IP -u admin -p admin
+				
+				#kill -9 ` ps -ef| grep $SERVER_NAME | grep -v grep | cut -c -5 | paste -s`
+				tail -f $SERVER_HOME/$SERVER_NAME/logs/$SERVER_NAME.out
+				]]>
+			</box>
+		</section>
+		<section title="kill.sh">
+			<text>kill.sh 파일은 kill -9 명령으로 인스턴스를 즉시 종료할 때 사용합니다.</text>
+			<box><![CDATA[#!/bin/sh
+				. ./env.sh
+				
+				ps -ef| grep java | grep "server=$SERVER_NAME" | awk {'print "kill -9 " $2'} | sh -x
+				]]>
+			</box>
+		</section>
+		<section title="dump.sh">
+			<text>dump.sh 파일은 인스턴스가 느려지거나, JVM의 현재 상황을 보려고 Thread Dump를 얻으려고 할 때 사용하는 스크립트입니다.</text>
+			<textR>장애상황이라면 5초 간격으로 3~5회를 실행합니다.</textR>
+			<box><![CDATA[#!/bin/sh
+				
+				. env.sh 
+				
+				ps -ef| grep java | grep "$SERVER_NAME " | awk {'print "kill -3 " $2'} | sh -x
+				]]> 
+			</box>
+		</section>
+		<section title="status.sh">
+			<text>status.sh 스크립트는 프로세스가 동작 중인지 체크하기 위한 스크립트입니다.</text>
+			<box><![CDATA[#!/bin/sh
+				
+				. env.sh 
+				
+				ps -ef| grep java | grep "=$SERVER_NAME "
+				]]> 
+			</box>
+		</section>
+		<section title="tail.sh">
+			<text>tail.sh 는 nohup로그를 보기 위한 스크립트입니다.</text>
+			<box><![CDATA[#!/bin/sh
+				. ./env.sh
+				
+				tail -200f $SERVER_HOME/$SERVER_NAME/logs/$SERVER_NAME.out
+				]]>
+			</box>
+		</section>
+	</section>
+	<section title="데이터소스 설정 방법">
+		<text>JBoss의 데이터 소스 설정 방법은 다음과 같습니다.</text>
+	</section>
+	<section title="Log4j 설정">
+		<text>5.0버전의 production환경 구성을 기준으로, 콘솔로 로그메시지를 출력하려면 log4j appender를 수정하여야 합니다.</text>
+		<textP>$SERVER_DIR/$SERVER_NAME/conf/jboss-log4j.xml</textP>
+		<box option="other">
+			<text type="red"><![CDATA[<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+			    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
+			    <param name="Target" value="System.out"/>
+			    <param name="Threshold" value="INFO"/>
+			
+			    <layout class="org.apache.log4j.PatternLayout">
+			        <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+			    </layout>
+			</appender>
+			…….]]>
+			</text>
+			<text type="default"><![CDATA[<category name="org.jgroups">]]>
+			</text>
+			<text type="red"><![CDATA[    <priority value="ERROR"/>]]>
+			</text>
+			<text type="default"><![CDATA[</category>
+			……
+			<!-- Buffer events and log them asynchronously -->
+			<appender name="ASYNC" class="org.apache.log4j.AsyncAppender">
+			    <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
+			    <appender-ref ref="FILE"/>]]>
+			</text>
+			<text type="red"><![CDATA[    <appender-ref ref="CONSOLE"/>]]>
+			</text>
+			<text type="default"><![CDATA[……
+			]]>
+			</text>
+		</box>
+	</section>
+	<section title="Configuration of Ports">
+		<text>같은 머신에서 여러 개의 JBoss인스턴스를 구성하려면, bindings-jboss-beans.xml 파일을 사용합니다. 포트 바인딩 설정을 위하여 /jboss/mr/domains/mrdomain/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml 파일을 이용합니다.</text>
+		<textR>각각의 인스턴스에서는 JVM 옵션에 -Djboss.service.binding.set=ports-default 등을 선언함으로써 각각의 포트를 제어합니다.</textR>
+		<textP>$SERVER_NAME/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml</textP>
+		<box option="other">
+			<text type="default"><![CDATA[<!-- Provides management tools with a ProfileService ManagementView
+			        interface to the SBM and its components -->
+			<bean name="ServiceBindingManagementObject" 
+			         class="org.jboss.services.binding.managed.ServiceBindingManagementObject">
+			
+			    <constructor>
+			        <!-- The name of the set of bindings to use for this server -->
+			        <parameter>${jboss.service.binding.set:]]></text>
+			<text type="red">ports-default</text>
+			<text type="default"><![CDATA[}</parameter>
+			
+			        <!--  The binding sets -->
+			        <parameter>
+			            <set>
+			                <inject bean="PortsDefaultBindings"/>
+			                <inject bean="Ports01Bindings"/>
+			                <inject bean="Ports02Bindings"/>
+			                <inject bean="Ports03Bindings"/>
+			            </set>
+			        </parameter>
+			
+			        <!-- Base binding metadata that is used to create bindings for each set -->
+			        <parameter><inject bean="StandardBindings"/></parameter>
+			
+			    </constructor>
+			</bean>
+			]]>
+			</text>
+		</box>
+		<text padding="23">설정 중에 포트 번호는 ports-01, ports-02, ports-03, ports-04, ports-05를 사용할 수 있습니다.</text>
+		<table size="3" width="300">
+			<header>
+				<col width="100">Name</col>
+				<col width="100">HTTP Port</col>
+				<col width="100">AJP13 Port</col>
+			</header>
+			<row>
+				<col>ports-default</col>
+				<col>8080</col>
+				<col>8009</col>
+				<col>ports-01</col>
+				<col>8180</col>
+				<col>8109</col>
+				<col>ports-02</col>
+				<col>8280</col>
+				<col>8209</col>
+				<col>ports-03</col>
+				<col>8380</col>
+				<col>8309</col>
+				<col>ports-04</col>
+				<col>8480</col>
+				<col>8409</col>
+				<col>ports-05</col>
+				<col>8580</col>
+				<col>8509</col>
+			</row>
+		</table>
+		<text padding="23">웹 서버와 접속은 mod_jk의 AJP13 프로토콜을 이용해 연결되는데, 웹 서버와 WAS서버 사이에 방화벽이 있다면, AJP 포트(8109, 8209, 8309, 8409, 8509)를 웹 서버에서 WAS로 연결될 수 있도록 설정하여야 합니다.</text>
+	</section>
+	<section title="Webapp session replication">
+		<text>웹 애플리케이션의 HTTP 세션 복제를 설정하려면 web.xml 파일에 <distributable/>를 추가합니다.</text>
+		<textP>xxxWeb/WEB-INF/web.xml</textP>
+		<box><![CDATA[<web-app  ...>
+			    <distributable/>
+			    <!-- ... -->
+			</web-app>
+			]]>
+		</box>
+	</section>
+</chapter>
