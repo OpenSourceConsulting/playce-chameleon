@@ -368,10 +368,10 @@ public class JaxbUtilsTest {
     	Document doc = null;
     	String context = null;
     	
-    	// Test Case 1 (weblogic-web-aap.xml 파싱 후 jboss-web.xml 로 변환)
+    	// Test Case 1 (weblogic.xml 파싱 후 jboss-web.xml 로 변환)
         try {
         	builder = new SAXBuilder();
-        	doc = builder.build(this.getClass().getResourceAsStream("/files/webdd/weblogic-web-app.xml"));
+        	doc = builder.build(this.getClass().getResourceAsStream("/files/webdd/weblogic.xml"));
 
 			context = doc.getRootElement().getChild("context-root", doc.getRootElement().getNamespace()).getText();
 			
