@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE weblogic-web-app PUBLIC "-//BEA Systems, Inc.//DTD Web Application 8.1//EN" "http://www.bea.com/servers/wls810/dtd/weblogic810-web-jar.dtd">
+
+<weblogic-web-app>
+
+  <session-descriptor>
+    <session-param>
+      <param-name>InvalidationIntervalSecs</param-name>
+      <param-value>600</param-value>
+    </session-param>
+  </session-descriptor>
+
+  <jsp-descriptor>
+    <jsp-param>
+      <param-name>keepgenerated</param-name>
+      <param-value>true</param-value>
+    </jsp-param>
+    <jsp-param>
+      <param-name>workingDir</param-name>
+      <param-value>/appl/GPEC/ROOT/jsp_pagecompile</param-value>
+    </jsp-param>
+  </jsp-descriptor>
+
+  <container-descriptor>
+    <servlet-reload-check-secs>-1</servlet-reload-check-secs>
+    <session-monitoring-enabled>true</session-monitoring-enabled>
+  </container-descriptor>
+
+  <context-root>/weblogic-root</context-root>
+</weblogic-web-app>
