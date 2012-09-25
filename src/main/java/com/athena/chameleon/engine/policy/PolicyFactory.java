@@ -20,6 +20,8 @@
  */
 package com.athena.chameleon.engine.policy;
 
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
@@ -66,6 +68,19 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 		policy.setJeus((PropertyUtil.getProperty("chameleon.migration.policy.jeus").indexOf(",") > -1 ? 
 				PropertyUtil.getProperty("chameleon.migration.policy.jeus").split(",") : 
 					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.jeus")}));
+		
+		StringBuilder regex = new StringBuilder("(");
+		
+		for(String weblogic : policy.getWeblogic()) {
+			regex.append(".*").append(weblogic).append(".*|");
+		}
+		for(String jeus : policy.getJeus()) {
+			regex.append(".*").append(jeus).append(".*|");
+		}
+		regex.deleteCharAt(regex.toString().length() - 1);
+		regex.append(")");
+		
+		policy.setPattern(Pattern.compile(regex.toString()));
 	}
 
 	@Override
@@ -82,4 +97,5 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 	public boolean isSingleton() {
 		return true;
 	}
+
 }//end of PolicyFactory.java

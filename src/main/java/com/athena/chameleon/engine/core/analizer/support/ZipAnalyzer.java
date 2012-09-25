@@ -27,6 +27,9 @@ import org.springframework.util.Assert;
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.core.analizer.AbstractAnalyzer;
+import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
+import com.athena.chameleon.engine.policy.Policy;
+import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
 /**
  * <pre>
@@ -37,6 +40,18 @@ import com.athena.chameleon.engine.core.analizer.AbstractAnalyzer;
  */
 public class ZipAnalyzer extends AbstractAnalyzer {
 
+	/**
+	 * <pre>
+	 * Constructor
+	 * </pre>
+	 * @param policy
+	 * @param converter
+	 * @param executor
+	 */
+	public ZipAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
+		super(policy, converter, executor);
+	}//end of Constructor
+	
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.core.analizer.Analyzer#analyze(java.io.File)
 	 */
@@ -57,7 +72,7 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			ClasspathUtil.addPath(tempDir);
 			
 			// 압축 해제 및 디렉토리를 분석한다.
-			defaultAnalyze(new File(tempDir));
+			defaultAnalyze(new File(tempDir), tempDir);
 			
 			executor.getExecutor().shutdown();
 			

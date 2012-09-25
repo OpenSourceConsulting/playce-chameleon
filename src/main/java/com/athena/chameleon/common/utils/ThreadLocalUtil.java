@@ -64,7 +64,7 @@ public class ThreadLocalUtil {
 	 * @param key
 	 * @param object
 	 */
-	public static void add(String key, Object object) {
+	public synchronized static void add(String key, Object object) {
 		getThreadLocal().put(key, object);
 	}//end of add()
 
@@ -75,7 +75,7 @@ public class ThreadLocalUtil {
 	 * @param key
 	 * @return
 	 */
-	public static Object get(String key) {
+	public synchronized static Object get(String key) {
 		return getThreadLocal().get(key);
 	}//end of get()
 

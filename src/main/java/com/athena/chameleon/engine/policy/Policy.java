@@ -20,6 +20,8 @@
  */
 package com.athena.chameleon.engine.policy;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.ArrayUtils;
 
 /**
@@ -38,6 +40,7 @@ public class Policy {
 	private String[] suffix;
 	private String[] weblogic;
 	private String[] jeus;
+	private Pattern pattern;
 	
 	/**
 	 * @return the unzipDir
@@ -110,6 +113,18 @@ public class Policy {
 	 */
 	public void setJeus(String[] jeus) {
 		this.jeus = jeus;
+	}	
+	/**
+	 * @return the pattern
+	 */
+	public Pattern getPattern() {
+		return pattern;
+	}
+	/**
+	 * @param pattern the pattern to set
+	 */
+	public void setPattern(Pattern pattern) {
+		this.pattern = pattern;
 	}
 	
 	@Override
@@ -119,7 +134,8 @@ public class Policy {
 				.append("enEncoding : " + enEncoding).append("\n")
 				.append("suffix : ").append(ArrayUtils.toString(suffix)).append("\n")
 				.append("weblogic : ").append(ArrayUtils.toString(weblogic)).append("\n")
-				.append("jeus : ").append(ArrayUtils.toString(jeus));
+				.append("jeus : ").append(ArrayUtils.toString(jeus))
+				.append("pattern : ").append(pattern.toString());
 		
 		return sb.toString();
 	}

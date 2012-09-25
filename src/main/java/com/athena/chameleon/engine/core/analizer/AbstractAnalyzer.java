@@ -27,9 +27,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
+import com.athena.chameleon.engine.threadpool.task.ClassFileDependencyCheckTask;
+import com.athena.chameleon.engine.threadpool.task.RegularFileDependencyCheckTask;
 
 
 /**
@@ -47,18 +51,14 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	protected FileEncodingConverter converter;
 	protected ChameleonThreadPoolExecutor executor;
 	
-	protected List<File> warFileList = new ArrayList<File>();
-	protected List<File> jarFileList = new ArrayList<File>();
+	protected List<File> warFileList;
+	protected List<File> jarFileList;
+	protected List<String> libFileList;
+	protected List<String> deleteFileList;
 	
-	public void setPolicy(Policy policy) {
+	public AbstractAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
 		this.policy = policy;
-	}
-	
-	public void setConverter(FileEncodingConverter converter) {
 		this.converter = converter;
-	}
-	
-	public void setExecutor(ChameleonThreadPoolExecutor executor) {
 		this.executor = executor;
 	}
 
@@ -72,64 +72,91 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	 * </pre>
 	 * @param file
 	 */
-	protected void defaultAnalyze(File file) {		
+	@SuppressWarnings("unchecked")
+	protected void defaultAnalyze(File file, String rootPath) {		
 		File[] fileList = file.listFiles();
 		
 		String extension = null;
 		for (File f : fileList) {
 			if (f.isDirectory()) {
-				defaultAnalyze(f);
+				defaultAnalyze(f, rootPath);
 			} else {
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
 				
 				if (extension.equals("war")) {
+					if ((warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST)) == null) {
+						warFileList = new ArrayList<File>();
+						ThreadLocalUtil.add(ChameleonConstants.WAR_FILE_LIST, warFileList);
+					}
+					
 					warFileList.add(f);
 			    } else if (extension.equals("jar")) {
-					jarFileList.add(f);
-				} else if (extension.equals("java")) {
-					javaAndJspAnalyze(f);
-				} else if (extension.equals("jsp")) {
-					javaAndJspAnalyze(f);
+			    	
+			    	// 라이브러리 jar 인 경우에 해당하며 목록을 ThreadLocal에 저장한다.
+			    	if (f.getParent().endsWith("lib")) {
+			    		
+			    		// xerces.jar, xalan.jar, xml-api.jar, jboss-*.jar 파일이 존재할 경우 제거
+			    		if (f.getName().equals("xerces.jar") || f.getName().equals("xalan.jar") || 
+			    				f.getName().equals("xml-api.jar") || f.getName().startsWith("jboss-")) {
+			    			
+			    			// 삭제 파일 목록에 추가
+				    		if((deleteFileList = (List<String>) ThreadLocalUtil.get(ChameleonConstants.DELETE_FILE_LIST)) == null) {
+				    			deleteFileList = new ArrayList<String>();
+								ThreadLocalUtil.add(ChameleonConstants.DELETE_FILE_LIST, deleteFileList);
+							}
+				    		
+				    		deleteFileList.add(f.getAbsolutePath().substring(rootPath.length()));
+				    		
+			    			f.delete();
+			    			continue;
+			    		}
+			    		
+			    		// 라이브러리 파일 목록에 추가
+			    		if ((libFileList = (List<String>) ThreadLocalUtil.get(ChameleonConstants.LIB_FILE_LIST)) == null) {
+			    			libFileList = new ArrayList<String>();
+							ThreadLocalUtil.add(ChameleonConstants.LIB_FILE_LIST, libFileList);
+						}
+			    		
+			    		libFileList.add(f.getAbsolutePath().substring(rootPath.length()));
+			    	}
+				} else if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
+					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy));
 				} else if (extension.equals("class")) {
-					classAnalyze(f);
+					executor.execute(new ClassFileDependencyCheckTask(f, rootPath, policy));
 				} else if (extension.equals("xml")) {
-					// WEB-INF/web.xml
-					
-					// WEB-INF/application.xml
+					// [war] WEB-INF/web.xml
 
-					// WEB-INF/weblogic.xml
+					// [war] WEB-INF/weblogic.xml
 
-					// WEB-INF/jeus-application-dd.xml
+					// [war] WEB-INF/jeus-web-dd.xml
 					
-					// META-INF/ejb-jar.xml
+					// [ear] META-INF/application.xml
+
+					/**
+			    	// application.xml 분석 시 ejb 관련 jar 파일이 명시된 경우 jarFileList에 추가한다.
+			    	// 프로젝트 소스로 입력된 경우 해당 jar 파일이 존재하지 않을 수 있으며, 이러한 경우 reporting 한다.
+			    	
+					if((jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST)) == null) {
+						jarFileList = new ArrayList<File>();
+						ThreadLocalUtil.add(ChameleonConstants.JAR_FILE_LIST, jarFileList);
+					}
 					
-					// META-INF/weblogic-ejb-jar.xml
+					jarFileList.add(f);
+					*/
 					
-					// META-INF/jeus-ejb-dd.xml
+					// [ear] META-INF/weblogic-application.xml
+					
+					// [ear] META-INF/jeus-application-dd.xml
+					
+					// [ejb jar] META-INF/ejb-jar.xml
+					
+					// [ejb jar] META-INF/weblogic-ejb-jar.xml
+					
+					// [ejb jar] META-INF/jeus-ejb-dd.xml
 				}
 			}
 		}
 	}//end of defaultAnalyzer()
-	
-	/**
-	 * <pre>
-	 * java 및 jsp 파일에 대한 의존성 분석
-	 * </pre>
-	 * @param file
-	 */
-	protected void javaAndJspAnalyze(File file) {
-		
-	}//end of javaAndJspAnalyze()
-	
-	/**
-	 * <pre>
-	 * class 파일에 대한 의존성 분석
-	 * </pre>
-	 * @param file
-	 */
-	protected void classAnalyze(File file) {
-		
-	}//end of classAnalyze()
 
     /**
      * <pre>

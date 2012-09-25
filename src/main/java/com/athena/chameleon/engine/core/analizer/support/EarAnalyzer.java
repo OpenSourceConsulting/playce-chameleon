@@ -27,6 +27,9 @@ import org.springframework.util.Assert;
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.core.analizer.AbstractAnalyzer;
+import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
+import com.athena.chameleon.engine.policy.Policy;
+import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
 /**
  * <pre>
@@ -36,6 +39,18 @@ import com.athena.chameleon.engine.core.analizer.AbstractAnalyzer;
  * @version 1.0
  */
 public class EarAnalyzer extends AbstractAnalyzer {
+
+	/**
+	 * <pre>
+	 * Constructor
+	 * </pre>
+	 * @param policy
+	 * @param converter
+	 * @param executor
+	 */
+	public EarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
+		super(policy, converter, executor);
+	}//end of Constructor
 
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.core.analizer.Analyzer#analyze(java.io.File)
@@ -57,7 +72,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			ClasspathUtil.addPath(tempDir);
 			
 			// 압축 해제 및 디렉토리를 분석한다.
-			defaultAnalyze(new File(tempDir));
+			defaultAnalyze(new File(tempDir), tempDir);
 			
 			executor.getExecutor().shutdown();
 			
@@ -71,12 +86,12 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			
 			// war 파일이 존재할 경우 해당 war 파일에 대해 분석한다.
 			for(File warFile : warFileList) {
-				new WarAnalyzer().analyze(warFile);
+				new WarAnalyzer(policy, converter, executor).analyze(warFile);
 			}
 			
 			// jar 파일이 존재할 경우 해당 jar 파일에 대해 분석한다.
 			for(File jarFile : jarFileList) {
-				new JarAnalyzer().analyze(jarFile);
+				new JarAnalyzer(policy, converter, executor).analyze(jarFile);
 			}
 			
 			// 해당 ear 파일로 재 압축한다.

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +16,29 @@
  * Revision History
  * Author			Date				Description
  * ---------------	----------------	------------
- * Sang-cheon Park	2012. 9. 24.		First Draft.
+ * Sang-cheon Park	2012. 9. 25.		First Draft.
  */
-package com.athena.chameleon.engine.core.analizer;
-
-import java.io.File;
+package com.athena.chameleon.engine.constant;
 
 /**
  * <pre>
- * 
+ * Athena-Chameleon에서 범용으로 사용되는 상수 등을 정의하기 위한 클래스
  * </pre>
+ * 
  * @author Sang-cheon Park
  * @version 1.0
  */
-public interface Analyzer {
+public class ChameleonConstants {
+
+	/**
+	 * ThreadLocal을 사용한 스레드간 공유 객체에 사용되는 Key
+	 */
+	public static final String ORIGINAL_FILE_LIST 	= "ORIGINAL_FILE_LIST";
+	public static final String DELETE_FILE_LIST 	= "DELETE_FILE_LIST";
+	public static final String DEPENDENCY_FILE_LIST = "DEPENDENCY_FILE_LIST";
 	
-	public void analyze(String path);
+	public static final String WAR_FILE_LIST 		= "WAR_FILE_LIST";
+	public static final String JAR_FILE_LIST 		= "JAR_FILE_LIST";
+	public static final String LIB_FILE_LIST 		= "LIB_FILE_LIST";
 	
-	public void analyze(File file);
-	
-}//end of Analyzer.java
+}//end of ChameleonConstants.java
