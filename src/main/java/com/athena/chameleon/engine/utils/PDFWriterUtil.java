@@ -28,6 +28,8 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.List;
+import com.itextpdf.text.ListItem;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Section;
@@ -53,6 +55,7 @@ public class PDFWriterUtil {
     public static Font     fnChapter;
     public static Font     fnSection;
     public static Font     fnSection2;
+    public static Font     fnURL;
     
     static {
         try {
@@ -65,7 +68,8 @@ public class PDFWriterUtil {
             fnChapter    = new Font(bfKorean, 14, Font.BOLD);
             fnSection    = new Font(bfKorean, 12, Font.BOLD);
             fnSection2   = new Font(bfKorean, 11, Font.BOLD);
-            
+            fnURL  		 = new Font(bfKorean, 10, Font.UNDERLINE, new BaseColor(0,0,255));
+    	    
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -173,10 +177,33 @@ public class PDFWriterUtil {
         return section;
     }
     
+    /**
+     * 
+     * Section 생성 및 Element Mapping
+     * 
+     * @param parent parent 객체
+     * @param e element 정보
+     * @return Section
+     * @throws Exception
+     */
     public static Section setSectionElement(Section parent, Element e) throws Exception {
-
-        Section section = getSection(parent, e.getAttributeValue("title"));
+    	
+    	Section section = getSection(parent, e.getAttributeValue("title"));
+    	return setElement(section, e);
         
+    }
+    
+    /**
+     * Element Mapping
+     * 
+     * @param section section 객체
+     * @param e element 정보
+     * @return Section
+     * @throws Exception
+     */
+    public static Section setElement(Section section, Element e) throws Exception {
+
+    	
         for(org.jdom2.Element e1 : e.getChildren()) {
             
             if(e1.getName().equals("section")) {
@@ -205,6 +232,8 @@ public class PDFWriterUtil {
             } else if(e1.getName().equals("box")) {
                 setBox(section, e1);
                 
+            } else if(e1.getName().equals("list")) {
+            	setList(section, e1);
             }
         }
         
@@ -280,6 +309,20 @@ public class PDFWriterUtil {
         
         section.add(t);
         
+    }
+    
+    public static void setList(Section section, Element e) throws Exception {
+    	List list = new List(false, 15);
+    	list.setIndentationLeft(23);
+    	for(Element e1 : e.getChildren()) {
+    		ListItem item = new ListItem(e1.getText(), fnNormal);
+    		item.setMultipliedLeading(1.8F);
+            list.add(item);
+        }
+    	list.getFirstItem().setSpacingBefore(-14);
+    	list.getLastItem().setSpacingAfter(14);
+    	
+    	section.add(list);
     }
     
     /**

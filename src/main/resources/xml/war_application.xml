@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="웹 애플리케이션 분석">
+	<text>업로드된 애플리케이션은 WAR(Web Archive) 영역으로 웹 애플리케이션에 대한 영역만 존재합니다. 일반적인 웹 애플리케이션의 속성은 다음과 같습니다.</text>
+	<section title ="web.xml">
+		<text>web.xml에 기술된 서블릿 및 필터, 기타 정보는 아래와 같이 요약할 수 있습니다.</text>
+		<web_xml_info/>
+	</section>
+	<section title="WEB/lib 구성 내용">
+		<text>lib의 구성 내용은 다음과 같습니다.</text>
+		<web_lib_list/>
+	</section>
+	<section title="WEB-INF/classes 구성">
+		<text>classes 디렉토리 내의 전체 파일의 개수는 [<war_file_cnt/>]개이며, <war_dir_cnt/>개의 디렉토리로 구성되어 있습니다. 각 클래스에 대한 요약은 다음과 같습니다.</text>
+		<war_class_info/>
+	</section>
+</chapter>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="마이그레이션의 개요">
+	<text>본 문서의 목적은 정부 통합전산센터의 상용 WAS서버에서 작동되는 업무 애플리케이션을 공개 SW기반의 WAS에서 작동이 되는 변경 작업에 대한 결과 산출물로 툴에 의해 자동으로 생성된 보고서입니다.
+	
+		본 보고서의 목적은 급변하는 정보 서비스 환경변화 및 무한경쟁은 IT 패러다임을 변화시켜 경제적이고 유연한 공개SW기반 정보시스템 도입 필요함에 따라 특정 벤더에 종속적이며 비표준 방식의 WAS를 Java 표준을 따르는 공개SW기반의 WAS로 전환시킬 수 있는 방법을 제공하는 문서입니다.
+		
+		본 분석도구는 아래와 같은 내용을 포함하고 있습니다.
+	</text>
+	<list>
+		<text>응용 서비스에서 사용되는 라이브러리 의존성 분석</text>
+		<text>비표준/벤더 종속적인 디스크립터를 Java EE 표준을 따르는 공개 SW 기반 표준 WAS에 적용할 수 있는 스크립트로 자동 변환</text>
+		<text>분석결과를 바탕으로 공개 SW기반의 WAS에 적용할 수 있는 코드 권고안 제시</text>
+		<text>마이그레이션을 위한 예상 소요 기간과 발생 가능한 문제점 등을 예측할 수 있는 분석 리포트 제공</text>
+	</list>
+	<section title ="목표 기대치">
+		<text>본 자동화 도구를 활용하여 변경된 애플리케이션이 기존 WAS대비 50% 작동을 목표로 하고 있습니다.</text>
+	</section>
+	<section title="보고서의 범위">
+		<text>본 보고서는 다음의 결과물을 포함하고 있습니다.</text>
+		<list>
+			<text>Java 소스 파일의 인코딩 변환 결과</text>
+			<text>JSP 소스 파일의 인코딩 변환 결과</text>
+			<text>사용하는 라이브러리에 대한 버전 및 라이선스 정보</text>
+			<text>디플로이 애플리케이션 ear, war, jar에 대한 분석결과</text>
+			<text>application.xml, web.xml, vendor-xml 파일에 대한 분석 결과</text>
+			<text>XML 디스크립터에 대한 필요시 변환</text>
+			<text>공개SW WAS로 변환시 코드 변경 권고안</text>
+		</list>
+	</section>
+</chapter>

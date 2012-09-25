@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="프로젝트 소스에 대한 분석">
+	<text>본 장에서는 프로젝트의 개발 소스에 대한 분석 결과를 제공합니다. 소스는 기본적으로 UTF-8으로 개발될 수 있도록 파일 인코딩에 대한 결과값을 포함합니다.</text>
+	<section title ="소스 파일 요약">
+		<text>우선 소스 파일들에 대한 개요는 다음과 같습니다.</text>
+		<source_file_summary/>
+		<source_file_summary_chart/>
+	</section>
+	<section title="Java 소스 파일별 분석 결과">
+		<text>소스 파일에 대한 분석 결과 아래와 같은 벤더 의존적인 코드들이 발견되었습니다.</text>
+		<pattern_result/>
+		<section title="Servlet 상속 클래스">
+			<text>아래의 클래스들은 서블릿을 상속받은 클래스들입니다.</text>
+			<pattern_servlet/>
+		</section>
+		<section title="EJB 상속 클래스">
+			<text>아래의 클래스들은 EJB(Enterprise Java Beans)를 상속받은 클래스들입니다.</text>
+			<pattern_ejb/>
+		</section>
+		<section title="com.weblogic.* 의존성 클래스">
+			<pattern_weblogic/>
+		</section>
+		<section title="com.tmax.jeus.* 의존성 클래스">
+			<pattern_jeus/>
+		</section>
+		<section title="com.ibm.websphere.* 의존성 클래스">
+			<pattern_websphere/>
+		</section>
+	</section>
+	<section title="JSP 소스 파일 분석 결과">
+		<text>본 [XXX] 프로젝트의 JSP 파일은 총 384개를 가지고 있으며, 각 JSP의 page directive는 다음과 같습니다.
+			파일별로 동일하게 구성되어야 하나 다르게 나타날 경우, 문제가 발생할 수 있는 소지도 존재합니다.
+		</text>
+		<pattern_jsp/>
+		<text>JSP 파일에 대한 권고안은 5장 마이그레이션 권고안을 참고하십시오.</text>
+	</section>
+</chapter>

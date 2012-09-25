@@ -125,7 +125,7 @@ public class MigrationComponentTest {
         upload.setPerson("홍길동");
         upload.setOrgRole("개발팀");
         
-        PDFDocGenerator.cratePDF(unzipDirPath+File.separator+"test.pdf", upload);
+        PDFDocGenerator.createPDF(unzipDirPath+File.separator+"test.pdf", upload);
         
     }
     

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="마이그레이션 권고안 – 전환시 부가작업 및 사항">
+	<section title ="Web Deployment Descript 추가">
+	</section>
+	<section title="EJB Deployment Descriptor 추가">
+		<text>EJB 2.x 버전에서는 EJB Deployment Descriptor가 필요하다.
+			ejb-jar.xml 파일은 표준 EJB Deployment Descriptor 파일이며, 각 WAS 마다 별도의 Descriptor를 설정하여야 한다.
+			
+			WebLogic의 경우엔 weblogic-ejb-jar.xml 파일에 바인딩될 JNDI이름등을 지정하게 된다.
+			JBoss에서는 jboss.xml 파일을 사용한다.
+		</text>
+		<web_lib_list/>
+	</section>
+	<section title="WEB-INF/classes 구성">
+		<text>classes 디렉토리 내의 전체 파일의 개수는 [<war_file_cnt/>]개이며, <war_dir_cnt/>개의 디렉토리로 구성되어 있습니다. 각 클래스에 대한 요약은 다음과 같습니다.</text>
+		<war_class_info/>
+	</section>
+</chapter>

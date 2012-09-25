@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <list>
+	<url>/xml/summary.xml</url>
+	<url>/xml/source_analyze.xml</url>
+	<url option="deploy">/xml/deploy_application.xml</url>
+	<url option="ear">/xml/ear_application.xml</url>  
+	<url option="war">/xml/war_application.xml</url>
+	<url>/xml/migration_advice.xml</url>
 	<url>/xml/JBoss.xml</url>
+	<!-- 
+	<url>/xml/tomcat.xml</url>
+	 -->
 </list>

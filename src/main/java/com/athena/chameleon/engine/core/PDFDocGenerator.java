@@ -2,6 +2,7 @@ package com.athena.chameleon.engine.core;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -27,6 +28,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -55,7 +57,7 @@ public class PDFDocGenerator {
 	 * @param filePath PDF 파일이 생설될 File Path
 	 *  
 	 */
-	public static void cratePDF(String filePath, Upload upload) throws Exception{
+	public static void createPDF(String filePath, Upload upload) throws Exception{
 
         Document pdf = new Document(PageSize.A4, 50, 50, 70, 65); 
         PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(filePath));
@@ -78,17 +80,13 @@ public class PDFDocGenerator {
             org.jdom2.Element root = chapterDoc.getRootElement();
             chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
                 
-            for(org.jdom2.Element e1 : root.getChildren()) {
-                
-                if(e1.getName().equals("section")) {
-                    PDFWriterUtil.setSectionElement(chapter, e1);
-                }
-            }
+            PDFWriterUtil.setElement(chapter, root);
             
             pdf.add(chapter);
             cNum++;
         }
 
+        setLastPageInfo(pdf, writer, cNum);
         setChapterSectionTOC(pdf, writer, event);
         setTitleMainPage(pdf, writer, event, upload);
         pdf.close();
@@ -209,6 +207,54 @@ public class PDFDocGenerator {
         // apply the new order
         writer.reorderPages(order);
 
+    }
+    
+    public static void setLastPageInfo(Document doc, PdfWriter writer, int cNum) throws Exception {
+    	Chapter chapter = PDFWriterUtil.getChapter(MessageUtil.getMessage("pdf.message.chapter.confirm.title"), cNum);
+    	
+    	Paragraph preP = new Paragraph();
+    	preP.add(new Phrase(MessageUtil.getMessage("pdf.message.chapter.confirm.prepared1"), PDFWriterUtil.fnNormalBold));
+    	preP.add(new Phrase("                                                           ", new Font(bfKorean, 10, Font.UNDERLINE)));
+    	preP.setSpacingBefore(15);
+    	preP.setSpacingAfter(2);
+    	chapter.add(preP);
+    	
+    	preP = new Paragraph();
+    	preP.add(new Phrase(MessageUtil.getMessage("pdf.message.chapter.confirm.prepared2"), PDFWriterUtil.fnNormal));
+    	preP.setIndentationLeft(65);
+    	preP.setSpacingAfter(14);
+    	chapter.add(preP);
+
+    	preP = new Paragraph();
+    	preP.add(new Phrase(MessageUtil.getMessage("pdf.message.chapter.confirm.approved1"), PDFWriterUtil.fnNormalBold));
+    	preP.add(new Phrase("                                                           ", new Font(bfKorean, 10, Font.UNDERLINE)));
+    	preP.setSpacingBefore(15);
+    	preP.setSpacingAfter(2);
+    	chapter.add(preP);
+    	
+    	preP = new Paragraph();
+    	preP.add(new Phrase(MessageUtil.getMessage("pdf.message.chapter.confirm.approved2"), PDFWriterUtil.fnNormal));
+    	preP.setIndentationLeft(65);
+    	preP.setSpacingAfter(14);
+    	chapter.add(preP);
+
+    	cNum++;
+    	doc.add(chapter);
+    	
+    	chapter = PDFWriterUtil.getChapter(MessageUtil.getMessage("pdf.message.chapter.appendices.title"), cNum);
+    	Section section = PDFWriterUtil.getSection(chapter, MessageUtil.getMessage("pdf.message.chapter.appendices.label1"));
+    	
+    	Chunk url = new Chunk(MessageUtil.getMessage("pdf.message.chapter.appendices.text1"), PDFWriterUtil.fnURL);
+    	url.setAction(new PdfAction(new URL(MessageUtil.getMessage("pdf.message.chapter.appendices.text1"))));
+
+    	preP = new Paragraph(url);
+    	preP.setIndentationLeft(23);
+    	preP.setSpacingAfter(14);
+    	section.add(preP);
+    	
+    	section = PDFWriterUtil.getSection(chapter, MessageUtil.getMessage("pdf.message.chapter.appendices.label2"));
+    	
+    	doc.add(chapter);
     }
     
 	/**
