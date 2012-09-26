@@ -34,7 +34,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
-import com.athena.chameleon.engine.core.analizer.Dependency;
+import com.athena.chameleon.engine.core.analyzer.Dependency;
 import com.athena.chameleon.engine.policy.Policy;
 
 /**
@@ -73,7 +73,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 
 		try {
 			Dependency dependency = new Dependency();
-			dependency.setFileName(file.getAbsolutePath().substring(rootPath.length()));
+			dependency.setFileName(file.getAbsolutePath().substring(rootPath.length() + 1));
 			dependency.setExtension(file.getName().substring(file.getName().lastIndexOf(".") + 1));
 		
 			FileReader reader = new FileReader(file);
@@ -84,7 +84,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 			while ((lineStr = buffer.readLine()) != null) {
 			    match = pattern.matcher(lineStr);
 			    if (match.matches()) {
-			    	dependency.addDependencyStrMap(Integer.toString(lineNum), lineStr);
+			    	dependency.addDependencyStrMap(new String("#" + Integer.toString(lineNum)), lineStr);
 			    }
 			    
 				lineNum++;
