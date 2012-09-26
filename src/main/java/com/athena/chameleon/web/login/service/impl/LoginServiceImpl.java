@@ -22,8 +22,6 @@ package com.athena.chameleon.web.login.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.athena.chameleon.web.login.service.LoginService;
 import com.athena.chameleon.web.login.vo.Login;

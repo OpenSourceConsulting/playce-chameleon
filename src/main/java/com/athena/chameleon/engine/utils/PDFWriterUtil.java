@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 import org.jdom2.Element;
 
-import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;

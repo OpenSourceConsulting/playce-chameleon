@@ -21,8 +21,6 @@
 package com.athena.chameleon.web.login.vo;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This Genre class is a Value Object class for Login.

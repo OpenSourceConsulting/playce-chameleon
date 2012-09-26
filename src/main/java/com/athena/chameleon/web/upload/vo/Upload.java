@@ -165,7 +165,7 @@ public class Upload implements Serializable {
 	 * @param object
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public static String getReflectionToString(Object object) {
 		Class clazz = object.getClass();
 		Field[] fields = clazz.getDeclaredFields();
