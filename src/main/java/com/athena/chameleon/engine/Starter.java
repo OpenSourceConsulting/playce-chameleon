@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.athena.chameleon.engine.core.MigrationComponent;
+
 /**
  * <pre>
  * CLI(Command Line Interface) 환경에서 Athena Chameleon WAS Migration 실행을 위한 Main 클래스
@@ -43,7 +45,7 @@ public class Starter {
     private static final Logger logger = LoggerFactory.getLogger(Starter.class);
     
     // zip, war, gz 등 소문자로 추가
-    private static final String[] SUPPORT_ARCHIVE_FORMAT = {"zip"}; 
+    private static final String[] SUPPORT_ARCHIVE_FORMAT = {"zip", "ear", "war", "jar"}; 
 
 	/**
 	 * <pre>
@@ -79,8 +81,8 @@ public class Starter {
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/context-*.xml");
 		
-		//MigrationComponent component = (MigrationComponent)context.getBean("migrationComponent");
-		//component.migrate(fqfn);
+		MigrationComponent component = (MigrationComponent)context.getBean("migrationComponent");
+		component.migrate(fqfn);
 	}//end of main()
 	
 	/**

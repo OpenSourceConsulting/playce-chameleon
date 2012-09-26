@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -37,8 +39,15 @@ import javax.xml.bind.Unmarshaller;
 import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
+import com.athena.chameleon.engine.core.analyzer.support.EarAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.support.JarAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.support.WarAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.support.ZipAnalyzer;
+import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.policy.Policy;
+import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.utils.FileUtil;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
@@ -61,6 +70,18 @@ public class MigrationComponent {
     public File                     weblogicEjbXmlFile;
     public File						jeusEjbXmlFile;
     public List<MigrationFile>      migrationFileList = new ArrayList<MigrationFile>();
+    
+    @Inject
+    @Named("policy")
+    private Policy policy;
+
+    @Inject
+    @Named("taskExecutor")
+    private ChameleonThreadPoolExecutor executor;
+
+    @Inject
+    @Named("fileEncodingConverter")
+    private FileEncodingConverter converter;
 
     {
         try {
@@ -477,6 +498,20 @@ public class MigrationComponent {
      */
 	public void setApplicationXmlFile(File applicationXmlFile) {
 		this.applicationXmlFile = applicationXmlFile;
+	}
+
+	public void migrate(String fqfn) {
+		String extension = fqfn.substring(fqfn.lastIndexOf(".") + 1);
+		
+		if (extension.equals("zip")) {
+			new ZipAnalyzer(policy, converter, executor).analyze(fqfn);
+		} else if (extension.equals("ear")) {
+			new EarAnalyzer(policy, converter, executor).analyze(fqfn);
+		} else if (extension.equals("war")) {
+			new WarAnalyzer(policy, converter, executor).analyze(fqfn);
+		} else if (extension.equals("jar")) {
+			new JarAnalyzer(policy, converter, executor).analyze(fqfn);
+		}
 	}
 
 }

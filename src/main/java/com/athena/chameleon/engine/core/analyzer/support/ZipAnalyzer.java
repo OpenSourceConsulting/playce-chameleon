@@ -24,7 +24,6 @@ import java.io.File;
 
 import org.springframework.util.Assert;
 
-import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
@@ -68,21 +67,11 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			// 인코딩 변경
 			converter.convert(new File(tempDir));
 			
-			// 압축 해제 디렉토리를 클래스 패스에 추가한다.
-			ClasspathUtil.addPath(tempDir);
+			// 프로젝트 소스(zip) 입력 시 class 파일에 대한 의존성 검사를 수행하지 않는다. 
+			// ClasspathUtil.addPath(tempDir);
 			
-			// 압축 해제 및 디렉토리를 분석한다.
-			defaultAnalyze(new File(tempDir), tempDir);
-			
-			executor.getExecutor().shutdown();
-			
-			try {
-				while(!executor.getExecutor().isTerminated()) {
-					Thread.sleep(100);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			// 압축 해제 디렉토리 내의 파일을 분석한다.
+			analyze(new File(tempDir), tempDir);
 			
 			// 해당 zip 파일로 재 압축한다.
 			ZipUtil.compress(tempDir, file.getAbsolutePath());

@@ -27,6 +27,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
@@ -64,16 +65,38 @@ public abstract class AbstractAnalyzer implements Analyzer {
 
 	public void analyze(String path) {
 		analyze(new File(path));
-	}
+	}//end of analyze()
+	
+	/**
+	 * <pre>
+	 *
+	 * </pre>
+	 * @param file
+	 * @param rootPath
+	 */
+	protected void analyze(File file, String rootPath) {	
+		defaultAnalyze(file, rootPath);
+		
+		executor.getExecutor().shutdown();
+		
+		try {
+			while(!executor.getExecutor().isTerminated()) {
+				Thread.sleep(100);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}//end of analyze()
 
 	/**
 	 * <pre>
 	 *
 	 * </pre>
 	 * @param file
+	 * @param rootPath
 	 */
 	@SuppressWarnings("unchecked")
-	protected void defaultAnalyze(File file, String rootPath) {		
+	private void defaultAnalyze(File file, String rootPath) {		
 		File[] fileList = file.listFiles();
 		
 		String extension = null;
@@ -82,6 +105,16 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				defaultAnalyze(f, rootPath);
 			} else {
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
+
+				// war, jar 파일은 EarAnalyzer
+				
+				// java 파일은 ZipAnalyzer
+				
+				// class 파일은 EarAnalyzer, WarAnalyzer, JarAnalyzer => ear, war, jar의 APP-INF/classes 또는 WEB-INF/classes, jar는?
+				
+				// jsp, properties는 ALL
+				
+				// xml은 ALL
 				
 				if (extension.equals("war")) {
 					if ((warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST)) == null) {
@@ -91,7 +124,6 @@ public abstract class AbstractAnalyzer implements Analyzer {
 					
 					warFileList.add(f);
 			    } else if (extension.equals("jar")) {
-			    	
 			    	// 라이브러리 jar 인 경우에 해당하며 목록을 ThreadLocal에 저장한다.
 			    	if (f.getParent().endsWith("lib")) {
 			    		
@@ -122,7 +154,10 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				} else if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
 					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy));
 				} else if (extension.equals("class")) {
-					executor.execute(new ClassFileDependencyCheckTask(f, rootPath, policy));
+					// classpath 내에 존재하는 class 파일일 경우에만 의존성 검사를 수행한다.
+					if(f.getAbsolutePath().startsWith(ClasspathUtil.lastAddedPath)) {
+						executor.execute(new ClassFileDependencyCheckTask(f, ClasspathUtil.lastAddedPath, policy));
+					}
 				} else if (extension.equals("xml")) {
 					// [war] WEB-INF/web.xml
 
@@ -180,5 +215,33 @@ public abstract class AbstractAnalyzer implements Analyzer {
         
         return path.delete();
     }//end of deleteDirectory()
+    
+    /**
+     * <pre>
+     * classpath 추가를 위한 classes 디렉토리를 탐색한다.
+     * </pre>
+     * @param dir
+     * @return
+     */
+    protected String getClassesDirPath(File dir) {
+    	String path = null;
+    	if (dir.exists()) {
+            File[] files = dir.listFiles();
+            
+            for (File f : files) {
+            	if (f.isDirectory()) {
+            		// APP-INF/classes 또는 WEB-INF/classes를 탐색
+            		if(f.getName().equals("classes") && f.getParent().endsWith("INF")) {
+            			path = f.getAbsolutePath();
+            			break;
+            		} else {
+            			path = getClassesDirPath(f);
+            		}
+            	}
+            }
+        }
+    	
+    	return path;
+    }//end of getClassesDirPath()
     
 }//end of DependencyAnalyzer.java

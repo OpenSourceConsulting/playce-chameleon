@@ -68,21 +68,11 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			// 인코딩 변경
 			converter.convert(new File(tempDir));
 			
-			// 압축 해제 디렉토리를 클래스 패스에 추가한다.
-			ClasspathUtil.addPath(tempDir);
+			// TODO 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
+			ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
 			
-			// 압축 해제 및 디렉토리를 분석한다.
-			defaultAnalyze(new File(tempDir), tempDir);
-			
-			executor.getExecutor().shutdown();
-			
-			try {
-				while(!executor.getExecutor().isTerminated()) {
-					Thread.sleep(100);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			// 압축 해제 디렉토리 내의 파일을 분석한다.
+			analyze(new File(tempDir), tempDir);
 			
 			// war 파일이 존재할 경우 해당 war 파일에 대해 분석한다.
 			for(File warFile : warFileList) {

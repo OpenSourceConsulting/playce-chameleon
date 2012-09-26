@@ -103,6 +103,8 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			}
 		} catch (ClassNotFoundException e) {
 			logger.error("ClassNotFoundException has occurred : ", e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 	
