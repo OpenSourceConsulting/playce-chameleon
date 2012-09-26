@@ -7,7 +7,5 @@
 	<url option="war">/xml/war_application.xml</url>
 	<url>/xml/migration_advice.xml</url>
 	<url>/xml/JBoss.xml</url>
-	<!-- 
 	<url>/xml/tomcat.xml</url>
-	 -->
 </list>

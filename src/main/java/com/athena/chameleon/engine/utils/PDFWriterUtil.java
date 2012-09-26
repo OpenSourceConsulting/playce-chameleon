@@ -20,14 +20,18 @@
  */
 package com.athena.chameleon.engine.utils;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.jdom2.Element;
 
+import com.athena.chameleon.common.utils.MessageUtil;
+import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
 import com.itextpdf.text.Paragraph;
@@ -35,6 +39,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
@@ -52,6 +57,7 @@ public class PDFWriterUtil {
     public static Font     fnNormalBold;
     public static Font     fnBox;
     public static Font     fnBoxRed;
+    public static Font     fnBoxWhite;
     public static Font     fnChapter;
     public static Font     fnSection;
     public static Font     fnSection2;
@@ -64,6 +70,7 @@ public class PDFWriterUtil {
             fnNormal     = new Font(bfKorean, 10);
             fnBox        = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(40, 40, 40));
             fnBoxRed     = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(255, 0, 0));
+            fnBoxWhite   = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(255, 255, 255));
             fnNormalBold = new Font(bfKorean, 10, Font.BOLD);
             fnChapter    = new Font(bfKorean, 14, Font.BOLD);
             fnSection    = new Font(bfKorean, 12, Font.BOLD);
@@ -232,8 +239,14 @@ public class PDFWriterUtil {
             } else if(e1.getName().equals("box")) {
                 setBox(section, e1);
                 
+            } else if(e1.getName().equals("boxB")) {
+                setBoxB(section, e1);
+                
             } else if(e1.getName().equals("list")) {
             	setList(section, e1);
+            	
+            } else if(e1.getName().equals("img")) {
+                setImage(section, e1);
             }
         }
         
@@ -271,7 +284,7 @@ public class PDFWriterUtil {
      * 
      * 기본 box 구성
      *
-     * @param section table이 들어갈 section 객체
+     * @param section box가 들어갈 section 객체
      * @param e box 정보가 들어있는 element
      * @throws Exception
      */
@@ -310,12 +323,69 @@ public class PDFWriterUtil {
         section.add(t);
         
     }
+
+    /**
+     * 
+     * box 구성(Backgroud : Black)
+     *
+     * @param section box가 들어갈 section 객체
+     * @param e box 정보가 들어있는 element
+     * @throws Exception
+     */
+    public static void setBoxB(Section section, Element e) throws Exception {
+
+        PdfPTable t = new PdfPTable(1);
+        t.setSpacingBefore(1);
+        t.setSpacingAfter(12);
+        
+        if(e.getAttributeValue("width") != null)
+            t.setTotalWidth(Float.parseFloat(e.getAttributeValue("width")));
+        
+        PdfPCell cell = new PdfPCell();
+        if(e.getAttributeValue("option") != null) {
+            
+            ColumnText col = new ColumnText(null);
+            for(Element e1 : e.getChildren()) {
+                 if(e1.getAttributeValue("type").equals("red"))
+                     col.addText(new Phrase(e1.getText(), fnBoxRed));
+                 else
+                     col.addText(new Phrase(e1.getText(), fnBoxWhite));
+            }
+            cell.setColumn(col);
+            
+        } else {
+            cell.setPhrase(new Phrase(e.getText(), fnBoxWhite));    
+        }
+        
+        cell.setPaddingLeft(10);
+        cell.setLeading(0.0F, 1.8F);
+        cell.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
+        cell.setBackgroundColor(new BaseColor(0, 0, 0));
+        
+        t.addCell(cell);
+        
+        section.add(t);
+        
+    }
     
+    /**
+     * 
+     * 기본 list 구성
+     *
+     * @param section list가 들어갈 section 객체
+     * @param e list 정보가 들어있는 element
+     * @throws Exception
+     */
     public static void setList(Section section, Element e) throws Exception {
     	List list = new List(false, 15);
     	list.setIndentationLeft(23);
     	for(Element e1 : e.getChildren()) {
-    		ListItem item = new ListItem(e1.getText(), fnNormal);
+    	    ListItem item = new ListItem(e1.getText(), fnNormal);
+    	    
+    	    if(e1.getChild("url") !=null) {
+    	        item.add(getUrl(e1.getChild("url")));
+    	    } 
+    	    
     		item.setMultipliedLeading(1.8F);
             list.add(item);
         }
@@ -323,6 +393,41 @@ public class PDFWriterUtil {
     	list.getLastItem().setSpacingAfter(14);
     	
     	section.add(list);
+    }
+
+    /**
+     * 
+     * url Mapping
+     *
+     * @param e url 정보가 들어있는 element
+     * @return Chunk
+     * @throws Exception
+     */
+    public static Chunk getUrl(Element e) throws Exception {
+        Chunk url = new Chunk(e.getText(), fnURL);
+        url.setAction(new PdfAction(new URL(e.getText())));
+
+        return url;
+    }
+    
+    /**
+     * 
+     * image 구성
+     *
+     * @param section image 가 들어갈 section 객체
+     * @param e image 정보가 들어있는 element
+     * @throws Exception
+     */
+    public static void setImage(Section section, Element e) throws Exception {
+        Image img = Image.getInstance(PDFDocGenerator.class.getResource(e.getText()));
+        img.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+        
+        if(e.getAttributeValue("scale") != null) {
+            float scale = Float.parseFloat(e.getAttributeValue("scale"));
+            img.scalePercent(scale, scale);
+        }
+        
+        section.add(img);
     }
     
     /**

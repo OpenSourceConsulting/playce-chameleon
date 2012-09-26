@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="Tomcat 설정 방법">
+	<text>본 장에서는 Tomcat을 다운로드 후 설치하고 환경설정을 하는 방법을 설명합니다. 레드햇에서 제공되는 Tomcat인 JBoss EWS(Enterprise Web Server)를 사용할 수도 있으며, 커뮤니티 버전의 Tomcat을 사용하여 웹 애플리케이션 서버로 사용할 수 있습니다.</text>
+	<section title ="Tomcat의 설치">
+		<text>서버의 작업 처리를 위하여 아래의 URL에서 tomcat을 내려받습니다.</text>
+		<list>
+			<text>Download URL : <url>http://tomcat.apache.org/download-60.cgi</url></text>
+			<text>Version : 6.0.35</text>
+		</list>
+		<img scale="70">/image/tomcat_download.gif</img>
+	</section>
+	<section title="업로드 및 설정">
+		<text>다운받은 Tomcat 설치를 위하여 바이너리 버전의 파일을 각각의 서버에 업로드 후 아래의 명령을 통해 Tomcat을 설치하도록 합니다.</text>
+		<boxB><![CDATA[$ cd Downloads
+					$ unzip apache-tomcat-6.0.35.zip
+					$ mv apache-tomcat-6.0.35 /platform/tomcat
+					$ chown -Rtomcat:tomcat /platform/tomcat/
+					$ cd /platform/tomcat/bin
+					$ chmoda+x *.sh
+					$ ls -al
+			]]>
+		</boxB>
+	</section>
+	<section title="Tomcat 구동 쉘 스크립트">
+		<text>Tomcat을 한 대의 서버에서 여러 개의 인스턴스가 작동되도록 구성할 수 있으며, 이는 아래와 같은 스크립트를 통해 사용 가능 합니다.</text>
+		<section title="env.sh">
+			<box><![CDATA[#!/bin/bash
+						#************************ Warning **********************************
+						#*                                                                 *
+						#* This configuration is property of OPEN SOURCE CONSULTING, INC.  *
+						#* Don't distribute this to other project.                         *
+						#*                                                                 *
+						#* Contact jchoi@osci.kr(http://www.osci.kr)                       *
+						#*******************************************************************
+						
+						# This is tomcat env.sh for iosp by Open Source Consulting, Inc
+						
+						## Set Tomcat base env
+						export JAVA_HOME=/opt/java1.6
+						export SERVER_NAME=template
+						export CATALINA_HOME=/platform/tomcat
+						export CATALINA_BASE=/platform/servers/$SERVER_NAME
+						
+						## Set Port Configuration
+						#########################################
+						#  Default Ports are as below      	#
+						#  HTTP_PORT : 8080			#
+						#  SSL_PORT : 8443			#
+						#  SHUTDOWN_PORT : 8005		  #
+						#########################################
+						export HTTP_PORT=8180
+						export AJP_PORT=8109
+						export SSL_PORT=8543
+						export SHUTDOWN_PORT=8105
+						
+						export COMP_USER=root
+						
+						if [ "x$JAVA_OPTS" = "x" ]; then
+						   JAVA_OPTS="-server"
+						   JAVA_OPTS="$JAVA_OPTS -Dserver=$SERVER_NAME"
+						   JAVA_OPTS="$JAVA_OPTS -Dhttp.port=$HTTP_PORT"
+						   JAVA_OPTS="$JAVA_OPTS -Dajp.port=$AJP_PORT"
+						   JAVA_OPTS="$JAVA_OPTS -Dssl.port=$SSL_PORT"
+						   JAVA_OPTS="$JAVA_OPTS -Dshutdown.port=$SHUTDOWN_PORT"
+						
+						#   JAVA_OPTS="$JAVA_OPTS -noverify"
+						   JAVA_OPTS="$JAVA_OPTS -Xms512m"
+						   JAVA_OPTS="$JAVA_OPTS -Xmx512m"
+						   JAVA_OPTS="$JAVA_OPTS -XX:PermSize=256m"
+						   JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=256m"
+						#   JAVA_OPTS="$JAVA_OPTS -Xss128k"
+						
+						   JAVA_OPTS="$JAVA_OPTS -verbose:gc"
+						   JAVA_OPTS="$JAVA_OPTS -Xloggc:/platform/logs/$SERVER_NAME/gc.log"
+						   JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails"
+						   JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCTimeStamps"
+						   JAVA_OPTS="$JAVA_OPTS -XX:+PrintHeapAtGC"
+						   JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
+						   JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=/platform/logs/$SERVER_NAME/java_pid.hprof"
+						
+						#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote"
+						#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.port=8186"
+						#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.ssl=false"
+						#   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
+						
+						   JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
+						   JAVA_OPTS="$JAVA_OPTS -Dsun.rmi.dgc.client.gcInterval=3600000"
+						   JAVA_OPTS="$JAVA_OPTS -Dsun.rmi.dgc.server.gcInterval=3600000"
+						   JAVA_OPTS="$JAVA_OPTS -Dsun.lang.ClassLoader.allowArraySyntax=true "
+						fi
+						
+						export JAVA_OPTS
+						
+						echo "================================================"
+						echo "CATALINA_HOME=$CATALINA_HOME"
+						echo "SERVER_HOME=$CATALINA_BASE"
+						echo "================================================"
+				]]>
+			</box>
+		</section>
+		<section title="start.sh">
+			<box><![CDATA[#!/bin/bash
+					. ./env.sh
+					
+					DATE=`date +%Y%m%d%H%M%S`
+					
+					# ------------------------------------
+					PID=`ps -ef | grep java | grep "=$SERVER_NAME" | awk '{print $2}'`
+					echo $PID
+					
+					if [ e$PID != "e" ]
+					then
+					echo "Tomcat ($SERVER_NAME) is already RUNNING..."
+					    exit;
+					fi
+					# ------------------------------------
+					UNAME=`id -u -n`
+					if [ e$UNAME != "e$COMP_USER" ]
+					then
+					echo "$COMP_USER USER to start this SERVER! - $SERVER_NAME..."
+					    exit;
+					fi
+					# ------------------------------------
+					
+					mv $CATALINA_BASE/logs/$SERVER_NAME.out $CATALINA_BASE/logs/$SERVER_NAME.$DATE
+					mv $CATALINA_BASE/logs/gc.log $CATALINA_BASE/logs/gc.log.$DATE
+					
+					nohup $CATALINA_HOME/bin/catalina.sh run >> $CATALINA_BASE/logs/$SERVER_NAME.out 2>&1 &
+					
+					# ------------------------------------
+					if [ e$1 = "enotail" ]
+					then
+					    echo "Starting... $SERVER_NAME"
+					    exit;
+					fi
+					# ------------------------------------
+					$CATALINA_BASE/tail.sh
+				]]>
+			</box>
+		</section>
+		<section title="stop.sh">
+			<box><![CDATA[#!/bin/bash
+					. ./env.sh
+					
+					$CATALINA_HOME/bin/shutdown.sh
+				]]>
+			</box>
+		</section>
+		<section title="kill.sh">
+			<box><![CDATA[#!/bin/bash
+					. ./env.sh
+					
+					ps -ef | grep java | grep "server=$SERVER_NAME" | awk {'print "kill -9 " $2'} | sh -x
+				]]>
+			</box>
+		</section>
+		<section title="tail.sh">
+			<box><![CDATA[#!/bin/bash
+					. ./env.sh
+					
+					tail -200f $CATALINA_BASE/logs/$SERVER_NAME.out
+				]]> 
+			</box>
+			<textR>Note. 각 서버 환경의 구성은 프로젝트 별로 달라질 수 있습니다.</textR>
+		</section>
+	</section>
+	<section title="Tomcat 디플로이">
+		<text>Tomcat의 애플리케이션 디플로이 디렉토리는 tomcat 인스턴스가 설치되는 디렉토리의 webapps 디렉토리입니다. 디플로이 대상 war파일을 webapps에 복사하거나, 압축이 풀린 형태(exploded)의 웹 애플리케이션을 디플로이 할 수 있습니다.</text>
+	</section>
+</chapter>
