@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter>
 <chapter title="웹 애플리케이션 분석">
 	<text>업로드된 애플리케이션은 WAR(Web Archive) 영역으로 웹 애플리케이션에 대한 영역만 존재합니다. 일반적인 웹 애플리케이션의 속성은 다음과 같습니다.</text>
 	<section title ="web.xml">

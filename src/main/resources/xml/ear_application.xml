@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter>
 <chapter title="엔터프라이즈 애플리케이션">
 	<textR>아래의 항목은 ear, war, jar만 들어왔을 경우에 따라 내용이 변경됨</textR>
 	<text>업로드하신 애플리케이션에 포함된 표준 디스크립터는 다음과 같습니다.</text>
