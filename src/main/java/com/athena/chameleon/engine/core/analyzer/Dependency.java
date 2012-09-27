@@ -18,10 +18,10 @@
  * ---------------	----------------	------------
  * Sang-cheon Park	2012. 9. 25.		First Draft.
  */
-package com.athena.chameleon.engine.core.analizer;
+package com.athena.chameleon.engine.core.analyzer;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * <pre>
@@ -75,7 +75,7 @@ public class Dependency {
 	 */
 	public Map<String, String> getDependencyStrMap() {
 		if(dependencyStrMap == null) {
-			dependencyStrMap = new HashMap<String, String>();
+			dependencyStrMap = new TreeMap<String, String>();
 		}
 		
 		return dependencyStrMap;

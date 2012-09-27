@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter>
 <chapter title="프로젝트 소스에 대한 분석">
 	<text>본 장에서는 프로젝트의 개발 소스에 대한 분석 결과를 제공합니다. 소스는 기본적으로 UTF-8으로 개발될 수 있도록 파일 인코딩에 대한 결과값을 포함합니다.</text>
 	<section title ="소스 파일 요약">

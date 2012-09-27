@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter>
 <chapter title="JBoss 설정 방법">
 	<section title ="JBoss의 설치">
 		<text>JBoss의 가장 큰 장점은 설치시 인스톨러를 별도로 실행하지 않아도 됩니다. 그냥 압축만 풀면 설치가 완료되는 것으로 보면 됩니다. JEMS라는 별도의 인스톨러를 가지긴 했으나 99%의 사용자와 거의 모든 JBoss 엔지니어는 압축을 풀어 사용하고 있습니다.

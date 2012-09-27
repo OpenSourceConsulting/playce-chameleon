@@ -35,6 +35,8 @@ import java.net.URLClassLoader;
  */
 public class ClasspathUtil {
 
+	public static String lastAddedPath = "NONE";
+	
 	/**
 	 * <pre>
 	 * ClassLoader에 지정된 path를 추가한다.
@@ -51,5 +53,7 @@ public class ClasspathUtil {
 		Method method = urlClass.getDeclaredMethod("addURL", new Class[] { URL.class });
 		method.setAccessible(true);
 		method.invoke(urlClassLoader, new Object[] { url });
+		
+		lastAddedPath = path;
 	}//end of addPath()
 }//end of ClasspathUtil.java

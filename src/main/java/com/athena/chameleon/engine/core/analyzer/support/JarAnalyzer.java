@@ -18,7 +18,7 @@
  * ---------------	----------------	------------
  * Sang-cheon Park	2012. 9. 24.		First Draft.
  */
-package com.athena.chameleon.engine.core.analizer.support;
+package com.athena.chameleon.engine.core.analyzer.support;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
-import com.athena.chameleon.engine.core.analizer.AbstractAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
@@ -38,7 +38,7 @@ import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecut
  * @author Sang-cheon Park
  * @version 1.0
  */
-public class ZipAnalyzer extends AbstractAnalyzer {
+public class JarAnalyzer extends AbstractAnalyzer {
 
 	/**
 	 * <pre>
@@ -48,7 +48,7 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 	 * @param converter
 	 * @param executor
 	 */
-	public ZipAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
+	public JarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
 		super(policy, converter, executor);
 	}//end of Constructor
 	
@@ -58,7 +58,7 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 	@Override
 	public void analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
-		Assert.isTrue(file.getName().endsWith(".zip"), "file name must be ends with \".zip\".");
+		Assert.isTrue(file.getName().endsWith(".jar"), "file name must be ends with \".jar\".");
 		
 		try {
 			// 임시 디렉토리에 압축 해제
@@ -68,23 +68,13 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			// 인코딩 변경
 			converter.convert(new File(tempDir));
 			
-			// 압축 해제 디렉토리를 클래스 패스에 추가한다.
-			ClasspathUtil.addPath(tempDir);
+			// TODO 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
+			ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
 			
-			// 압축 해제 및 디렉토리를 분석한다.
-			defaultAnalyze(new File(tempDir), tempDir);
+			// 압축 해제 디렉토리 내의 파일을 분석한다.
+			analyze(new File(tempDir), tempDir);
 			
-			executor.getExecutor().shutdown();
-			
-			try {
-				while(!executor.getExecutor().isTerminated()) {
-					Thread.sleep(100);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			// 해당 zip 파일로 재 압축한다.
+			// 해당 jar 파일로 재 압축한다.
 			ZipUtil.compress(tempDir, file.getAbsolutePath());
 			
 			// 임시 디렉토리를 삭제한다.
@@ -97,4 +87,4 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 		}
 	}//end of analyze()
 
-}//end of ZipAnalyzer.java
+}//end of JarAnalyzer.java
