@@ -23,7 +23,6 @@ package com.athena.chameleon.engine.entity.pdf;
 import java.util.List;
 import java.util.Map;
 
-import com.athena.chameleon.engine.core.analyzer.Dependency;
 
 /**
  * PDF 생성을 위한 root pojo object

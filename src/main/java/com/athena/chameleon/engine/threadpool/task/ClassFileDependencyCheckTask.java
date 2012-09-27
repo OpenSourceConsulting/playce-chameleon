@@ -37,7 +37,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
-import com.athena.chameleon.engine.core.analyzer.Dependency;
+import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 

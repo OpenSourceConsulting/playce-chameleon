@@ -18,7 +18,7 @@
  * ---------------	----------------	------------
  * Sang-cheon Park	2012. 9. 25.		First Draft.
  */
-package com.athena.chameleon.engine.core.analyzer;
+package com.athena.chameleon.engine.entity.pdf;
 
 import java.util.Map;
 import java.util.TreeMap;

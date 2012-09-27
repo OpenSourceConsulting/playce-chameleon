@@ -27,10 +27,15 @@ package com.athena.chameleon.engine.entity.pdf;
  * @version 1.0
  */
 public enum FileType {
-    JAVA, HTML, JSP, JS, CSS, XML, PROPERTIES, JAR, DIRECTORY, SUM;
+	
+    JAVA, HTML, HTM, JSP, JS, CSS, XML, PROPERTIES, JAR, DIRECTORY, SUM;
 
     public String toString() {
-        return "*." + super.toString().toLowerCase();
+    	if(this.equals(DIRECTORY) || this.equals(SUM)) {
+    		return super.toString();
+    	} else {
+    		return "*." + super.toString().toLowerCase();
+    	}
     }
     
     public String value() {

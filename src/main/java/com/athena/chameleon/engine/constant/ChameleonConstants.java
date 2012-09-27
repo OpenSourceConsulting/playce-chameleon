@@ -33,6 +33,8 @@ public class ChameleonConstants {
 	/**
 	 * ThreadLocal을 사용한 스레드간 공유 객체에 사용되는 Key
 	 */
+	public static final String FILE_SUMMARY 		= "FILE_SUMMARY";
+	
 	public static final String ORIGINAL_FILE_LIST 	= "ORIGINAL_FILE_LIST";
 	public static final String DELETE_FILE_LIST 	= "DELETE_FILE_LIST";
 	public static final String DEPENDENCY_FILE_LIST = "DEPENDENCY_FILE_LIST";

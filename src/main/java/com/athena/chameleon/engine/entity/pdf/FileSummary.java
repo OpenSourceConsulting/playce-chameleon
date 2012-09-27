@@ -33,9 +33,9 @@ public class FileSummary {
     //파일 갯수
     private int fileCount;
     //인코딩유형
-    private String sourceEncoding;
+    private String sourceEncoding = "N/A";
     //결과유형
-    private String targetEncoding;
+    private String targetEncoding = "N/A";
     
     /**
      * @return the fileType
@@ -86,7 +86,7 @@ public class FileSummary {
         this.targetEncoding = targetEncoding;
     }
     
-    public void addCount(){
+    public synchronized void addCount(){
         this.fileCount++;
     }
 
