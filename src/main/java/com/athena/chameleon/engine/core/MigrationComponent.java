@@ -500,17 +500,27 @@ public class MigrationComponent {
 		this.applicationXmlFile = applicationXmlFile;
 	}
 
-	public void migrate(String fqfn) {
-		String extension = fqfn.substring(fqfn.lastIndexOf(".") + 1);
+	public void migrate(String sourceFile, String applicationFile) {
+		String extension = null;
 		
-		if (extension.equals("zip")) {
-			new ZipAnalyzer(policy, converter, executor).analyze(fqfn);
-		} else if (extension.equals("ear")) {
-			new EarAnalyzer(policy, converter, executor).analyze(fqfn);
-		} else if (extension.equals("war")) {
-			new WarAnalyzer(policy, converter, executor).analyze(fqfn);
-		} else if (extension.equals("jar")) {
-			new JarAnalyzer(policy, converter, executor).analyze(fqfn);
+		if(sourceFile != null) {
+			extension = sourceFile.substring(sourceFile.lastIndexOf(".") + 1);
+			
+			if (extension.equals("zip")) {
+				new ZipAnalyzer(policy, converter, executor).analyze(sourceFile);
+			}
+		}
+		
+		if(applicationFile != null) {
+			extension = applicationFile.substring(applicationFile.lastIndexOf(".") + 1);
+			
+			if (extension.equals("ear")) {
+				new EarAnalyzer(policy, converter, executor).analyze(applicationFile);
+			} else if (extension.equals("war")) {
+				new WarAnalyzer(policy, converter, executor).analyze(applicationFile);
+			} else if (extension.equals("jar")) {
+				new JarAnalyzer(policy, converter, executor).analyze(applicationFile);
+			}
 		}
 	}
 

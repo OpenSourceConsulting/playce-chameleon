@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -43,10 +44,10 @@ import com.athena.chameleon.engine.core.MigrationComponent;
 public class Starter {
 	
     private static final Logger logger = LoggerFactory.getLogger(Starter.class);
-    
-    // zip, war, gz 등 소문자로 추가
-    private static final String[] SUPPORT_ARCHIVE_FORMAT = {"zip", "ear", "war", "jar"}; 
 
+    private static final String SUPPORT_SOURCE_FORMAT = "zip";
+    private static final String[] SUPPORT_APPLICATION_FORMAT = {"ear", "war", "jar"}; 
+    
 	/**
 	 * <pre>
 	 * WAS Migration 실행을 위한 main()는 다음과 같은 작업을 수행한다.
@@ -63,46 +64,74 @@ public class Starter {
 	public static void main(String[] args) {
 		logger.debug("Starting of Athena Chameleon WAS Migration tool.");
 		
-		String fqfn = null;
+		String sourceFile = null;
+		String applicationFile = null;
 		if(args.length == 0) {
-			fqfn = getFileName();
+			sourceFile = getSourceFileName();
+			applicationFile = getApplicationFileName();
 		} else if(args.length == 1) {
-			fqfn = args[0].replaceAll("\\\\", "/");
-			if(!isExists(fqfn) || !isValidExtension(fqfn)) {
-            	System.out.println(fqfn + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
-				fqfn = getFileName();
+			sourceFile = args[0].replaceAll("\\\\", "/");
+			if(!isExists(sourceFile) || !isValidSourceExtension(sourceFile)) {
+            	System.out.println(sourceFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
+				sourceFile = getSourceFileName();
+			}
+		} else if(args.length == 2) {
+			sourceFile = args[0].replaceAll("\\\\", "/");
+			if(!isExists(sourceFile) || !isValidSourceExtension(sourceFile)) {
+            	System.out.println(sourceFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
+				sourceFile = getSourceFileName();
+			}
+
+			applicationFile = args[1].replaceAll("\\\\", "/");
+			if(!isExists(applicationFile) || !isValidApplicationExtension(applicationFile)) {
+            	System.out.println(applicationFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
+            	applicationFile = getApplicationFileName();
 			}
 		} else {
-			System.out.println("[Usage] : java -jar athena-chameleon.jar ${file}");
+			System.out.println("[Usage] : java -jar athena-chameleon.jar ${Project Source Archive File} ${Application Archive File}");
 			System.exit(-1);
 		}
 		
-		logger.debug("File => [{}]", fqfn);
+		logger.debug("Project Source File => [{}]", sourceFile);
+		logger.debug("Application Archive File => [{}]", applicationFile);
+		
+		if(StringUtils.isEmpty(sourceFile) && StringUtils.isEmpty(applicationFile)) {
+			System.out.println("[Error] 입력된 파일 정보가 없기 때문에 프로그램을 종료합니다.");
+			System.exit(-1);
+		}
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/context-*.xml");
 		
 		MigrationComponent component = (MigrationComponent)context.getBean("migrationComponent");
-		component.migrate(fqfn);
+		component.migrate(sourceFile, applicationFile);
 	}//end of main()
 	
 	/**
 	 * @return
 	 */
-	private static String getFileName() {
+	private static String getSourceFileName() {
 		String fqfn = null;
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		try {
-            System.out.println("+:+:+:+: 파일 경로를 포함한 파일명을 입력해주세요. +:+:+:+:");
+            System.out.println("+:+:+:+: [프로젝트 소스(zip)] 파일 경로를 포함한 파일명을 입력해주세요. +:+:+:+:");
             
             do {
-                System.out.print("('q' or 'quit' to terminate) => ");
+                System.out.print("('q' or 'quit' to terminate and press ENTER to skip) => ");
                 
                 fqfn = br.readLine();
                 
                 if(fqfn.equals("")) {
-                    continue;
+                	System.out.print("입력된 파일 정보가 없습니다. 애플리케이션 파일 입력으로 이동하시겠습니까? (y/n - default 'n') => ");
+                	
+                	String skip = br.readLine();
+                	
+                	if(skip.toLowerCase().equals("y") || skip.toLowerCase().equals("yes")) {
+                		return null;
+                	} else {
+                		continue;
+                	}
                 }
                 
                 if(fqfn.toLowerCase().equals("q") || fqfn.toLowerCase().equals("quit")) {
@@ -111,7 +140,7 @@ public class Starter {
 
                 fqfn = fqfn.replaceAll("\\\\", "/");
                 
-                if(!isValidExtension(fqfn)) {
+                if(!isValidSourceExtension(fqfn)) {
                 	System.out.println("지원하지 않는 파일 형식입니다. 다시 입력해 주십시오.");
                 	continue;
                 }
@@ -130,7 +159,62 @@ public class Starter {
         }
 		
 		return fqfn;
-	}// end of getFileName()
+	}// end of getSourceFileName()
+	
+	/**
+	 * @return
+	 */
+	private static String getApplicationFileName() {
+		String fqfn = null;
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		try {
+            System.out.println("+:+:+:+: [애플리케이션(ear, war, jar)] 파일 경로를 포함한 파일명을 입력해주세요. +:+:+:+:");
+            
+            do {
+                System.out.print("('q' or 'quit' to terminate) => ");
+                
+                fqfn = br.readLine();
+                
+                if(fqfn.equals("")) {
+                	System.out.print("입력된 파일 정보가 없습니다. 계속하시겠습니까? (y/n - default 'y') => ");
+                	
+                	String skip = br.readLine();
+                	
+                	if(skip.toLowerCase().equals("n") || skip.toLowerCase().equals("no")) {
+                		return null;
+                	} else {
+                		continue;
+                	}
+                }
+                
+                if(fqfn.toLowerCase().equals("q") || fqfn.toLowerCase().equals("quit")) {
+                    System.exit(1);
+                }
+
+                fqfn = fqfn.replaceAll("\\\\", "/");
+                
+                if(!isValidApplicationExtension(fqfn)) {
+                	System.out.println("지원하지 않는 파일 형식입니다. 다시 입력해 주십시오.");
+                	continue;
+                }
+                
+                if(!isExists(fqfn)) {
+                	System.out.println("존재하지 않는 파일입니다. 다시 입력해 주십시오.");
+                	continue;
+                }
+                
+                break;
+            } while(true);
+        } catch (Exception e) {
+            System.out.println("알 수 없는 오류가 발생했습니다.");
+            logger.error("Unhandled exception has occurred.", e);
+            System.exit(1);
+        }
+		
+		return fqfn;
+	}// end of getApplicationFileName()
 	
 	/**
 	 * <pre>
@@ -146,13 +230,25 @@ public class Starter {
 	
 	/**
 	 * <pre>
-	 * 확장자를 이용한 압축 포맷의 지원 여부
+	 * 확장자를 이용한 프로젝트 소스 압축 포맷의 지원 여부
 	 * </pre>
 	 * 
 	 * @param fqfn
 	 * @return
 	 */
-	private static boolean isValidExtension(String fqfn) {
-		return ArrayUtils.contains(SUPPORT_ARCHIVE_FORMAT, fqfn.substring(fqfn.lastIndexOf(".") + 1).toLowerCase());
+	private static boolean isValidSourceExtension(String fqfn) {
+		return SUPPORT_SOURCE_FORMAT.equals(fqfn.substring(fqfn.lastIndexOf(".") + 1).toLowerCase());
+	}//end of isValidExtension()
+	
+	/**
+	 * <pre>
+	 * 확장자를 이용한 애플리케이션 압축 포맷의 지원 여부
+	 * </pre>
+	 * 
+	 * @param fqfn
+	 * @return
+	 */
+	private static boolean isValidApplicationExtension(String fqfn) {
+		return ArrayUtils.contains(SUPPORT_APPLICATION_FORMAT, fqfn.substring(fqfn.lastIndexOf(".") + 1).toLowerCase());
 	}//end of isValidExtension()
 }//end of Starter.java
