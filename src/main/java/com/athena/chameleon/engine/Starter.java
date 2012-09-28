@@ -46,7 +46,7 @@ public class Starter {
     private static final Logger logger = LoggerFactory.getLogger(Starter.class);
 
     private static final String SUPPORT_SOURCE_FORMAT = "zip";
-    private static final String[] SUPPORT_APPLICATION_FORMAT = {"ear", "war", "jar"}; 
+    private static final String[] SUPPORT_DEPLOY_FORMAT = {"ear", "war", "jar"}; 
     
 	/**
 	 * <pre>
@@ -65,16 +65,17 @@ public class Starter {
 		logger.debug("Starting of Athena Chameleon WAS Migration tool.");
 		
 		String sourceFile = null;
-		String applicationFile = null;
+		String deployFile = null;
 		if(args.length == 0) {
 			sourceFile = getSourceFileName();
-			applicationFile = getApplicationFileName();
+			deployFile = getApplicationFileName();
 		} else if(args.length == 1) {
 			sourceFile = args[0].replaceAll("\\\\", "/");
 			if(!isExists(sourceFile) || !isValidSourceExtension(sourceFile)) {
             	System.out.println(sourceFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
 				sourceFile = getSourceFileName();
 			}
+			deployFile = getApplicationFileName();
 		} else if(args.length == 2) {
 			sourceFile = args[0].replaceAll("\\\\", "/");
 			if(!isExists(sourceFile) || !isValidSourceExtension(sourceFile)) {
@@ -82,10 +83,10 @@ public class Starter {
 				sourceFile = getSourceFileName();
 			}
 
-			applicationFile = args[1].replaceAll("\\\\", "/");
-			if(!isExists(applicationFile) || !isValidApplicationExtension(applicationFile)) {
-            	System.out.println(applicationFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
-            	applicationFile = getApplicationFileName();
+			deployFile = args[1].replaceAll("\\\\", "/");
+			if(!isExists(deployFile) || !isValidApplicationExtension(deployFile)) {
+            	System.out.println(deployFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
+            	deployFile = getApplicationFileName();
 			}
 		} else {
 			System.out.println("[Usage] : java -jar athena-chameleon.jar ${Project Source Archive File} ${Application Archive File}");
@@ -93,9 +94,9 @@ public class Starter {
 		}
 		
 		logger.debug("Project Source File => [{}]", sourceFile);
-		logger.debug("Application Archive File => [{}]", applicationFile);
+		logger.debug("Application Archive File => [{}]", deployFile);
 		
-		if(StringUtils.isEmpty(sourceFile) && StringUtils.isEmpty(applicationFile)) {
+		if(StringUtils.isEmpty(sourceFile) && StringUtils.isEmpty(deployFile)) {
 			System.out.println("[Error] 입력된 파일 정보가 없기 때문에 프로그램을 종료합니다.");
 			System.exit(-1);
 		}
@@ -103,7 +104,7 @@ public class Starter {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/context-*.xml");
 		
 		MigrationComponent component = (MigrationComponent)context.getBean("migrationComponent");
-		component.migrate(sourceFile, applicationFile);
+		component.migrate(sourceFile, deployFile);
 	}//end of main()
 	
 	/**
@@ -170,10 +171,10 @@ public class Starter {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		try {
-            System.out.println("+:+:+:+: [애플리케이션(ear, war, jar)] 파일 경로를 포함한 파일명을 입력해주세요. +:+:+:+:");
+            System.out.println("+:+:+:+: [Deploy 애플리케이션(ear, war, jar)] 파일 경로를 포함한 파일명을 입력해주세요. +:+:+:+:");
             
             do {
-                System.out.print("('q' or 'quit' to terminate) => ");
+                System.out.print("('q' or 'quit' to terminate and press ENTER to skip) => ");
                 
                 fqfn = br.readLine();
                 
@@ -249,6 +250,6 @@ public class Starter {
 	 * @return
 	 */
 	private static boolean isValidApplicationExtension(String fqfn) {
-		return ArrayUtils.contains(SUPPORT_APPLICATION_FORMAT, fqfn.substring(fqfn.lastIndexOf(".") + 1).toLowerCase());
+		return ArrayUtils.contains(SUPPORT_DEPLOY_FORMAT, fqfn.substring(fqfn.lastIndexOf(".") + 1).toLowerCase());
 	}//end of isValidExtension()
 }//end of Starter.java

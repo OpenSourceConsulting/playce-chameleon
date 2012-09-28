@@ -73,8 +73,8 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);
 			
-			// 해당 zip 파일로 재 압축한다.
-			ZipUtil.compress(tempDir, file.getAbsolutePath());
+			// 해당 zip 파일을 xxx-result.zip으로 재 압축한다.
+			ZipUtil.compress(tempDir, getResultFile(file));
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));
@@ -85,5 +85,5 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}
 	}//end of analyze()
-
+	
 }//end of ZipAnalyzer.java
