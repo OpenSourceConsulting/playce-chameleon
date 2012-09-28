@@ -39,6 +39,10 @@ import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecut
  * @version 1.0
  */
 public class WarAnalyzer extends AbstractAnalyzer {
+	
+	// Ear Application 내에 포함된 Archive 인지의 여부
+	// 재압축 시 Ear Application 내의 Archive일 경우 동일한 이름으로 재압축 하기 위해 사용됨.
+	private boolean embed;
 
 	/**
 	 * <pre>
@@ -48,8 +52,9 @@ public class WarAnalyzer extends AbstractAnalyzer {
 	 * @param converter
 	 * @param executor
 	 */
-	public WarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
+	public WarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, boolean embed) {
 		super(policy, converter, executor);
+		this.embed = embed;
 	}//end of Constructor
 	
 	/* (non-Javadoc)
@@ -82,9 +87,9 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);
-			
-			// 해당 war 파일로 재 압축한다.
-			ZipUtil.compress(tempDir, file.getAbsolutePath());
+
+			// 임시디렉토리를 재 압축한다.
+			ZipUtil.compress(tempDir, (embed ? file.getAbsolutePath() : getResultFile(file)));
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));

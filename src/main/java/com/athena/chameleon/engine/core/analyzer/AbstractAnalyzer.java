@@ -244,4 +244,18 @@ public abstract class AbstractAnalyzer implements Analyzer {
     	return path;
     }//end of getClassesDirPath()
     
+    /**
+     * <pre>
+     * Migration 결과 디렉토리를 ${fileName}-result.${archiveType} 으로 재 압축하기 위한 파일명을 생성한다.
+     * </pre>
+     * @param file
+     * @return
+     */
+    protected String getResultFile(File file) {
+    	String resultFile = file.getAbsolutePath();
+    	resultFile = resultFile.substring(0, resultFile.lastIndexOf(".")) + "-result" + resultFile.substring(resultFile.lastIndexOf("."));
+    	
+    	return resultFile;
+    }//end of getResultFile()
+    
 }//end of DependencyAnalyzer.java

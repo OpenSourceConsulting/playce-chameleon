@@ -39,6 +39,10 @@ import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecut
  * @version 1.0
  */
 public class JarAnalyzer extends AbstractAnalyzer {
+	
+	// Ear Application 내에 포함된 Archive 인지의 여부
+	// 재압축 시 Ear Application 내의 Archive일 경우 동일한 이름으로 재압축 하기 위해 사용됨.
+	private boolean embed;
 
 	/**
 	 * <pre>
@@ -48,8 +52,9 @@ public class JarAnalyzer extends AbstractAnalyzer {
 	 * @param converter
 	 * @param executor
 	 */
-	public JarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
+	public JarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, boolean embed) {
 		super(policy, converter, executor);
+		this.embed = embed;
 	}//end of Constructor
 	
 	/* (non-Javadoc)
@@ -68,14 +73,14 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			// 인코딩 변경
 			converter.convert(new File(tempDir));
 			
-			// TODO 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
-			ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
+			// 압축 해제 디렉토리를 클래스 패스에 추가한다. 
+			ClasspathUtil.addPath(tempDir);
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);
 			
-			// 해당 jar 파일로 재 압축한다.
-			ZipUtil.compress(tempDir, file.getAbsolutePath());
+			// 임시디렉토리를 재 압축한다.
+			ZipUtil.compress(tempDir, (embed ? file.getAbsolutePath() : getResultFile(file)));
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));

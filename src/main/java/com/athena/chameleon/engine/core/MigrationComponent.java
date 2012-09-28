@@ -500,7 +500,7 @@ public class MigrationComponent {
 		this.applicationXmlFile = applicationXmlFile;
 	}
 
-	public void migrate(String sourceFile, String applicationFile) {
+	public void migrate(String sourceFile, String deployFile) {
 		String extension = null;
 		
 		if(sourceFile != null) {
@@ -511,15 +511,15 @@ public class MigrationComponent {
 			}
 		}
 		
-		if(applicationFile != null) {
-			extension = applicationFile.substring(applicationFile.lastIndexOf(".") + 1);
+		if(deployFile != null) {
+			extension = deployFile.substring(deployFile.lastIndexOf(".") + 1);
 			
 			if (extension.equals("ear")) {
-				new EarAnalyzer(policy, converter, executor).analyze(applicationFile);
+				new EarAnalyzer(policy, converter, executor).analyze(deployFile);
 			} else if (extension.equals("war")) {
-				new WarAnalyzer(policy, converter, executor).analyze(applicationFile);
+				new WarAnalyzer(policy, converter, executor, false).analyze(deployFile);
 			} else if (extension.equals("jar")) {
-				new JarAnalyzer(policy, converter, executor).analyze(applicationFile);
+				new JarAnalyzer(policy, converter, executor, false).analyze(deployFile);
 			}
 		}
 	}
