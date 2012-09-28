@@ -28,41 +28,51 @@ import java.util.Map;
  * @author Hyo-jeong Lee
  * @version 1.0
  */
-public class EarAnalyzeResult {
-    
-    //디스크립터 정보(파일명, 위치)
-    private Map<String, String> descriptor;
-    
-    //application.xml 정보
-    private String  applicationXmlInfo;
+public class ApplicationAnalyzeResult {
 
-    /**
-     * @return the descriptor
-     */
-    public Map<String, String> getDescriptor() {
-        return descriptor;
-    }
-
-    /**
-     * @param descriptor the descriptor to set
-     */
-    public void setDescriptor(Map<String, String> descriptor) {
-        this.descriptor = descriptor;
-    }
-
-    /**
-     * @return the applicationXmlInfo
-     */
-    public String getApplicationXmlInfo() {
-        return applicationXmlInfo;
-    }
-
-    /**
-     * @param applicationXmlInfo the applicationXmlInfo to set
-     */
-    public void setApplicationXmlInfo(String applicationXmlInfo) {
-        this.applicationXmlInfo = applicationXmlInfo;
-    }
-
+	//항목
+	private String item;
+	//내용
+    private String contents;
+    //비고
+    private String note;
+	    
+	/**
+	 * @return the item
+	 */
+	public String getItem() {
+		return item;
+	}
+	/**
+	 * @param item the item to set
+	 */
+	public void setItem(String item) {
+		this.item = item;
+	}
+	/**
+	 * @return the contents
+	 */
+	public String getContents() {
+		return contents;
+	}
+	/**
+	 * @param contents the contents to set
+	 */
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+	/**
+	 * @return the note
+	 */
+	public String getNote() {
+		return note;
+	}
+	/**
+	 * @param note the note to set
+	 */
+	public void setNote(String note) {
+		this.note = note;
+	}
+	
 }
 //end of FileSummary.java

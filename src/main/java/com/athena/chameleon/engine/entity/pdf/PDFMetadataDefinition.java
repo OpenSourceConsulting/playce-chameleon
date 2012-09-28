@@ -32,38 +32,194 @@ import java.util.Map;
  */
 public class PDFMetadataDefinition {
 
-    //파일 요약 정보
-    private FileSummary fileSummary;
+    //source file 요약 정보
+    private FileSummary sourceFileSummary;
+    //deploy file 요약 정보
+    private FileSummary deployFileSummary;
     //의존성 분석 정보
     private Map<DependencyAnalyzeType, List<Dependency>> dependency;
-    //ear 분석 정보
-    //war 분석 정보
+    //디스크립터 정보(파일명, 위치)
+    private Map<String, String> descripter;
+    //application.xml 내용(ear의 경우)
+    private String 	applicationXmlContent;
+    //module application
+    private List<ApplicationAnalyzeResult>	moduleApplicationList;
+    //ejb application(파일명, 애플리케이션 정보)
+    private Map<String, List<ApplicationAnalyzeResult>> ejbApplicationList;
+    //ejb descripter(파일명, 디스크립터 정보)
+    private Map<String, List<ApplicationAnalyzeResult>> ejbDescripterList;
+    //web.xml 내용(war의 경우)
+    private List<ApplicationAnalyzeResult> webXmlContents;
+    //web lib 구성
+    private List<String> webLib;
+    //web classes 구성(클래스명, 요약정보)
+    private Map<String, List<ApplicationAnalyzeResult>> webClasses;
+    //변환 xml 정보(파일명, 파일내용)
+    private Map<String, String> transXmlInfo;
+    //변환 대상 파일 리스트
+    private List<String> transFileList;
     
-    /**
-     * @return the fileSummary
-     */
-    public FileSummary getFileSummary() {
-        return fileSummary;
-    }
-    /**
-     * @param fileSummary the fileSummary to set
-     */
-    public void setFileSummary(FileSummary fileSummary) {
-        this.fileSummary = fileSummary;
-    }
-    /**
-     * @return the dependency
-     */
-    public Map<DependencyAnalyzeType, List<Dependency>> getDependency() {
-        return dependency;
-    }
-    /**
-     * @param dependency the dependency to set
-     */
-    public void setDependency(Map<DependencyAnalyzeType, List<Dependency>> dependency) {
-        this.dependency = dependency;
-    }
-    
+	/**
+	 * @return the sourceFileSummary
+	 */
+	public FileSummary getSourceFileSummary() {
+		return sourceFileSummary;
+	}
+	/**
+	 * @param sourceFileSummary the sourceFileSummary to set
+	 */
+	public void setSourceFileSummary(FileSummary sourceFileSummary) {
+		this.sourceFileSummary = sourceFileSummary;
+	}
+	/**
+	 * @return the deployFileSummary
+	 */
+	public FileSummary getDeployFileSummary() {
+		return deployFileSummary;
+	}
+	/**
+	 * @param deployFileSummary the deployFileSummary to set
+	 */
+	public void setDeployFileSummary(FileSummary deployFileSummary) {
+		this.deployFileSummary = deployFileSummary;
+	}
+	/**
+	 * @return the dependency
+	 */
+	public Map<DependencyAnalyzeType, List<Dependency>> getDependency() {
+		return dependency;
+	}
+	/**
+	 * @param dependency the dependency to set
+	 */
+	public void setDependency(
+			Map<DependencyAnalyzeType, List<Dependency>> dependency) {
+		this.dependency = dependency;
+	}
+	/**
+	 * @return the descripter
+	 */
+	public Map<String, String> getDescripter() {
+		return descripter;
+	}
+	/**
+	 * @param descripter the descripter to set
+	 */
+	public void setDescripter(Map<String, String> descripter) {
+		this.descripter = descripter;
+	}
+	/**
+	 * @return the applicationXmlContent
+	 */
+	public String getApplicationXmlContent() {
+		return applicationXmlContent;
+	}
+	/**
+	 * @param applicationXmlContent the applicationXmlContent to set
+	 */
+	public void setApplicationXmlContent(String applicationXmlContent) {
+		this.applicationXmlContent = applicationXmlContent;
+	}
+	/**
+	 * @return the moduleApplicationList
+	 */
+	public List<ApplicationAnalyzeResult> getModuleApplicationList() {
+		return moduleApplicationList;
+	}
+	/**
+	 * @param moduleApplicationList the moduleApplicationList to set
+	 */
+	public void setModuleApplicationList(
+			List<ApplicationAnalyzeResult> moduleApplicationList) {
+		this.moduleApplicationList = moduleApplicationList;
+	}
+	/**
+	 * @return the ejbApplicationList
+	 */
+	public Map<String, List<ApplicationAnalyzeResult>> getEjbApplicationList() {
+		return ejbApplicationList;
+	}
+	/**
+	 * @param ejbApplicationList the ejbApplicationList to set
+	 */
+	public void setEjbApplicationList(
+			Map<String, List<ApplicationAnalyzeResult>> ejbApplicationList) {
+		this.ejbApplicationList = ejbApplicationList;
+	}
+	/**
+	 * @return the ejbDescripterList
+	 */
+	public Map<String, List<ApplicationAnalyzeResult>> getEjbDescripterList() {
+		return ejbDescripterList;
+	}
+	/**
+	 * @param ejbDescripterList the ejbDescripterList to set
+	 */
+	public void setEjbDescripterList(
+			Map<String, List<ApplicationAnalyzeResult>> ejbDescripterList) {
+		this.ejbDescripterList = ejbDescripterList;
+	}
+	/**
+	 * @return the webXmlContents
+	 */
+	public List<ApplicationAnalyzeResult> getWebXmlContents() {
+		return webXmlContents;
+	}
+	/**
+	 * @param webXmlContents the webXmlContents to set
+	 */
+	public void setWebXmlContents(List<ApplicationAnalyzeResult> webXmlContents) {
+		this.webXmlContents = webXmlContents;
+	}
+	/**
+	 * @return the webLib
+	 */
+	public List<String> getWebLib() {
+		return webLib;
+	}
+	/**
+	 * @param webLib the webLib to set
+	 */
+	public void setWebLib(List<String> webLib) {
+		this.webLib = webLib;
+	}
+	/**
+	 * @return the webClasses
+	 */
+	public Map<String, List<ApplicationAnalyzeResult>> getWebClasses() {
+		return webClasses;
+	}
+	/**
+	 * @param webClasses the webClasses to set
+	 */
+	public void setWebClasses(Map<String, List<ApplicationAnalyzeResult>> webClasses) {
+		this.webClasses = webClasses;
+	}
+	/**
+	 * @return the transXmlInfo
+	 */
+	public Map<String, String> getTransXmlInfo() {
+		return transXmlInfo;
+	}
+	/**
+	 * @param transXmlInfo the transXmlInfo to set
+	 */
+	public void setTransXmlInfo(Map<String, String> transXmlInfo) {
+		this.transXmlInfo = transXmlInfo;
+	}
+	/**
+	 * @return the transFileList
+	 */
+	public List<String> getTransFileList() {
+		return transFileList;
+	}
+	/**
+	 * @param transFileList the transFileList to set
+	 */
+	public void setTransFileList(List<String> transFileList) {
+		this.transFileList = transFileList;
+	}
+       
     
 }
 //end of PDFDefination.java
