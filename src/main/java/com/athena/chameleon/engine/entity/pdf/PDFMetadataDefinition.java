@@ -33,9 +33,13 @@ import java.util.Map;
 public class PDFMetadataDefinition {
 
     //source file 요약 정보
-    private FileSummary sourceFileSummary;
-    //deploy file 요약 정보
-    private FileSummary deployFileSummary;
+    private FileSummary zipFileSummary;
+    //deploy ear file 요약 정보
+    private FileSummary earFileSummary;
+    //deploy war file 요약 정보
+    private List<FileSummary> warFileSummaryList;
+    //deploy EJB jar file 요약 정보
+    private List<FileSummary> jarFileSummaryList;
     //의존성 분석 정보
     private Map<DependencyAnalyzeType, List<Dependency>> dependency;
     //디스크립터 정보(파일명, 위치)
@@ -60,28 +64,52 @@ public class PDFMetadataDefinition {
     private List<String> transFileList;
     
 	/**
-	 * @return the sourceFileSummary
+	 * @return the zipFileSummary
 	 */
-	public FileSummary getSourceFileSummary() {
-		return sourceFileSummary;
+	public FileSummary getZipFileSummary() {
+		return zipFileSummary;
 	}
 	/**
-	 * @param sourceFileSummary the sourceFileSummary to set
+	 * @param zipFileSummary the zipFileSummary to set
 	 */
-	public void setSourceFileSummary(FileSummary sourceFileSummary) {
-		this.sourceFileSummary = sourceFileSummary;
+	public void setZipFileSummary(FileSummary zipFileSummary) {
+		this.zipFileSummary = zipFileSummary;
 	}
 	/**
-	 * @return the deployFileSummary
+	 * @return the earFileSummary
 	 */
-	public FileSummary getDeployFileSummary() {
-		return deployFileSummary;
+	public FileSummary getEarFileSummary() {
+		return earFileSummary;
 	}
 	/**
-	 * @param deployFileSummary the deployFileSummary to set
+	 * @param earFileSummary the earFileSummary to set
 	 */
-	public void setDeployFileSummary(FileSummary deployFileSummary) {
-		this.deployFileSummary = deployFileSummary;
+	public void setEarFileSummary(FileSummary earFileSummary) {
+		this.earFileSummary = earFileSummary;
+	}
+	/**
+	 * @return the warFileSummaryList
+	 */
+	public List<FileSummary> getWarFileSummaryList() {
+		return warFileSummaryList;
+	}
+	/**
+	 * @param warFileSummaryList the warFileSummaryList to set
+	 */
+	public void setWarFileSummaryList(List<FileSummary> warFileSummaryList) {
+		this.warFileSummaryList = warFileSummaryList;
+	}
+	/**
+	 * @return the jarFileSummaryList
+	 */
+	public List<FileSummary> getJarFileSummaryList() {
+		return jarFileSummaryList;
+	}
+	/**
+	 * @param jarFileSummaryList the jarFileSummaryList to set
+	 */
+	public void setJarFileSummaryList(List<FileSummary> jarFileSummaryList) {
+		this.jarFileSummaryList = jarFileSummaryList;
 	}
 	/**
 	 * @return the dependency
