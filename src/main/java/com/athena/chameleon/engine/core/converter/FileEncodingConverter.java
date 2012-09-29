@@ -40,6 +40,7 @@ import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.ArchiveType;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
@@ -101,8 +102,6 @@ public class FileEncodingConverter {
 
 		logger.debug("Convert Target Path or File : [{}]", file.getAbsolutePath());
 		
-		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
-		
 		fileSummaryMap = new HashMap<FileType, FileSummary>();
 		for (FileType fileType : fileTypes) {
 			fileSummary = new FileSummary();
@@ -133,16 +132,21 @@ public class FileEncodingConverter {
 		}
 		
 		// 파일 확장자에 따라 파일 요약정보를 PDFMetadataDefinition에 저장한다.
+		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+		AnalyzeDefinition analyzeDefinition = new AnalyzeDefinition();
+		analyzeDefinition.setOrigFileName(file.getAbsolutePath());
+		analyzeDefinition.setFileSummary(fileSummaryMap);
+		
 		String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
 		
 		if (ArchiveType.ZIP.value().equals(extension)) {
-			metadataDefinition.setZipFileSummary(fileSummaryMap);
+			metadataDefinition.setZipDefinition(analyzeDefinition);
 		} else if (ArchiveType.EAR.value().equals(extension)) {
-			metadataDefinition.setEarFileSummary(fileSummaryMap);
+			metadataDefinition.setEarDefinition(analyzeDefinition);
 		} else if (ArchiveType.WAR.value().equals(extension)) {
-			metadataDefinition.getWarFileSummaryList().add(fileSummaryMap);
+			metadataDefinition.addWarDefinitionMap(file.getName(), analyzeDefinition);
 		} else if (ArchiveType.JAR.value().equals(extension)) {
-			metadataDefinition.getJarFileSummaryList().add(fileSummaryMap);
+			metadataDefinition.addJarDefinitionMap(file.getName(), analyzeDefinition);
 		}
 		
 	}//end of convert()

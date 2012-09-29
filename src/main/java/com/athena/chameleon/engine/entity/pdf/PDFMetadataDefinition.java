@@ -20,9 +20,9 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * PDF 생성을 위한 root pojo object
@@ -37,71 +37,83 @@ public class PDFMetadataDefinition {
     //ear 분석정보
     private AnalyzeDefinition earDefinition;
     //war 분석정보
-    private List<AnalyzeDefinition> warDefinitionList;
+    private Map<String, AnalyzeDefinition> warDefinitionMap;
     //jar 분석정보
-    private List<AnalyzeDefinition> jarDefinitionList;
+    private Map<String, AnalyzeDefinition> jarDefinitionMap;
     //변환 xml 정보(파일명, 파일내용)
     private Map<String, String> transXmlInfo;
     //변환 대상 파일 리스트
     private List<String> transFileList;
     
-	/**
+    /**
 	 * @return the zipDefinition
 	 */
 	public AnalyzeDefinition getZipDefinition() {
-		if(zipDefinition == null) {
-			zipDefinition = new AnalyzeDefinition();
-		}
 		return zipDefinition;
+	}
+	/**
+	 * @param zipDefinition the zipDefinition to set
+	 */
+	public void setZipDefinition(AnalyzeDefinition zipDefinition) {
+		this.zipDefinition = zipDefinition;
 	}
 	/**
 	 * @return the earDefinition
 	 */
 	public AnalyzeDefinition getEarDefinition() {
-		if(earDefinition == null) {
-			earDefinition = new AnalyzeDefinition();
-		}
 		return earDefinition;
 	}
 	/**
-	 * <p>
-     * This accessor method returns a reference to the live list, not a snapshot.
-     * Therefore any modification you make to the returned list will be present inside this object.
-     * This is why there is not a <CODE>set</CODE> method for the application property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getWarDefinitionList().add(newItem);
-     * </pre>
-     * 
-	 * @return the warDefinitionList
+	 * @param earDefinition the earDefinition to set
 	 */
-	public List<AnalyzeDefinition> getWarDefinitionList() {
-		if(warDefinitionList == null) {
-			warDefinitionList = new ArrayList<AnalyzeDefinition>();
-		}
-		return warDefinitionList;
+	public void setEarDefinition(AnalyzeDefinition earDefinition) {
+		this.earDefinition = earDefinition;
 	}
 	/**
-	 * <p>
-     * This accessor method returns a reference to the live list, not a snapshot.
-     * Therefore any modification you make to the returned list will be present inside this object.
-     * This is why there is not a <CODE>set</CODE> method for the application property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getJarDefinitionList().add(newItem);
-     * </pre>
-     * 
-	 * @return the jarDefinitionList
+	 * @return the warDefinitionMap
 	 */
-	public List<AnalyzeDefinition> getJarDefinitionList() {
-		if(jarDefinitionList == null) {
-			jarDefinitionList = new ArrayList<AnalyzeDefinition>();
+	public Map<String, AnalyzeDefinition> getWarDefinitionMap() {
+		return warDefinitionMap;
+	}
+	/**
+	 * @param fileName
+	 * @param warDefinition
+	 */
+	public void addWarDefinitionMap(String fileName, AnalyzeDefinition warDefinition) {
+		if(warDefinitionMap == null) {
+			warDefinitionMap = new TreeMap<String, AnalyzeDefinition>();
 		}
-		return jarDefinitionList;
+		
+		warDefinitionMap.put(fileName, warDefinition);
+	}
+	/**
+	 * @param warDefinitionMap the warDefinitionMap to set
+	 */
+	public void setWarDefinitionMap(Map<String, AnalyzeDefinition> warDefinitionMap) {
+		this.warDefinitionMap = warDefinitionMap;
+	}
+	/**
+	 * @return the jarDefinitionMap
+	 */
+	public Map<String, AnalyzeDefinition> getJarDefinitionMap() {
+		return jarDefinitionMap;
+	}
+	/**
+	 * @param fileName
+	 * @param jarDefinition
+	 */
+	public void addJarDefinitionMap(String fileName, AnalyzeDefinition jarDefinition) {
+		if(jarDefinitionMap == null) {
+			jarDefinitionMap = new TreeMap<String, AnalyzeDefinition>();
+		}
+		
+		jarDefinitionMap.put(fileName, jarDefinition);
+	}
+	/**
+	 * @param jarDefinitionMap the jarDefinitionMap to set
+	 */
+	public void setJarDefinitionMap(Map<String, AnalyzeDefinition> jarDefinitionMap) {
+		this.jarDefinitionMap = jarDefinitionMap;
 	}
 	/**
 	 * @return the transXmlInfo
