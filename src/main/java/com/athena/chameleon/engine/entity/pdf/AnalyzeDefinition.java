@@ -20,6 +20,7 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -33,7 +34,28 @@ public class AnalyzeDefinition {
 
 	private String origFileName;
 	private String migrateFileName;
+	//파일 요약정보
 	private Map<FileType, FileSummary> fileSummary;
+	//servlet 상속 정보
+	private List<CommonAnalyze> servletExtendsList;
+	//EJB 상속 정보
+	private List<CommonAnalyze> ejbExtendsList;
+	//java 의존성 정보 
+	private List<Dependency> javaDependencyList;
+	//class 의존성 정보 
+	private List<Dependency> classDependencyList;
+	//jsp 의존성 정보 
+	private List<Dependency> jspDependencyList;
+	//jsp 소스 파일 분석
+	private List<CommonAnalyze> jspAnalyzeList;
+	//디스크립터 정보 
+	private List<CommonAnalyze> descripterList;
+	//ejb application 
+	private List<CommonAnalyze> ejbApplicationList;
+	//lib 구성 정보
+	private List<String> libConstList;
+	//classes 구성(클래스명, 요약정보)
+    private Map<String, List<CommonAnalyze>> classesConstList;
 
 	/**
 	 * @return the origFileName
@@ -75,6 +97,147 @@ public class AnalyzeDefinition {
 	 */
 	public void setFileSummary(Map<FileType, FileSummary> fileSummary) {
 		this.fileSummary = fileSummary;
+	}
+
+	/**
+	 * @return the servletExtendsList
+	 */
+	public List<CommonAnalyze> getServletExtendsList() {
+		return servletExtendsList;
+	}
+
+	/**
+	 * @param servletExtendsList the servletExtendsList to set
+	 */
+	public void setServletExtendsList(List<CommonAnalyze> servletExtendsList) {
+		this.servletExtendsList = servletExtendsList;
+	}
+
+	/**
+	 * @return the ejbExtendsList
+	 */
+	public List<CommonAnalyze> getEjbExtendsList() {
+		return ejbExtendsList;
+	}
+
+	/**
+	 * @param ejbExtendsList the ejbExtendsList to set
+	 */
+	public void setEjbExtendsList(List<CommonAnalyze> ejbExtendsList) {
+		this.ejbExtendsList = ejbExtendsList;
+	}
+
+	/**
+	 * @return the javaDependencyList
+	 */
+	public List<Dependency> getJavaDependencyList() {
+		return javaDependencyList;
+	}
+
+	/**
+	 * @param javaDependencyList the javaDependencyList to set
+	 */
+	public void setJavaDependencyList(List<Dependency> javaDependencyList) {
+		this.javaDependencyList = javaDependencyList;
+	}
+
+	/**
+	 * @return the classDependencyList
+	 */
+	public List<Dependency> getClassDependencyList() {
+		return classDependencyList;
+	}
+
+	/**
+	 * @param classDependencyList the classDependencyList to set
+	 */
+	public void setClassDependencyList(List<Dependency> classDependencyList) {
+		this.classDependencyList = classDependencyList;
+	}
+
+	/**
+	 * @return the jspDependencyList
+	 */
+	public List<Dependency> getJspDependencyList() {
+		return jspDependencyList;
+	}
+
+	/**
+	 * @param jspDependencyList the jspDependencyList to set
+	 */
+	public void setJspDependencyList(List<Dependency> jspDependencyList) {
+		this.jspDependencyList = jspDependencyList;
+	}
+
+	/**
+	 * @return the jspAnalyzeList
+	 */
+	public List<CommonAnalyze> getJspAnalyzeList() {
+		return jspAnalyzeList;
+	}
+
+	/**
+	 * @param jspAnalyzeList the jspAnalyzeList to set
+	 */
+	public void setJspAnalyzeList(List<CommonAnalyze> jspAnalyzeList) {
+		this.jspAnalyzeList = jspAnalyzeList;
+	}
+
+	/**
+	 * @return the descripterList
+	 */
+	public List<CommonAnalyze> getDescripterList() {
+		return descripterList;
+	}
+
+	/**
+	 * @param descripterList the descripterList to set
+	 */
+	public void setDescripterList(List<CommonAnalyze> descripterList) {
+		this.descripterList = descripterList;
+	}
+
+	/**
+	 * @return the ejbApplicationList
+	 */
+	public List<CommonAnalyze> getEjbApplicationList() {
+		return ejbApplicationList;
+	}
+
+	/**
+	 * @param ejbApplicationList the ejbApplicationList to set
+	 */
+	public void setEjbApplicationList(List<CommonAnalyze> ejbApplicationList) {
+		this.ejbApplicationList = ejbApplicationList;
+	}
+
+	/**
+	 * @return the libConstList
+	 */
+	public List<String> getLibConstList() {
+		return libConstList;
+	}
+
+	/**
+	 * @param libConstList the libConstList to set
+	 */
+	public void setLibConstList(List<String> libConstList) {
+		this.libConstList = libConstList;
+	}
+
+	/**
+	 * @return the classesConstList
+	 */
+	public Map<String, List<CommonAnalyze>> getClassesConstList() {
+		return classesConstList;
+	}
+
+	/**
+	 * @param classesConstList the classesConstList to set
+	 */
+	public void setClassesConstList(
+			Map<String, List<CommonAnalyze>> classesConstList) {
+		this.classesConstList = classesConstList;
 	} 
 }
 //end of PDFDefination.java

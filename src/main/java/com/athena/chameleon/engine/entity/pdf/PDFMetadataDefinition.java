@@ -22,6 +22,7 @@ package com.athena.chameleon.engine.entity.pdf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * PDF 생성을 위한 root pojo object
@@ -39,38 +40,10 @@ public class PDFMetadataDefinition {
     private List<AnalyzeDefinition> warDefinitionList;
     //jar 분석정보
     private List<AnalyzeDefinition> jarDefinitionList;
-/*    
-    //source file 요약 정보
-    private Map<FileType, FileSummary> zipFileSummary;
-    //deploy ear file 요약 정보
-    private Map<FileType, FileSummary> earFileSummary;
-    //deploy war file 요약 정보
-    private List<Map<FileType, FileSummary>> warFileSummaryList;
-    //deploy EJB jar file 요약 정보
-    private List<Map<FileType, FileSummary>> jarFileSummaryList;
-    //의존성 분석 정보
-    private Map<DependencyAnalyzeType, List<Dependency>> dependency;
-    //디스크립터 정보(파일명, 위치)
-    private Map<String, String> descripter;
-    //application.xml 내용(ear의 경우)
-    private String 	applicationXmlContent;
-    //module application
-    private List<ApplicationAnalyzeResult>	moduleApplicationList;
-    //ejb application(파일명, 애플리케이션 정보)
-    private Map<String, List<ApplicationAnalyzeResult>> ejbApplicationList;
-    //ejb descripter(파일명, 디스크립터 정보)
-    private Map<String, List<ApplicationAnalyzeResult>> ejbDescripterList;
-    //web.xml 내용(war의 경우)
-    private List<ApplicationAnalyzeResult> webXmlContents;
-    //web lib 구성
-    private List<String> webLib;
-    //web classes 구성(클래스명, 요약정보)
-    private Map<String, List<ApplicationAnalyzeResult>> webClasses;
     //변환 xml 정보(파일명, 파일내용)
     private Map<String, String> transXmlInfo;
     //변환 대상 파일 리스트
     private List<String> transFileList;
-    */
     
 	/**
 	 * @return the zipDefinition
@@ -129,6 +102,30 @@ public class PDFMetadataDefinition {
 			jarDefinitionList = new ArrayList<AnalyzeDefinition>();
 		}
 		return jarDefinitionList;
+	}
+	/**
+	 * @return the transXmlInfo
+	 */
+	public Map<String, String> getTransXmlInfo() {
+		return transXmlInfo;
+	}
+	/**
+	 * @param transXmlInfo the transXmlInfo to set
+	 */
+	public void setTransXmlInfo(Map<String, String> transXmlInfo) {
+		this.transXmlInfo = transXmlInfo;
+	}
+	/**
+	 * @return the transFileList
+	 */
+	public List<String> getTransFileList() {
+		return transFileList;
+	}
+	/**
+	 * @param transFileList the transFileList to set
+	 */
+	public void setTransFileList(List<String> transFileList) {
+		this.transFileList = transFileList;
 	}
 }
 //end of PDFDefination.java

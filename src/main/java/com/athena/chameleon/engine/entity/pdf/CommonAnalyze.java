@@ -28,14 +28,22 @@ import java.util.Map;
  * @author Hyo-jeong Lee
  * @version 1.0
  */
-public class ApplicationAnalyzeResult {
+public class CommonAnalyze {
 
 	//항목
 	private String item;
+	//위치
+	private String location;
 	//내용
     private String contents;
     //비고
     private String note;
+    //directive
+    private String directive;
+    //파일갯수
+    private int fileCount;
+    //Xml Object
+    private Object xmlObject;
 	    
 	/**
 	 * @return the item
@@ -73,6 +81,53 @@ public class ApplicationAnalyzeResult {
 	public void setNote(String note) {
 		this.note = note;
 	}
-	
+	/**
+	 * @return the location
+	 */
+	public String getLocation() {
+		return location;
+	}
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	/**
+	 * @return the directive
+	 */
+	public String getDirective() {
+		return directive;
+	}
+	/**
+	 * @param directive the directive to set
+	 */
+	public void setDirective(String directive) {
+		this.directive = directive;
+	}
+	/**
+	 * @return the fileCount
+	 */
+	public int getFileCount() {
+		return fileCount;
+	}
+	/**
+	 * @param fileCount the fileCount to set
+	 */
+	public void setFileCount(int fileCount) {
+		this.fileCount = fileCount;
+	}
+	/**
+	 * @return the xmlObject
+	 */
+	public Object getXmlObject() {
+		return xmlObject;
+	}
+	/**
+	 * @param xmlObject the xmlObject to set
+	 */
+	public void setXmlObject(Object xmlObject) {
+		this.xmlObject = xmlObject;
+	}
 }
 //end of FileSummary.java
