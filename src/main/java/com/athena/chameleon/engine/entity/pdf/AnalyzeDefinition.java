@@ -20,8 +20,6 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 
@@ -33,7 +31,37 @@ import java.util.Map;
  */
 public class AnalyzeDefinition {
 
+	private String origFileName;
+	private String migrateFileName;
 	private Map<FileType, FileSummary> fileSummary;
+
+	/**
+	 * @return the origFileName
+	 */
+	public String getOrigFileName() {
+		return origFileName;
+	}
+
+	/**
+	 * @param origFileName the origFileName to set
+	 */
+	public void setOrigFileName(String origFileName) {
+		this.origFileName = origFileName;
+	}
+
+	/**
+	 * @return the migrateFileName
+	 */
+	public String getMigrateFileName() {
+		return migrateFileName;
+	}
+
+	/**
+	 * @param migrateFileName the migrateFileName to set
+	 */
+	public void setMigrateFileName(String migrateFileName) {
+		this.migrateFileName = migrateFileName;
+	}
 
 	/**
 	 * @return the fileSummary

@@ -71,29 +71,24 @@ public class PDFMetadataDefinition {
     //변환 대상 파일 리스트
     private List<String> transFileList;
     */
+    
 	/**
 	 * @return the zipDefinition
 	 */
 	public AnalyzeDefinition getZipDefinition() {
+		if(zipDefinition == null) {
+			zipDefinition = new AnalyzeDefinition();
+		}
 		return zipDefinition;
-	}
-	/**
-	 * @param zipDefinition the zipDefinition to set
-	 */
-	public void setZipDefinition(AnalyzeDefinition zipDefinition) {
-		this.zipDefinition = zipDefinition;
 	}
 	/**
 	 * @return the earDefinition
 	 */
 	public AnalyzeDefinition getEarDefinition() {
+		if(earDefinition == null) {
+			earDefinition = new AnalyzeDefinition();
+		}
 		return earDefinition;
-	}
-	/**
-	 * @param earDefinition the earDefinition to set
-	 */
-	public void setEarDefinition(AnalyzeDefinition earDefinition) {
-		this.earDefinition = earDefinition;
 	}
 	/**
 	 * <p>
