@@ -73,6 +73,7 @@ public class FileEncodingConverter {
     @Named("taskExecutor")
 	private ChameleonThreadPoolExecutor executor;
     
+    private AnalyzeDefinition analyzeDefinition;
     private FileType[] fileTypes = FileType.values();
     private Map<FileType, FileSummary> fileSummaryMap;
     private FileSummary fileSummary;
@@ -109,6 +110,11 @@ public class FileEncodingConverter {
 			fileSummaryMap.put(fileType, fileSummary);
 		}
 		
+		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+		analyzeDefinition = new AnalyzeDefinition();
+		analyzeDefinition.setFileName(file.getAbsolutePath());
+		analyzeDefinition.setFileSummary(fileSummaryMap);
+		
 		convertAll(file);
 		executor.getExecutor().shutdown();	
 		
@@ -132,11 +138,6 @@ public class FileEncodingConverter {
 		}
 		
 		// 파일 확장자에 따라 파일 요약정보를 PDFMetadataDefinition에 저장한다.
-		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
-		AnalyzeDefinition analyzeDefinition = new AnalyzeDefinition();
-		analyzeDefinition.setFileName(file.getAbsolutePath());
-		analyzeDefinition.setFileSummary(fileSummaryMap);
-		
 		String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
 		
 		if (ArchiveType.ZIP.value().equals(extension)) {
@@ -173,10 +174,25 @@ public class FileEncodingConverter {
 			String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
 			
 			for (FileType fileType : fileTypes) {
-				if (fileType.name().equals(extension.toUpperCase())) {
+				if (fileType.value().equals(extension)) {
 					fileSummary = fileSummaryMap.get(fileType);
 					fileSummary.addCount();
 					totalCount++;
+					
+					if(fileType.equals(FileType.JAR) && file.getParent().endsWith("lib")) {
+						// xerces.jar, xalan.jar, xml-api.jar, jboss-*.jar 파일이 존재할 경우 제거
+			    		if (file.getName().equals("xerces.jar") || file.getName().equals("xalan.jar") || 
+			    				file.getName().equals("xml-api.jar") || file.getName().startsWith("jboss-")) {
+			    			
+			    			// 삭제 파일 목록에 추가 후 파일 삭제
+			    			analyzeDefinition.getDeleteLibraryList().add(file.getName());
+			    			file.delete();
+			    		} else {
+			    			// 라이브러리 파일 목록에 추가
+			    			analyzeDefinition.getLibraryList().add(file.getName());
+			    		}
+		    			continue;
+					}
 					
 					// 해당 파일 타입에 대한 소스 인코딩이 정의되어 있지 않은 경우 제일 처음 탐색되는 파일로 소스 인코딩을 판별한다.
 					if (fileSummary.getSourceEncoding().equals("N/A") && !fileType.equals(FileType.JAR)) {

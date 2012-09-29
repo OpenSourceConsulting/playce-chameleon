@@ -20,6 +20,7 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +53,10 @@ public class AnalyzeDefinition {
 	private List<CommonAnalyze> descripterList;
 	//ejb application 
 	private List<CommonAnalyze> ejbApplicationList;
-	//lib 구성 정보
-	private List<String> libConstList;
+	//library 구성 정보
+	private List<String> libraryList;
+	//삭제 라이브러리 목록 정보
+	private List<String> deleteLibraryList;
 	//classes 구성 정보
     private List<ClassAnalyze> classesConstList;
 
@@ -198,17 +201,45 @@ public class AnalyzeDefinition {
 	}
 
 	/**
-	 * @return the libConstList
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getLibraryList().add(newItem);
+     * </pre>
+     * 
+	 * @return the libraryList
 	 */
-	public List<String> getLibConstList() {
-		return libConstList;
+	public List<String> getLibraryList() {
+		if(libraryList == null) {
+			libraryList = new ArrayList<String>();
+		}
+		return libraryList;
 	}
 
 	/**
-	 * @param libConstList the libConstList to set
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getDeleteLibraryList().add(newItem);
+     * </pre>
+     * 
+	 * @return the deleteLibraryList
 	 */
-	public void setLibConstList(List<String> libConstList) {
-		this.libConstList = libConstList;
+	public List<String> getDeleteLibraryList() {
+		if(deleteLibraryList == null) {
+			deleteLibraryList = new ArrayList<String>();
+		}
+		return deleteLibraryList;
 	}
 
 	/**

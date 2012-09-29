@@ -105,6 +105,19 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				defaultAnalyze(f, rootPath);
 			} else {
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
+				
+				
+				/**
+				
+				if(this instanceof ZipAnalyzer) {
+					
+				} else if(this instanceof EarAnalyzer) {
+					
+				} else if(this instanceof WarAnalyzer) {
+					
+				} else if(this instanceof JarAnalyzer) {
+					
+				}
 
 				// war, jar 파일은 EarAnalyzer
 				
@@ -115,6 +128,8 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				// jsp, properties는 ALL
 				
 				// xml은 ALL
+				 
+				 */
 				
 				if (extension.equals("war")) {
 					if ((warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST)) == null) {
@@ -124,33 +139,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 					
 					warFileList.add(f);
 			    } else if (extension.equals("jar")) {
-			    	// 라이브러리 jar 인 경우에 해당하며 목록을 ThreadLocal에 저장한다.
-			    	if (f.getParent().endsWith("lib")) {
-			    		
-			    		// xerces.jar, xalan.jar, xml-api.jar, jboss-*.jar 파일이 존재할 경우 제거
-			    		if (f.getName().equals("xerces.jar") || f.getName().equals("xalan.jar") || 
-			    				f.getName().equals("xml-api.jar") || f.getName().startsWith("jboss-")) {
-			    			
-			    			// 삭제 파일 목록에 추가
-				    		if((deleteFileList = (List<String>) ThreadLocalUtil.get(ChameleonConstants.DELETE_FILE_LIST)) == null) {
-				    			deleteFileList = new ArrayList<String>();
-								ThreadLocalUtil.add(ChameleonConstants.DELETE_FILE_LIST, deleteFileList);
-							}
-				    		
-				    		deleteFileList.add(f.getAbsolutePath().substring(rootPath.length()));
-				    		
-			    			f.delete();
-			    			continue;
-			    		}
-			    		
-			    		// 라이브러리 파일 목록에 추가
-			    		if ((libFileList = (List<String>) ThreadLocalUtil.get(ChameleonConstants.LIB_FILE_LIST)) == null) {
-			    			libFileList = new ArrayList<String>();
-							ThreadLocalUtil.add(ChameleonConstants.LIB_FILE_LIST, libFileList);
-						}
-			    		
-			    		libFileList.add(f.getAbsolutePath().substring(rootPath.length()));
-			    	}
+			    	// nothing to do
 				} else if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
 					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy));
 				} else if (extension.equals("class")) {
