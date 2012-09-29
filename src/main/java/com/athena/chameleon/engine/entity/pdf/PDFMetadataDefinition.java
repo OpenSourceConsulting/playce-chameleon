@@ -20,6 +20,7 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -88,28 +89,44 @@ public class PDFMetadataDefinition {
 		this.earFileSummary = earFileSummary;
 	}
 	/**
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getWarFileSummaryList().add(newItem);
+     * </pre>
+     * 
 	 * @return the warFileSummaryList
 	 */
 	public List<FileSummary> getWarFileSummaryList() {
+		if(warFileSummaryList == null) {
+			warFileSummaryList = new ArrayList<FileSummary>();
+		}
 		return warFileSummaryList;
 	}
 	/**
-	 * @param warFileSummaryList the warFileSummaryList to set
-	 */
-	public void setWarFileSummaryList(List<FileSummary> warFileSummaryList) {
-		this.warFileSummaryList = warFileSummaryList;
-	}
-	/**
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getJarFileSummaryList().add(newItem);
+     * </pre>
+     * 
 	 * @return the jarFileSummaryList
 	 */
 	public List<FileSummary> getJarFileSummaryList() {
+		if(jarFileSummaryList == null) {
+			jarFileSummaryList = new ArrayList<FileSummary>();
+		}
 		return jarFileSummaryList;
-	}
-	/**
-	 * @param jarFileSummaryList the jarFileSummaryList to set
-	 */
-	public void setJarFileSummaryList(List<FileSummary> jarFileSummaryList) {
-		this.jarFileSummaryList = jarFileSummaryList;
 	}
 	/**
 	 * @return the dependency
