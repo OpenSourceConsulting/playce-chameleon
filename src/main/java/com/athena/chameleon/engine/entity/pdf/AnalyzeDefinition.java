@@ -54,8 +54,8 @@ public class AnalyzeDefinition {
 	private List<CommonAnalyze> ejbApplicationList;
 	//lib 구성 정보
 	private List<String> libConstList;
-	//classes 구성(클래스명, 요약정보)
-    private Map<String, List<CommonAnalyze>> classesConstList;
+	//classes 구성 정보
+    private List<ClassAnalyze> classesConstList;
 
 	/**
 	 * @return the origFileName
@@ -228,16 +228,16 @@ public class AnalyzeDefinition {
 	/**
 	 * @return the classesConstList
 	 */
-	public Map<String, List<CommonAnalyze>> getClassesConstList() {
+	public List<ClassAnalyze> getClassesConstList() {
 		return classesConstList;
 	}
 
 	/**
 	 * @param classesConstList the classesConstList to set
 	 */
-	public void setClassesConstList(
-			Map<String, List<CommonAnalyze>> classesConstList) {
+	public void setClassesConstList(List<ClassAnalyze> classesConstList) {
 		this.classesConstList = classesConstList;
-	} 
+	}
+
 }
 //end of PDFDefination.java
