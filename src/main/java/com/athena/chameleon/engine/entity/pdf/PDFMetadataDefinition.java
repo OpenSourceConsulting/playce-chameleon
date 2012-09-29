@@ -20,9 +20,7 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -33,6 +31,15 @@ import java.util.Map;
  */
 public class PDFMetadataDefinition {
 
+	//zip 분석정보
+    private AnalyzeDefinition zipDefinition;
+    //ear 분석정보
+    private AnalyzeDefinition earDefinition;
+    //war 분석정보
+    private List<AnalyzeDefinition> warDefinitionList;
+    //jar 분석정보
+    private List<AnalyzeDefinition> jarDefinitionList;
+/*    
     //source file 요약 정보
     private Map<FileType, FileSummary> zipFileSummary;
     //deploy ear file 요약 정보
@@ -63,208 +70,54 @@ public class PDFMetadataDefinition {
     private Map<String, String> transXmlInfo;
     //변환 대상 파일 리스트
     private List<String> transFileList;
-    
+    */
 	/**
-	 * @return the zipFileSummary
+	 * @return the zipDefinition
 	 */
-	public Map<FileType, FileSummary> getZipFileSummary() {
-		return zipFileSummary;
+	public AnalyzeDefinition getZipDefinition() {
+		return zipDefinition;
 	}
 	/**
-	 * @param zipFileSummary the zipFileSummary to set
+	 * @param zipDefinition the zipDefinition to set
 	 */
-	public void setZipFileSummary(Map<FileType, FileSummary> zipFileSummary) {
-		this.zipFileSummary = zipFileSummary;
+	public void setZipDefinition(AnalyzeDefinition zipDefinition) {
+		this.zipDefinition = zipDefinition;
 	}
 	/**
-	 * @return the earFileSummary
+	 * @return the earDefinition
 	 */
-	public Map<FileType, FileSummary> getEarFileSummary() {
-		return earFileSummary;
+	public AnalyzeDefinition getEarDefinition() {
+		return earDefinition;
 	}
 	/**
-	 * @param earFileSummary the earFileSummary to set
+	 * @param earDefinition the earDefinition to set
 	 */
-	public void setEarFileSummary(Map<FileType, FileSummary> earFileSummary) {
-		this.earFileSummary = earFileSummary;
+	public void setEarDefinition(AnalyzeDefinition earDefinition) {
+		this.earDefinition = earDefinition;
 	}
 	/**
-	 * <p>
-     * This accessor method returns a reference to the live list, not a snapshot.
-     * Therefore any modification you make to the returned list will be present inside this object.
-     * This is why there is not a <CODE>set</CODE> method for the application property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getWarFileSummaryList().add(newItem);
-     * </pre>
-     * 
-	 * @return the warFileSummaryList
+	 * @return the warDefinitionList
 	 */
-	public List<Map<FileType, FileSummary>> getWarFileSummaryList() {
-		if(warFileSummaryList == null) {
-			warFileSummaryList = new ArrayList<Map<FileType, FileSummary>>();
-		}
-		return warFileSummaryList;
+	public List<AnalyzeDefinition> getWarDefinitionList() {
+		return warDefinitionList;
 	}
 	/**
-	 * <p>
-     * This accessor method returns a reference to the live list, not a snapshot.
-     * Therefore any modification you make to the returned list will be present inside this object.
-     * This is why there is not a <CODE>set</CODE> method for the application property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getJarFileSummaryList().add(newItem);
-     * </pre>
-     * 
-	 * @return the jarFileSummaryList
+	 * @param warDefinitionList the warDefinitionList to set
 	 */
-	public List<Map<FileType, FileSummary>> getJarFileSummaryList() {
-		if(jarFileSummaryList == null) {
-			jarFileSummaryList = new ArrayList<Map<FileType, FileSummary>>();
-		}
-		return jarFileSummaryList;
+	public void setWarDefinitionList(List<AnalyzeDefinition> warDefinitionList) {
+		this.warDefinitionList = warDefinitionList;
 	}
 	/**
-	 * @return the dependency
+	 * @return the jarDefinitionList
 	 */
-	public Map<DependencyAnalyzeType, List<Dependency>> getDependency() {
-		return dependency;
+	public List<AnalyzeDefinition> getJarDefinitionList() {
+		return jarDefinitionList;
 	}
 	/**
-	 * @param dependency the dependency to set
+	 * @param jarDefinitionList the jarDefinitionList to set
 	 */
-	public void setDependency(
-			Map<DependencyAnalyzeType, List<Dependency>> dependency) {
-		this.dependency = dependency;
-	}
-	/**
-	 * @return the descripter
-	 */
-	public Map<String, String> getDescripter() {
-		return descripter;
-	}
-	/**
-	 * @param descripter the descripter to set
-	 */
-	public void setDescripter(Map<String, String> descripter) {
-		this.descripter = descripter;
-	}
-	/**
-	 * @return the applicationXmlContent
-	 */
-	public String getApplicationXmlContent() {
-		return applicationXmlContent;
-	}
-	/**
-	 * @param applicationXmlContent the applicationXmlContent to set
-	 */
-	public void setApplicationXmlContent(String applicationXmlContent) {
-		this.applicationXmlContent = applicationXmlContent;
-	}
-	/**
-	 * @return the moduleApplicationList
-	 */
-	public List<ApplicationAnalyzeResult> getModuleApplicationList() {
-		return moduleApplicationList;
-	}
-	/**
-	 * @param moduleApplicationList the moduleApplicationList to set
-	 */
-	public void setModuleApplicationList(
-			List<ApplicationAnalyzeResult> moduleApplicationList) {
-		this.moduleApplicationList = moduleApplicationList;
-	}
-	/**
-	 * @return the ejbApplicationList
-	 */
-	public Map<String, List<ApplicationAnalyzeResult>> getEjbApplicationList() {
-		return ejbApplicationList;
-	}
-	/**
-	 * @param ejbApplicationList the ejbApplicationList to set
-	 */
-	public void setEjbApplicationList(
-			Map<String, List<ApplicationAnalyzeResult>> ejbApplicationList) {
-		this.ejbApplicationList = ejbApplicationList;
-	}
-	/**
-	 * @return the ejbDescripterList
-	 */
-	public Map<String, List<ApplicationAnalyzeResult>> getEjbDescripterList() {
-		return ejbDescripterList;
-	}
-	/**
-	 * @param ejbDescripterList the ejbDescripterList to set
-	 */
-	public void setEjbDescripterList(
-			Map<String, List<ApplicationAnalyzeResult>> ejbDescripterList) {
-		this.ejbDescripterList = ejbDescripterList;
-	}
-	/**
-	 * @return the webXmlContents
-	 */
-	public List<ApplicationAnalyzeResult> getWebXmlContents() {
-		return webXmlContents;
-	}
-	/**
-	 * @param webXmlContents the webXmlContents to set
-	 */
-	public void setWebXmlContents(List<ApplicationAnalyzeResult> webXmlContents) {
-		this.webXmlContents = webXmlContents;
-	}
-	/**
-	 * @return the webLib
-	 */
-	public List<String> getWebLib() {
-		return webLib;
-	}
-	/**
-	 * @param webLib the webLib to set
-	 */
-	public void setWebLib(List<String> webLib) {
-		this.webLib = webLib;
-	}
-	/**
-	 * @return the webClasses
-	 */
-	public Map<String, List<ApplicationAnalyzeResult>> getWebClasses() {
-		return webClasses;
-	}
-	/**
-	 * @param webClasses the webClasses to set
-	 */
-	public void setWebClasses(Map<String, List<ApplicationAnalyzeResult>> webClasses) {
-		this.webClasses = webClasses;
-	}
-	/**
-	 * @return the transXmlInfo
-	 */
-	public Map<String, String> getTransXmlInfo() {
-		return transXmlInfo;
-	}
-	/**
-	 * @param transXmlInfo the transXmlInfo to set
-	 */
-	public void setTransXmlInfo(Map<String, String> transXmlInfo) {
-		this.transXmlInfo = transXmlInfo;
-	}
-	/**
-	 * @return the transFileList
-	 */
-	public List<String> getTransFileList() {
-		return transFileList;
-	}
-	/**
-	 * @param transFileList the transFileList to set
-	 */
-	public void setTransFileList(List<String> transFileList) {
-		this.transFileList = transFileList;
-	}
-       
-    
+	public void setJarDefinitionList(List<AnalyzeDefinition> jarDefinitionList) {
+		this.jarDefinitionList = jarDefinitionList;
+	}   
 }
 //end of PDFDefination.java
