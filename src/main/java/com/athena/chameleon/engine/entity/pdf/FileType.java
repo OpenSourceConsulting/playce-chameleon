@@ -34,16 +34,16 @@ public enum FileType {
     	if(this.equals(DIRECTORY) || this.equals(SUM)) {
     		return super.toString();
     	} else {
-    		return "*." + super.toString().toLowerCase();
+    		return "*." + value();
     	}
     }
     
     public String value() {
-        return name();
+        return name().toLowerCase();
     }
 
     public static FileType fromValue(String v) {
-        return valueOf(v);
+        return valueOf(v.toUpperCase());
     }
 
 }

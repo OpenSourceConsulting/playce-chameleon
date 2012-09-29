@@ -42,7 +42,7 @@ import com.ibm.icu.text.CharsetDetector;
  * @author Sang-cheon Park
  * @version 1.0
  */
-public class ConvertEncodingTask extends BaseTask {
+public class FileEncodingConvertTask extends BaseTask {
 	
 	/*
 	private static final String[] SEARCH_CHAR_SET = {
@@ -70,11 +70,11 @@ public class ConvertEncodingTask extends BaseTask {
 	private String defaultEncoding = "UTF-8";
 	private String extension;
 	
-	public ConvertEncodingTask(File file, String defaultEncoding) {
+	public FileEncodingConvertTask(File file, String defaultEncoding) {
 		this(file.getAbsolutePath() + " Convert Task", file, defaultEncoding);
 	}
 	
-	public ConvertEncodingTask(String taskName, File file, String defaultEncoding) {
+	public FileEncodingConvertTask(String taskName, File file, String defaultEncoding) {
 		super(taskName);
 		setFile(file);
 		setDefaultEncoding(defaultEncoding);
@@ -155,4 +155,4 @@ public class ConvertEncodingTask extends BaseTask {
 		return str;
 	}//end of replace()
 
-}//end of ConvertEncodingTask.java
+}//end of FileEncodingConvertTask.java

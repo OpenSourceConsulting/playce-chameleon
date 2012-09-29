@@ -110,7 +110,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				
 				// java 파일은 ZipAnalyzer
 				
-				// class 파일은 EarAnalyzer, WarAnalyzer, JarAnalyzer => ear, war, jar의 APP-INF/classes 또는 WEB-INF/classes, jar는?
+				// class 파일은 EarAnalyzer, WarAnalyzer, JarAnalyzer => ear, war, jar의 APP-INF/classes 또는 WEB-INF/classes, jar는 루트
 				
 				// jsp, properties는 ALL
 				

@@ -44,7 +44,7 @@ import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
-import com.athena.chameleon.engine.threadpool.task.ConvertEncodingTask;
+import com.athena.chameleon.engine.threadpool.task.FileEncodingConvertTask;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
@@ -196,7 +196,7 @@ public class FileEncodingConverter {
 			
 			// suffix property에 지정된 확장자를 가진 파일인지 검사
 			if (ArrayUtils.contains(policy.getSuffix(), extension)) {
-				executor.execute(new ConvertEncodingTask(file, policy.getDefaultEncoding()));
+				executor.execute(new FileEncodingConvertTask(file, policy.getDefaultEncoding()));
 			}
 		}
 	}//end of convertAll()
