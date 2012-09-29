@@ -21,7 +21,6 @@
 package com.athena.chameleon.engine.entity.pdf;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 소스 파일 요약 Entity

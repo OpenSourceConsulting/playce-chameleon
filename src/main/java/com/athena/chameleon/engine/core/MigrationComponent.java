@@ -507,6 +507,9 @@ public class MigrationComponent {
 		
 		// PDF 출력용 통합 Data Object를 초기화 하고 ThreadLocal에 저장한다.
 		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
+		metadataDefinition.setSourceFile(sourceFile);
+		metadataDefinition.setDeployFile(deployFile);		
+		
 		ThreadLocalUtil.add(ChameleonConstants.PDF_METADATA_DEFINITION, metadataDefinition);
 		
 		String extension = null;

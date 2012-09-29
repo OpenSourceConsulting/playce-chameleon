@@ -32,8 +32,8 @@ import java.util.Map;
  */
 public class AnalyzeDefinition {
 
-	private String origFileName;
-	private String migrateFileName;
+	private String fileName;
+	
 	//파일 요약정보
 	private Map<FileType, FileSummary> fileSummary;
 	//servlet 상속 정보
@@ -58,31 +58,17 @@ public class AnalyzeDefinition {
     private List<ClassAnalyze> classesConstList;
 
 	/**
-	 * @return the origFileName
+	 * @return the fileName
 	 */
-	public String getOrigFileName() {
-		return origFileName;
+	public String getFileName() {
+		return fileName;
 	}
 
 	/**
-	 * @param origFileName the origFileName to set
+	 * @param fileName the fileName to set
 	 */
-	public void setOrigFileName(String origFileName) {
-		this.origFileName = origFileName;
-	}
-
-	/**
-	 * @return the migrateFileName
-	 */
-	public String getMigrateFileName() {
-		return migrateFileName;
-	}
-
-	/**
-	 * @param migrateFileName the migrateFileName to set
-	 */
-	public void setMigrateFileName(String migrateFileName) {
-		this.migrateFileName = migrateFileName;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	/**

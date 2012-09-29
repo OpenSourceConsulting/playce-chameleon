@@ -31,6 +31,11 @@ import java.util.TreeMap;
  * @version 1.0
  */
 public class PDFMetadataDefinition {
+	
+	private String sourceFile;
+	private String migrateSourceFile;
+	private String deployFile;
+	private String migrateDeployFile;
 
 	//zip 분석정보
     private AnalyzeDefinition zipDefinition;
@@ -45,7 +50,55 @@ public class PDFMetadataDefinition {
     //변환 대상 파일 리스트
     private List<String> transFileList;
     
-    /**
+	/**
+	 * @return the sourceFile
+	 */
+	public String getSourceFile() {
+		return sourceFile;
+	}
+	/**
+	 * @param sourceFile the sourceFile to set
+	 */
+	public void setSourceFile(String sourceFile) {
+		this.sourceFile = sourceFile;
+	}
+	/**
+	 * @return the migrateSourceFile
+	 */
+	public String getMigrateSourceFile() {
+		return migrateSourceFile;
+	}
+	/**
+	 * @param migrateSourceFile the migrateSourceFile to set
+	 */
+	public void setMigrateSourceFile(String migrateSourceFile) {
+		this.migrateSourceFile = migrateSourceFile;
+	}
+	/**
+	 * @return the deployFile
+	 */
+	public String getDeployFile() {
+		return deployFile;
+	}
+	/**
+	 * @param deployFile the deployFile to set
+	 */
+	public void setDeployFile(String deployFile) {
+		this.deployFile = deployFile;
+	}
+	/**
+	 * @return the migrateDeployFile
+	 */
+	public String getMigrateDeployFile() {
+		return migrateDeployFile;
+	}
+	/**
+	 * @param migrateDeployFile the migrateDeployFile to set
+	 */
+	public void setMigrateDeployFile(String migrateDeployFile) {
+		this.migrateDeployFile = migrateDeployFile;
+	}
+	/**
 	 * @return the zipDefinition
 	 */
 	public AnalyzeDefinition getZipDefinition() {

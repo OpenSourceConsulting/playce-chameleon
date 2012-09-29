@@ -134,7 +134,7 @@ public class FileEncodingConverter {
 		// 파일 확장자에 따라 파일 요약정보를 PDFMetadataDefinition에 저장한다.
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		AnalyzeDefinition analyzeDefinition = new AnalyzeDefinition();
-		analyzeDefinition.setOrigFileName(file.getAbsolutePath());
+		analyzeDefinition.setFileName(file.getAbsolutePath());
 		analyzeDefinition.setFileSummary(fileSummaryMap);
 		
 		String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
