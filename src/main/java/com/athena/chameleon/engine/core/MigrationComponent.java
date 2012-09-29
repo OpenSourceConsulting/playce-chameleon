@@ -39,6 +39,8 @@ import javax.xml.bind.Unmarshaller;
 import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.support.EarAnalyzer;
 import com.athena.chameleon.engine.core.analyzer.support.JarAnalyzer;
 import com.athena.chameleon.engine.core.analyzer.support.WarAnalyzer;
@@ -46,6 +48,7 @@ import com.athena.chameleon.engine.core.analyzer.support.ZipAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.utils.FileUtil;
@@ -501,6 +504,11 @@ public class MigrationComponent {
 	}
 
 	public void migrate(String sourceFile, String deployFile) {
+		
+		// PDF 출력용 통합 Data Object를 초기화 하고 ThreadLocal에 저장한다.
+		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
+		ThreadLocalUtil.add(ChameleonConstants.PDF_METADATA_DEFINITION, metadataDefinition);
+		
 		String extension = null;
 		
 		if(sourceFile != null) {

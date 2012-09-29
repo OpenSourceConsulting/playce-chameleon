@@ -34,13 +34,13 @@ import java.util.Map;
 public class PDFMetadataDefinition {
 
     //source file 요약 정보
-    private FileSummary zipFileSummary;
+    private Map<FileType, FileSummary> zipFileSummary;
     //deploy ear file 요약 정보
-    private FileSummary earFileSummary;
+    private Map<FileType, FileSummary> earFileSummary;
     //deploy war file 요약 정보
-    private List<FileSummary> warFileSummaryList;
+    private List<Map<FileType, FileSummary>> warFileSummaryList;
     //deploy EJB jar file 요약 정보
-    private List<FileSummary> jarFileSummaryList;
+    private List<Map<FileType, FileSummary>> jarFileSummaryList;
     //의존성 분석 정보
     private Map<DependencyAnalyzeType, List<Dependency>> dependency;
     //디스크립터 정보(파일명, 위치)
@@ -67,25 +67,25 @@ public class PDFMetadataDefinition {
 	/**
 	 * @return the zipFileSummary
 	 */
-	public FileSummary getZipFileSummary() {
+	public Map<FileType, FileSummary> getZipFileSummary() {
 		return zipFileSummary;
 	}
 	/**
 	 * @param zipFileSummary the zipFileSummary to set
 	 */
-	public void setZipFileSummary(FileSummary zipFileSummary) {
+	public void setZipFileSummary(Map<FileType, FileSummary> zipFileSummary) {
 		this.zipFileSummary = zipFileSummary;
 	}
 	/**
 	 * @return the earFileSummary
 	 */
-	public FileSummary getEarFileSummary() {
+	public Map<FileType, FileSummary> getEarFileSummary() {
 		return earFileSummary;
 	}
 	/**
 	 * @param earFileSummary the earFileSummary to set
 	 */
-	public void setEarFileSummary(FileSummary earFileSummary) {
+	public void setEarFileSummary(Map<FileType, FileSummary> earFileSummary) {
 		this.earFileSummary = earFileSummary;
 	}
 	/**
@@ -102,9 +102,9 @@ public class PDFMetadataDefinition {
      * 
 	 * @return the warFileSummaryList
 	 */
-	public List<FileSummary> getWarFileSummaryList() {
+	public List<Map<FileType, FileSummary>> getWarFileSummaryList() {
 		if(warFileSummaryList == null) {
-			warFileSummaryList = new ArrayList<FileSummary>();
+			warFileSummaryList = new ArrayList<Map<FileType, FileSummary>>();
 		}
 		return warFileSummaryList;
 	}
@@ -122,9 +122,9 @@ public class PDFMetadataDefinition {
      * 
 	 * @return the jarFileSummaryList
 	 */
-	public List<FileSummary> getJarFileSummaryList() {
+	public List<Map<FileType, FileSummary>> getJarFileSummaryList() {
 		if(jarFileSummaryList == null) {
-			jarFileSummaryList = new ArrayList<FileSummary>();
+			jarFileSummaryList = new ArrayList<Map<FileType, FileSummary>>();
 		}
 		return jarFileSummaryList;
 	}

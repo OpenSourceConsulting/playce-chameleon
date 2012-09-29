@@ -40,8 +40,10 @@ import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
+import com.athena.chameleon.engine.entity.pdf.ArchiveType;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.threadpool.task.FileEncodingConvertTask;
@@ -93,24 +95,19 @@ public class FileEncodingConverter {
 	 * </pre>
 	 * @param dir
 	 */
-	@SuppressWarnings("unchecked")
 	public void convert(File file) {
 		Assert.notNull(file, "file must not be null");
 		Assert.isTrue(file.exists(), file + " does not exist.");
 
 		logger.debug("Convert Target Path or File : [{}]", file.getAbsolutePath());
 		
-		fileSummaryMap = (Map<FileType, FileSummary>)ThreadLocalUtil.get(ChameleonConstants.FILE_SUMMARY);
-		if (fileSummaryMap == null) {
-			fileSummaryMap = new HashMap<FileType, FileSummary>();
-			
-			for (FileType fileType : fileTypes) {
-				fileSummary = new FileSummary();
-				fileSummary.setFileType(fileType);
-				fileSummaryMap.put(fileType, fileSummary);
-			}
-			
-			ThreadLocalUtil.add(ChameleonConstants.FILE_SUMMARY, fileSummaryMap);
+		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+		
+		fileSummaryMap = new HashMap<FileType, FileSummary>();
+		for (FileType fileType : fileTypes) {
+			fileSummary = new FileSummary();
+			fileSummary.setFileType(fileType);
+			fileSummaryMap.put(fileType, fileSummary);
 		}
 		
 		convertAll(file);
@@ -135,6 +132,19 @@ public class FileEncodingConverter {
 								  String.format("%5s", fileSummaryMap.get(fileType).getTargetEncoding())});
 		}
 		
+		// 파일 확장자에 따라 파일 요약정보를 PDFMetadataDefinition에 저장한다.
+		String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
+		
+		if (ArchiveType.ZIP.value().equals(extension)) {
+			metadataDefinition.setZipFileSummary(fileSummaryMap);
+		} else if (ArchiveType.EAR.value().equals(extension)) {
+			metadataDefinition.setEarFileSummary(fileSummaryMap);
+		} else if (ArchiveType.WAR.value().equals(extension)) {
+			metadataDefinition.getWarFileSummaryList().add(fileSummaryMap);
+		} else if (ArchiveType.JAR.value().equals(extension)) {
+			metadataDefinition.getJarFileSummaryList().add(fileSummaryMap);
+		}
+		
 	}//end of convert()
 	
 	/**
@@ -143,10 +153,9 @@ public class FileEncodingConverter {
 	 * </pre>
 	 * @param file
 	 */
-	@SuppressWarnings("unchecked")
 	private void convertAll(File file) {
 		if (file.isDirectory()) {
-			fileSummary = ((Map<FileType, FileSummary>)ThreadLocalUtil.get(ChameleonConstants.FILE_SUMMARY)).get(FileType.DIRECTORY);
+			fileSummary = fileSummaryMap.get(FileType.DIRECTORY);
 			fileSummary.addCount();
 			totalCount++;
 			
@@ -161,7 +170,7 @@ public class FileEncodingConverter {
 			
 			for (FileType fileType : fileTypes) {
 				if (fileType.name().equals(extension.toUpperCase())) {
-					fileSummary = ((Map<FileType, FileSummary>)ThreadLocalUtil.get(ChameleonConstants.FILE_SUMMARY)).get(fileType);
+					fileSummary = fileSummaryMap.get(fileType);
 					fileSummary.addCount();
 					totalCount++;
 					
