@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
@@ -47,8 +48,8 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 	 * @param converter
 	 * @param executor
 	 */
-	public ZipAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
-		super(policy, converter, executor);
+	public ZipAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, AnalyzeDefinition analyzeDefinition) {
+		super(policy, converter, executor, analyzeDefinition);
 	}//end of Constructor
 	
 	/* (non-Javadoc)
@@ -65,7 +66,7 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 
 			// 인코딩 변경
-			converter.convert(new File(tempDir));
+			converter.convert(new File(tempDir), analyzeDefinition);
 			
 			// 프로젝트 소스(zip) 입력 시 class 파일에 대한 의존성 검사를 수행하지 않는다. 
 			// ClasspathUtil.addPath(tempDir);

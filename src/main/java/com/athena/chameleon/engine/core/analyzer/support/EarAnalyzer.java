@@ -25,9 +25,13 @@ import java.io.File;
 import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
@@ -48,8 +52,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 	 * @param converter
 	 * @param executor
 	 */
-	public EarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
-		super(policy, converter, executor);
+	public EarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, AnalyzeDefinition analyzeDefinition) {
+		super(policy, converter, executor, analyzeDefinition);
 	}//end of Constructor
 
 	/* (non-Javadoc)
@@ -66,7 +70,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 
 			// 인코딩 변경
-			converter.convert(new File(tempDir));
+			converter.convert(new File(tempDir), analyzeDefinition);
 			
 			// 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
 			ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
@@ -75,13 +79,25 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			analyze(new File(tempDir), tempDir);
 			
 			// war 파일이 존재할 경우 해당 war 파일에 대해 분석한다.
-			for(File warFile : warFileList) {
-				new WarAnalyzer(policy, converter, executor, true).analyze(warFile);
+			if(warFileList != null && warFileList.size() > 0) {
+				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+				AnalyzeDefinition warDefinition = null;
+				for(File warFile : warFileList) {
+					warDefinition = new AnalyzeDefinition();
+					metadataDefinition.addWarDefinitionMap(warFile.getName(), warDefinition);
+					new WarAnalyzer(policy, converter, executor, warDefinition, true).analyze(warFile);
+				}
 			}
 			
 			// jar 파일이 존재할 경우 해당 jar 파일에 대해 분석한다.
-			for(File jarFile : jarFileList) {
-				new JarAnalyzer(policy, converter, executor, true).analyze(jarFile);
+			if(warFileList != null && warFileList.size() > 0) {
+				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+				AnalyzeDefinition jarDefinition = null;
+				for(File jarFile : jarFileList) {
+					jarDefinition = new AnalyzeDefinition();
+					metadataDefinition.addWarDefinitionMap(jarFile.getName(), jarDefinition);
+					new JarAnalyzer(policy, converter, executor, jarDefinition, true).analyze(jarFile);
+				}
 			}
 			
 			// 해당 ear 파일로 재 압축한다.

@@ -31,6 +31,7 @@ import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.threadpool.task.ClassFileDependencyCheckTask;
@@ -51,16 +52,18 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	protected Policy policy;
 	protected FileEncodingConverter converter;
 	protected ChameleonThreadPoolExecutor executor;
+	protected AnalyzeDefinition analyzeDefinition;
 	
 	protected List<File> warFileList;
 	protected List<File> jarFileList;
 	protected List<String> libFileList;
 	protected List<String> deleteFileList;
 	
-	public AbstractAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor) {
+	public AbstractAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, AnalyzeDefinition analyzeDefinition) {
 		this.policy = policy;
 		this.converter = converter;
 		this.executor = executor;
+		this.analyzeDefinition = analyzeDefinition;
 	}
 
 	public void analyze(String path) {
@@ -141,7 +144,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 			    } else if (extension.equals("jar")) {
 			    	// nothing to do
 				} else if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
-					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy));
+					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy, analyzeDefinition));
 				} else if (extension.equals("class")) {
 					// classpath 내에 존재하는 class 파일일 경우에만 의존성 검사를 수행한다.
 					if(f.getAbsolutePath().startsWith(ClasspathUtil.lastAddedPath)) {

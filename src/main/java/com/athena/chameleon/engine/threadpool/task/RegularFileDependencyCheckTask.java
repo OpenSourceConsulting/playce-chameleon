@@ -25,15 +25,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 
-import com.athena.chameleon.common.utils.ThreadLocalUtil;
-import com.athena.chameleon.engine.constant.ChameleonConstants;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.policy.Policy;
 
@@ -50,22 +48,23 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 	private File file;
 	private String rootPath;
 	private Policy policy;
+	private AnalyzeDefinition analyzeDefinition;
 	
-	public RegularFileDependencyCheckTask(File file, String rootPath, Policy policy) {
-		this(file.getAbsoluteFile() + " Dependency Check Task", file, rootPath, policy);
+	public RegularFileDependencyCheckTask(File file, String rootPath, Policy policy, AnalyzeDefinition analyzeDefinition) {
+		this(file.getAbsoluteFile() + " Dependency Check Task", file, rootPath, policy, analyzeDefinition);
 	}
 	
-	public RegularFileDependencyCheckTask(String taskName, File file, String rootPath, Policy policy) {
+	public RegularFileDependencyCheckTask(String taskName, File file, String rootPath, Policy policy, AnalyzeDefinition analyzeDefinition) {
 		super(taskName);
 		this.file = file;
 		this.rootPath = rootPath;
 		this.policy = policy;
+		this.analyzeDefinition = analyzeDefinition;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.threadpool.task.BaseTask#taskRun()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void taskRun() {
 		Pattern pattern = policy.getPattern();
@@ -75,6 +74,8 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 			Dependency dependency = new Dependency();
 			dependency.setFileName(file.getAbsolutePath().substring(rootPath.length() + 1));
 			dependency.setExtension(file.getName().substring(file.getName().lastIndexOf(".") + 1));
+			
+			CommonAnalyze commonAnalyze = null;
 		
 			FileReader reader = new FileReader(file);
 			BufferedReader buffer = new BufferedReader(reader);
@@ -82,9 +83,33 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 			String lineStr = null;
 			int lineNum = 1;
 			while ((lineStr = buffer.readLine()) != null) {
+				
+				// Servlet 상속 여부 검사
+				// 추후 패턴으로 지정하여 파일 전체 내용을 검사
+				if (commonAnalyze == null && file.getName().endsWith("java") && lineStr.indexOf("extends HttpServlet") > -1) {
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem(file.getName());
+					commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
+					
+					analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+				}
+				
+				// EJB 관련 상속 여부 검사
+				// 추후 패턴으로 지정하여 파일 전체 내용을 검사
+				if (commonAnalyze == null && file.getName().endsWith("java") && lineStr.indexOf("extends EJBHome") > -1 || 
+						lineStr.indexOf("extends SessionBean") > -1 || lineStr.indexOf("extends EJBObject") > -1) {
+					
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem(file.getName());
+					commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
+					
+					analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+				}
+				
+				//  Weblogic, Jeus 등 상용 WAS 의존성 검사
 			    match = pattern.matcher(lineStr);
 			    if (match.matches()) {
-			    	dependency.addDependencyStrMap(new String("#" + Integer.toString(lineNum)), lineStr);
+			    	dependency.addDependencyStrMap(new String("Line " + Integer.toString(lineNum)), lineStr);
 			    }
 			    
 				lineNum++;
@@ -93,14 +118,13 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 			IOUtils.closeQuietly(buffer);
 			
 			if (dependency.getDependencyStrMap().size() > 0) {
-				List<Dependency> dependencyFileList = (List<Dependency>)ThreadLocalUtil.get(ChameleonConstants.DEPENDENCY_FILE_LIST);
-				
-				if (dependencyFileList == null) {
-					dependencyFileList = new ArrayList<Dependency>();
-					ThreadLocalUtil.add(ChameleonConstants.DEPENDENCY_FILE_LIST, dependencyFileList);
-				}
-	    		
-				dependencyFileList.add(dependency);
+				if (file.getName().endsWith("java")) {
+		    		analyzeDefinition.getJavaDependencyList().add(dependency);
+		    	} else if (file.getName().endsWith("jsp")) {
+		    		analyzeDefinition.getJspDependencyList().add(dependency);
+		    	} else if (file.getName().endsWith("properties")) {
+		    		analyzeDefinition.getPropertyDependencyList().add(dependency);
+		    	}
 			}
 		} catch (FileNotFoundException e) {
 			logger.error("FileNotFoundException has occurred : ", e);

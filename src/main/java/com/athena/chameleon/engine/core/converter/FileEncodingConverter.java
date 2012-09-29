@@ -86,9 +86,10 @@ public class FileEncodingConverter {
 	 * 
 	 * @param fqfn
 	 */
-	public void convert(String fqfn) {
+	public void convert(String fqfn, AnalyzeDefinition analyzeDefinition) {
 		Assert.notNull(fqfn, "fqfn must not be null");
-		convert(new File(fqfn));
+		Assert.notNull(analyzeDefinition, "analyzeDefinition must not be null");
+		convert(new File(fqfn), analyzeDefinition);
 	}//end of convert()
 
 	/**
@@ -97,8 +98,9 @@ public class FileEncodingConverter {
 	 * </pre>
 	 * @param dir
 	 */
-	public void convert(File file) {
+	public void convert(File file, AnalyzeDefinition analyzeDefinition) {
 		Assert.notNull(file, "file must not be null");
+		Assert.notNull(analyzeDefinition, "analyzeDefinition must not be null");
 		Assert.isTrue(file.exists(), file + " does not exist.");
 
 		logger.debug("Convert Target Path or File : [{}]", file.getAbsolutePath());
@@ -113,7 +115,7 @@ public class FileEncodingConverter {
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		analyzeDefinition = new AnalyzeDefinition();
 		analyzeDefinition.setFileName(file.getAbsolutePath());
-		analyzeDefinition.setFileSummary(fileSummaryMap);
+		analyzeDefinition.setFileSummaryMap(fileSummaryMap);
 		
 		convertAll(file);
 		executor.getExecutor().shutdown();	

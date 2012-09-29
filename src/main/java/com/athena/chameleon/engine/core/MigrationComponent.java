@@ -48,6 +48,7 @@ import com.athena.chameleon.engine.core.analyzer.support.ZipAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
@@ -504,7 +505,6 @@ public class MigrationComponent {
 	}
 
 	public void migrate(String sourceFile, String deployFile) {
-		
 		// PDF 출력용 통합 Data Object를 초기화 하고 ThreadLocal에 저장한다.
 		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
 		metadataDefinition.setSourceFile(sourceFile);
@@ -512,25 +512,33 @@ public class MigrationComponent {
 		
 		ThreadLocalUtil.add(ChameleonConstants.PDF_METADATA_DEFINITION, metadataDefinition);
 		
+		AnalyzeDefinition analyzeDefinition = null;
+		
 		String extension = null;
 		
-		if(sourceFile != null) {
-			extension = sourceFile.substring(sourceFile.lastIndexOf(".") + 1);
+		if (sourceFile != null) {
+			analyzeDefinition = new AnalyzeDefinition();
 			
+			extension = sourceFile.substring(sourceFile.lastIndexOf(".") + 1);
 			if (extension.equals("zip")) {
-				new ZipAnalyzer(policy, converter, executor).analyze(sourceFile);
+				metadataDefinition.setZipDefinition(analyzeDefinition);
+				new ZipAnalyzer(policy, converter, executor, analyzeDefinition).analyze(sourceFile);
 			}
 		}
 		
-		if(deployFile != null) {
-			extension = deployFile.substring(deployFile.lastIndexOf(".") + 1);
+		if (deployFile != null) {
+			analyzeDefinition = new AnalyzeDefinition();
 			
+			extension = deployFile.substring(deployFile.lastIndexOf(".") + 1);
 			if (extension.equals("ear")) {
-				new EarAnalyzer(policy, converter, executor).analyze(deployFile);
+				metadataDefinition.setEarDefinition(analyzeDefinition);
+				new EarAnalyzer(policy, converter, executor, analyzeDefinition).analyze(deployFile);
 			} else if (extension.equals("war")) {
-				new WarAnalyzer(policy, converter, executor, false).analyze(deployFile);
+				metadataDefinition.addWarDefinitionMap(new File(deployFile).getName(), analyzeDefinition);
+				new WarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile);
 			} else if (extension.equals("jar")) {
-				new JarAnalyzer(policy, converter, executor, false).analyze(deployFile);
+				metadataDefinition.addJarDefinitionMap(new File(deployFile).getName(), analyzeDefinition);
+				new JarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile);
 			}
 		}
 	}

@@ -36,17 +36,19 @@ public class AnalyzeDefinition {
 	private String fileName;
 	
 	//파일 요약정보
-	private Map<FileType, FileSummary> fileSummary;
+	private Map<FileType, FileSummary> fileSummaryMap;
 	//servlet 상속 정보
 	private List<CommonAnalyze> servletExtendsList;
 	//EJB 상속 정보
 	private List<CommonAnalyze> ejbExtendsList;
 	//java 의존성 정보 
 	private List<Dependency> javaDependencyList;
-	//class 의존성 정보 
-	private List<Dependency> classDependencyList;
 	//jsp 의존성 정보 
 	private List<Dependency> jspDependencyList;
+	//properties 의존성 정보 
+	private List<Dependency> propertyDependencyList;
+	//class 의존성 정보 
+	private List<Dependency> classDependencyList;
 	//jsp 소스 파일 분석
 	private List<CommonAnalyze> jspAnalyzeList;
 	//디스크립터 정보 
@@ -75,129 +77,107 @@ public class AnalyzeDefinition {
 	}
 
 	/**
-	 * @return the fileSummary
+	 * @return the fileSummaryMap
 	 */
-	public Map<FileType, FileSummary> getFileSummary() {
-		return fileSummary;
+	public Map<FileType, FileSummary> getFileSummaryMap() {
+		return fileSummaryMap;
 	}
 
 	/**
-	 * @param fileSummary the fileSummary to set
+	 * @param fileSummaryMap the fileSummaryMap to set
 	 */
-	public void setFileSummary(Map<FileType, FileSummary> fileSummary) {
-		this.fileSummary = fileSummary;
+	public void setFileSummaryMap(Map<FileType, FileSummary> fileSummaryMap) {
+		this.fileSummaryMap = fileSummaryMap;
 	}
 
 	/**
 	 * @return the servletExtendsList
 	 */
 	public List<CommonAnalyze> getServletExtendsList() {
+		if(servletExtendsList == null) {
+			servletExtendsList = new ArrayList<CommonAnalyze>();
+		}
 		return servletExtendsList;
-	}
-
-	/**
-	 * @param servletExtendsList the servletExtendsList to set
-	 */
-	public void setServletExtendsList(List<CommonAnalyze> servletExtendsList) {
-		this.servletExtendsList = servletExtendsList;
 	}
 
 	/**
 	 * @return the ejbExtendsList
 	 */
 	public List<CommonAnalyze> getEjbExtendsList() {
+		if(ejbExtendsList == null) {
+			ejbExtendsList = new ArrayList<CommonAnalyze>();
+		}
 		return ejbExtendsList;
-	}
-
-	/**
-	 * @param ejbExtendsList the ejbExtendsList to set
-	 */
-	public void setEjbExtendsList(List<CommonAnalyze> ejbExtendsList) {
-		this.ejbExtendsList = ejbExtendsList;
 	}
 
 	/**
 	 * @return the javaDependencyList
 	 */
 	public List<Dependency> getJavaDependencyList() {
+		if(javaDependencyList == null) {
+			javaDependencyList = new ArrayList<Dependency>();
+		}
 		return javaDependencyList;
-	}
-
-	/**
-	 * @param javaDependencyList the javaDependencyList to set
-	 */
-	public void setJavaDependencyList(List<Dependency> javaDependencyList) {
-		this.javaDependencyList = javaDependencyList;
-	}
-
-	/**
-	 * @return the classDependencyList
-	 */
-	public List<Dependency> getClassDependencyList() {
-		return classDependencyList;
-	}
-
-	/**
-	 * @param classDependencyList the classDependencyList to set
-	 */
-	public void setClassDependencyList(List<Dependency> classDependencyList) {
-		this.classDependencyList = classDependencyList;
 	}
 
 	/**
 	 * @return the jspDependencyList
 	 */
 	public List<Dependency> getJspDependencyList() {
+		if(jspDependencyList == null) {
+			jspDependencyList = new ArrayList<Dependency>();
+		}
 		return jspDependencyList;
 	}
 
 	/**
-	 * @param jspDependencyList the jspDependencyList to set
+	 * @return the classDependencyList
 	 */
-	public void setJspDependencyList(List<Dependency> jspDependencyList) {
-		this.jspDependencyList = jspDependencyList;
+	public List<Dependency> getClassDependencyList() {
+		if(classDependencyList == null) {
+			classDependencyList = new ArrayList<Dependency>();
+		}
+		return classDependencyList;
+	}
+
+	/**
+	 * @return the propertyDependencyList
+	 */
+	public List<Dependency> getPropertyDependencyList() {
+		if(propertyDependencyList == null) {
+			propertyDependencyList = new ArrayList<Dependency>();
+		}
+		return propertyDependencyList;
 	}
 
 	/**
 	 * @return the jspAnalyzeList
 	 */
 	public List<CommonAnalyze> getJspAnalyzeList() {
+		if(jspAnalyzeList == null) {
+			jspAnalyzeList = new ArrayList<CommonAnalyze>();
+		}
 		return jspAnalyzeList;
-	}
-
-	/**
-	 * @param jspAnalyzeList the jspAnalyzeList to set
-	 */
-	public void setJspAnalyzeList(List<CommonAnalyze> jspAnalyzeList) {
-		this.jspAnalyzeList = jspAnalyzeList;
 	}
 
 	/**
 	 * @return the descripterList
 	 */
 	public List<CommonAnalyze> getDescripterList() {
+		if(descripterList == null) {
+			descripterList = new ArrayList<CommonAnalyze>();
+		}
 		return descripterList;
-	}
-
-	/**
-	 * @param descripterList the descripterList to set
-	 */
-	public void setDescripterList(List<CommonAnalyze> descripterList) {
-		this.descripterList = descripterList;
 	}
 
 	/**
 	 * @return the ejbApplicationList
 	 */
 	public List<CommonAnalyze> getEjbApplicationList() {
+		if(ejbApplicationList == null) {
+			ejbApplicationList = new ArrayList<CommonAnalyze>();
+		}
 		return ejbApplicationList;
-	}
-
-	/**
-	 * @param ejbApplicationList the ejbApplicationList to set
-	 */
-	public void setEjbApplicationList(List<CommonAnalyze> ejbApplicationList) {
-		this.ejbApplicationList = ejbApplicationList;
 	}
 
 	/**
@@ -246,14 +226,10 @@ public class AnalyzeDefinition {
 	 * @return the classesConstList
 	 */
 	public List<ClassAnalyze> getClassesConstList() {
+		if(classesConstList == null) {
+			classesConstList = new ArrayList<ClassAnalyze>();
+		}
 		return classesConstList;
-	}
-
-	/**
-	 * @param classesConstList the classesConstList to set
-	 */
-	public void setClassesConstList(List<ClassAnalyze> classesConstList) {
-		this.classesConstList = classesConstList;
 	}
 
 }

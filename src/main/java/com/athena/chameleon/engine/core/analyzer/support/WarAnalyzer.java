@@ -28,6 +28,7 @@ import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
@@ -52,8 +53,8 @@ public class WarAnalyzer extends AbstractAnalyzer {
 	 * @param converter
 	 * @param executor
 	 */
-	public WarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, boolean embed) {
-		super(policy, converter, executor);
+	public WarAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, AnalyzeDefinition analyzeDefinition, boolean embed) {
+		super(policy, converter, executor, analyzeDefinition);
 		this.embed = embed;
 	}//end of Constructor
 	
@@ -80,7 +81,7 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			}
 
 			// 인코딩 변경
-			converter.convert(new File(tempDir));
+			converter.convert(new File(tempDir), analyzeDefinition);
 			
 			// 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
 			ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
