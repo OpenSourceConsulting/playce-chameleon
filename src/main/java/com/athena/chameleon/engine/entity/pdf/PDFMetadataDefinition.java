@@ -20,8 +20,8 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * PDF 생성을 위한 root pojo object
@@ -96,28 +96,44 @@ public class PDFMetadataDefinition {
 		this.earDefinition = earDefinition;
 	}
 	/**
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getWarDefinitionList().add(newItem);
+     * </pre>
+     * 
 	 * @return the warDefinitionList
 	 */
 	public List<AnalyzeDefinition> getWarDefinitionList() {
+		if(warDefinitionList == null) {
+			warDefinitionList = new ArrayList<AnalyzeDefinition>();
+		}
 		return warDefinitionList;
 	}
 	/**
-	 * @param warDefinitionList the warDefinitionList to set
-	 */
-	public void setWarDefinitionList(List<AnalyzeDefinition> warDefinitionList) {
-		this.warDefinitionList = warDefinitionList;
-	}
-	/**
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getJarDefinitionList().add(newItem);
+     * </pre>
+     * 
 	 * @return the jarDefinitionList
 	 */
 	public List<AnalyzeDefinition> getJarDefinitionList() {
+		if(jarDefinitionList == null) {
+			jarDefinitionList = new ArrayList<AnalyzeDefinition>();
+		}
 		return jarDefinitionList;
 	}
-	/**
-	 * @param jarDefinitionList the jarDefinitionList to set
-	 */
-	public void setJarDefinitionList(List<AnalyzeDefinition> jarDefinitionList) {
-		this.jarDefinitionList = jarDefinitionList;
-	}   
 }
 //end of PDFDefination.java
