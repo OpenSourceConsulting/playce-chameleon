@@ -20,6 +20,7 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,7 +34,9 @@ public class ClassAnalyze {
 	//클래스명
 	private String className;
 	//Super Class
-	private String superClass;
+	private List<String> superClasses;
+	//Interfaces
+	private List<String> interfaces;
 	//Class Modifier
 	private String classModifier;
 	//Final class 여부
@@ -42,6 +45,10 @@ public class ClassAnalyze {
 	private List<String> filedList;
 	//Methods
 	private List<String> methodList;
+	//Constructors
+	private List<String> constructorList;
+	//inner classes
+	private List<ClassAnalyze> classAnalyzeList;
 	
 	/**
 	 * @return the className
@@ -56,16 +63,22 @@ public class ClassAnalyze {
 		this.className = className;
 	}
 	/**
-	 * @return the superClass
+	 * @return the superClasses
 	 */
-	public String getSuperClass() {
-		return superClass;
+	public List<String> getSuperClasses() {
+		if(superClasses == null) {
+			superClasses = new ArrayList<String>();
+		}
+		return superClasses;
 	}
 	/**
-	 * @param superClass the superClass to set
+	 * @return the interfaces
 	 */
-	public void setSuperClass(String superClass) {
-		this.superClass = superClass;
+	public List<String> getInterfaces() {
+		if(interfaces == null) {
+			interfaces = new ArrayList<String>();
+		}
+		return interfaces;
 	}
 	/**
 	 * @return the classModifier
@@ -95,26 +108,38 @@ public class ClassAnalyze {
 	 * @return the filedList
 	 */
 	public List<String> getFiledList() {
+		if(filedList == null) {
+			filedList = new ArrayList<String>();
+		}
 		return filedList;
-	}
-	/**
-	 * @param filedList the filedList to set
-	 */
-	public void setFiledList(List<String> filedList) {
-		this.filedList = filedList;
 	}
 	/**
 	 * @return the methodList
 	 */
 	public List<String> getMethodList() {
+		if(methodList == null) {
+			methodList = new ArrayList<String>();
+		}
 		return methodList;
 	}
 	/**
-	 * @param methodList the methodList to set
+	 * @return the constructorList
 	 */
-	public void setMethodList(List<String> methodList) {
-		this.methodList = methodList;
+	public List<String> getConstructorList() {
+		if(constructorList == null) {
+			constructorList = new ArrayList<String>();
+		}
+		return constructorList;
 	}
-	    
+	/**
+	 * @return the classAnalyzeList
+	 */
+	public List<ClassAnalyze> getClassAnalyzeList() {
+		if(classAnalyzeList == null) {
+			classAnalyzeList = new ArrayList<ClassAnalyze>();
+		}
+		return classAnalyzeList;
+	}
+	
 }
 //end of FileSummary.java

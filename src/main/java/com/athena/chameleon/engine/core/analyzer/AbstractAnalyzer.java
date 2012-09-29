@@ -109,7 +109,6 @@ public abstract class AbstractAnalyzer implements Analyzer {
 			} else {
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
 				
-				
 				/**
 				
 				if(this instanceof ZipAnalyzer) {
@@ -142,44 +141,61 @@ public abstract class AbstractAnalyzer implements Analyzer {
 					
 					warFileList.add(f);
 			    } else if (extension.equals("jar")) {
-			    	// nothing to do
+			    	//=================
+			    	//= Nothing to do = 
+			    	//=================
+			    	
+			    	/**
+			    	 * ejb 관련 jar 파일은 아래와 같이 application.xml 파일의 module 정보로부터 가져온다.
+			    	 * 
+			    	 * &lt;module>
+			    	 *    &lt;ejb>test-ejb.jar&lt;/ejb>
+			    	 * &lt/module>
+			    	 * 
+			    	 * parsing이 완료된 ejb jar 파일은 다음과 같이 설정하여 ThreadLocal에 저장한다.
+			    	 * 
+						if((jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST)) == null) {
+							jarFileList = new ArrayList<File>();
+							ThreadLocalUtil.add(ChameleonConstants.JAR_FILE_LIST, jarFileList);
+						}
+					
+						jarFileList.add(f);
+			    	 * 
+			    	 */
 				} else if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
 					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy, analyzeDefinition));
 				} else if (extension.equals("class")) {
 					// classpath 내에 존재하는 class 파일일 경우에만 의존성 검사를 수행한다.
-					if(f.getAbsolutePath().startsWith(ClasspathUtil.lastAddedPath)) {
-						executor.execute(new ClassFileDependencyCheckTask(f, ClasspathUtil.lastAddedPath, policy));
+					if (f.getAbsolutePath().startsWith(ClasspathUtil.lastAddedPath)) {
+						executor.execute(new ClassFileDependencyCheckTask(f, ClasspathUtil.lastAddedPath, policy, analyzeDefinition));
 					}
 				} else if (extension.equals("xml")) {
-					// [war] WEB-INF/web.xml
+					// [war] WEB-INF/web.xml, WEB-INF/weblogic.xml, WEB-INF/jeus-web-dd.xml
+					// [ear] META-INF/application.xml, META-INF/weblogic-application.xml, META-INF/jeus-application-dd.xml
+					// [jar] META-INF/ejb-jar.xml, META-INF/weblogic-ejb-jar.xml, META-INF/jeus-ejb-dd.xml
+					if (f.getParent().endsWith("WEB-INF")) {
+						if (f.getName().equals("web.xml")) {
 
-					// [war] WEB-INF/weblogic.xml
+						} else if (f.getName().equals("weblogic.xml")) {
 
-					// [war] WEB-INF/jeus-web-dd.xml
-					
-					// [ear] META-INF/application.xml
+						} else if (f.getName().equals("jeus-web-dd.xml")) {
 
-					/**
-			    	// application.xml 분석 시 ejb 관련 jar 파일이 명시된 경우 jarFileList에 추가한다.
-			    	// 프로젝트 소스로 입력된 경우 해당 jar 파일이 존재하지 않을 수 있으며, 이러한 경우 reporting 한다.
-			    	
-					if((jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST)) == null) {
-						jarFileList = new ArrayList<File>();
-						ThreadLocalUtil.add(ChameleonConstants.JAR_FILE_LIST, jarFileList);
+						}
+					} else if (f.getParent().endsWith("META-INF")) {
+						if (f.getName().equals("application.xml")) {
+
+						} else if (f.getName().equals("weblogic-application.xml")) {
+
+						} else if (f.getName().equals("jeus-application-dd.xml")) {
+
+						} else if (f.getName().equals("ejb-jar.xml")) {
+
+						} else if (f.getName().equals("weblogic-ejb-jar.xml")) {
+
+						} else if (f.getName().equals("jeus-ejb-dd.xml")) {
+
+						}
 					}
-					
-					jarFileList.add(f);
-					*/
-					
-					// [ear] META-INF/weblogic-application.xml
-					
-					// [ear] META-INF/jeus-application-dd.xml
-					
-					// [ejb jar] META-INF/ejb-jar.xml
-					
-					// [ejb jar] META-INF/weblogic-ejb-jar.xml
-					
-					// [ejb jar] META-INF/jeus-ejb-dd.xml
 				}
 			}
 		}

@@ -26,20 +26,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.athena.chameleon.common.utils.ThreadLocalUtil;
-import com.athena.chameleon.engine.constant.ChameleonConstants;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.policy.Policy;
-import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
 /**
  * <pre>
@@ -54,27 +52,28 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	private File file;
 	private String rootPath;
 	private Policy policy;
-
+	private AnalyzeDefinition analyzeDefinition;
+	
 	private Pattern pattern;
 	private Matcher match;
 	private Dependency dependency;
 	private String className;
 	
-	public ClassFileDependencyCheckTask(File file, String rootPath, Policy policy) {
-		this(file.getAbsoluteFile() + " Dependency Check Task", file, rootPath, policy);
+	public ClassFileDependencyCheckTask(File file, String rootPath, Policy policy, AnalyzeDefinition analyzeDefinition) {
+		this(file.getAbsoluteFile() + " Dependency Check Task", file, rootPath, policy, analyzeDefinition);
 	}
 	
-	public ClassFileDependencyCheckTask(String taskName, File file, String rootPath, Policy policy) {
+	public ClassFileDependencyCheckTask(String taskName, File file, String rootPath, Policy policy, AnalyzeDefinition analyzeDefinition) {
 		super(taskName);
 		this.file = file;
 		this.rootPath = rootPath;
 		this.policy = policy;
+		this.analyzeDefinition = analyzeDefinition;
 	}
 	
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.threadpool.task.BaseTask#taskRun()
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void taskRun() {
 		className = file.getAbsolutePath()
@@ -87,19 +86,17 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			dependency = new Dependency();
 			dependency.setFileName(clazz.getCanonicalName());
 			dependency.setExtension("class");
+			
+			ClassAnalyze classAnalyze = new ClassAnalyze();
+			classAnalyze.setClassName(clazz.getCanonicalName());
+			classAnalyze.setClassModifier(Modifier.toString(clazz.getModifiers()));
+			classAnalyze.setFinalClass(Modifier.isFinal(clazz.getModifiers()));
 
 			pattern = policy.getPattern();
-			classParse(clazz);
+			classParse(clazz, classAnalyze);
 
 			if (dependency.getDependencyStrMap().size() > 0) {
-				List<Dependency> dependencyFileList = (List<Dependency>)ThreadLocalUtil.get(ChameleonConstants.DEPENDENCY_FILE_LIST);
-				
-				if (dependencyFileList == null) {
-					dependencyFileList = new ArrayList<Dependency>();
-					ThreadLocalUtil.add(ChameleonConstants.DEPENDENCY_FILE_LIST, dependencyFileList);
-				}
-	    		
-				dependencyFileList.add(dependency);
+				analyzeDefinition.getClassDependencyList().add(dependency);
 			}
 		} catch (ClassNotFoundException e) {
 			logger.error("ClassNotFoundException has occurred : ", e);
@@ -113,13 +110,16 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 * 입력된 클래스에 대한 의존성 검사를 수행하는 메소드
 	 * </pre>
 	 * @param clazz
+	 * @param classAnalyze
 	 */
-	private void classParse(Class<?> clazz) {
-		// 인터페이스에 대한 의존성 검사
-		interfaceParse(clazz.getGenericInterfaces());
+	private void classParse(Class<?> clazz, ClassAnalyze classAnalyze) {
+		className = clazz.getCanonicalName();
 		
 		// 인터페이스에 대한 의존성 검사
-		superClassParse(getAncestor(clazz, new ArrayList<Class<?>>()));
+		interfaceParse(clazz.getGenericInterfaces(), classAnalyze);
+		
+		// 인터페이스에 대한 의존성 검사
+		superClassParse(getAncestor(clazz, new ArrayList<Class<?>>()), classAnalyze);
 		
 		// 애노테이션에 대한 의존성 검사
 		annotationParse(clazz.getDeclaredAnnotations());
@@ -128,18 +128,26 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		packageParse(clazz.getPackage());
 
 		// 생성자에 대한 의존성 검사
-		memberParse(clazz.getDeclaredConstructors());
+		memberParse(clazz.getDeclaredConstructors(), classAnalyze);
 		
 		// 변수에 대한 의존성 검사
-		memberParse(clazz.getDeclaredFields());
+		memberParse(clazz.getDeclaredFields(), classAnalyze);
 		
 		// 메소드에 대한 의존성 검사
-		memberParse(clazz.getDeclaredMethods());
+		memberParse(clazz.getDeclaredMethods(), classAnalyze);
 
 		// 이너클래스에 대한 의존성 검사
 		Class<?>[] clss = clazz.getDeclaredClasses();
+		ClassAnalyze alalyze = null;
 		for (Class<?> cls : clss) {
-			classParse(cls);
+			alalyze = new ClassAnalyze();
+			alalyze.setClassName(cls.getCanonicalName());
+			alalyze.setClassModifier(Modifier.toString(cls.getModifiers()));
+			alalyze.setFinalClass(Modifier.isFinal(cls.getModifiers()));
+			
+			classParse(cls, alalyze);
+			
+			classAnalyze.getClassAnalyzeList().add(alalyze);
 		}
 	}//end of classParse()
 	
@@ -148,15 +156,25 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 * 인터페이스에 대한 의존성 검사를 수행하는 메소드
 	 * </pre>
 	 * @param interfaces
+	 * @param classAnalyze
 	 */
-	private void interfaceParse(Type[] interfaces) {
+	private void interfaceParse(Type[] interfaces, ClassAnalyze classAnalyze) {
 		String value = null;
 		if (interfaces.length != 0) {
 			for (Type intf : interfaces) {
 				value = intf.toString();
+				classAnalyze.getInterfaces().add(value);
+
+				// EJB 상속 여부
+				if(value.indexOf("javax.ejb.SessionBean") > -1) {
+					CommonAnalyze commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+					commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+					
+					analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+				}
 				
 				match = pattern.matcher(value);
-				
 				if(match.matches()) {
 					addDependencyStrMap("Interface", value);
 				}					
@@ -169,14 +187,33 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 * 부모 클래스에 대한 의존성 검사를 수행하는 메소드
 	 * </pre>
 	 * @param ancestorList
+	 * @param classAnalyze
 	 */
-	private void superClassParse(List<Class<?>> ancestorList) {
+	private void superClassParse(List<Class<?>> ancestorList, ClassAnalyze classAnalyze) {
 		String value = null;
 		for (Class<?> clazz : ancestorList) {
 			value = clazz.getCanonicalName();
+			classAnalyze.getSuperClasses().add(value);
+			
+			// HttpServlet 상속 여부
+			if(value.indexOf("javax.ejb.SessionBean") > -1) {
+				CommonAnalyze commonAnalyze = new CommonAnalyze();
+				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+				
+				analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+			}
+			
+			// EJB 상속 여부
+			if(value.indexOf("javax.ejb.EJBHome") > -1 || value.indexOf("javax.ejb.EJBObject") > -1) {
+				CommonAnalyze commonAnalyze = new CommonAnalyze();
+				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+				
+				analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+			}
 			
 			match = pattern.matcher(value);
-			
 			if(match.matches()) {
 				addDependencyStrMap("SuperClass", value);
 			}
@@ -195,11 +232,19 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			for (Annotation annotation : annotations) {
 				value = annotation.toString();
 				
-				match = pattern.matcher(value);
+				// Annotation을 이용한 EJB 상속 여부
+				if(value.indexOf("@javax.ejb.Stateless") > -1 || value.indexOf("@javax.ejb.Remote") > -1) {
+					CommonAnalyze commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+					commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+					
+					analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+				}
 				
+				match = pattern.matcher(value);
 				if(match.matches()) {
 					addDependencyStrMap("Annotation", value);
-				}	
+				}
 			}
 		}
 	}//end of annotationParse()
@@ -213,8 +258,8 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	private void packageParse(Package pack) {
 		if(pack != null) {
 			String value = pack.getName();
-			match = pattern.matcher(value);
 			
+			match = pattern.matcher(value);
 			if(match.matches()) {
 				addDependencyStrMap("Package", value);
 			}		
@@ -226,28 +271,32 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 * Field, Constructor, Method에 대한 의존성 검사를 수행하는 메소드
 	 * </pre>
 	 * @param members
+	 * @param classAnalyze
 	 */
-	private void memberParse(Member[] members) {
+	private void memberParse(Member[] members, ClassAnalyze classAnalyze) {
 		String value = null;
 		for (Member member : members) {
 			if (member instanceof Field) {
 				value = ((Field) member).toGenericString();
-				match = pattern.matcher(value);
+				classAnalyze.getFiledList().add(value);
 				
+				match = pattern.matcher(value);
 				if(match.matches()) {
 					addDependencyStrMap("Field", value);
 				}
 			} else if (member instanceof Constructor) {
 				value = ((Constructor<?>) member).toGenericString();
-				match = pattern.matcher(value);
+				classAnalyze.getConstructorList().add(value);
 				
+				match = pattern.matcher(value);
 				if(match.matches()) {
 					addDependencyStrMap("Constructor", value);
 				}
 			} else if (member instanceof Method) {
 				value = ((Method) member).toGenericString();
-				match = pattern.matcher(value);
+				classAnalyze.getMethodList().add(value);
 				
+				match = pattern.matcher(value);
 				if(match.matches()) {
 					addDependencyStrMap("Method", value);
 				}
@@ -277,19 +326,5 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		String key = "#" + (dependency.getDependencyStrMap().size() + 1) + " : " + type;
 		dependency.addDependencyStrMap(key, value);
 	}//end of addDependencyStrMap()
-	
-	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/context-*.xml");
-		
-		Policy policy = (Policy)context.getBean("policy");
-		ChameleonThreadPoolExecutor executor = (ChameleonThreadPoolExecutor)context.getBean("taskExecutor");
-		
-		File file = new File("/Volumes/STORAGE/development/chameleon/workspace/athena-chameleon/target/classes/com/athena/chameleon/engine/core/analyzer/AbstractAnalyzer.class");
-		
-		ClassFileDependencyCheckTask task = new ClassFileDependencyCheckTask(file, "/Volumes/STORAGE/development/chameleon/workspace/athena-chameleon/target/classes", policy);
-		
-		executor.execute(task);
-		executor.getExecutor().shutdown();
-	}
 
 }//end of ClassFileDependencyCheckTask.java

@@ -97,7 +97,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 				// EJB 관련 상속 여부 검사
 				// 추후 패턴으로 지정하여 파일 전체 내용을 검사
 				if (commonAnalyze == null && file.getName().endsWith("java") && lineStr.indexOf("extends EJBHome") > -1 || 
-						lineStr.indexOf("extends SessionBean") > -1 || lineStr.indexOf("extends EJBObject") > -1) {
+						lineStr.indexOf("extends EJBObject") > -1 || lineStr.indexOf("implements SessionBean") > -1) {
 					
 					commonAnalyze = new CommonAnalyze();
 					commonAnalyze.setItem(file.getName());
