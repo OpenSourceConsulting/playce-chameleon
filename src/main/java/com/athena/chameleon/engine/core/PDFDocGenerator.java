@@ -9,18 +9,22 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 
+import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.springframework.stereotype.Component;
 
 import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.FileSummary;
+import com.athena.chameleon.engine.entity.pdf.FileType;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
 import com.athena.chameleon.web.upload.vo.Upload;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
@@ -57,8 +61,11 @@ public class PDFDocGenerator {
 	 * @param filePath PDF 파일이 생설될 File Path
 	 *  
 	 */
-	public static void createPDF(String filePath, Upload upload) throws Exception{
+	public static void createPDF(String filePath, Upload upload, PDFMetadataDefinition data) throws Exception{
 
+		if(data == null) 
+			return;
+		
         Document pdf = new Document(PageSize.A4, 50, 50, 70, 65); 
         PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(filePath));
         writer.setLinearPageMode();
@@ -67,23 +74,43 @@ public class PDFDocGenerator {
         
         pdf.open();
         int cNum = 1;
-        Chapter chapter;
         
         SAXBuilder builder = new SAXBuilder();
         File listXml = new File(PDFDocGenerator.class.getResource("/xml/chapter.xml").getFile());
         org.jdom2.Document listDoc = builder.build(listXml);
         
-        for(org.jdom2.Element chapterE : listDoc.getRootElement().getChildren()) {
-            File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
-            org.jdom2.Document chapterDoc = builder.build(chapterXml);
-            
-            org.jdom2.Element root = chapterDoc.getRootElement();
-            chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
-                
-            PDFWriterUtil.setElement(chapter, root);
-            
-            pdf.add(chapter);
-            cNum++;
+        for(Element chapterE : listDoc.getRootElement().getChildren()) {
+        	
+        	if(chapterE.getAttributeValue("option") != null) {
+        		
+        		String option = chapterE.getAttributeValue("option");
+        		addChapterForZip(writer, chapterE, cNum, pdf, builder, data.getZipDefinition());
+    			
+        		if(option.equals("zip") && data.getZipDefinition() != null) {
+        			
+        			addChapterForZip(writer, chapterE, cNum, pdf, builder, data.getZipDefinition());
+        			cNum++;
+        			
+        		} else if(option.equals("deploy") && data.getDeployFile() != null) {
+        			
+        			addChapter(writer, chapterE, cNum, pdf, builder);
+        			cNum++;
+        		} else if(option.equals("ear") && data.getEarDefinition() != null) {
+        			
+        		} else if(option.equals("war") && data.getEarDefinition() == null && data.getWarDefinitionMap() != null) {
+        			
+        		} else if(option.equals("jar") && data.getEarDefinition() == null && data.getJarDefinitionMap() != null) {
+        			
+        		} else if(option.equals(upload.getAfterWas())) {
+        			
+        			addChapter(writer, chapterE, cNum, pdf, builder);
+        			cNum++;
+        		}
+        		
+        	} else {
+        		addChapter(writer, chapterE, cNum, pdf, builder);
+        		cNum++;
+        	}
         }
 
         setLastPageInfo(pdf, writer, cNum);
@@ -92,6 +119,90 @@ public class PDFDocGenerator {
         pdf.close();
 	}
 	
+	public static void addChapterForZip(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder, AnalyzeDefinition data) throws Exception {
+		
+		File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
+		org.jdom2.Document chapterDoc = builder.build(chapterXml);
+        
+        Element root = chapterDoc.getRootElement();
+        
+        for(Element e : root.getChildren()) {
+        	if(e.getName().equals("section")) {
+        		
+        		Element[] childs = new Element[2];
+                for(Element e1 : e.getChildren()) {
+        			if(e1.getName().equals("source_file_summary")) {
+        				childs = setFileSummary(data);
+        			}
+        		}
+				
+				if(childs[0] != null)
+					e.addContent(childs[0]);
+        		
+				if(childs[1] != null)
+					e.addContent(childs[1]);
+					
+        	}
+        }
+
+        Chapter chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
+            
+        PDFWriterUtil.setElement(writer, chapter, root);
+        
+        pdf.add(chapter);
+	}
+
+	public static void addChapter(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder) throws Exception {
+		
+		File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
+		org.jdom2.Document chapterDoc = builder.build(chapterXml);
+        
+        Element root = chapterDoc.getRootElement();
+        Chapter chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
+            
+        PDFWriterUtil.setElement(writer, chapter, root);
+        
+        pdf.add(chapter);
+	}
+	
+	public static Element[] setFileSummary(AnalyzeDefinition data) {
+
+		Element[] childs = new Element[2];
+		childs[0] = new Element("table");
+		childs[1] = new Element("chart");
+		childs[1].setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
+		
+		Element childE1 = new Element("header");
+		Element childE2 = new Element("row");
+		Element childE3;
+		
+		childs[0].setAttribute("size", "4");
+		
+		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header1")));
+		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header2")));
+		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header3")));
+		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header4")));
+	
+		Iterator iterator = data.getFileSummaryMap().entrySet().iterator();
+		
+        while (iterator.hasNext()) {
+            Entry entry = (Entry)iterator.next();
+            childE2.addContent(new Element("col").setText(((FileType)entry.getKey()).toString()));
+            childE2.addContent(new Element("col").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
+            childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getSourceEncoding()));
+            childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getTargetEncoding()));
+			
+            childE3 = new Element("data");
+			childE3.addContent(new Element("column").setText(((FileType)entry.getKey()).toString()));
+			childE3.addContent(new Element("value").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
+			childs[1].addContent(childE3);
+        }
+		
+        childs[0].addContent(childE1);
+        childs[0].addContent(childE2);
+		
+		return childs;
+	}
 	/**
 	 * 
 	 * PDF Title Page 구성
@@ -104,7 +215,7 @@ public class PDFDocGenerator {
 	    Font fnTitle = new Font(bfKorean, 20, Font.BOLD);
 	    Font fnLabel = new Font(bfKorean, 11, Font.BOLD);
 	    Font fnText  = new Font(bfKorean, 11);
-	    LineSeparator UNDERLINE = new LineSeparator(1, 80, null, Element.ALIGN_CENTER, -5);
+	    LineSeparator UNDERLINE = new LineSeparator(1, 80, null, com.itextpdf.text.Element.ALIGN_CENTER, -5);
 	    doc.newPage();
 	    doc.add(Chunk.NEWLINE); 
 
@@ -112,12 +223,12 @@ public class PDFDocGenerator {
         
 	    int toc = writer.getPageNumber();
         Image img = Image.getInstance(PDFDocGenerator.class.getResource("/image/title.gif"));
-        img.setAlignment(Element.ALIGN_CENTER);
+        img.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
 	    img.scalePercent(80, 80);
 	    doc.add(img);
 	    
 	    Paragraph titlePh = new Paragraph(MessageUtil.getMessage("pdf.message.main.title"), fnTitle);
-        titlePh.setAlignment(Element.ALIGN_CENTER);
+        titlePh.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
         titlePh.setSpacingBefore(50);
         titlePh.setSpacingAfter(30);
 	    doc.add(titlePh);
@@ -150,7 +261,7 @@ public class PDFDocGenerator {
 
         PdfPTable t2 = new PdfPTable(2);
         t2.getDefaultCell().setFixedHeight(28);
-        t2.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+        t2.getDefaultCell().setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
         
         t2.getDefaultCell().setBackgroundColor(new BaseColor(217, 217, 217));
         t2.addCell(new Phrase(MessageUtil.getMessage("pdf.message.main.label.owner"), fnLabel));

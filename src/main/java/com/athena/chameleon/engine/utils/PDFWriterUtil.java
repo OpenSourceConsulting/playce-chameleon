@@ -20,12 +20,27 @@
  */
 package com.athena.chameleon.engine.utils;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
 import org.jdom2.Element;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartRenderingInfo;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.entity.StandardEntityCollection;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.athena.chameleon.engine.core.PDFDocGenerator;
+import com.itextpdf.awt.PdfGraphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
+import javax.imageio.ImageIO;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
@@ -35,12 +50,16 @@ import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfAction;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * PDF Writer 유틸 클래스
@@ -192,10 +211,10 @@ public class PDFWriterUtil {
      * @return Section
      * @throws Exception
      */
-    public static Section setSectionElement(Section parent, Element e) throws Exception {
+    public static Section setSectionElement(PdfWriter writer, Section parent, Element e) throws Exception {
     	
     	Section section = getSection(parent, e.getAttributeValue("title"));
-    	return setElement(section, e);
+    	return setElement(writer, section, e);
         
     }
     
@@ -207,13 +226,13 @@ public class PDFWriterUtil {
      * @return Section
      * @throws Exception
      */
-    public static Section setElement(Section section, Element e) throws Exception {
+    public static Section setElement(PdfWriter writer, Section section, Element e) throws Exception {
 
     	
         for(org.jdom2.Element e1 : e.getChildren()) {
             
             if(e1.getName().equals("section")) {
-                setSectionElement(section, e1);
+                setSectionElement(writer, section, e1);
                 
             } else if(e1.getName().equals("text")) {
                 
@@ -246,6 +265,8 @@ public class PDFWriterUtil {
             	
             } else if(e1.getName().equals("img")) {
                 setImage(section, e1);
+            } else if(e1.getName().equals("chart")) {
+            	setChart(writer, section, e1);
             }
         }
         
@@ -427,6 +448,44 @@ public class PDFWriterUtil {
         }
         
         section.add(img);
+    }
+
+    /**
+     * 
+     * chart 구성
+     *
+     * @param section chart 가 들어갈 section 객체
+     * @param e chart 정보가 들어있는 element
+     * @throws Exception
+     */
+    public static void setChart(PdfWriter writer, Section section, Element e) throws Exception {
+    	
+    	DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    	for(Element e1 : e.getChildren()) {
+    		dataset.setValue(
+                    Integer.parseInt(e1.getChild("value").getText()),
+                    e.getAttributeValue("title"),
+                    e1.getChild("column").getText());
+        }
+    	
+    	
+
+
+
+    	JFreeChart chart = ChartFactory.createBarChart3D(e.getAttributeValue("title"),  "",
+                "", dataset, PlotOrientation.VERTICAL, false,
+                true, false);
+    	
+    	PdfContentByte cb = writer.getDirectContent();
+    	PdfTemplate bar = cb.createTemplate(300, 150);
+        Graphics2D g2d2 = new PdfGraphics2D(bar, 300, 150);
+        Rectangle2D r2d2 = new Rectangle2D.Double(0, 0, 300, 150);
+        chart.draw(g2d2, r2d2);
+        g2d2.dispose();
+        
+        Image image = Image.getInstance(bar);
+        image.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+        section.add(image); 
     }
     
     /**

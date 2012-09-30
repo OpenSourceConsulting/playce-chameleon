@@ -24,9 +24,6 @@
 		<section title="com.tmax.jeus.* 의존성 클래스">
 			<pattern_jeus/>
 		</section>
-		<section title="com.ibm.websphere.* 의존성 클래스">
-			<pattern_websphere/>
-		</section>
 	</section>
 	<section title="JSP 소스 파일 분석 결과">
 		<text>본 [XXX] 프로젝트의 JSP 파일은 총 384개를 가지고 있으며, 각 JSP의 page directive는 다음과 같습니다.

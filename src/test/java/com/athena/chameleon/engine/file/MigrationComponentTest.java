@@ -26,7 +26,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +47,10 @@ import com.athena.chameleon.engine.core.PDFCommonEventHelper;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
+import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.FileSummary;
+import com.athena.chameleon.engine.entity.pdf.FileType;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.utils.FileUtil;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
 import com.athena.chameleon.web.upload.vo.Upload;
@@ -125,7 +131,26 @@ public class MigrationComponentTest {
         upload.setPerson("홍길동");
         upload.setOrgRole("개발팀");
         
-        PDFDocGenerator.createPDF(unzipDirPath+File.separator+"test.pdf", upload);
+        PDFMetadataDefinition data = new PDFMetadataDefinition();
+        AnalyzeDefinition zip = new AnalyzeDefinition();
+        FileSummary zipSummary = new FileSummary();
+        zipSummary.setFileCount(10);
+        zipSummary.setSourceEncoding("EUC-KR");
+        zipSummary.setTargetEncoding("UTF-8");
+        
+        Map<FileType, FileSummary> fileSummaryMap = new HashMap<FileType, FileSummary>();
+        fileSummaryMap.put(FileType.JAVA, zipSummary);
+        
+        zipSummary = new FileSummary();
+        zipSummary.setFileCount(20);
+        zipSummary.setSourceEncoding("EUC-KR");
+        zipSummary.setTargetEncoding("UTF-8");
+        
+        fileSummaryMap.put(FileType.JSP, zipSummary);
+        zip.setFileSummaryMap(fileSummaryMap);
+        data.setZipDefinition(zip);
+        
+        PDFDocGenerator.createPDF(unzipDirPath+File.separator+"test.pdf", upload, data);
         
     }
     
