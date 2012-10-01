@@ -39,8 +39,6 @@ public class CommonAnalyze {
     private String contents;
     //비고
     private String note;
-    //directive
-    private String directive;
     //파일갯수
     private int fileCount;
     //Xml Object
@@ -95,18 +93,6 @@ public class CommonAnalyze {
 	 */
 	public void setLocation(String location) {
 		this.location = location;
-	}
-	/**
-	 * @return the directive
-	 */
-	public String getDirective() {
-		return directive;
-	}
-	/**
-	 * @param directive the directive to set
-	 */
-	public void setDirective(String directive) {
-		this.directive = directive;
 	}
 	/**
 	 * @return the fileCount
