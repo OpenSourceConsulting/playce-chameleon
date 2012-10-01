@@ -20,6 +20,7 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -122,6 +123,9 @@ public class CommonAnalyze {
 	 * @return the xmlDataList
 	 */
 	public List<CommonAnalyze> getXmlDataList() {
+		if(xmlDataList == null)
+			return new ArrayList<CommonAnalyze>();
+		
 		return xmlDataList;
 	}
 	/**

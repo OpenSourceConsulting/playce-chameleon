@@ -60,6 +60,11 @@ public class AnalyzeDefinition {
 	private List<String> libraryList;
 	//삭제 라이브러리 목록 정보
 	private List<String> deleteLibraryList;
+	//class 파일 갯수
+	private int classFileCount;
+	//class 디렉토리 갯수
+	private int classDirCount;
+	
 	//classes 구성 정보
     private List<ClassAnalyze> classesConstList;
 
@@ -246,6 +251,34 @@ public class AnalyzeDefinition {
 			classesConstList = new ArrayList<ClassAnalyze>();
 		}
 		return classesConstList;
+	}
+
+	/**
+	 * @return the classFileCount
+	 */
+	public int getClassFileCount() {
+		return classFileCount;
+	}
+
+	/**
+	 * @param classFileCount the classFileCount to set
+	 */
+	public void setClassFileCount(int classFileCount) {
+		this.classFileCount = classFileCount;
+	}
+
+	/**
+	 * @return the classDirCount
+	 */
+	public int getClassDirCount() {
+		return classDirCount;
+	}
+
+	/**
+	 * @param classDirCount the classDirCount to set
+	 */
+	public void setClassDirCount(int classDirCount) {
+		this.classDirCount = classDirCount;
 	}
 
 }

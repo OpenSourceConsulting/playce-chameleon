@@ -6,6 +6,7 @@
 	<url option="deploy">/xml/deploy_application.xml</url>
 	<url option="ear">/xml/ear_application.xml</url>  
 	<url option="war">/xml/war_application.xml</url>
+	<url option="jar">/xml/jar_application.xml</url>
 	<url>/xml/migration_advice.xml</url>
 	<url option="JBoss">/xml/JBoss.xml</url>
 	<url option="Tomcat">/xml/tomcat.xml</url>

@@ -140,6 +140,47 @@ public class ClassAnalyze {
 		}
 		return classAnalyzeList;
 	}
-	
+	/**
+	 * @return the superClasses
+	 */
+	public String getSuperClassesStr() {
+		if(getSuperClasses().size() == 0) {
+			return "";
+		} else {
+			String str = "";
+			for(String s : getSuperClasses())
+				str += s+"\n";
+			
+			return str;
+		}
+	}
+	/**
+	 * @return the filedList
+	 */
+	public String getFiledListStr() {
+		if(getFiledList().size() == 0) {
+			return "";
+		} else {
+			String str = "";
+			for(String s : getFiledList())
+				str += s+"\n";
+			
+			return str;
+		}
+	}
+	/**
+	 * @return the methodList
+	 */
+	public String getMethodListStr() {
+		if(getMethodList().size() == 0) {
+			return "";
+		} else {
+			String str = "";
+			for(String s : getMethodList())
+				str += s+"\n";
+			
+			return str;
+		}
+	}
 }
 //end of FileSummary.java

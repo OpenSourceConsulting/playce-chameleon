@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
@@ -100,6 +101,9 @@ public class PDFDocGenerator {
         			cNum++;
 
         		} else if(option.equals("ear") && data.getEarDefinition() != null) {
+
+        			addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data, upload);
+        			cNum++;
         			
         		} else if(option.equals("war") && data.getEarDefinition() == null && data.getWarDefinitionMap() != null) {
         			Iterator iterator = data.getWarDefinitionMap().entrySet().iterator();
@@ -111,6 +115,13 @@ public class PDFDocGenerator {
         	        }
         			
         		} else if(option.equals("jar") && data.getEarDefinition() == null && data.getJarDefinitionMap() != null) {
+        			Iterator iterator = data.getJarDefinitionMap().entrySet().iterator();
+        			
+        			if (iterator.hasNext()) {
+        	            Entry entry = (Entry)iterator.next();
+        	            addChapterForDynamic(writer, chapterE, cNum, pdf, builder, (AnalyzeDefinition)entry.getValue(), upload);
+            			cNum++;
+        	        }
         			
         		} else if(option.equals(upload.getAfterWas())) {
         			
@@ -145,34 +156,81 @@ public class PDFDocGenerator {
         
         pdf.add(chapter);
 	}
+
+	public static void addChapterForDynamic(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder, PDFMetadataDefinition data, Upload upload) throws Exception {
+		
+		File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
+		org.jdom2.Document chapterDoc = builder.build(chapterXml);
+        
+        Element root = chapterDoc.getRootElement();
+        
+        setDynamicSection(root, data, upload);
+        
+        Chapter chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
+            
+        PDFWriterUtil.setElement(writer, chapter, root);
+        
+        pdf.add(chapter);
+	}
 	
+	public static void setDynamicSection(Element root, PDFMetadataDefinition rootData, Upload upload) throws Exception {
+		
+		List<Element> childs = new ArrayList<Element>();
+		AnalyzeDefinition data = rootData.getEarDefinition();
+		
+		setDynamicSection(root, data, upload);
+		
+        for(Element e : root.getChildren()) {
+        	if(e.getName().equals("child_deploy")) 
+				childs = setChildDeployData(rootData, upload);
+		}
+		
+        for(Element child : childs) {
+        	root.addContent(child);
+        }
+	}
+
 	public static void setDynamicSection(Element root, AnalyzeDefinition data, Upload upload) {
 		
 		List<Element> childs = new ArrayList<Element>();
         for(Element e : root.getChildren()) {
-        	if(e.getName().equals("section")) {
+        	if(e.getName().equals("section")) 
         		setDynamicSection(e, data, upload);
-			} else if(e.getName().equals("file_summary")) {
+			 else if(e.getName().equals("file_summary")) 
 				childs = setFileSummary(data);
-			} else if(e.getName().equals("pattern_servlet")) {
+			 else if(e.getName().equals("pattern_servlet")) 
 				childs = setPatternData(data, "servlet");
-			} else if(e.getName().equals("pattern_ejb")) {
+			 else if(e.getName().equals("pattern_ejb")) 
 				childs = setPatternData(data, "ejb");
-			} else if(e.getName().equals("dependency_java")) {
+			 else if(e.getName().equals("dependency_java")) 
 				childs = setDependencyData(data, "java");
-			}  else if(e.getName().equals("dependency_jsp")) {
+			  else if(e.getName().equals("dependency_jsp")) 
 				childs = setDependencyData(data, "jsp");
-			}  else if(e.getName().equals("dependency_property")) {
+			  else if(e.getName().equals("dependency_property")) 
 				childs = setDependencyData(data, "property");
-			}  else if(e.getName().equals("dependency_class")) {
+			  else if(e.getName().equals("dependency_class")) 
 				childs = setDependencyData(data, "class");
-			} else if(e.getName().equals("jsp_analyze_result")) {
+			 else if(e.getName().equals("jsp_analyze_result")) 
 				childs = setJspAnalyzeData(data, upload);
-			} else if(e.getName().equals("deploy_application_text")) {
+			 else if(e.getName().equals("deploy_application_text")) 
 				childs = setDeployApplicationText(data, upload);
-			} else if(e.getName().equals("web_xml_info")) {
-				childs = setWebXmlData(data, upload);
-			}
+			 else if(e.getName().equals("web_xml_info")) 
+				childs = setXmlData(data, upload);
+			 else if(e.getName().equals("jar_xml_info")) 
+				childs = setXmlData(data, upload);
+			 else if(e.getName().equals("lib_list")) 
+				childs = setLibData(data, upload, "");
+			 else if(e.getName().equals("delete_lib_list")) 
+				childs = setLibData(data, upload, "D");
+			 else if(e.getName().equals("class_info")) 
+				childs = setClassData(data, upload);
+			 else if(e.getName().equals("application_list")) 
+				childs = setApplicationListData(data, upload);
+			 else if(e.getName().equals("application_info")) 
+				childs = setApplicationData(data, upload);
+			 else if(e.getName().equals("ejb_application_list")) 
+				childs = setEjbApplicationData(data, upload);
+			 
 		}
 		
         for(Element child : childs) {
@@ -357,15 +415,12 @@ public class PDFDocGenerator {
 		
 	}
 
-	public static List<Element> setWebXmlData(AnalyzeDefinition data, Upload upload) {
+	public static List<Element> setXmlData(AnalyzeDefinition data, Upload upload) {
 
 		List<Element> childs = new ArrayList<Element>();
-		Map<String, Integer> dataMap = data.getJspDirectiveMap();
+		List<CommonAnalyze> dataList = data.getDescripterList();
 		
-		if(dataMap != null) {
-			int jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
-			
-			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
+		if(dataList.size() > 0) {
 			Element child = new Element("table");
 			Element childE1 = new Element("header");
 			Element childE2 = new Element("row");
@@ -373,20 +428,16 @@ public class PDFDocGenerator {
 			child.setAttribute("size", "2");
 			
 			Element col = new Element("col");
-			col.setAttribute("width", "330");
-			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header1")));
+			col.setAttribute("width", "150");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
 			
 			col = new Element("col");
-			col.setAttribute("width", "70");
-			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header2")));
+			col.setAttribute("width", "300");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
 		
-			Iterator iterator = dataMap.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Entry entry = (Entry)iterator.next();
-	            
-				childE2.addContent(new Element("col").setText(String.valueOf(entry.getKey())));
-	            childE2.addContent(new Element("col").setText(String.valueOf(entry.getValue())));
-	            
+			for(CommonAnalyze comm : dataList) {
+				childE2.addContent(new Element("col").setText(comm.getItem()));
+	            childE2.addContent(new Element("col").setText(comm.getContents()));
 	        }
 			child.addContent(childE1);
 	        child.addContent(childE2);
@@ -397,6 +448,235 @@ public class PDFDocGenerator {
 		return childs;
 	}
 
+	public static List<Element> setLibData(AnalyzeDefinition data, Upload upload, String type) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<String> dataList;
+		if(type.equals("D"))
+			dataList = data.getLibraryList();
+		else
+			dataList = data.getDeleteLibraryList();
+		
+		if(dataList.size() > 0) {
+			Element child = new Element("table");
+			Element childE1 = new Element("header");
+			Element childE2 = new Element("row");
+			
+			child.setAttribute("size", "1");
+			
+			Element col = new Element("col");
+			col.setAttribute("width", "200");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
+			
+			for(String text : dataList) {
+				childE2.addContent(new Element("col").setText(text));
+	        }
+			child.addContent(childE1);
+	        child.addContent(childE2);
+			
+			childs.add(child);
+		}
+		
+		return childs;
+	}
+
+	public static List<Element> setClassData(AnalyzeDefinition data, Upload upload) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<ClassAnalyze> dataList = data.getClassesConstList();
+		
+		if(dataList.size() > 0) {
+			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.class.text", String.valueOf(data.getClassFileCount()), String.valueOf(data.getClassDirCount()))));
+			
+			Element child, childE1, childE2, col, text;
+			for (ClassAnalyze comm : dataList) {
+				
+				text = new Element("text");
+				text.setText(MessageUtil.getMessage("pdf.message.chapter.class_info.label") + comm.getClassName());
+				text.setAttribute("padding", "23");
+				childs.add(text);
+				
+				child = new Element("table");
+				childE1 = new Element("header");
+				childE2 = new Element("row");
+				
+				child.setAttribute("size", "2");
+				
+				col = new Element("col");
+				col.setAttribute("width", "100");
+				childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header4")));
+				
+				col = new Element("col");
+				col.setAttribute("width", "300");
+				childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
+			
+				childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header1")));
+				childE2.addContent(new Element("col").setText(comm.getSuperClassesStr()));
+				childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header2")));
+				childE2.addContent(new Element("col").setText(comm.getClassModifier()));
+				childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header3")));
+				childE2.addContent(new Element("col").setText(String.valueOf(comm.isFinalClass())));
+				childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header4")));
+				childE2.addContent(new Element("col").setText(comm.getFiledListStr()));
+				childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header5")));
+				childE2.addContent(new Element("col").setText(comm.getMethodListStr()));
+	            
+	            child.addContent(childE1);
+		        child.addContent(childE2);
+				
+				childs.add(child);    
+	        }
+		}
+		
+		return childs;
+	}
+
+	public static List<Element> setApplicationListData(AnalyzeDefinition data, Upload upload) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<CommonAnalyze> dataList = data.getDescripterList();
+		
+		if(dataList.size() > 0) {
+			Element child = new Element("table");
+			Element childE1 = new Element("header");
+			Element childE2 = new Element("row");
+			
+			child.setAttribute("size", "2");
+			
+			Element col = new Element("col");
+			col.setAttribute("width", "150");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
+			
+			col = new Element("col");
+			col.setAttribute("width", "300");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.pattern.table.header2")));
+			
+			for(CommonAnalyze comm : dataList) {
+				childE2.addContent(new Element("col").setText(comm.getItem()));
+				childE2.addContent(new Element("col").setText(comm.getLocation()));
+	        }
+			child.addContent(childE1);
+	        child.addContent(childE2);
+			
+			childs.add(child);
+		}
+		
+		return childs;
+	}
+
+	public static List<Element> setApplicationData(AnalyzeDefinition data, Upload upload) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<CommonAnalyze> dataList = data.getDescripterList();
+		
+		if(dataList.size() > 0) {
+			
+			Element text;
+			for(CommonAnalyze comm : dataList) {
+				text = new Element("text");
+				text.setText(comm.getItem());
+				text.setAttribute("padding", "23");
+				childs.add(text);
+				childs.add(new Element("box").setText(comm.getContents()+"\n"));
+	        }
+
+		}
+		return childs;
+	}
+
+	public static List<Element> setEjbApplicationData(AnalyzeDefinition data, Upload upload) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<CommonAnalyze> dataList = data.getDescripterList();
+		
+		if(dataList.size() > 0) {
+			Element child = new Element("table");
+			Element childE1 = new Element("header");
+			Element childE2 = new Element("row");
+			
+			child.setAttribute("size", "3");
+			
+			Element col = new Element("col");
+			col.setAttribute("width", "100");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header5")));
+			
+			col = new Element("col");
+			col.setAttribute("width", "150");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
+			
+			col = new Element("col");
+			col.setAttribute("width", "150");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header6")));
+			
+			for(CommonAnalyze comm : dataList) {
+				childE2.addContent(new Element("col").setText(comm.getItem()));
+				childE2.addContent(new Element("col").setText(comm.getContents()));
+				childE2.addContent(new Element("col").setText(comm.getNote()));
+	        }
+			child.addContent(childE1);
+	        child.addContent(childE2);
+			childs.add(child);
+			
+	        for(CommonAnalyze comm : dataList) {
+		        if(comm.getXmlDataList().size() > 0) {
+					Element section = new Element("section");
+					section.setAttribute("title", comm.getItem());
+					
+					child = new Element("table");
+					childE1 = new Element("header");
+					childE2 = new Element("row");
+					
+					child.setAttribute("size", "2");
+					
+					col.setAttribute("width", "150");
+					childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
+					
+					col = new Element("col");
+					col.setAttribute("width", "300");
+					childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
+					
+					for(CommonAnalyze childC : comm.getXmlDataList()) {
+						childE2.addContent(new Element("col").setText(childC.getItem()));
+						childE2.addContent(new Element("col").setText(childC.getContents()));
+					}
+					child.addContent(childE1);
+			        child.addContent(childE2);
+			        section.addContent(child);
+			        childs.add(section);
+				}
+	        }
+	        
+		}
+		
+		return childs;
+	}
+
+	public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload) throws Exception {
+		
+		List<Element> childs = new ArrayList<Element>();
+		
+		Iterator iterator = rootData.getWarDefinitionMap().entrySet().iterator();
+		while (iterator.hasNext()) {
+            Entry entry = (Entry)iterator.next();
+            AnalyzeDefinition data = (AnalyzeDefinition)entry.getValue();
+            
+            File childXml = new File(PDFDocGenerator.class.getResource("/xml/war_application.xml").getFile());
+    		org.jdom2.Document chapterDoc = new SAXBuilder().build(childXml);
+            
+            Element root = chapterDoc.getRootElement();
+            
+            Element section = new Element("section");
+            section.setAttribute("title", data.getFileName());
+            
+            for(Element e : root.getChildren()) {
+            	section.addContent(e);
+            }
+            
+            childs.add(section);
+        }
+		
+		return childs;
+	}
 	/**
 	 * 
 	 * PDF Title Page 구성
