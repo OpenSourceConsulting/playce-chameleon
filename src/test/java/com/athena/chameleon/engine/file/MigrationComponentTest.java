@@ -48,6 +48,8 @@ import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
@@ -133,6 +135,8 @@ public class MigrationComponentTest {
         
         PDFMetadataDefinition data = new PDFMetadataDefinition();
         AnalyzeDefinition zip = new AnalyzeDefinition();
+        
+        //zip - summary
         FileSummary zipSummary = new FileSummary();
         zipSummary.setFileCount(10);
         zipSummary.setSourceEncoding("EUC-KR");
@@ -148,6 +152,144 @@ public class MigrationComponentTest {
         
         fileSummaryMap.put(FileType.JSP, zipSummary);
         zip.setFileSummaryMap(fileSummaryMap);
+        
+        //zip - servlet
+        List<CommonAnalyze> commList = new ArrayList<CommonAnalyze>();
+        CommonAnalyze comm = new CommonAnalyze();
+        comm.setItem("NIPAFramework");
+        comm.setLocation("src/main/org/nipa/web/servlet");
+        commList.add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setItem("NIPAFramework1");
+        comm.setLocation("src/main/org/nipa/web/servlet1");
+        commList.add(comm);
+        
+        zip.setServletExtendsList(commList);
+        
+        //zip - ejb
+        commList = new ArrayList<CommonAnalyze>();
+        comm = new CommonAnalyze();
+        comm.setItem("NIPAFrameworkEjb");
+        comm.setLocation("src/main/org/nipa/web/ejb");
+        commList.add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setItem("NIPAFrameworkEjb1");
+        comm.setLocation("src/main/org/nipa/web/ejb1");
+        commList.add(comm);
+        
+        zip.setEjbExtendsList(commList);
+        
+        //zip - java
+        List<Dependency> dependencyList = new ArrayList<Dependency>();
+        Dependency dependency = new Dependency();
+        dependency.setFileName("src/main/org/nipa/migration/WebHelper.java");
+        
+        Map<String, String> fileInfo = new HashMap<String, String>();
+        fileInfo.put("Line 8:", "import com.bea.weblogic.jmx.DataSourceMBean");
+        fileInfo.put("Line 12:", "import com.bea.weblogic.jmx.ContextMBean;");
+        fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
+        dependency.setDependencyStrMap(fileInfo);
+        
+        dependencyList.add(dependency);
+        
+        dependency = new Dependency();
+        dependency.setFileName("src/main/org/nipa/migration/WebHelper2.java");
+        
+        fileInfo = new HashMap<String, String>();
+        fileInfo.put("Line 18:", "import com.bea.weblogic.jmx.DataSourceMBean");
+        fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
+        fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
+        dependency.setDependencyStrMap(fileInfo);
+        
+        dependencyList.add(dependency);
+        zip.setJavaDependencyList(dependencyList);
+        
+      //zip - jsp
+        dependencyList = new ArrayList<Dependency>();
+        dependency = new Dependency();
+        dependency.setFileName("src/main/org/nipa/migration/WebHelper.jsp");
+        
+        fileInfo = new HashMap<String, String>();
+        fileInfo.put("Line 8:", "import com.bea.weblogic.jmx.DataSourceMBean");
+        fileInfo.put("Line 12:", "import com.bea.weblogic.jmx.ContextMBean;");
+        fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
+        dependency.setDependencyStrMap(fileInfo);
+        
+        dependencyList.add(dependency);
+        
+        dependency = new Dependency();
+        dependency.setFileName("src/main/org/nipa/migration/WebHelper2.jsp");
+        
+        fileInfo = new HashMap<String, String>();
+        fileInfo.put("Line 18:", "import com.bea.weblogic.jmx.DataSourceMBean");
+        fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
+        fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
+        dependency.setDependencyStrMap(fileInfo);
+        
+        dependencyList.add(dependency);
+        zip.setJspDependencyList(dependencyList);
+
+        //zip - property
+	      dependencyList = new ArrayList<Dependency>();
+	      dependency = new Dependency();
+	      dependency.setFileName("src/main/org/nipa/migration/WebHelper.properties");
+	      
+	      fileInfo = new HashMap<String, String>();
+	      fileInfo.put("Line 8:", "import com.bea.weblogic.jmx.DataSourceMBean");
+	      fileInfo.put("Line 12:", "import com.bea.weblogic.jmx.ContextMBean;");
+	      dependency.setDependencyStrMap(fileInfo);
+	          
+	      dependencyList.add(dependency);
+	      
+	      dependency = new Dependency();
+	      dependency.setFileName("src/main/org/nipa/migration/WebHelper2.properties");
+	      
+	      fileInfo = new HashMap<String, String>();
+	      fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
+	      fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
+	      dependency.setDependencyStrMap(fileInfo);
+	        
+	      dependencyList.add(dependency);
+	      zip.setPropertyDependencyList(dependencyList);
+
+        //zip - class
+        dependencyList = new ArrayList<Dependency>();
+        dependency = new Dependency();
+        dependency.setFileName("src/main/org/nipa/migration/WebHelper.class");
+        
+        fileInfo = new HashMap<String, String>();
+        fileInfo.put("Line 8:", "import com.bea.weblogic.jmx.DataSourceMBean");
+        fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
+        dependency.setDependencyStrMap(fileInfo);
+        
+        dependencyList.add(dependency);
+        
+        dependency = new Dependency();
+        dependency.setFileName("src/main/org/nipa/migration/WebHelper2.class");
+        
+        fileInfo = new HashMap<String, String>();
+        fileInfo.put("Line 18:", "import com.bea.weblogic.jmx.DataSourceMBean");
+        fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
+        dependency.setDependencyStrMap(fileInfo);
+        
+        dependencyList.add(dependency);
+        zip.setClassDependencyList(dependencyList);
+        
+        //jsp 분석 결과
+        commList = new ArrayList<CommonAnalyze>();
+        comm = new CommonAnalyze();
+        comm.setDirective("<%@ page language=\"java\" contentType=\"text/html; charset=euc-kr\"%>");
+        comm.setFileCount(35);
+        commList.add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setDirective("<%@ page language=\"java\" pageEncoding=\"java\" contentType=\"text/html; charset=EUC-KR\" %>");
+        comm.setFileCount(200);
+        commList.add(comm);
+        zip.setJspAnalyzeList(commList);
+        
         data.setZipDefinition(zip);
         
         PDFDocGenerator.createPDF(unzipDirPath+File.separator+"test.pdf", upload, data);

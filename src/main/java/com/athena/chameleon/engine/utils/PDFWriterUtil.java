@@ -282,7 +282,9 @@ public class PDFWriterUtil {
             t.setTotalWidth(Float.parseFloat(e.getAttributeValue("width")));
         
         t.setSpacingAfter(12);
-        t.getDefaultCell().setFixedHeight(22); 
+        t.getDefaultCell().setLeading(0.0F, 1.3F);
+        t.getDefaultCell().setMinimumHeight(22);
+        t.getDefaultCell().setPaddingBottom(8);
         t.getDefaultCell().setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
         
         setTableHeader(e, t, colSize);
@@ -459,10 +461,6 @@ public class PDFWriterUtil {
                     e1.getChild("column").getText());
         }
     	
-    	
-
-
-
     	JFreeChart chart = ChartFactory.createBarChart3D(e.getAttributeValue("title"),  "",
                 "", dataset, PlotOrientation.VERTICAL, false,
                 true, false);
