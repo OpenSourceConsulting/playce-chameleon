@@ -23,9 +23,6 @@ package com.athena.chameleon.engine.file;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,15 +32,12 @@ import javax.inject.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.athena.chameleon.common.utils.MessageUtil;
-import com.athena.chameleon.engine.core.PDFCommonEventHelper;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
@@ -53,21 +47,7 @@ import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
-import com.athena.chameleon.engine.utils.FileUtil;
-import com.athena.chameleon.engine.utils.PDFWriterUtil;
 import com.athena.chameleon.web.upload.vo.Upload;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chapter;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Section;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * This FileUnzipTest class is a Test Case class for FileUnzip.
@@ -154,35 +134,28 @@ public class MigrationComponentTest {
         zip.setFileSummaryMap(fileSummaryMap);
         
         //zip - servlet
-        List<CommonAnalyze> commList = new ArrayList<CommonAnalyze>();
         CommonAnalyze comm = new CommonAnalyze();
         comm.setItem("NIPAFramework");
         comm.setLocation("src/main/org/nipa/web/servlet");
-        commList.add(comm);
+        zip.getServletExtendsList().add(comm);
         
         comm = new CommonAnalyze();
         comm.setItem("NIPAFramework1");
         comm.setLocation("src/main/org/nipa/web/servlet1");
-        commList.add(comm);
-        
-        zip.setServletExtendsList(commList);
+        zip.getServletExtendsList().add(comm);
         
         //zip - ejb
-        commList = new ArrayList<CommonAnalyze>();
         comm = new CommonAnalyze();
         comm.setItem("NIPAFrameworkEjb");
         comm.setLocation("src/main/org/nipa/web/ejb");
-        commList.add(comm);
+        zip.getEjbExtendsList().add(comm);
         
         comm = new CommonAnalyze();
         comm.setItem("NIPAFrameworkEjb1");
         comm.setLocation("src/main/org/nipa/web/ejb1");
-        commList.add(comm);
-        
-        zip.setEjbExtendsList(commList);
+        zip.getEjbExtendsList().add(comm);
         
         //zip - java
-        List<Dependency> dependencyList = new ArrayList<Dependency>();
         Dependency dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper.java");
         
@@ -191,8 +164,7 @@ public class MigrationComponentTest {
         fileInfo.put("Line 12:", "import com.bea.weblogic.jmx.ContextMBean;");
         fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
-        
-        dependencyList.add(dependency);
+        zip.getJavaDependencyList().add(dependency);
         
         dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper2.java");
@@ -202,12 +174,9 @@ public class MigrationComponentTest {
         fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
         fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
+        zip.getJavaDependencyList().add(dependency);
         
-        dependencyList.add(dependency);
-        zip.setJavaDependencyList(dependencyList);
-        
-      //zip - jsp
-        dependencyList = new ArrayList<Dependency>();
+        //zip - jsp
         dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper.jsp");
         
@@ -216,8 +185,7 @@ public class MigrationComponentTest {
         fileInfo.put("Line 12:", "import com.bea.weblogic.jmx.ContextMBean;");
         fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
-        
-        dependencyList.add(dependency);
+        zip.getJspDependencyList().add(dependency);
         
         dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper2.jsp");
@@ -227,35 +195,28 @@ public class MigrationComponentTest {
         fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
         fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
-        
-        dependencyList.add(dependency);
-        zip.setJspDependencyList(dependencyList);
+        zip.getJspDependencyList().add(dependency);
 
         //zip - property
-	      dependencyList = new ArrayList<Dependency>();
-	      dependency = new Dependency();
-	      dependency.setFileName("src/main/org/nipa/migration/WebHelper.properties");
-	      
-	      fileInfo = new HashMap<String, String>();
-	      fileInfo.put("Line 8:", "import com.bea.weblogic.jmx.DataSourceMBean");
-	      fileInfo.put("Line 12:", "import com.bea.weblogic.jmx.ContextMBean;");
-	      dependency.setDependencyStrMap(fileInfo);
-	          
-	      dependencyList.add(dependency);
-	      
-	      dependency = new Dependency();
-	      dependency.setFileName("src/main/org/nipa/migration/WebHelper2.properties");
-	      
-	      fileInfo = new HashMap<String, String>();
-	      fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
-	      fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
-	      dependency.setDependencyStrMap(fileInfo);
-	        
-	      dependencyList.add(dependency);
-	      zip.setPropertyDependencyList(dependencyList);
+		dependency = new Dependency();
+		dependency.setFileName("src/main/org/nipa/migration/WebHelper.properties");
+
+		fileInfo = new HashMap<String, String>();
+		fileInfo.put("Line 8:", "import com.bea.weblogic.jmx.DataSourceMBean");
+		fileInfo.put("Line 12:", "import com.bea.weblogic.jmx.ContextMBean;");
+		dependency.setDependencyStrMap(fileInfo);
+		zip.getPropertyDependencyList().add(dependency);
+
+		dependency = new Dependency();
+		dependency.setFileName("src/main/org/nipa/migration/WebHelper2.properties");
+
+		fileInfo = new HashMap<String, String>();
+		fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
+		fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
+		dependency.setDependencyStrMap(fileInfo);
+		zip.getPropertyDependencyList().add(dependency);
 
         //zip - class
-        dependencyList = new ArrayList<Dependency>();
         dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper.class");
         
@@ -263,8 +224,7 @@ public class MigrationComponentTest {
         fileInfo.put("Line 8:", "import com.bea.weblogic.jmx.DataSourceMBean");
         fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
-        
-        dependencyList.add(dependency);
+        zip.getClassDependencyList().add(dependency);
         
         dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper2.class");
@@ -273,22 +233,18 @@ public class MigrationComponentTest {
         fileInfo.put("Line 18:", "import com.bea.weblogic.jmx.DataSourceMBean");
         fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
         dependency.setDependencyStrMap(fileInfo);
-        
-        dependencyList.add(dependency);
-        zip.setClassDependencyList(dependencyList);
+        zip.getClassDependencyList().add(dependency);
         
         //jsp 분석 결과
-        commList = new ArrayList<CommonAnalyze>();
         comm = new CommonAnalyze();
         comm.setDirective("<%@ page language=\"java\" contentType=\"text/html; charset=euc-kr\"%>");
         comm.setFileCount(35);
-        commList.add(comm);
+        zip.getJspAnalyzeList().add(comm);
         
         comm = new CommonAnalyze();
         comm.setDirective("<%@ page language=\"java\" pageEncoding=\"java\" contentType=\"text/html; charset=EUC-KR\" %>");
         comm.setFileCount(200);
-        commList.add(comm);
-        zip.setJspAnalyzeList(commList);
+        zip.getJspAnalyzeList().add(comm);
         
         data.setZipDefinition(zip);
         
