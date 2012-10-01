@@ -20,6 +20,8 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.List;
+
 
 /**
  * 소스 파일 요약 Entity
@@ -43,7 +45,9 @@ public class CommonAnalyze {
     private int fileCount;
     //Xml Object
     private Object xmlObject;
-	    
+	//xml Data List
+    private List<CommonAnalyze> xmlDataList;
+    
 	/**
 	 * @return the item
 	 */
@@ -127,6 +131,18 @@ public class CommonAnalyze {
 	 */
 	public void setXmlObject(Object xmlObject) {
 		this.xmlObject = xmlObject;
+	}
+	/**
+	 * @return the xmlDataList
+	 */
+	public List<CommonAnalyze> getXmlDataList() {
+		return xmlDataList;
+	}
+	/**
+	 * @param xmlDataList the xmlDataList to set
+	 */
+	public void setXmlDataList(List<CommonAnalyze> xmlDataList) {
+		this.xmlDataList = xmlDataList;
 	}
 }
 //end of FileSummary.java

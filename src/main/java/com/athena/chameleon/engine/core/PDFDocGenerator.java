@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
@@ -101,11 +102,14 @@ public class PDFDocGenerator {
         		} else if(option.equals("ear") && data.getEarDefinition() != null) {
         			
         		} else if(option.equals("war") && data.getEarDefinition() == null && data.getWarDefinitionMap() != null) {
-
+        			Iterator iterator = data.getWarDefinitionMap().entrySet().iterator();
         			
-        			//addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getWarDefinition(), upload);
-        			cNum++;
-
+        			if (iterator.hasNext()) {
+        	            Entry entry = (Entry)iterator.next();
+        	            addChapterForDynamic(writer, chapterE, cNum, pdf, builder, (AnalyzeDefinition)entry.getValue(), upload);
+            			cNum++;
+        	        }
+        			
         		} else if(option.equals("jar") && data.getEarDefinition() == null && data.getJarDefinitionMap() != null) {
         			
         		} else if(option.equals(upload.getAfterWas())) {
@@ -166,6 +170,8 @@ public class PDFDocGenerator {
 				childs = setJspAnalyzeData(data, upload);
 			} else if(e.getName().equals("deploy_application_text")) {
 				childs = setDeployApplicationText(data, upload);
+			} else if(e.getName().equals("web_xml_info")) {
+				childs = setWebXmlData(data, upload);
 			}
 		}
 		
@@ -306,9 +312,9 @@ public class PDFDocGenerator {
 	public static List<Element> setJspAnalyzeData(AnalyzeDefinition data, Upload upload) {
 
 		List<Element> childs = new ArrayList<Element>();
-		List<CommonAnalyze> dataList = data.getJspAnalyzeList();
+		Map<String, Integer> dataMap = data.getJspDirectiveMap();
 		
-		if(dataList.size() > 0) {
+		if(dataMap != null) {
 			int jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
 			
 			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
@@ -326,12 +332,15 @@ public class PDFDocGenerator {
 			col.setAttribute("width", "70");
 			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header2")));
 		
-			for(CommonAnalyze comm : dataList) {
-	            childE2.addContent(new Element("col").setText(comm.getDirective()));
-	            childE2.addContent(new Element("col").setText(String.valueOf(comm.getFileCount())));
+			Iterator iterator = dataMap.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Entry entry = (Entry)iterator.next();
+	            
+				childE2.addContent(new Element("col").setText(String.valueOf(entry.getKey())));
+	            childE2.addContent(new Element("col").setText(String.valueOf(entry.getValue())));
+	            
 	        }
-			
-	        child.addContent(childE1);
+			child.addContent(childE1);
 	        child.addContent(childE2);
 			
 			childs.add(child);
@@ -346,6 +355,46 @@ public class PDFDocGenerator {
 		childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.deploy.application.text", upload.getDeploySrc().getName())));
 		return childs;
 		
+	}
+
+	public static List<Element> setWebXmlData(AnalyzeDefinition data, Upload upload) {
+
+		List<Element> childs = new ArrayList<Element>();
+		Map<String, Integer> dataMap = data.getJspDirectiveMap();
+		
+		if(dataMap != null) {
+			int jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
+			
+			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
+			Element child = new Element("table");
+			Element childE1 = new Element("header");
+			Element childE2 = new Element("row");
+			
+			child.setAttribute("size", "2");
+			
+			Element col = new Element("col");
+			col.setAttribute("width", "330");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header1")));
+			
+			col = new Element("col");
+			col.setAttribute("width", "70");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header2")));
+		
+			Iterator iterator = dataMap.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Entry entry = (Entry)iterator.next();
+	            
+				childE2.addContent(new Element("col").setText(String.valueOf(entry.getKey())));
+	            childE2.addContent(new Element("col").setText(String.valueOf(entry.getValue())));
+	            
+	        }
+			child.addContent(childE1);
+	        child.addContent(childE2);
+			
+			childs.add(child);
+		}
+		
+		return childs;
 	}
 
 	/**

@@ -236,15 +236,11 @@ public class MigrationComponentTest {
         zip.getClassDependencyList().add(dependency);
         
         //jsp 분석 결과
-        comm = new CommonAnalyze();
-        comm.setDirective("<%@ page language=\"java\" contentType=\"text/html; charset=euc-kr\"%>");
-        comm.setFileCount(35);
-        zip.getJspAnalyzeList().add(comm);
-        
-        comm = new CommonAnalyze();
-        comm.setDirective("<%@ page language=\"java\" pageEncoding=\"java\" contentType=\"text/html; charset=EUC-KR\" %>");
-        comm.setFileCount(200);
-        zip.getJspAnalyzeList().add(comm);
+        Map<String, Integer> dataMap = new HashMap<String, Integer>();
+        dataMap.put("<%@ page language=\"java\" contentType=\"text/html; charset=euc-kr\"%>", 35);
+        dataMap.put("<%@ page language=\"java\" pageEncoding=\"java\" contentType=\"text/html; charset=EUC-KR\" %>", 200);
+
+        zip.setJspDirectiveMap(dataMap);
         
         data.setZipDefinition(zip);
         

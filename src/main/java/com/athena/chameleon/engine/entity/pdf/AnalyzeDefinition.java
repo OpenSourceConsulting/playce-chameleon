@@ -51,8 +51,6 @@ public class AnalyzeDefinition {
 	//class 의존성 정보 
 	private List<Dependency> classDependencyList;
 	//jsp 소스 파일 분석
-	private List<CommonAnalyze> jspAnalyzeList;
-	//jsp 소스 파일 분석
 	private Map<String, Integer> jspDirectiveMap;
 	//디스크립터 정보 
 	private List<CommonAnalyze> descripterList;
@@ -151,16 +149,6 @@ public class AnalyzeDefinition {
 			propertyDependencyList = new ArrayList<Dependency>();
 		}
 		return propertyDependencyList;
-	}
-
-	/**
-	 * @return the jspAnalyzeList
-	 */
-	public List<CommonAnalyze> getJspAnalyzeList() {
-		if(jspAnalyzeList == null) {
-			jspAnalyzeList = new ArrayList<CommonAnalyze>();
-		}
-		return jspAnalyzeList;
 	}
 
 	/**
