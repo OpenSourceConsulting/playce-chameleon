@@ -232,5 +232,89 @@ public class AnalyzeDefinition {
 		return classesConstList;
 	}
 
+	/**
+	 * @param servletExtendsList the servletExtendsList to set
+	 */
+	public void setServletExtendsList(List<CommonAnalyze> servletExtendsList) {
+		this.servletExtendsList = servletExtendsList;
+	}
+
+	/**
+	 * @param ejbExtendsList the ejbExtendsList to set
+	 */
+	public void setEjbExtendsList(List<CommonAnalyze> ejbExtendsList) {
+		this.ejbExtendsList = ejbExtendsList;
+	}
+
+	/**
+	 * @param javaDependencyList the javaDependencyList to set
+	 */
+	public void setJavaDependencyList(List<Dependency> javaDependencyList) {
+		this.javaDependencyList = javaDependencyList;
+	}
+
+	/**
+	 * @param jspDependencyList the jspDependencyList to set
+	 */
+	public void setJspDependencyList(List<Dependency> jspDependencyList) {
+		this.jspDependencyList = jspDependencyList;
+	}
+
+	/**
+	 * @param propertyDependencyList the propertyDependencyList to set
+	 */
+	public void setPropertyDependencyList(List<Dependency> propertyDependencyList) {
+		this.propertyDependencyList = propertyDependencyList;
+	}
+
+	/**
+	 * @param classDependencyList the classDependencyList to set
+	 */
+	public void setClassDependencyList(List<Dependency> classDependencyList) {
+		this.classDependencyList = classDependencyList;
+	}
+
+	/**
+	 * @param jspAnalyzeList the jspAnalyzeList to set
+	 */
+	public void setJspAnalyzeList(List<CommonAnalyze> jspAnalyzeList) {
+		this.jspAnalyzeList = jspAnalyzeList;
+	}
+
+	/**
+	 * @param descripterList the descripterList to set
+	 */
+	public void setDescripterList(List<CommonAnalyze> descripterList) {
+		this.descripterList = descripterList;
+	}
+
+	/**
+	 * @param ejbApplicationList the ejbApplicationList to set
+	 */
+	public void setEjbApplicationList(List<CommonAnalyze> ejbApplicationList) {
+		this.ejbApplicationList = ejbApplicationList;
+	}
+
+	/**
+	 * @param libraryList the libraryList to set
+	 */
+	public void setLibraryList(List<String> libraryList) {
+		this.libraryList = libraryList;
+	}
+
+	/**
+	 * @param deleteLibraryList the deleteLibraryList to set
+	 */
+	public void setDeleteLibraryList(List<String> deleteLibraryList) {
+		this.deleteLibraryList = deleteLibraryList;
+	}
+
+	/**
+	 * @param classesConstList the classesConstList to set
+	 */
+	public void setClassesConstList(List<ClassAnalyze> classesConstList) {
+		this.classesConstList = classesConstList;
+	}
+
 }
 //end of PDFDefination.java

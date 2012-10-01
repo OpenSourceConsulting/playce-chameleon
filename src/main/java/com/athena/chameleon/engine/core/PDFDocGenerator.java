@@ -3,6 +3,7 @@ package com.athena.chameleon.engine.core;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 import com.athena.chameleon.common.utils.MessageUtil;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
@@ -84,21 +87,25 @@ public class PDFDocGenerator {
         	if(chapterE.getAttributeValue("option") != null) {
         		
         		String option = chapterE.getAttributeValue("option");
-        		addChapterForZip(writer, chapterE, cNum, pdf, builder, data.getZipDefinition());
     			
         		if(option.equals("zip") && data.getZipDefinition() != null) {
         			
-        			addChapterForZip(writer, chapterE, cNum, pdf, builder, data.getZipDefinition());
+        			addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getZipDefinition(), upload);
         			cNum++;
         			
-        		} else if(option.equals("deploy") && data.getDeployFile() != null) {
-        			
-        			addChapter(writer, chapterE, cNum, pdf, builder);
+        		} else if(option.equals("deploy") && upload.getDeploySrc() != null) {
+
+        			addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getZipDefinition(), upload);
         			cNum++;
+
         		} else if(option.equals("ear") && data.getEarDefinition() != null) {
         			
         		} else if(option.equals("war") && data.getEarDefinition() == null && data.getWarDefinitionMap() != null) {
+
         			
+        			//addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getWarDefinition(), upload);
+        			cNum++;
+
         		} else if(option.equals("jar") && data.getEarDefinition() == null && data.getJarDefinitionMap() != null) {
         			
         		} else if(option.equals(upload.getAfterWas())) {
@@ -119,37 +126,52 @@ public class PDFDocGenerator {
         pdf.close();
 	}
 	
-	public static void addChapterForZip(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder, AnalyzeDefinition data) throws Exception {
+	public static void addChapterForDynamic(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder, AnalyzeDefinition data, Upload upload) throws Exception {
 		
 		File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
 		org.jdom2.Document chapterDoc = builder.build(chapterXml);
         
         Element root = chapterDoc.getRootElement();
         
-        for(Element e : root.getChildren()) {
-        	if(e.getName().equals("section")) {
-        		
-        		Element[] childs = new Element[2];
-                for(Element e1 : e.getChildren()) {
-        			if(e1.getName().equals("source_file_summary")) {
-        				childs = setFileSummary(data);
-        			}
-        		}
-				
-				if(childs[0] != null)
-					e.addContent(childs[0]);
-        		
-				if(childs[1] != null)
-					e.addContent(childs[1]);
-					
-        	}
-        }
-
+        setDynamicSection(root, data, upload);
+        
         Chapter chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
             
         PDFWriterUtil.setElement(writer, chapter, root);
         
         pdf.add(chapter);
+	}
+	
+	public static void setDynamicSection(Element root, AnalyzeDefinition data, Upload upload) {
+		
+		List<Element> childs = new ArrayList<Element>();
+        for(Element e : root.getChildren()) {
+        	if(e.getName().equals("section")) {
+        		setDynamicSection(e, data, upload);
+			} else if(e.getName().equals("file_summary")) {
+				childs = setFileSummary(data);
+			} else if(e.getName().equals("pattern_servlet")) {
+				childs = setPatternData(data, "servlet");
+			} else if(e.getName().equals("pattern_ejb")) {
+				childs = setPatternData(data, "ejb");
+			} else if(e.getName().equals("dependency_java")) {
+				childs = setDependencyData(data, "java");
+			}  else if(e.getName().equals("dependency_jsp")) {
+				childs = setDependencyData(data, "jsp");
+			}  else if(e.getName().equals("dependency_property")) {
+				childs = setDependencyData(data, "property");
+			}  else if(e.getName().equals("dependency_class")) {
+				childs = setDependencyData(data, "class");
+			} else if(e.getName().equals("jsp_analyze_result")) {
+				childs = setJspAnalyzeData(data, upload);
+			} else if(e.getName().equals("deploy_application_text")) {
+				childs = setDeployApplicationText(data, upload);
+			}
+		}
+		
+        for(Element child : childs) {
+        	root.addContent(child);
+        }
 	}
 
 	public static void addChapter(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder) throws Exception {
@@ -165,18 +187,17 @@ public class PDFDocGenerator {
         pdf.add(chapter);
 	}
 	
-	public static Element[] setFileSummary(AnalyzeDefinition data) {
+	public static List<Element> setFileSummary(AnalyzeDefinition data) {
 
-		Element[] childs = new Element[2];
-		childs[0] = new Element("table");
-		childs[1] = new Element("chart");
-		childs[1].setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
+		Element child1 = new Element("table");
+		Element child2 = new Element("chart");
+		child2.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
 		
 		Element childE1 = new Element("header");
 		Element childE2 = new Element("row");
 		Element childE3;
 		
-		childs[0].setAttribute("size", "4");
+		child1.setAttribute("size", "4");
 		
 		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header1")));
 		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header2")));
@@ -195,14 +216,138 @@ public class PDFDocGenerator {
             childE3 = new Element("data");
 			childE3.addContent(new Element("column").setText(((FileType)entry.getKey()).toString()));
 			childE3.addContent(new Element("value").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
-			childs[1].addContent(childE3);
+			child2.addContent(childE3);
         }
 		
-        childs[0].addContent(childE1);
-        childs[0].addContent(childE2);
+        child1.addContent(childE1);
+        child1.addContent(childE2);
+		
+        List<Element> childs = new ArrayList<Element>();
+		childs.add(child1);
+		childs.add(child2);
 		
 		return childs;
 	}
+
+	public static List<Element> setPatternData(AnalyzeDefinition data, String type) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<CommonAnalyze> dataList = new ArrayList<CommonAnalyze>();
+		if(type.equals("servlet"))
+			dataList = data.getServletExtendsList();
+		else if(type.equals("ejb"))
+			dataList = data.getEjbExtendsList();
+		
+		if(dataList.size() > 0) {
+			Element child = new Element("table");
+			Element childE1 = new Element("header");
+			Element childE2 = new Element("row");
+			
+			child.setAttribute("size", "2");
+			
+			Element col = new Element("col");
+			col.setAttribute("width", "150");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.pattern.table.header1")));
+			
+			col = new Element("col");
+			col.setAttribute("width", "300");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.pattern.table.header2")));
+		
+			for(CommonAnalyze comm : dataList) {
+	            childE2.addContent(new Element("col").setText(comm.getItem()));
+	            childE2.addContent(new Element("col").setText(comm.getLocation()));
+	        }
+			
+	        child.addContent(childE1);
+	        child.addContent(childE2);
+			
+			childs.add(child);
+		}
+		
+		return childs;
+	}
+
+	public static List<Element> setDependencyData(AnalyzeDefinition data, String type) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<Dependency> dataList = new ArrayList<Dependency>();
+		if(type.equals("java"))
+			dataList = data.getJavaDependencyList();
+		else if(type.equals("jsp"))
+			dataList = data.getJspDependencyList();
+		else if(type.equals("property"))
+			dataList = data.getPropertyDependencyList();
+		else if(type.equals("class"))
+			dataList = data.getClassDependencyList();
+		
+		if(dataList.size() > 0) {
+			
+			Element text;
+			for(Dependency comm : dataList) {
+				text = new Element("text");
+				text.setText(comm.getFileName());
+				text.setAttribute("padding", "23");
+				childs.add(text);
+				
+				Iterator iterator = comm.getDependencyStrMap().entrySet().iterator();
+				StringBuffer buf = new StringBuffer();
+		        while (iterator.hasNext()) {
+		            Entry entry = (Entry)iterator.next();
+		            buf.append(entry.getKey() + " " + entry.getValue()+"\n");
+		        }
+				childs.add(new Element("box").setText(buf.toString()+"\n"));
+	        }
+			
+		}
+		
+		return childs;
+	}
+
+	public static List<Element> setJspAnalyzeData(AnalyzeDefinition data, Upload upload) {
+
+		List<Element> childs = new ArrayList<Element>();
+		List<CommonAnalyze> dataList = data.getJspAnalyzeList();
+		
+		if(dataList.size() > 0) {
+			int jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
+			
+			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
+			Element child = new Element("table");
+			Element childE1 = new Element("header");
+			Element childE2 = new Element("row");
+			
+			child.setAttribute("size", "2");
+			
+			Element col = new Element("col");
+			col.setAttribute("width", "330");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header1")));
+			
+			col = new Element("col");
+			col.setAttribute("width", "70");
+			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header2")));
+		
+			for(CommonAnalyze comm : dataList) {
+	            childE2.addContent(new Element("col").setText(comm.getDirective()));
+	            childE2.addContent(new Element("col").setText(String.valueOf(comm.getFileCount())));
+	        }
+			
+	        child.addContent(childE1);
+	        child.addContent(childE2);
+			
+			childs.add(child);
+		}
+		
+		return childs;
+	}
+
+	public static List<Element> setDeployApplicationText(AnalyzeDefinition data, Upload upload) {
+
+		List<Element> childs = new ArrayList<Element>();
+		childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.deploy.application.text", upload.getDeploySrc().getName())));
+		return childs;
+		
+	}
+
 	/**
 	 * 
 	 * PDF Title Page 구성
