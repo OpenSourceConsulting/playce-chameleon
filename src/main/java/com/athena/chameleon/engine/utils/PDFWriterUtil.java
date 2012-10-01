@@ -20,27 +20,19 @@
  */
 package com.athena.chameleon.engine.utils;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.ByteArrayOutputStream;
+import java.awt.geom.Rectangle2D;
 import java.net.URL;
 import java.util.ArrayList;
 
 import org.jdom2.Element;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.entity.StandardEntityCollection;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.itextpdf.awt.PdfGraphics2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-
-import javax.imageio.ImageIO;
-
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
@@ -50,7 +42,6 @@ import com.itextpdf.text.List;
 import com.itextpdf.text.ListItem;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.Section;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;

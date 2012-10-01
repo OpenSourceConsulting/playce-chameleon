@@ -79,10 +79,27 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 		
 			FileReader reader = new FileReader(file);
 			BufferedReader buffer = new BufferedReader(reader);
-			
+
+			String directive = "";
+			boolean isEnd = false;
 			String lineStr = null;
 			int lineNum = 1;
 			while ((lineStr = buffer.readLine()) != null) {
+				
+				// JSP Directive 검사
+				if(file.getName().endsWith("jsp")) {
+					if(!isEnd) {
+						// Ignore Carriage Return Line Feed
+						directive += lineStr;
+						
+						if(directive.lastIndexOf("%>") > -1) {
+							isEnd = true;
+							
+							// 동일한 Directive 가 있으면 add count, 없으면 신규 Directive 등록
+							analyzeDefinition.addJspDirectiveCount(directive);
+						}
+					}
+				}
 				
 				// Servlet 상속 여부 검사
 				// 추후 패턴으로 지정하여 파일 전체 내용을 검사

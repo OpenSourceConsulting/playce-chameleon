@@ -21,6 +21,7 @@
 package com.athena.chameleon.engine.entity.pdf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ public class AnalyzeDefinition {
 	//class 의존성 정보 
 	private List<Dependency> classDependencyList;
 	//jsp 소스 파일 분석
-	private List<CommonAnalyze> jspAnalyzeList;
+	private Map<String, Integer> jspDirectiveMap;
 	//디스크립터 정보 
 	private List<CommonAnalyze> descripterList;
 	//ejb application 
@@ -151,13 +152,28 @@ public class AnalyzeDefinition {
 	}
 
 	/**
-	 * @return the jspAnalyzeList
+	 * @return the jspDirectiveMap
 	 */
-	public List<CommonAnalyze> getJspAnalyzeList() {
-		if(jspAnalyzeList == null) {
-			jspAnalyzeList = new ArrayList<CommonAnalyze>();
+	public Map<String, Integer> getJspDirectiveMap() {
+		if(jspDirectiveMap == null) {
+			jspDirectiveMap = new HashMap<String, Integer>();
 		}
-		return jspAnalyzeList;
+		return jspDirectiveMap;
+	}
+	
+	/**
+	 * @param jspDirectiveMap the jspDirectiveMap to set
+	 */
+	public void setJspDirectiveMap(Map<String, Integer> jspDirectiveMap) {
+		this.jspDirectiveMap = jspDirectiveMap;
+	}
+	
+	/**
+	 * @return the jspDirectiveList
+	 */
+	public void addJspDirectiveCount(String directive) {
+		int cnt = getJspDirectiveMap().get(directive) == null ? 0 : getJspDirectiveMap().get(directive);
+		getJspDirectiveMap().put(directive, ++cnt);
 	}
 
 	/**

@@ -20,6 +20,12 @@
  */
 package com.athena.chameleon.engine.threadpool.task;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +97,31 @@ public abstract class BaseTask implements Runnable {
     	// TODO 사후 작업이 필요하면 afterRun() 메소드 구현 후 호출
     	logger.debug("[{}] is completed.", getTaskName());
     }
+    
+    /**
+     * <pre>
+     * 파일의 내용을 문자열로 변환하여 반환한다.
+     * </pre>
+     * @param file
+     * @return
+     */
+    protected String fileToString(String file) {
+        String result = null;
+
+        try {
+            DataInputStream in = null;
+            File f = new File(file);
+            byte[] buffer = new byte[(int) f.length()];
+            in = new DataInputStream(new FileInputStream(f));
+            in.readFully(buffer);
+            result = new String(buffer);
+            IOUtils.closeQuietly(in);
+        } catch (IOException e) {
+            throw new RuntimeException("IO problem in fileToString", e);
+        }
+        
+        return result;
+    }//end of fileToString()
     
     @Override
     public String toString() {
