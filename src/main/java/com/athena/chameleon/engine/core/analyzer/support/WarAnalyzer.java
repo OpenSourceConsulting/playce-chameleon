@@ -95,8 +95,34 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));
 			
-			// ThreadLocal에 저장된 의존성 검사 및 DD 관련 재 가공 후 ThreadLocal에 저장
+			/*
+			System.err.println("\n\n================== [Deploy File Result] ==================");
+			PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+			FileType[] fileTypes = FileType.values();
+			AnalyzeDefinition definition = metadataDefinition.getWarDefinitionMap().get(file.getName());
+			Map<FileType, FileSummary> fileSummaryMap = definition.getFileSummaryMap();
+			Map<String, Integer> directiveInfo = definition.getJspDirectiveMap();
+					
+			logger.info("File => {}", metadataDefinition.getDeployFile());
 			
+			for (FileType fileType : fileTypes) {
+				logger.info("File Type : [{}], \tCount : [{}개], \tSource Encoding : [{}], \tTarget Encoding : [{}]", 
+						new Object[] {String.format("%12s", fileSummaryMap.get(fileType).getFileType().toString()), 
+									  String.format("%5s", fileSummaryMap.get(fileType).getFileCount()),
+									  String.format("%12s", fileSummaryMap.get(fileType).getSourceEncoding()),
+									  String.format("%5s", fileSummaryMap.get(fileType).getTargetEncoding())});
+			}
+			
+			Iterator<Entry<String, Integer>> iter = directiveInfo.entrySet().iterator();
+			
+			Entry<String, Integer> entry = null;
+			while(iter.hasNext()) {
+				entry = iter.next();
+				logger.info("[{}] : {}개", entry.getKey(), entry.getValue());
+			}
+			
+			logger.info("directory count in classes : [{}], class file count in classes : [{}]", definition.getClassDirCount(), definition.getClassFileCount());
+			//*/
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}

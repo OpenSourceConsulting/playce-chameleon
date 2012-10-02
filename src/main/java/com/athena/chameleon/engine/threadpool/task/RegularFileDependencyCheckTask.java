@@ -87,12 +87,18 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 			while ((lineStr = buffer.readLine()) != null) {
 				
 				// JSP Directive 검사
-				if(file.getName().endsWith("jsp")) {
-					if(!isEnd) {
-						// Ignore Carriage Return Line Feed
-						directive += lineStr;
+				if (file.getName().endsWith("jsp")) {
+					if (!isEnd) {
+						if (lineStr.indexOf("<%@page") > -1 || lineStr.indexOf("<%@ page") > -1) {
+							directive += lineStr;
+						}
 						
-						if(directive.lastIndexOf("%>") > -1) {
+						if (lineStr.lastIndexOf("%>") > -1 && !directive.equals("")) {
+							if(!directive.equals(lineStr)) {
+								// Ignore Carriage Return Line Feed
+								directive += lineStr;
+							}
+							
 							isEnd = true;
 							
 							// 동일한 Directive 가 있으면 add count, 없으면 신규 Directive 등록

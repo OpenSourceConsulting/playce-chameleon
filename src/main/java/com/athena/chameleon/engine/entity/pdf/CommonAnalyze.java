@@ -123,16 +123,11 @@ public class CommonAnalyze {
 	 * @return the xmlDataList
 	 */
 	public List<CommonAnalyze> getXmlDataList() {
-		if(xmlDataList == null)
-			return new ArrayList<CommonAnalyze>();
+		if(xmlDataList == null) {
+			xmlDataList = new ArrayList<CommonAnalyze>();
+		}
 		
 		return xmlDataList;
-	}
-	/**
-	 * @param xmlDataList the xmlDataList to set
-	 */
-	public void setXmlDataList(List<CommonAnalyze> xmlDataList) {
-		this.xmlDataList = xmlDataList;
 	}
 }
 //end of FileSummary.java

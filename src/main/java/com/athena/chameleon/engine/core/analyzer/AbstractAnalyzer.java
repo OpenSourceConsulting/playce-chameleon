@@ -105,6 +105,10 @@ public abstract class AbstractAnalyzer implements Analyzer {
 		String extension = null;
 		for (File f : fileList) {
 			if (f.isDirectory()) {
+				// classpath 내에 존재하는 디렉토리일 경우 디렉토리 갯수를 센다. 
+				if (f.getAbsolutePath().startsWith(ClasspathUtil.lastAddedPath)) {
+					analyzeDefinition.addClassDirCount();
+				}
 				defaultAnalyze(f, rootPath);
 			} else {
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
@@ -167,6 +171,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				} else if (extension.equals("class")) {
 					// classpath 내에 존재하는 class 파일일 경우에만 의존성 검사를 수행한다.
 					if (f.getAbsolutePath().startsWith(ClasspathUtil.lastAddedPath)) {
+						analyzeDefinition.addClassFileCount();
 						executor.execute(new ClassFileDependencyCheckTask(f, ClasspathUtil.lastAddedPath, policy, analyzeDefinition));
 					}
 				} else if (extension.equals("xml")) {

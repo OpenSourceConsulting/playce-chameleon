@@ -46,25 +46,42 @@ public class FileEncodingConvertTask extends BaseTask {
 	
 	/*
 	private static final String[] SEARCH_CHAR_SET = {
-		"encoding=\"EUC-KR\"", "encoding=\"euc-kr\"", "defaultEncoding=\"EUC-KR\"", "defaultEncoding=\"euc-kr\"",
+		"encoding=\"EUC-KR\"", "encoding=\"euc-kr\"", "Encoding=\"EUC-KR\"", "Encoding=\"euc-kr\"",
 		"charset=EUC-KR", "charset=euc-kr", "charset=\"EUC-KR\"", "charset=\"euc-kr\"", 
 
-		"encoding=\"MS949\"", "encoding=\"ms949\"", "defaultEncoding=\"MS949\"", "defaultEncoding=\"ms949\"",
+		"encoding=\"MS949\"", "encoding=\"ms949\"", "Encoding=\"MS949\"", "Encoding=\"ms949\"",
 		"charset=MS949", "charset=ms949", "charset=\"MS949\"", "charset=\"ms949\"",
+		
+		"encoding=\"KSC5601\"", "encoding=\"ksc5601\"", "Encoding=\"KSC5601\"", "Encoding=\"ksc5601\"",
+		"charset=KSC5601", "charset=ksc5601", "charset=\"KSC5601\"", "charset=\"ksc5601\"", 
 
-		"encoding=\"UTF-16BE\"", "encoding=\"utf-16be\"", "defaultEncoding=\"UTF-16BE\"", "defaultEncoding=\"utf-16be\"",
+		"encoding=\"UTF-16BE\"", "encoding=\"utf-16be\"", "Encoding=\"UTF-16BE\"", "Encoding=\"utf-16be\"",
 		"charset=UTF-16BE", "charset=utf-16be", "charset=\"UTF-16BE\"", "charset=\"utf-16be\"", 
 
-		"encoding=\"UTF-16LE\"", "encoding=\"utf-16le\"", "defaultEncoding=\"UTF-16LE\"", "defaultEncoding=\"utf-16le\"",
+		"encoding=\"UTF-16LE\"", "encoding=\"utf-16le\"", "Encoding=\"UTF-16LE\"", "Encoding=\"utf-16le\"",
 		"charset=UTF-16LE", "charset=utf-16le", "charset=\"UTF-16LE\"", "charset=\"utf-16le\"", 
 		
-		"encoding=\"UTF-16\"", "encoding=\"utf-16\"", "defaultEncoding=\"UTF-16\"", "defaultEncoding=\"utf-16\"",
+		"encoding=\"UTF-16\"", "encoding=\"utf-16\"", "Encoding=\"UTF-16\"", "Encoding=\"utf-16\"",
 		"charset=UTF-16", "charset=utf-16", "charset=\"UTF-16\"", "charset=\"utf-16\""
 		};
+	/*/
+	private static String[] SEARCH_CHAR_SET;
 	//*/
-	
-	private static final String[] SEARCH_CHAR_SET = (String[])ArrayUtils.add(CharsetDetector.getAllDetectableCharsets(), "MS949");
 	private static final String[] TARGET_SUFFIX = {"html", "htm", "jsp", "xml"};
+	
+	static {
+		String[] temp = CharsetDetector.getAllDetectableCharsets();
+		temp = (String[])ArrayUtils.add(temp, "MS949");
+		temp = (String[])ArrayUtils.add(temp, "KSC5601");
+		
+		SEARCH_CHAR_SET = CharsetDetector.getAllDetectableCharsets();
+		SEARCH_CHAR_SET = (String[])ArrayUtils.add(SEARCH_CHAR_SET, "MS949");
+		SEARCH_CHAR_SET = (String[])ArrayUtils.add(SEARCH_CHAR_SET, "KSC5601");
+
+		for(String charSet : temp) {
+			SEARCH_CHAR_SET = (String[])ArrayUtils.add(SEARCH_CHAR_SET, charSet.toLowerCase());
+		}
+	}
 	
 	private File file;
 	private String defaultEncoding = "UTF-8";
@@ -154,5 +171,9 @@ public class FileEncodingConvertTask extends BaseTask {
 		
 		return str;
 	}//end of replace()
+	
+	public static void main(String[] args) {
+		System.out.println("ddd");
+	}
 
 }//end of FileEncodingConvertTask.java

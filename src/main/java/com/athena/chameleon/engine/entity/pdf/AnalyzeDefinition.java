@@ -259,6 +259,10 @@ public class AnalyzeDefinition {
 	public int getClassFileCount() {
 		return classFileCount;
 	}
+	
+	public void addClassFileCount() {
+		this.classFileCount++;
+	}
 
 	/**
 	 * @param classFileCount the classFileCount to set
@@ -274,6 +278,10 @@ public class AnalyzeDefinition {
 		return classDirCount;
 	}
 
+	public void addClassDirCount() {
+		this.classDirCount++;
+	}
+	
 	/**
 	 * @param classDirCount the classDirCount to set
 	 */

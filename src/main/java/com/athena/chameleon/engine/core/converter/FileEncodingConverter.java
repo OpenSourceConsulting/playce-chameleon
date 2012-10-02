@@ -105,6 +105,8 @@ public class FileEncodingConverter {
 
 		logger.debug("Convert Target Path or File : [{}]", file.getAbsolutePath());
 		
+		this.analyzeDefinition = analyzeDefinition;
+		
 		fileSummaryMap = new HashMap<FileType, FileSummary>();
 		for (FileType fileType : fileTypes) {
 			fileSummary = new FileSummary();
@@ -113,7 +115,6 @@ public class FileEncodingConverter {
 		}
 		
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
-		analyzeDefinition = new AnalyzeDefinition();
 		analyzeDefinition.setFileName(file.getAbsolutePath());
 		analyzeDefinition.setFileSummaryMap(fileSummaryMap);
 		
