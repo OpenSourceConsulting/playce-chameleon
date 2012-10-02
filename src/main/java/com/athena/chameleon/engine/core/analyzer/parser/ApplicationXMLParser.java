@@ -185,9 +185,5 @@ public class ApplicationXMLParser extends Parser {
 			return application;
 		}
 	}//end of checkApplication()
-
-	public static void main(String[] args) {
-		new ApplicationXMLParser().parse(new File("/Users/nices96/Desktop/xmlparse/META-INF/application_1_3.xml"), new AnalyzeDefinition());
-	}
 }
 //end of ApplicationXMLParser.java
