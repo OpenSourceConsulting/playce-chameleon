@@ -558,6 +558,27 @@ public class JaxbUtils {
 	 * <p>
 	 * <pre>
 	 * String xml = "&lt;Request&gt;...&lt;/Request&gt;";
+	 * Request request = (Request) JaxbUtils.marshal("com.athena.chameleon.engine.entity", xml);
+	 * </pre>
+	 * </p>
+	 * <b>이 메소드를 반복적으로 호출하면 성능 문제가 발생한다. {@link javax.xml.bind.JAXBContext#createMarshaller()} 및 {@link javax.xml.bind.JAXBContext#createUnmarshaller()} 메소는
+	 * 반복적으로 호출하는 경우 성능 문제를 발생하기 때문이다.</b>
+	 * 
+	 * @param packageName 패키지명 (예; "<tt>com.skt.isf.sal.jaxb.request</tt>")
+	 * @param file		  unmarshal 대상 파일
+	 * @return Object XML의 JAXB DOM Object
+	 * @throws javax.xml.bind.JAXBException unmarshal할 수 없는 경우
+	 */
+	public static Object unmarshal(String packageName, File file) throws JAXBException {
+		Unmarshaller unmarshaller = createUnmarshaller(packageName);
+		return unmarshaller.unmarshal(file);
+	}//end of unmarshal()
+
+	/**
+	 * XML을 JAXB DOM Object로 변환한다.
+	 * <p>
+	 * <pre>
+	 * String xml = "&lt;Request&gt;...&lt;/Request&gt;";
 	 * Request request = (Request) JaxbUtils.marshal(unmarshaller, xml);
 	 * </pre>
 	 * </p>

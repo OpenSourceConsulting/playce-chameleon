@@ -24,18 +24,26 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
+import com.athena.chameleon.engine.core.analyzer.support.EarAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.support.JarAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.support.WarAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.support.ZipAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.threadpool.task.ClassFileDependencyCheckTask;
 import com.athena.chameleon.engine.threadpool.task.RegularFileDependencyCheckTask;
+import com.athena.chameleon.engine.utils.JaxbUtils;
 
 
 /**
@@ -113,30 +121,6 @@ public abstract class AbstractAnalyzer implements Analyzer {
 			} else {
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
 				
-				/**
-				
-				if(this instanceof ZipAnalyzer) {
-					
-				} else if(this instanceof EarAnalyzer) {
-					
-				} else if(this instanceof WarAnalyzer) {
-					
-				} else if(this instanceof JarAnalyzer) {
-					
-				}
-
-				// war, jar 파일은 EarAnalyzer
-				
-				// java 파일은 ZipAnalyzer
-				
-				// class 파일은 EarAnalyzer, WarAnalyzer, JarAnalyzer => ear, war, jar의 APP-INF/classes 또는 WEB-INF/classes, jar는 루트
-				
-				// jsp, properties는 ALL
-				
-				// xml은 ALL
-				 
-				 */
-				
 				if (extension.equals("war")) {
 					if ((warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST)) == null) {
 						warFileList = new ArrayList<File>();
@@ -180,25 +164,43 @@ public abstract class AbstractAnalyzer implements Analyzer {
 					// [jar] META-INF/ejb-jar.xml, META-INF/weblogic-ejb-jar.xml, META-INF/jeus-ejb-dd.xml
 					if (f.getParent().endsWith("WEB-INF")) {
 						if (f.getName().equals("web.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
+								
+							}
 						} else if (f.getName().equals("weblogic.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
+								
+							}
 						} else if (f.getName().equals("jeus-web-dd.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
+								
+							}
 						}
 					} else if (f.getParent().endsWith("META-INF")) {
 						if (f.getName().equals("application.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
+								
+							}
 						} else if (f.getName().equals("weblogic-application.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
+								
+							}
 						} else if (f.getName().equals("jeus-application-dd.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
+								
+							}
 						} else if (f.getName().equals("ejb-jar.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
+								
+							}
 						} else if (f.getName().equals("weblogic-ejb-jar.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
+								
+							}
 						} else if (f.getName().equals("jeus-ejb-dd.xml")) {
-
+							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
+								
+							}
 						}
 					}
 				}
@@ -270,5 +272,27 @@ public abstract class AbstractAnalyzer implements Analyzer {
     	
     	return resultFile;
     }//end of getResultFile()
+    
+
+    public void webXmlParse(File file) {
+    	Object webApp = null;
+
+    	try {
+        	//web.xml 2.5
+			webApp = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType.class.getPackage().getName(), file);
+		} catch (JAXBException e1) {
+        	try {
+            	//web.xml 2.4
+				webApp = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_4.WebAppType.class.getPackage().getName(), file);
+			} catch (JAXBException e2) {
+            	try {
+        			//web.xml 2.3
+					webApp = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_3.WebApp.class.getPackage().getName(), file);
+				} catch (JAXBException e3) {
+					e3.printStackTrace();
+				}
+			}
+		}
+    }//end of webXmlParse()
     
 }//end of DependencyAnalyzer.java
