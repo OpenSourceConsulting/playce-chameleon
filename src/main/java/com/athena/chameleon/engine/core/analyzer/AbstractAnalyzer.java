@@ -21,18 +21,21 @@
 package com.athena.chameleon.engine.core.analyzer;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
-import com.athena.chameleon.common.utils.ThreadLocalUtil;
-import com.athena.chameleon.engine.constant.ChameleonConstants;
+import com.athena.chameleon.engine.core.analyzer.parser.ApplicationXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.EjbJarXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.JeusApplicationDDXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.JeusEjbDDXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.JeusWebDDXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.WebXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.WeblogicApplicationXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.WeblogicEjbJarXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.WeblogicXMLParser;
 import com.athena.chameleon.engine.core.analyzer.support.EarAnalyzer;
 import com.athena.chameleon.engine.core.analyzer.support.JarAnalyzer;
 import com.athena.chameleon.engine.core.analyzer.support.WarAnalyzer;
@@ -43,7 +46,6 @@ import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.threadpool.task.ClassFileDependencyCheckTask;
 import com.athena.chameleon.engine.threadpool.task.RegularFileDependencyCheckTask;
-import com.athena.chameleon.engine.utils.JaxbUtils;
 
 
 /**
@@ -62,8 +64,6 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	protected ChameleonThreadPoolExecutor executor;
 	protected AnalyzeDefinition analyzeDefinition;
 	
-	protected List<File> warFileList;
-	protected List<File> jarFileList;
 	protected List<String> libFileList;
 	protected List<String> deleteFileList;
 	
@@ -106,7 +106,6 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	 * @param file
 	 * @param rootPath
 	 */
-	@SuppressWarnings("unchecked")
 	private void defaultAnalyze(File file, String rootPath) {		
 		File[] fileList = file.listFiles();
 		
@@ -120,37 +119,8 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				defaultAnalyze(f, rootPath);
 			} else {
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
-				
-				if (extension.equals("war")) {
-					if ((warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST)) == null) {
-						warFileList = new ArrayList<File>();
-						ThreadLocalUtil.add(ChameleonConstants.WAR_FILE_LIST, warFileList);
-					}
-					
-					warFileList.add(f);
-			    } else if (extension.equals("jar")) {
-			    	//=================
-			    	//= Nothing to do = 
-			    	//=================
-			    	
-			    	/**
-			    	 * ejb 관련 jar 파일은 아래와 같이 application.xml 파일의 module 정보로부터 가져온다.
-			    	 * 
-			    	 * &lt;module>
-			    	 *    &lt;ejb>test-ejb.jar&lt;/ejb>
-			    	 * &lt/module>
-			    	 * 
-			    	 * parsing이 완료된 ejb jar 파일은 다음과 같이 설정하여 ThreadLocal에 저장한다.
-			    	 * 
-						if((jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST)) == null) {
-							jarFileList = new ArrayList<File>();
-							ThreadLocalUtil.add(ChameleonConstants.JAR_FILE_LIST, jarFileList);
-						}
-					
-						jarFileList.add(f);
-			    	 * 
-			    	 */
-				} else if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
+
+				if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
 					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy, analyzeDefinition));
 				} else if (extension.equals("class")) {
 					// classpath 내에 존재하는 class 파일일 경우에만 의존성 검사를 수행한다.
@@ -165,41 +135,41 @@ public abstract class AbstractAnalyzer implements Analyzer {
 					if (f.getParent().endsWith("WEB-INF")) {
 						if (f.getName().equals("web.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
-								
+								new WebXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("weblogic.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
-								
+								new WeblogicXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("jeus-web-dd.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
-								
+								new JeusWebDDXMLParser().parse(f, analyzeDefinition);
 							}
 						}
 					} else if (f.getParent().endsWith("META-INF")) {
 						if (f.getName().equals("application.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
-								
+								new ApplicationXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("weblogic-application.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
-								
+								new WeblogicApplicationXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("jeus-application-dd.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
-								
+								new JeusApplicationDDXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("ejb-jar.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
-								
+								new EjbJarXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("weblogic-ejb-jar.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
-								
+								new WeblogicEjbJarXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("jeus-ejb-dd.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
-								
+								new JeusEjbDDXMLParser().parse(f, analyzeDefinition);
 							}
 						}
 					}
@@ -272,27 +242,5 @@ public abstract class AbstractAnalyzer implements Analyzer {
     	
     	return resultFile;
     }//end of getResultFile()
-    
-
-    public void webXmlParse(File file) {
-    	Object webApp = null;
-
-    	try {
-        	//web.xml 2.5
-			webApp = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType.class.getPackage().getName(), file);
-		} catch (JAXBException e1) {
-        	try {
-            	//web.xml 2.4
-				webApp = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_4.WebAppType.class.getPackage().getName(), file);
-			} catch (JAXBException e2) {
-            	try {
-        			//web.xml 2.3
-					webApp = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_3.WebApp.class.getPackage().getName(), file);
-				} catch (JAXBException e3) {
-					e3.printStackTrace();
-				}
-			}
-		}
-    }//end of webXmlParse()
     
 }//end of DependencyAnalyzer.java

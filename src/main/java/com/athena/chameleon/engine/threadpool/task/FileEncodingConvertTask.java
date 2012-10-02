@@ -171,9 +171,5 @@ public class FileEncodingConvertTask extends BaseTask {
 		
 		return str;
 	}//end of replace()
-	
-	public static void main(String[] args) {
-		System.out.println("ddd");
-	}
 
 }//end of FileEncodingConvertTask.java

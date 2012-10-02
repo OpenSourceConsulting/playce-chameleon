@@ -21,6 +21,7 @@
 package com.athena.chameleon.engine.core.analyzer.support;
 
 import java.io.File;
+import java.util.List;
 
 import org.springframework.util.Assert;
 
@@ -43,6 +44,9 @@ import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecut
  * @version 1.0
  */
 public class EarAnalyzer extends AbstractAnalyzer {
+	
+	private List<File> warFileList;
+	private List<File> jarFileList;
 
 	/**
 	 * <pre>
@@ -59,6 +63,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.core.analizer.Analyzer#analyze(java.io.File)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
@@ -79,6 +84,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			analyze(new File(tempDir), tempDir);
 			
 			// war 파일이 존재할 경우 해당 war 파일에 대해 분석한다.
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
 			if(warFileList != null && warFileList.size() > 0) {
 				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 				AnalyzeDefinition warDefinition = null;
@@ -90,7 +96,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			}
 			
 			// jar 파일이 존재할 경우 해당 jar 파일에 대해 분석한다.
-			if(warFileList != null && warFileList.size() > 0) {
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			if(jarFileList != null && jarFileList.size() > 0) {
 				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 				AnalyzeDefinition jarDefinition = null;
 				for(File jarFile : jarFileList) {
