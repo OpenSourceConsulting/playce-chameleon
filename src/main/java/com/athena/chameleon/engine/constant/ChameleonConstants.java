@@ -41,5 +41,7 @@ public class ChameleonConstants {
 	public static final String WAR_FILE_LIST 			= "WAR_FILE_LIST";
 	public static final String JAR_FILE_LIST 			= "JAR_FILE_LIST";
 	public static final String LIB_FILE_LIST 			= "LIB_FILE_LIST";
+
+	public static final String PROJECT_NAME 			= "PROJECT_NAME";
 	
 }//end of ChameleonConstants.java

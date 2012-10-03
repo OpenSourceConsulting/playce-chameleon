@@ -22,7 +22,11 @@ package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
  * <pre>
@@ -39,8 +43,25 @@ public class WeblogicEjbJarXMLParser extends Parser {
 	 */
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
-		// TODO Auto-generated method stub
-		return null;
+		this.analyzeDefinition = analyzeDefinition;
+		
+    	Object obj = null;
+    	
+    	try {
+        	// weblogic-ejb-jar v9_0
+			obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType.class.getPackage().getName(), file)).getValue();
+    	} catch (JAXBException e1) {
+	    	try {
+	        	// weblogic-ejb-jar v8_1
+				obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v8_1.WeblogicEjbJar.class.getPackage().getName(), file);
+			} catch (JAXBException e2) {
+				logger.error("JAXBException has occurred.", e2);
+			}
+    	}
+		
+		// jboss.xml 변환 생성
+    	
+    	return obj;
 	}//end of parse()
 
 }

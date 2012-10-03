@@ -21,12 +21,19 @@
 package com.athena.chameleon.engine.core.analyzer;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.parser.ApplicationXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.EjbJarXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusApplicationDDXMLParser;
@@ -86,8 +93,10 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	 * @param rootPath
 	 */
 	protected void analyze(File file, String rootPath) {	
-		defaultAnalyze(file, rootPath);
+		// 입력된 파일명을 프로젝트 이름으로 사용한다.(jboss-app.xml, jboss-web.xml 파일 생성시 사용)
+		ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName().substring(0, file.getName().lastIndexOf(".")));
 		
+		defaultAnalyze(file, rootPath);
 		executor.getExecutor().shutdown();
 		
 		try {
@@ -242,5 +251,45 @@ public abstract class AbstractAnalyzer implements Analyzer {
     	
     	return resultFile;
     }//end of getResultFile()
+    
+    /**
+     * <pre>
+     * jboss-classloading.xml 파일을 생성한다.
+     * </pre>
+     * @param parentPath
+     * @param domain
+     * @param patentDomain
+     */
+    protected void makeClassLoading(File parentPath, String domain, String patentDomain) {
+    	Assert.notNull(parentPath, "parentPath must not be null");
+    	Assert.notNull(domain, "domain must not be null");
+    	
+    	StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+    	
+    	if(StringUtils.isEmpty(patentDomain)) {
+    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
+    		  .append("		  domain=\"").append(domain).append("\"\r\n")
+    		  .append("		  export-all=\"NON_EMPTY\"\r\n")
+    		  .append("		  import-all=\"true\"\r\n")
+    		  .append("		  parent-first=\"false\">\r\n")
+    		  .append("</classloading>");
+    	} else {
+    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
+	  		  .append("		  domain=\"").append(domain).append("\"\r\n")
+	  		  .append("		  parent-domain=\"").append(patentDomain).append("\"\r\n")
+	  		  .append("		  export-all=\"NON_EMPTY\"\r\n")
+	  		  .append("		  import-all=\"true\">\r\n")
+	  		  .append("</classloading>");
+    	}
+    	
+    	try {
+			File file = new File(parentPath, "jboss-classloading.xml");
+			FileWriter fw = new FileWriter(file);
+			fw.write(sb.toString());
+			IOUtils.closeQuietly(fw);
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+		}
+    }//end of makeClassLoading()
     
 }//end of DependencyAnalyzer.java

@@ -25,10 +25,13 @@ import java.io.File;
 import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
@@ -88,6 +91,15 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);
+			
+			// jboss-classloading.xml 파일을 생성한다.
+			if(embed) {
+				String parentDomain = ((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getDeployFile();
+				parentDomain = parentDomain.substring(parentDomain.lastIndexOf("/") + 1);
+				makeClassLoading(new File(tempDir, "WEB-INF"), file.getName(), parentDomain);
+			} else {
+				makeClassLoading(new File(tempDir, "WEB-INF"), file.getName(), null);
+			}
 
 			// 임시디렉토리를 재 압축한다.
 			ZipUtil.compress(tempDir, (embed ? file.getAbsolutePath() : getResultFile(file)));

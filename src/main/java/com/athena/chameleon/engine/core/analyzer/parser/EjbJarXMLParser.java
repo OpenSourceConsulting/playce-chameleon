@@ -22,7 +22,11 @@ package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
  * <pre>
@@ -39,9 +43,23 @@ public class EjbJarXMLParser extends Parser {
 	 */
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
-		// TODO Auto-generated method stub
-		return null;
+		this.analyzeDefinition = analyzeDefinition;
+		
+    	Object obj = null;
+    	
+    	try {
+        	// ejb-jar v2_1
+			obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType.class.getPackage().getName(), file)).getValue();
+    	} catch (JAXBException e1) {
+	    	try {
+	        	// ejb-jar v2_0
+				obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar.class.getPackage().getName(), file);
+			} catch (JAXBException e2) {
+				logger.error("JAXBException has occurred.", e2);
+			}
+    	}
+    	
+    	return obj;
 	}//end of parse()
-
 }
 //end of EjbJarXMLParser.java

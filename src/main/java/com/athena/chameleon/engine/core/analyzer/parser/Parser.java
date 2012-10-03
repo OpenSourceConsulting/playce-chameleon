@@ -20,6 +20,7 @@
  */
 package com.athena.chameleon.engine.core.analyzer.parser;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -105,4 +106,26 @@ public abstract class Parser {
         output.write(xmlData);
         IOUtils.closeQuietly(output);
 	}//end of rewrite()
+	
+    /**
+     * <pre>
+     * 파일의 내용을 문자열로 변환하여 반환한다.
+     * </pre>
+     * @param file
+     * @return
+     * @throws IOException 
+     */
+    protected String fileToString(String file) throws IOException {
+        String result = null;
+
+        DataInputStream in = null;
+        File f = new File(file);
+        byte[] buffer = new byte[(int) f.length()];
+        in = new DataInputStream(new FileInputStream(f));
+        in.readFully(buffer);
+        result = new String(buffer);
+        IOUtils.closeQuietly(in);
+        
+        return result;
+    }//end of fileToString()
 }//end of Parser.java

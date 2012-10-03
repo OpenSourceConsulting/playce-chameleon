@@ -27,11 +27,6 @@
 				<client-auth>Requires</client-auth>
 				<identity-assertion>NotSupported</identity-assertion>
 			</security-interop>
-			<env>
-				<type>java.lang.Integer</type>
-				<name>minAmount</name>
-				<value>100</value>
-			</env>
 			<ejb-ref>
 				<jndi-info>
 					<ref-name>AccountEJB</ref-name>

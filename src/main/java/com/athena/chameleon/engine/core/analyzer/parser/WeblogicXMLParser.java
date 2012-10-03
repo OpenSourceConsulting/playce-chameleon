@@ -22,6 +22,11 @@ package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
 
+import org.jdom2.Document;
+import org.jdom2.input.SAXBuilder;
+
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 
 /**
@@ -39,8 +44,28 @@ public class WeblogicXMLParser extends Parser {
 	 */
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
-		// TODO Auto-generated method stub
-		return null;
+		this.analyzeDefinition = analyzeDefinition;
+		
+    	SAXBuilder builder = null;
+    	Document doc = null;
+    	String context = null;
+    	
+        try {
+        	builder = new SAXBuilder();
+        	doc = builder.build(file);
+
+			context = doc.getRootElement().getChild("context-root", doc.getRootElement().getNamespace()).getText();
+			
+			String jbossWeb = fileToString("./src/main/resources/jbossweb/jboss-web.xml");
+			jbossWeb = jbossWeb.replaceAll("\\$\\{contextRoot\\}", context);
+			jbossWeb = jbossWeb.replaceAll("\\$\\{loaderRepository\\}", "com.athena.chameleon:loader=" + ThreadLocalUtil.get(ChameleonConstants.PROJECT_NAME));
+			
+			rewrite(new File(file.getParentFile(), "jboss-web.xml"), jbossWeb);
+        } catch (Exception e) {
+			logger.error("Unhandled exception has occurred.", e);
+        }
+    	
+		return doc;
 	}//end of parse()
 
 }
