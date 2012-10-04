@@ -21,6 +21,7 @@
 package com.athena.chameleon.engine.entity.pdf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -127,6 +128,9 @@ public class PDFMetadataDefinition {
 	 * @return the warDefinitionMap
 	 */
 	public Map<String, AnalyzeDefinition> getWarDefinitionMap() {
+	    if(warDefinitionMap == null)
+	        warDefinitionMap = new TreeMap<String, AnalyzeDefinition>();
+	    
 		return warDefinitionMap;
 	}
 	/**
