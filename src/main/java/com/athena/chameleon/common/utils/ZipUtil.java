@@ -41,6 +41,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.athena.chameleon.engine.utils.FileUtil;
+
 /**
  * <pre>
  * zip, ear, war, jar 파일에 대한 압축해제 및 재압축 기능을 지원하는 유틸리트 클래스
@@ -116,7 +118,8 @@ public class ZipUtil {
      * @throws IOException
      */
     public static boolean decompress(String targetZipFileStr, String destDirStr) throws IOException {
-        return decompress(targetZipFileStr, destDirStr, DEFAULT_ENCODING);
+        //return decompress(targetZipFileStr, destDirStr, DEFAULT_ENCODING);
+    	return FileUtil.extract2(targetZipFileStr, destDirStr);
     }//end of decompress()
 
     /**

@@ -60,6 +60,91 @@ public class FileUtil {
     public static String extract(String zipFilePath, String unzipDirPath) throws Exception {
         return extract(zipFilePath, unzipDirPath, PropertyUtil.getProperty("unzip.default.encoding"));
     }
+    
+
+    public static boolean extract2(String zipFilePath, String unzipDirPath) throws IOException {
+		ZipFile zipFile = null;
+
+		try {
+			if (logger.isDebugEnabled()) {
+				logger.debug("[ZipUtil] zipFilePath :" + zipFilePath);
+			}
+
+			String unZipDir = (unzipDirPath == null) ? zipFilePath.substring(0,
+					zipFilePath.lastIndexOf('.')) + File.separator
+					: unzipDirPath + File.separator;
+			if (logger.isDebugEnabled()) {
+				logger.debug("[ZipUtil] unzipDirPath :" + unZipDir);
+			}
+
+			zipFile = new ZipFile(zipFilePath, "EUC-KR");
+
+			Enumeration<?> e = zipFile.getEntries();
+			for (; e.hasMoreElements();) {
+				FileOutputStream output = null;
+				InputStream input = null;
+
+				try {
+					ZipEntry entry = (ZipEntry) e.nextElement();
+
+					//entryName = entry.getName().replace('\\', '/');
+					if (entry.isDirectory()) {
+						File dir = new File(unZipDir, entry.getName());
+						if (!dir.exists() && !dir.mkdirs()) {
+							throw new IOException("[ZipUtil] make directory fail");
+						}
+					} else {
+						File outputFile = null;
+
+						try {
+							outputFile = new File(unZipDir, entry.getName());
+
+							if (entry.getSize() == 0 && entry.getName().indexOf('.') == -1) {
+								throw new Exception("[ZipUtil] This file may be a directory");
+							}
+
+							File parentDir = outputFile.getParentFile();
+							if (!parentDir.exists() && !parentDir.mkdirs()) {
+								throw new IOException("[ZipUtil] make directory fail");
+							}
+
+							input = zipFile.getInputStream(entry);
+							output = new FileOutputStream(outputFile);
+							int len = 0;
+							byte buffer[] = new byte[1024];
+							while ((len = input.read(buffer)) > 0) {
+								output.write(buffer, 0, len);
+							}
+						} catch (Exception ex2) {
+							ex2.printStackTrace();
+							if (!outputFile.exists() && !outputFile.mkdirs()) {
+								throw new IOException("[ZipUtil] make directory fail");
+							}
+						}
+					}
+				} catch (IOException ex) {
+					throw ex;
+				} catch (Exception ex) {
+					throw new IOException("[ZipUtil] extract fail", ex);
+				} finally {
+					if (input != null) {
+						input.close();
+					}
+					if (output != null) {
+						output.close();
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if (zipFile != null) {
+				zipFile.close();
+			}
+		}
+		return true;
+    }
 
     /**
      * 
