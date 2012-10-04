@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR" />
-<title>Login Box HTML Code - www.PSDGraphics.com</title>
+<title>Athena Chameleon - WAS Migration Tool</title>
 
 <link href="/chameleon/css/login-box.css" rel="stylesheet" type="text/css" />
 
@@ -30,7 +30,7 @@
 					dataType: "json",			  
 					success: function(data) {
 						if(data.result) {
-							document.location = "<c:url value='/upload.do?method=show' />";
+							document.location = "<c:url value='/main.do' />";
 						} else {
 							alert('입력한 ID나 Password 정보가 일치하지 않습니다.');
 							return false;

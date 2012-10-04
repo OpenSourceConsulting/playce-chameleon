@@ -46,7 +46,7 @@ import com.athena.chameleon.web.upload.vo.Upload;
  * @version 1.0
  */
 @Controller("uploadController")
-@RequestMapping("/upload.do")
+@RequestMapping("/upload")
 public class UploadController {
 
 	@Inject
@@ -69,15 +69,15 @@ public class UploadController {
 	 * @return
 	 * @throws Exception
 	 */
-    @RequestMapping(params = "method=show")
+	@RequestMapping("/form.do")
     public String showUpload(Model model, HttpSession session) throws Exception {
     	
     	String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
     	if(loginFlag == null || !loginFlag.equals("Y"))
-    		return "redirect:/login.do?method=show";
+    		return "redirect:/login/loginForm.do";
     	
     	model.addAttribute(new Upload());
-    	return "/ifrm/upload/show";
+    	return "/ifrm/upload/uploadForm";
     }
 
     /**
