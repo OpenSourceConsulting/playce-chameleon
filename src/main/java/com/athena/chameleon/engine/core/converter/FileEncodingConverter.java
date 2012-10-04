@@ -77,7 +77,6 @@ public class FileEncodingConverter {
     private FileType[] fileTypes = FileType.values();
     private Map<FileType, FileSummary> fileSummaryMap;
     private FileSummary fileSummary;
-    private int totalCount;
     
 	/**
 	 * <pre>
@@ -129,16 +128,18 @@ public class FileEncodingConverter {
 			e.printStackTrace();
 		}
 		
-		// 모든 Runnable Task가 완료된 후 전체 항목에 대한 Total Count를 세팅한다.
-		fileSummaryMap.get(FileType.SUM).setFileCount(totalCount);
-		
+		int totalCount = 0;
 		for (FileType fileType : fileTypes) {
+			totalCount += fileSummaryMap.get(fileType).getFileCount();
 			logger.info("File Type : [{}], \tCount : [{}개], \tSource Encoding : [{}], \tTarget Encoding : [{}]", 
 					new Object[] {String.format("%12s", fileSummaryMap.get(fileType).getFileType().toString()), 
 								  String.format("%5s", fileSummaryMap.get(fileType).getFileCount()),
 								  String.format("%12s", fileSummaryMap.get(fileType).getSourceEncoding()),
 								  String.format("%5s", fileSummaryMap.get(fileType).getTargetEncoding())});
 		}
+
+		// 모든 Runnable Task가 완료된 후 전체 항목에 대한 Total Count를 세팅한다.
+		fileSummaryMap.get(FileType.SUM).setFileCount(totalCount);
 		
 		// 파일 확장자에 따라 파일 요약정보를 PDFMetadataDefinition에 저장한다.
 		String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
@@ -165,7 +166,6 @@ public class FileEncodingConverter {
 		if (file.isDirectory()) {
 			fileSummary = fileSummaryMap.get(FileType.DIRECTORY);
 			fileSummary.addCount();
-			totalCount++;
 			
 			File[] files = null;
 			files = file.listFiles();
@@ -180,7 +180,6 @@ public class FileEncodingConverter {
 				if (fileType.value().equals(extension)) {
 					fileSummary = fileSummaryMap.get(fileType);
 					fileSummary.addCount();
-					totalCount++;
 					
 					if(fileType.equals(FileType.JAR) && file.getParent().endsWith("lib")) {
 						// xerces.jar, xalan.jar, xml-api.jar, jboss-*.jar 파일이 존재할 경우 제거
