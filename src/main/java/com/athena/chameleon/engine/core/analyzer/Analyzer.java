@@ -31,8 +31,8 @@ import java.io.File;
  */
 public interface Analyzer {
 	
-	public void analyze(String path);
+	public String analyze(String path);
 	
-	public void analyze(File file);
+	public String analyze(File file);
 	
 }//end of Analyzer.java

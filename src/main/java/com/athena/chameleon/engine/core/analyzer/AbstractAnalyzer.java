@@ -81,8 +81,8 @@ public abstract class AbstractAnalyzer implements Analyzer {
 		this.analyzeDefinition = analyzeDefinition;
 	}
 
-	public void analyze(String path) {
-		analyze(new File(path));
+	public String analyze(String path) {
+		return analyze(new File(path));
 	}//end of analyze()
 	
 	/**

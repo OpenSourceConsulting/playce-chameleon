@@ -65,9 +65,11 @@ public class EarAnalyzer extends AbstractAnalyzer {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void analyze(File file) {
+	public String analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
 		Assert.isTrue(file.getName().endsWith(".ear"), "file name must be ends with \".ear\".");
+		
+		String newFileName = null;
 		
 		try {
 			// 임시 디렉토리에 압축 해제
@@ -111,7 +113,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			makeClassLoading(new File(tempDir, "META-INF"), file.getName(), null);
 			
 			// 해당 ear 파일로 재 압축한다.
-			ZipUtil.compress(tempDir, getResultFile(file));
+			newFileName = getResultFile(file);
+			ZipUtil.compress(tempDir, newFileName);
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));
@@ -121,6 +124,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}
+		
+		return newFileName;
 	}//end of analyze()
 	
 }//end of EarAnalyzer.java

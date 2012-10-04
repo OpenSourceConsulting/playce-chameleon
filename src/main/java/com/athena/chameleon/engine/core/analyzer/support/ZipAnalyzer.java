@@ -56,9 +56,11 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 	 * @see com.athena.chameleon.engine.core.analizer.Analyzer#analyze(java.io.File)
 	 */
 	@Override
-	public void analyze(File file) {
+	public String analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
 		Assert.isTrue(file.getName().endsWith(".zip"), "file name must be ends with \".zip\".");
+		
+		String newFileName = null;
 		
 		try {
 			// 임시 디렉토리에 압축 해제
@@ -75,7 +77,8 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			analyze(new File(tempDir), tempDir);
 			
 			// 해당 zip 파일을 xxx-result.zip으로 재 압축한다.
-			ZipUtil.compress(tempDir, getResultFile(file));
+			newFileName = getResultFile(file);
+			ZipUtil.compress(tempDir, newFileName);
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));
@@ -85,6 +88,8 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}
+		
+		return newFileName;
 	}//end of analyze()
 	
 }//end of ZipAnalyzer.java
