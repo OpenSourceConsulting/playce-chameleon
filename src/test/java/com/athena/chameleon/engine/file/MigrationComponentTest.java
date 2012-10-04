@@ -33,6 +33,7 @@ import javax.inject.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,11 +82,12 @@ public class MigrationComponentTest {
     @Named("pdfDocGenerator")
     private PDFDocGenerator pdfData;
 
-    @Test
+    //@Test
+	@Ignore
     public void unzipTest() throws Exception  {
+        /*
         String zipFilePath = this.getClass().getResource("/files/test.zip").getFile();
         String tmpFileDir = unzipDirPath + File.separator + System.currentTimeMillis();
-        /*
         String unzipPath = FileUtil.extract(zipFilePath, tmpFileDir);
         
         File unzipFile = new File(unzipPath);
