@@ -291,21 +291,21 @@ public class PDFDocGenerator {
     		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header3")));
     		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header4")));
     	
-    		Iterator iterator = data.getFileSummaryMap().entrySet().iterator();
-    		
-            while (iterator.hasNext()) {
-                Entry entry = (Entry)iterator.next();
-                childE2.addContent(new Element("col").setText(((FileType)entry.getKey()).toString()));
-                childE2.addContent(new Element("col").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
-                childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getSourceEncoding()));
-                childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getTargetEncoding()));
-    			
-                childE3 = new Element("data");
-    			childE3.addContent(new Element("column").setText(((FileType)entry.getKey()).toString()));
-    			childE3.addContent(new Element("value").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
-    			child2.addContent(childE3);
+    		for (FileType fileType : FileType.values()) {
+    		    FileSummary summary = data.getFileSummaryMap().get(fileType);
+    		    if(summary != null) {
+    		        childE2.addContent(new Element("col").setText(fileType.toString()));
+                    childE2.addContent(new Element("col").setText(String.valueOf(summary.getFileCount())));
+                    childE2.addContent(new Element("col").setText(summary.getSourceEncoding()));
+                    childE2.addContent(new Element("col").setText(summary.getTargetEncoding()));
+                    
+                    childE3 = new Element("data");
+                    childE3.addContent(new Element("column").setText(fileType.toString()));
+                    childE3.addContent(new Element("value").setText(String.valueOf(summary.getFileCount())));
+                    child2.addContent(childE3);        
+    		    }
             }
-    		
+            
             child1.addContent(childE1);
             child1.addContent(childE2);
     		

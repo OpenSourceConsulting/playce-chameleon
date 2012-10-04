@@ -78,10 +78,10 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	protected void taskRun() {
 		className = file.getAbsolutePath()
 						.substring(rootPath.length() + 1, file.getAbsolutePath().lastIndexOf("."))
-						.replaceAll("/", ".");
+						.replaceAll("/", ".").replaceAll("\\\\", ".");
 		
 		try {
-			Class<?> clazz = Class.forName(className);
+	        Class<?> clazz = Class.forName(className);
 
 			dependency = new Dependency();
 			dependency.setFileName(clazz.getCanonicalName());
