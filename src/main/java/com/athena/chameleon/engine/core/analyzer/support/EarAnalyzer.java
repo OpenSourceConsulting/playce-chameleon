@@ -116,7 +116,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			}
 			
 			// jboss-classloading.xml 파일을 생성한다.
-			makeClassLoading(new File(tempDir, "META-INF"), file.getName(), null);
+			makeClassLoading(getMetaInfDirPath(new File(tempDir)), file.getName(), null);
 			
 			// 해당 ear 파일로 재 압축한다.
 			newFileName = getResultFile(file);

@@ -238,6 +238,62 @@ public abstract class AbstractAnalyzer implements Analyzer {
     
     /**
      * <pre>
+     * WEB-INF 디렉토리를 탐색한다.
+     * </pre>
+     * @param dir
+     * @return
+     */
+    protected File getWebInfDirPath(File dir) {
+    	File path = null;
+    	if (dir.exists()) {
+            File[] files = dir.listFiles();
+            
+            for (File f : files) {
+            	if (f.isDirectory()) {
+            		// APP-INF/classes 또는 WEB-INF/classes를 탐색
+            		if(f.getName().endsWith("WEB-INF")) {
+            			path = f;
+            			break;
+            		} else {
+            			path = getWebInfDirPath(f);
+            		}
+            	}
+            }
+        }
+    	
+    	return path;
+    }//end of getWebInfDirPath()
+    
+    /**
+     * <pre>
+     * META-INF 디렉토리를 탐색한다.
+     * </pre>
+     * @param dir
+     * @return
+     */
+    protected File getMetaInfDirPath(File dir) {
+    	File path = null;
+    	if (dir.exists()) {
+            File[] files = dir.listFiles();
+            
+            for (File f : files) {
+            	if (f.isDirectory()) {
+            		// APP-INF/classes 또는 WEB-INF/classes를 탐색
+            		if(f.getName().endsWith("META-INF")) {
+            			path = f;
+            			break;
+            		} else {
+            			path = getMetaInfDirPath(f);
+            		}
+            	}
+            }
+        }
+    	
+    	return path;
+    }//end of getMetaInfDirPath()
+    
+    /**
+     * <pre>
      * Migration 결과 디렉토리를 ${fileName}-result.${archiveType} 으로 재 압축하기 위한 파일명을 생성한다.
      * </pre>
      * @param file

@@ -101,11 +101,11 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			if(embed) {
 				String parentDomain = ((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getDeployFile();
 				parentDomain = parentDomain.substring(parentDomain.lastIndexOf("/") + 1);
-				makeClassLoading(new File(tempDir, "WEB-INF"), file.getName(), parentDomain);
+				makeClassLoading(getWebInfDirPath(new File(tempDir)), file.getName(), parentDomain);
 			} else {
-				makeClassLoading(new File(tempDir, "WEB-INF"), file.getName(), null);
+				makeClassLoading(getWebInfDirPath(new File(tempDir)), file.getName(), null);
 			}
-
+			
 			// 임시디렉토리를 재 압축한다.
 			newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
 			ZipUtil.compress(tempDir, newFileName);

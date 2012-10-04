@@ -28,7 +28,7 @@ package com.athena.chameleon.engine.entity.pdf;
  */
 public enum FileType {
 	
-    JAVA, HTML, HTM, JSP, JS, CSS, XML, PROPERTIES, JAR, DIRECTORY, SUM;
+    JAVA, CLASS, HTML, HTM, JSP, JS, CSS, XML, PROPERTIES, JAR, DIRECTORY, SUM;
 
     public String toString() {
     	if(this.equals(DIRECTORY) || this.equals(SUM)) {

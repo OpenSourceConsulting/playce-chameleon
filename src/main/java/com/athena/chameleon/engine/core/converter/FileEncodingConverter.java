@@ -127,8 +127,17 @@ public class FileEncodingConverter {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
+		// 모든 Runnable Task가 완료된 후 전체 항목에 대한 Total Count를 세팅한다.
 		int totalCount = 0;
+		for (FileType fileType : fileTypes) {
+			if(!fileType.equals(FileType.SUM)) {
+				totalCount += fileSummaryMap.get(fileType).getFileCount();
+			}
+		}
+
+		fileSummaryMap.get(FileType.SUM).setFileCount(totalCount);
+		
 		for (FileType fileType : fileTypes) {
 			totalCount += fileSummaryMap.get(fileType).getFileCount();
 			logger.info("File Type : [{}], \tCount : [{}개], \tSource Encoding : [{}], \tTarget Encoding : [{}]", 
@@ -137,9 +146,6 @@ public class FileEncodingConverter {
 								  String.format("%12s", fileSummaryMap.get(fileType).getSourceEncoding()),
 								  String.format("%5s", fileSummaryMap.get(fileType).getTargetEncoding())});
 		}
-
-		// 모든 Runnable Task가 완료된 후 전체 항목에 대한 Total Count를 세팅한다.
-		fileSummaryMap.get(FileType.SUM).setFileCount(totalCount);
 		
 		// 파일 확장자에 따라 파일 요약정보를 PDFMetadataDefinition에 저장한다.
 		String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
@@ -197,7 +203,7 @@ public class FileEncodingConverter {
 					}
 					
 					// 해당 파일 타입에 대한 소스 인코딩이 정의되어 있지 않은 경우 제일 처음 탐색되는 파일로 소스 인코딩을 판별한다.
-					if (fileSummary.getSourceEncoding().equals("N/A") && !fileType.equals(FileType.JAR)) {
+					if ((fileSummary.getSourceEncoding().equals("N/A") || fileSummary.getSourceEncoding().equals(policy.getDefaultEncoding())) && !fileType.equals(FileType.CLASS) && !fileType.equals(FileType.JAR)) {
 						try {
 							InputStream input = new FileInputStream(file);
 							byte[] data = IOUtils.toByteArray(input, file.length());
@@ -207,12 +213,6 @@ public class FileEncodingConverter {
 							detector.setDeclaredEncoding(policy.getDefaultEncoding());
 							detector.setText(data);
 							CharsetMatch cm = detector.detect();
-							
-							//*===========================================================
-							if(cm.getName().equals(policy.getDefaultEncoding())) {
-								continue;
-							}
-							//===========================================================*/
 							
 							fileSummary.setSourceEncoding(cm.getName());
 							fileSummary.setTargetEncoding(policy.getDefaultEncoding());

@@ -67,7 +67,7 @@ public class FileEncodingConvertTask extends BaseTask {
 	/*/
 	private static String[] SEARCH_CHAR_SET;
 	//*/
-	private static final String[] TARGET_SUFFIX = {"html", "htm", "jsp", "xml"};
+	private static final String[] TARGET_SUFFIX = {"html", "htm", "jsp", "xml", "js", "css"};
 	
 	static {
 		String[] temp = CharsetDetector.getAllDetectableCharsets();
