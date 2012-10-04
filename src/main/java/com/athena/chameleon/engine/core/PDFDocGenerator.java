@@ -181,18 +181,24 @@ public class PDFDocGenerator {
 		setDynamicSection(root, data, upload);
 		
         for(Element e : root.getChildren()) {
-        	if(e.getName().equals("child_deploy")) 
-				childs = setChildDeployData(rootData, upload);
+            
+            if(e.getName().equals("section")) {
+                if(e.getChild("child_deploy") != null) {
+                    childs = setChildDeployData(rootData, upload);
+                }
+            }
+            
+            for(Element child : childs) {
+                e.addContent(child);
+            }
+            childs = new ArrayList<Element>();
 		}
-		
-        for(Element child : childs) {
-        	root.addContent(child);
-        }
 	}
 
 	public static void setDynamicSection(Element root, AnalyzeDefinition data, Upload upload) {
 		
 		List<Element> childs = new ArrayList<Element>();
+		int index = 0;
         for(Element e : root.getChildren()) {
         	if(e.getName().equals("section")) 
         		setDynamicSection(e, data, upload);
@@ -215,27 +221,32 @@ public class PDFDocGenerator {
 			 else if(e.getName().equals("deploy_application_text")) 
 				childs = setDeployApplicationText(data, upload);
 			 else if(e.getName().equals("web_xml_info")) 
-				childs = setXmlData(data, upload);
+				childs = setApplicationData(data, upload);
 			 else if(e.getName().equals("jar_xml_info")) 
-				childs = setXmlData(data, upload);
+				childs = setApplicationData(data, upload);
 			 else if(e.getName().equals("lib_list")) 
 				childs = setLibData(data, upload, "");
 			 else if(e.getName().equals("delete_lib_list")) 
 				childs = setLibData(data, upload, "D");
 			 else if(e.getName().equals("class_info")) 
 				childs = setClassData(data, upload);
-			 else if(e.getName().equals("application_list")) 
+			 else if(e.getName().equals("application_list")) { 
 				childs = setApplicationListData(data, upload);
-			 else if(e.getName().equals("application_info")) 
+				index = 2;
+			 } else if(e.getName().equals("application_info")) 
 				childs = setApplicationData(data, upload);
 			 else if(e.getName().equals("ejb_application_list")) 
 				childs = setEjbApplicationData(data, upload);
 			 
 		}
 		
-        for(Element child : childs) {
-        	root.addContent(child);
+        if(index == 0) {
+            root.addContent(childs);
+        } else {
+            root.addContent(index, childs);
+            index = 0;
         }
+        
 	}
 
 	public static void addChapter(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder) throws Exception {
@@ -585,65 +596,40 @@ public class PDFDocGenerator {
 	public static List<Element> setEjbApplicationData(AnalyzeDefinition data, Upload upload) {
 
 		List<Element> childs = new ArrayList<Element>();
-		List<CommonAnalyze> dataList = data.getDescripterList();
+		Iterator iterator = data.getEjbApplicationMap().entrySet().iterator();
 		
-		if(dataList.size() > 0) {
-			Element child = new Element("table");
-			Element childE1 = new Element("header");
-			Element childE2 = new Element("row");
-			
-			child.setAttribute("size", "3");
-			
-			Element col = new Element("col");
-			col.setAttribute("width", "100");
-			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header5")));
-			
-			col = new Element("col");
-			col.setAttribute("width", "150");
-			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
-			
-			col = new Element("col");
-			col.setAttribute("width", "150");
-			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header6")));
-			
-			for(CommonAnalyze comm : dataList) {
+        while (iterator.hasNext()) {
+            Entry entry = (Entry)iterator.next();
+            
+    	    Element child, childE1, childE2, col;
+    	    Element section = new Element("section");
+            section.setAttribute("title", String.valueOf(entry.getKey()));
+
+            child = new Element("table");
+            childE1 = new Element("header");
+            childE2 = new Element("row");
+            
+            child.setAttribute("size", "2");
+            
+            col = new Element("col");
+            col.setAttribute("width", "150");
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
+            
+            col = new Element("col");
+            col.setAttribute("width", "300");
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
+            
+            List<CommonAnalyze> dataList = (List<CommonAnalyze>) entry.getValue();
+            for(CommonAnalyze comm : dataList) {
 				childE2.addContent(new Element("col").setText(comm.getItem()));
 				childE2.addContent(new Element("col").setText(comm.getContents()));
-				childE2.addContent(new Element("col").setText(comm.getNote()));
-	        }
-			child.addContent(childE1);
-	        child.addContent(childE2);
-			childs.add(child);
-			
-	        for(CommonAnalyze comm : dataList) {
-		        if(comm.getXmlDataList().size() > 0) {
-					Element section = new Element("section");
-					section.setAttribute("title", comm.getItem());
-					
-					child = new Element("table");
-					childE1 = new Element("header");
-					childE2 = new Element("row");
-					
-					child.setAttribute("size", "2");
-					
-					col.setAttribute("width", "150");
-					childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
-					
-					col = new Element("col");
-					col.setAttribute("width", "300");
-					childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
-					
-					for(CommonAnalyze childC : comm.getXmlDataList()) {
-						childE2.addContent(new Element("col").setText(childC.getItem()));
-						childE2.addContent(new Element("col").setText(childC.getContents()));
-					}
-					child.addContent(childE1);
-			        child.addContent(childE2);
-			        section.addContent(child);
-			        childs.add(section);
-				}
-	        }
-	        
+    		}
+            
+            child.addContent(childE1);
+            child.addContent(childE2);
+            section.addContent(new Element("text").setText(entry.getKey()+"의 EJB 애플리케이션정보는다음과같습니다."));
+            section.addContent(child);
+            childs.add(section);
 		}
 		
 		return childs;
@@ -652,8 +638,8 @@ public class PDFDocGenerator {
 	public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload) throws Exception {
 		
 		List<Element> childs = new ArrayList<Element>();
-		
-		Iterator iterator = rootData.getWarDefinitionMap().entrySet().iterator();
+		List<Element> childs2 = new ArrayList<Element>();
+        Iterator iterator = rootData.getWarDefinitionMap().entrySet().iterator();
 		while (iterator.hasNext()) {
             Entry entry = (Entry)iterator.next();
             AnalyzeDefinition data = (AnalyzeDefinition)entry.getValue();
@@ -665,11 +651,13 @@ public class PDFDocGenerator {
             
             Element section = new Element("section");
             section.setAttribute("title", data.getFileName());
-            
             for(Element e : root.getChildren()) {
-            	section.addContent(e);
+                childs2.add(e.clone());
             }
             
+            for(Element e : childs2) {
+                section.addContent(e);
+            }
             setDynamicSection(section, data, upload);
             
             childs.add(section);

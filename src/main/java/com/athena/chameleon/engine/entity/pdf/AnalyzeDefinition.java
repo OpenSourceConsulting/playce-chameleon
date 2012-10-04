@@ -55,7 +55,7 @@ public class AnalyzeDefinition {
 	//디스크립터 정보 
 	private List<CommonAnalyze> descripterList;
 	//ejb application 
-	private List<CommonAnalyze> ejbApplicationList;
+	private Map<String, List<CommonAnalyze>> ejbApplicationMap;
 	//library 구성 정보
 	private List<String> libraryList;
 	//삭제 라이브러리 목록 정보
@@ -192,13 +192,13 @@ public class AnalyzeDefinition {
 	}
 
 	/**
-	 * @return the ejbApplicationList
+	 * @return the ejbApplicationMap
 	 */
-	public List<CommonAnalyze> getEjbApplicationList() {
-		if(ejbApplicationList == null) {
-			ejbApplicationList = new ArrayList<CommonAnalyze>();
+	public Map<String, List<CommonAnalyze>> getEjbApplicationMap() {
+		if(ejbApplicationMap == null) {
+			ejbApplicationMap = new HashMap<String, List<CommonAnalyze>>();
 		}
-		return ejbApplicationList;
+		return ejbApplicationMap;
 	}
 
 	/**

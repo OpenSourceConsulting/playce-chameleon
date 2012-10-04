@@ -23,6 +23,7 @@ package com.athena.chameleon.engine.file;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +118,7 @@ public class MigrationComponentTest {
         PDFMetadataDefinition data = new PDFMetadataDefinition();
         AnalyzeDefinition zip = new AnalyzeDefinition();
         AnalyzeDefinition war = new AnalyzeDefinition();
+        AnalyzeDefinition ear = new AnalyzeDefinition();
         
         //zip - summary
         FileSummary zipSummary = new FileSummary();
@@ -135,6 +137,7 @@ public class MigrationComponentTest {
         fileSummaryMap.put(FileType.JSP, zipSummary);
         zip.setFileSummaryMap(fileSummaryMap);
         war.setFileSummaryMap(fileSummaryMap);
+        ear.setFileSummaryMap(fileSummaryMap);
         
         //zip - servlet
         CommonAnalyze comm = new CommonAnalyze();
@@ -252,22 +255,68 @@ public class MigrationComponentTest {
         zip.setJspDirectiveMap(dataMap);
         war.setJspDirectiveMap(dataMap);
         
-        //web.xml 
+        //descripter
         comm = new CommonAnalyze();
-        comm.setItem("display-name");
-        comm.setContents("athena-chameleon");
+        comm.setItem("application.xml");
+        comm.setLocation("newgpec.ear/application.xml");
+        comm.setContents("<?xmlversion=\"1.0\"encoding=\"UTF-8\"?>\n<applicationxmlns=\"http://java.sun.com/xml/ns/javaee\"\nxmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"version=\"5\"\nxsi:schemaLocation=\"http://java.sun.com/xml/ns/javaeehttp://java.sun.com/xml/ns/javaee/application_5.xsd\">\n\n\n<module>\n <java>test-client.jar</java>\n</module>\n\n\n<module>\n <ejb>test-ejb.jar</ejb>\n</module>\n\n\n<module>\n<web>\n   <web-uri>test.war</web-uri>\n   <context-root>test</context-root>\n </web>\n</module>\n\n\n<library-directory>lib</library-directory>\n</application>\n");
+        ear.getDescripterList().add(comm);
         war.getDescripterList().add(comm);
         
         comm = new CommonAnalyze();
-        comm.setItem("filter-mapping : filter-name");
-        comm.setContents("encodingFilter");
+        comm.setItem("jeus-application.xml");
+        comm.setLocation("newgpec.ear/jeus-application.xml");
+        comm.setContents("<?xmlversion=\"1.0\"encoding=\"UTF-8\"?>\n<applicationxmlns=\"http://java.sun.com/xml/ns/javaee\"\nxmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"version=\"5\"\nxsi:schemaLocation=\"http://java.sun.com/xml/ns/javaeehttp://java.sun.com/xml/ns/javaee/application_5.xsd\">\n\n\n<module>\n <java>test-client.jar</java>\n</module>\n\n\n<module>\n <ejb>test-ejb.jar</ejb>\n</module>\n\n\n<module>\n<web>\n   <web-uri>test.war</web-uri>\n   <context-root>test</context-root>\n </web>\n</module>\n\n\n<library-directory>lib</library-directory>\n</application>\n");
+        ear.getDescripterList().add(comm);
         war.getDescripterList().add(comm);
+        
+        //ear-ejb application
+        List<CommonAnalyze> commList = new ArrayList<CommonAnalyze>();
+        comm = new CommonAnalyze();
+        comm.setItem("Home Interface");
+        comm.setContents("com.xxx.xxx.XxxHome");
+        commList.add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setItem("Remote Interface");
+        comm.setContents("com.xxx.xxx.XxxRemote");
+        commList.add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setItem("Enterprise Bean Class");
+        comm.setContents("com.xxx.xxx.XxxBean");
+        commList.add(comm);
+        
+        ear.getEjbApplicationMap().put("test-ejb.jar", commList);
+        
+        commList = new ArrayList<CommonAnalyze>();
+        comm = new CommonAnalyze();
+        comm.setItem("Home Interface");
+        comm.setContents("com.xxx.xxx.XxxHome");
+        commList.add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setItem("Remote Interface");
+        comm.setContents("com.xxx.xxx.XxxRemote");
+        commList.add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setItem("Enterprise Bean Class");
+        comm.setContents("com.xxx.xxx.XxxBean");
+        commList.add(comm);
+        
+        ear.getEjbApplicationMap().put("test-ejb1.jar", commList);
         
         //jar
         war.getLibraryList().add("commons-io.jar");
         war.getLibraryList().add("commons-dbcp.jar");
         
         war.getDeleteLibraryList().add("common.jar");
+        
+        ear.getLibraryList().add("commons-io.jar");
+        ear.getLibraryList().add("commons-dbcp.jar");
+        
+        ear.getDeleteLibraryList().add("common.jar");
         
         //class 구성정보
         ClassAnalyze classes = new ClassAnalyze();
@@ -280,6 +329,7 @@ public class MigrationComponentTest {
         classes.getMethodList().add("public int com.osc.reflect.Employee.getSalary()");
         classes.getMethodList().add("public final native java.lang.Class java.lang.Object.getClass()");
         war.getClassesConstList().add(classes);
+        ear.getClassesConstList().add(classes);
         
         classes = new ClassAnalyze();
         classes.setClassName("com.xxx.xxx.YyyService");
@@ -291,9 +341,13 @@ public class MigrationComponentTest {
         classes.getMethodList().add("public boolean java.lang.Object.equals(java.lang.Object)");
         classes.getMethodList().add("public java.lang.String java.lang.Object.toString()");
         war.getClassesConstList().add(classes);
+        ear.getClassesConstList().add(classes);
+        
+        war.setFileName("war_test");
         
         data.setZipDefinition(zip);
         data.addWarDefinitionMap("warTest", war);
+        data.setEarDefinition(ear);
         
         PDFDocGenerator.createPDF(unzipDirPath+File.separator+"test.pdf", upload, data);
         
