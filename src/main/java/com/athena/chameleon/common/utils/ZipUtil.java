@@ -276,8 +276,7 @@ public class ZipUtil {
 				bos.flush();
 			}
 			
-			IOUtils.closeQuietly(bos);
-			IOUtils.closeQuietly(fos);
+			IOUtils.closeQuietly(ais);
 			IOUtils.closeQuietly(bos);
 			IOUtils.closeQuietly(fos);
 		}
