@@ -65,9 +65,14 @@ public class WarAnalyzer extends AbstractAnalyzer {
 	 * @see com.athena.chameleon.engine.core.analizer.Analyzer#analyze(java.io.File)
 	 */
 	@Override
-	public void analyze(File file) {
+	public String analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
 		Assert.isTrue(file.getName().endsWith(".war"), "file name must be ends with \".war\".");
+
+		// 입력된 파일명을 프로젝트 이름으로 사용한다.(jboss-app.xml, jboss-web.xml 파일 생성시 사용)
+		ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName().substring(0, file.getName().lastIndexOf(".")));
+		
+		String newFileName = null;
 		
 		try {
 			// 임시 디렉토리에 압축 해제
@@ -102,7 +107,8 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			}
 
 			// 임시디렉토리를 재 압축한다.
-			ZipUtil.compress(tempDir, (embed ? file.getAbsolutePath() : getResultFile(file)));
+			newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
+			ZipUtil.compress(tempDir, newFileName);
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));
@@ -138,6 +144,8 @@ public class WarAnalyzer extends AbstractAnalyzer {
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}
+		
+		return newFileName;
 	}//end of analyze()
 
 }//end of WarAnalyzer.java

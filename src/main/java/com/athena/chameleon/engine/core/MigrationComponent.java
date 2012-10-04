@@ -50,6 +50,7 @@ import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
+import com.athena.chameleon.engine.entity.upload.Upload;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.utils.FileUtil;
@@ -504,7 +505,7 @@ public class MigrationComponent {
 		this.applicationXmlFile = applicationXmlFile;
 	}
 
-	public void migrate(String sourceFile, String deployFile) {
+	public void migrate(String sourceFile, String deployFile, Upload upload) {
 		// PDF 출력용 통합 Data Object를 초기화 하고 ThreadLocal에 저장한다.
 		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
 		metadataDefinition.setSourceFile(sourceFile);
@@ -522,7 +523,7 @@ public class MigrationComponent {
 			extension = sourceFile.substring(sourceFile.lastIndexOf(".") + 1);
 			if (extension.equals("zip")) {
 				metadataDefinition.setZipDefinition(analyzeDefinition);
-				new ZipAnalyzer(policy, converter, executor, analyzeDefinition).analyze(sourceFile);
+				metadataDefinition.setMigrateSourceFile(new ZipAnalyzer(policy, converter, executor, analyzeDefinition).analyze(sourceFile));
 			}
 		}
 		
@@ -532,15 +533,26 @@ public class MigrationComponent {
 			extension = deployFile.substring(deployFile.lastIndexOf(".") + 1);
 			if (extension.equals("ear")) {
 				metadataDefinition.setEarDefinition(analyzeDefinition);
-				new EarAnalyzer(policy, converter, executor, analyzeDefinition).analyze(deployFile);
+				metadataDefinition.setMigrateDeployFile(new EarAnalyzer(policy, converter, executor, analyzeDefinition).analyze(deployFile));
 			} else if (extension.equals("war")) {
 				metadataDefinition.addWarDefinitionMap(new File(deployFile).getName(), analyzeDefinition);
-				new WarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile);
+				metadataDefinition.setMigrateDeployFile(new WarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile));
 			} else if (extension.equals("jar")) {
 				metadataDefinition.addJarDefinitionMap(new File(deployFile).getName(), analyzeDefinition);
-				new JarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile);
+				metadataDefinition.setMigrateDeployFile(new JarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile));
 			}
 		}
+		
+		try {
+    		if (sourceFile != null) {
+    		    PDFDocGenerator.createPDF(new File(sourceFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf", upload, metadataDefinition);
+    		} else if (deployFile != null) {
+    		    PDFDocGenerator.createPDF(new File(deployFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf", upload, metadataDefinition);
+    		}
+		} catch(Exception e) {
+		    e.printStackTrace();
+		}
+		
 	}
 
 }

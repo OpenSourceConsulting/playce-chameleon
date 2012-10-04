@@ -23,6 +23,7 @@ package com.athena.chameleon.engine.core.analyzer.support;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
@@ -65,9 +66,14 @@ public class EarAnalyzer extends AbstractAnalyzer {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void analyze(File file) {
+	public String analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
 		Assert.isTrue(file.getName().endsWith(".ear"), "file name must be ends with \".ear\".");
+
+		// 입력된 파일명을 프로젝트 이름으로 사용한다.(jboss-app.xml, jboss-web.xml 파일 생성시 사용)
+		ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName().substring(0, file.getName().lastIndexOf(".")));
+		
+		String newFileName = null;
 		
 		try {
 			// 임시 디렉토리에 압축 해제
@@ -78,7 +84,9 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			converter.convert(new File(tempDir), analyzeDefinition);
 			
 			// 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
-			ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
+			if(!StringUtils.isEmpty(getClassesDirPath(new File(tempDir)))) {
+	            ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
+			}
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);
@@ -111,7 +119,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			makeClassLoading(new File(tempDir, "META-INF"), file.getName(), null);
 			
 			// 해당 ear 파일로 재 압축한다.
-			ZipUtil.compress(tempDir, getResultFile(file));
+			newFileName = getResultFile(file);
+			ZipUtil.compress(tempDir, newFileName);
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));
@@ -121,6 +130,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}
+		
+		return newFileName;
 	}//end of analyze()
 	
 }//end of EarAnalyzer.java

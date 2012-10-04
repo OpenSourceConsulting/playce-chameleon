@@ -21,11 +21,12 @@ import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.Dependency;
+import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
+import com.athena.chameleon.engine.entity.upload.Upload;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
-import com.athena.chameleon.web.upload.vo.Upload;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
@@ -188,8 +189,10 @@ public class PDFDocGenerator {
         for(Element e : root.getChildren()) {
             
             if(e.getName().equals("section")) {
-                if(e.getChild("child_deploy") != null) {
-                    childs = setChildDeployData(rootData, upload);
+                if(e.getChild("war_child_deploy") != null) {
+                    childs = setChildDeployData(rootData, upload, "war");
+                } else if(e.getChild("jar_child_deploy") != null) {
+                    childs = setChildDeployData(rootData, upload, "jar");
                 } else if(e.getChild("trans_xml_info") != null) {
                     childs = setTransXmlData(rootData, upload);
                 }
@@ -271,43 +274,44 @@ public class PDFDocGenerator {
 	
 	public static List<Element> setFileSummary(AnalyzeDefinition data) {
 
-		Element child1 = new Element("table");
-		Element child2 = new Element("chart");
-		child2.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
-		
-		Element childE1 = new Element("header");
-		Element childE2 = new Element("row");
-		Element childE3;
-		
-		child1.setAttribute("size", "4");
-		
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header1")));
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header2")));
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header3")));
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header4")));
-	
-		Iterator iterator = data.getFileSummaryMap().entrySet().iterator();
-		
-        while (iterator.hasNext()) {
-            Entry entry = (Entry)iterator.next();
-            childE2.addContent(new Element("col").setText(((FileType)entry.getKey()).toString()));
-            childE2.addContent(new Element("col").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
-            childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getSourceEncoding()));
-            childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getTargetEncoding()));
-			
-            childE3 = new Element("data");
-			childE3.addContent(new Element("column").setText(((FileType)entry.getKey()).toString()));
-			childE3.addContent(new Element("value").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
-			child2.addContent(childE3);
-        }
-		
-        child1.addContent(childE1);
-        child1.addContent(childE2);
-		
-        List<Element> childs = new ArrayList<Element>();
-		childs.add(child1);
-		childs.add(child2);
-		
+	    List<Element> childs = new ArrayList<Element>();
+        if(data.getFileSummaryMap() != null){
+    		Element child1 = new Element("table");
+    		Element child2 = new Element("chart");
+    		child2.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
+    		
+    		Element childE1 = new Element("header");
+    		Element childE2 = new Element("row");
+    		Element childE3;
+    		
+    		child1.setAttribute("size", "4");
+    		
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header1")));
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header2")));
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header3")));
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header4")));
+    	
+    		for (FileType fileType : FileType.values()) {
+    		    FileSummary summary = data.getFileSummaryMap().get(fileType);
+    		    if(summary != null) {
+    		        childE2.addContent(new Element("col").setText(fileType.toString()));
+                    childE2.addContent(new Element("col").setText(String.valueOf(summary.getFileCount())));
+                    childE2.addContent(new Element("col").setText(summary.getSourceEncoding()));
+                    childE2.addContent(new Element("col").setText(summary.getTargetEncoding()));
+                    
+                    childE3 = new Element("data");
+                    childE3.addContent(new Element("column").setText(fileType.toString()));
+                    childE3.addContent(new Element("value").setText(String.valueOf(summary.getFileCount())));
+                    child2.addContent(childE3);        
+    		    }
+            }
+            
+            child1.addContent(childE1);
+            child1.addContent(childE2);
+    		
+            childs.add(child1);
+    		childs.add(child2);
+	    }
 		return childs;
 	}
 
@@ -391,7 +395,9 @@ public class PDFDocGenerator {
 		Map<String, Integer> dataMap = data.getJspDirectiveMap();
 		
 		if(dataMap != null) {
-			int jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
+			int jspFileCount = 0;
+			if(data.getFileSummaryMap() != null)
+			    jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
 			
 			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
 			Element child = new Element("table");
@@ -645,17 +651,19 @@ public class PDFDocGenerator {
     public static List<Element> setTransXmlData(PDFMetadataDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
-        Iterator iterator = data.getTransXmlInfo().entrySet().iterator();
+        List<EjbRecommend> dataList = data.getEjbRecommendList();
         
         Element section; 
-        while (iterator.hasNext()) {
-            Entry entry = (Entry)iterator.next();
+        for(EjbRecommend comm : dataList) {
             
             section = new Element("section");
-            section.setAttribute("title", String.valueOf(entry.getKey()));
+            if(comm.isTransFlag())
+                section.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.advice.trans.label2", comm.getItem()));
+            else
+                section.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.advice.trans.label1", comm.getItem()));
             
-            section.addContent(new Element("text").setText(String.valueOf(entry.getKey())));
-            section.addContent(new Element("box").setText(String.valueOf(entry.getValue())));
+            section.addContent(new Element("text").setText(comm.getLocation()));
+            section.addContent(new Element("box").setText(comm.getContents()));
             
             childs.add(section);
         }
@@ -684,12 +692,20 @@ public class PDFDocGenerator {
         return childs;
     }
 
-	public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload) throws Exception {
+	public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload, String type) throws Exception {
 		
 		List<Element> childs = new ArrayList<Element>();
-		List<Element> childs2 = new ArrayList<Element>();
-        Iterator iterator = rootData.getWarDefinitionMap().entrySet().iterator();
+		List<Element> childs2;
+        Iterator iterator = null;
+        if(type.equals("war")) {
+            iterator = rootData.getWarDefinitionMap().entrySet().iterator();
+        } else if(type.equals("jar")) {
+            iterator = rootData.getJarDefinitionMap().entrySet().iterator();
+        }
+        
+        Element section;
 		while (iterator.hasNext()) {
+		    childs2 = new ArrayList<Element>();
             Entry entry = (Entry)iterator.next();
             AnalyzeDefinition data = (AnalyzeDefinition)entry.getValue();
             
@@ -698,7 +714,7 @@ public class PDFDocGenerator {
             
             Element root = chapterDoc.getRootElement();
             
-            Element section = new Element("section");
+            section = new Element("section");
             section.setAttribute("title", data.getFileName());
             for(Element e : root.getChildren()) {
                 childs2.add(e.clone());

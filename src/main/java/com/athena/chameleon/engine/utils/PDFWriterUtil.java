@@ -28,10 +28,13 @@ import java.util.ArrayList;
 import org.jdom2.Element;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.athena.chameleon.engine.core.PDFDocGenerator;
+import com.athena.chameleon.engine.entity.pdf.FileSummary;
+import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
@@ -454,28 +457,37 @@ public class PDFWriterUtil {
     public static void setChart(PdfWriter writer, Section section, Element e) throws Exception {
     	
     	DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    	
     	for(Element e1 : e.getChildren()) {
-    		dataset.setValue(
-                    Integer.parseInt(e1.getChild("value").getText()),
-                    e.getAttributeValue("title"),
-                    e1.getChild("column").getText());
+    	    if(!e1.getChild("column").getText().equals(FileType.DIRECTORY.toString())
+    	            && !e1.getChild("column").getText().equals(FileType.SUM.toString())) {
+        		dataset.setValue(
+                        Integer.parseInt(e1.getChild("value").getText()),
+                        e.getAttributeValue("title"),
+                        e1.getChild("column").getText());
+    	    }
         }
     	
     	JFreeChart chart = ChartFactory.createBarChart3D(e.getAttributeValue("title"),  "",
                 "", dataset, PlotOrientation.VERTICAL, false,
                 true, false);
     	
+    	CategoryPlot plot = chart.getCategoryPlot();
+    	java.awt.Font labelFont = chart.getCategoryPlot().getDomainAxis().getLabelFont();
+    	plot.getDomainAxis().setLabelFont(new java.awt.Font(labelFont.getName(), Font.NORMAL, 6));
+    	plot.getDomainAxis().setTickLabelFont(new java.awt.Font(labelFont.getName(), Font.NORMAL, 6));
+    	
     	PdfContentByte cb = writer.getDirectContent();
-    	PdfTemplate bar = cb.createTemplate(300, 150);
-        Graphics2D g2d2 = new PdfGraphics2D(bar, 300, 150);
-        Rectangle2D r2d2 = new Rectangle2D.Double(0, 0, 300, 150);
+    	PdfTemplate bar = cb.createTemplate(450, 150);
+        Graphics2D g2d2 = new PdfGraphics2D(bar, 450, 150);
+        Rectangle2D r2d2 = new Rectangle2D.Double(0, 0, 450, 150);
         chart.draw(g2d2, r2d2);
         g2d2.dispose();
         
         Image image = Image.getInstance(bar);
         image.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
         section.add(image); 
-    }
+    } 
     
     /**
      * 

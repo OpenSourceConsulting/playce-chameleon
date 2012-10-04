@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
-import com.athena.chameleon.common.utils.ThreadLocalUtil;
-import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.parser.ApplicationXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.EjbJarXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusApplicationDDXMLParser;
@@ -81,8 +79,11 @@ public abstract class AbstractAnalyzer implements Analyzer {
 		this.analyzeDefinition = analyzeDefinition;
 	}
 
-	public void analyze(String path) {
-		analyze(new File(path));
+	public String analyze(String path) {
+		File file = new File(path);
+		analyzeDefinition.setFileName(file.getName());
+		
+		return analyze(file);
 	}//end of analyze()
 	
 	/**
@@ -92,10 +93,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	 * @param file
 	 * @param rootPath
 	 */
-	protected void analyze(File file, String rootPath) {	
-		// 입력된 파일명을 프로젝트 이름으로 사용한다.(jboss-app.xml, jboss-web.xml 파일 생성시 사용)
-		ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName().substring(0, file.getName().lastIndexOf(".")));
-		
+	protected void analyze(File file, String rootPath) {		
 		defaultAnalyze(file, rootPath);
 		executor.getExecutor().shutdown();
 		

@@ -37,7 +37,7 @@ import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.Migration;
-import com.athena.chameleon.web.upload.vo.Upload;
+import com.athena.chameleon.engine.entity.upload.Upload;
 
 /**
  * This LoginController class is a Controller class to Upload.
@@ -104,7 +104,9 @@ public class UploadController {
     	
     	try {
     	    String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator;
+    	    String sourceFile, deployFile = "";
     	    File migrationFile;
+    	    
     	    if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
                 
                 migrationFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
@@ -117,11 +119,9 @@ public class UploadController {
                 migrationFile.deleteOnExit();
                 upload.getProjectSrc().transferTo(migrationFile);
                 
-                Migration entity = component.executeMigration(migrationFile);
-                System.out.println(entity.getFileListStr());
-                System.out.println(entity.getWebXmlStr());
-                System.out.println(entity.getApplicationXmlStr());
-                System.out.println(entity.getEjbXmlStr());
+                sourceFile = migrationFile.getAbsolutePath();
+            } else {
+                sourceFile = null;
             }
             
             if(upload.getDeploySrc() != null && upload.getDeploySrc().getSize() > 0 ) {
@@ -136,12 +136,13 @@ public class UploadController {
                 migrationFile.deleteOnExit();
                 upload.getDeploySrc().transferTo(migrationFile);
                 
-                Migration entity = component.executeMigration(migrationFile);
-                System.out.println(entity.getFileListStr());
-                System.out.println(entity.getWebXmlStr());
-                System.out.println(entity.getApplicationXmlStr());
-                System.out.println(entity.getEjbXmlStr());
+                deployFile = migrationFile.getAbsolutePath();
+                
+            } else {
+                deployFile = null;
             }
+            component.migrate(sourceFile, deployFile, upload);
+            
         }
         catch (Exception ex) {
         	ex.printStackTrace();

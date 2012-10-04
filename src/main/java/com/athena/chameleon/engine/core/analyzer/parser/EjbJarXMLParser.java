@@ -21,11 +21,15 @@
 package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
@@ -44,16 +48,27 @@ public class EjbJarXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-		
+
+        try {
+            CommonAnalyze commonAnalyze = new CommonAnalyze();
+            commonAnalyze.setItem(file.getName());
+            commonAnalyze.setLocation(file.getPath());
+            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
+            
+            analyzeDefinition.getDescripterList().add(commonAnalyze);
+        } catch (IOException e) {
+            logger.error("IOException has occurred.", e);
+        }
+        
     	Object obj = null;
-    	
+
     	try {
         	// ejb-jar v2_1
-			obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType.class.getPackage().getName(), file)).getValue();
+			obj = checkEjbJar(((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType.class.getPackage().getName(), file)).getValue());
     	} catch (JAXBException e1) {
 	    	try {
 	        	// ejb-jar v2_0
-				obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar.class.getPackage().getName(), file);
+				obj = checkEjbJar(JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar.class.getPackage().getName(), file));
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);
 			}
@@ -61,5 +76,80 @@ public class EjbJarXMLParser extends Parser {
     	
     	return obj;
 	}//end of parse()
+	
+	/**
+	 * <pre>
+	 * 
+	 * </pre>
+	 * @param obj
+	 * @return
+	 */
+	private Object checkEjbJar(Object obj) {
+		if(obj instanceof com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType) {
+			com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType ejbJar = (com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EjbJarType)obj;
+			com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.EnterpriseBeansType enterpriseBeans = ejbJar.getEnterpriseBeans();
+			
+			List<Object> beanList = enterpriseBeans.getSessionOrEntityOrMessageDriven();
+			
+			List<CommonAnalyze> commonAnalyzeList = new ArrayList<CommonAnalyze>();
+			CommonAnalyze commonAnalyze = null;
+			for(Object bean : beanList) {
+				if(bean instanceof com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType) {
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem("Home Interface");
+					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getHome().getValue());
+					commonAnalyzeList.add(commonAnalyze);
+
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem("Remote Interface");
+					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getRemote().getValue());
+					commonAnalyzeList.add(commonAnalyze);
+
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem("Enterprise Bean Class");
+					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getEjbClass().getValue());
+					commonAnalyzeList.add(commonAnalyze);
+				}
+			}
+			
+			if(commonAnalyzeList.size() > 0) {
+				analyzeDefinition.getEjbApplicationMap().put(analyzeDefinition.getFileName(), commonAnalyzeList);
+			}
+			
+			return ejbJar;
+		} else {
+			com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar ejbJar = (com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar)obj;
+			com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EnterpriseBeans enterpriseBeans = ejbJar.getEnterpriseBeans();
+			
+			List<Object> beanList = enterpriseBeans.getSessionOrEntityOrMessageDriven();
+			
+			List<CommonAnalyze> commonAnalyzeList = new ArrayList<CommonAnalyze>();
+			CommonAnalyze commonAnalyze = null;
+			for(Object bean : beanList) {
+				if(bean instanceof com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session) {
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem("Home Interface");
+					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getHome().getvalue());
+					commonAnalyzeList.add(commonAnalyze);
+
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem("Remote Interface");
+					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getRemote().getvalue());
+					commonAnalyzeList.add(commonAnalyze);
+
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem("Enterprise Bean Class");
+					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getEjbClass().getvalue());
+					commonAnalyzeList.add(commonAnalyze);
+				}
+			}
+			
+			if(commonAnalyzeList.size() > 0) {
+				analyzeDefinition.getEjbApplicationMap().put(analyzeDefinition.getFileName(), commonAnalyzeList);
+			}
+			
+			return ejbJar;
+		}
+	}//end of checkEjbJar()
 }
 //end of EjbJarXMLParser.java

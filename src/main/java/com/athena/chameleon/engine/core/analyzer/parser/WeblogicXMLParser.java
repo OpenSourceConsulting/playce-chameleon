@@ -21,6 +21,7 @@
 package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
@@ -28,6 +29,7 @@ import org.jdom2.input.SAXBuilder;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 
 /**
  * <pre>
@@ -45,7 +47,18 @@ public class WeblogicXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-		
+
+        try {
+            CommonAnalyze commonAnalyze = new CommonAnalyze();
+            commonAnalyze.setItem(file.getName());
+            commonAnalyze.setLocation(file.getPath());
+            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
+            
+            analyzeDefinition.getDescripterList().add(commonAnalyze);
+        } catch (IOException e) {
+            logger.error("IOException has occurred.", e);
+        }
+        
     	SAXBuilder builder = null;
     	Document doc = null;
     	String context = null;

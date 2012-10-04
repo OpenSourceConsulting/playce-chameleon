@@ -48,7 +48,7 @@ public class PDFMetadataDefinition {
     //jar 분석정보
     private Map<String, AnalyzeDefinition> jarDefinitionMap;
     //변환 xml 정보(파일명, 파일내용)
-    private Map<String, String> transXmlInfo;
+    private List<EjbRecommend> ejbRecommendList;
     //변환 대상 파일 리스트
     private List<String> transFileList;
     
@@ -128,6 +128,9 @@ public class PDFMetadataDefinition {
 	 * @return the warDefinitionMap
 	 */
 	public Map<String, AnalyzeDefinition> getWarDefinitionMap() {
+	    if(warDefinitionMap == null)
+	        warDefinitionMap = new TreeMap<String, AnalyzeDefinition>();
+	    
 		return warDefinitionMap;
 	}
 	/**
@@ -151,6 +154,9 @@ public class PDFMetadataDefinition {
 	 * @return the jarDefinitionMap
 	 */
 	public Map<String, AnalyzeDefinition> getJarDefinitionMap() {
+	    if(jarDefinitionMap == null) {
+	        jarDefinitionMap = new TreeMap<String, AnalyzeDefinition>();
+        }
 		return jarDefinitionMap;
 	}
 	/**
@@ -171,21 +177,6 @@ public class PDFMetadataDefinition {
 		this.jarDefinitionMap = jarDefinitionMap;
 	}
 	/**
-	 * @return the transXmlInfo
-	 */
-	public Map<String, String> getTransXmlInfo() {
-	    if(transXmlInfo == null)
-	        transXmlInfo = new HashMap<String, String>();
-	    
-		return transXmlInfo;
-	}
-	/**
-	 * @param transXmlInfo the transXmlInfo to set
-	 */
-	public void setTransXmlInfo(Map<String, String> transXmlInfo) {
-		this.transXmlInfo = transXmlInfo;
-	}
-	/**
 	 * @return the transFileList
 	 */
 	public List<String> getTransFileList() {
@@ -193,11 +184,13 @@ public class PDFMetadataDefinition {
 	        transFileList = new ArrayList<String>();
 		return transFileList;
 	}
-	/**
-	 * @param transFileList the transFileList to set
-	 */
-	public void setTransFileList(List<String> transFileList) {
-		this.transFileList = transFileList;
-	}
+    /**
+     * @return the ejbRecommendList
+     */
+    public List<EjbRecommend> getEjbRecommendList() {
+        if(ejbRecommendList == null)
+            ejbRecommendList = new ArrayList<EjbRecommend>(); 
+        return ejbRecommendList;
+    }
 }
 //end of PDFDefination.java

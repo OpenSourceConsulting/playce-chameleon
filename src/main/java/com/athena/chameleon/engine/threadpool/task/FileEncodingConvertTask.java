@@ -151,7 +151,9 @@ public class FileEncodingConvertTask extends BaseTask {
 	    	}
             
             output = new OutputStreamWriter(new FileOutputStream(file), defaultEncoding);
-            output.write(fileContents);
+            if(fileContents != null) {
+                output.write(fileContents);
+            }
             IOUtils.closeQuietly(output);
 		} catch (UnsupportedEncodingException e) {
 			logger.error("UnsupportedEncodingException has occurred : ", e);

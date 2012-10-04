@@ -32,6 +32,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.athena.chameleon.engine.core.MigrationComponent;
+import com.athena.chameleon.engine.entity.upload.Upload;
 
 /**
  * <pre>
@@ -104,7 +105,7 @@ public class Starter {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/context-*.xml");
 		
 		MigrationComponent component = (MigrationComponent)context.getBean("migrationComponent");
-		component.migrate(sourceFile, deployFile);
+		component.migrate(sourceFile, deployFile, new Upload());
 	}//end of main()
 	
 	/**
