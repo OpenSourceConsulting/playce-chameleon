@@ -50,6 +50,7 @@ import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
+import com.athena.chameleon.engine.entity.upload.Upload;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.utils.FileUtil;
@@ -504,7 +505,7 @@ public class MigrationComponent {
 		this.applicationXmlFile = applicationXmlFile;
 	}
 
-	public void migrate(String sourceFile, String deployFile) {
+	public void migrate(String sourceFile, String deployFile, Upload upload) {
 		// PDF 출력용 통합 Data Object를 초기화 하고 ThreadLocal에 저장한다.
 		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
 		metadataDefinition.setSourceFile(sourceFile);
@@ -541,6 +542,17 @@ public class MigrationComponent {
 				new JarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile);
 			}
 		}
+		
+		try {
+    		if (sourceFile != null) {
+    		    PDFDocGenerator.createPDF(new File(sourceFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf", upload, metadataDefinition);
+    		} else if (deployFile != null) {
+    		    PDFDocGenerator.createPDF(new File(deployFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf", upload, metadataDefinition);
+    		}
+		} catch(Exception e) {
+		    e.printStackTrace();
+		}
+		
 	}
 
 }

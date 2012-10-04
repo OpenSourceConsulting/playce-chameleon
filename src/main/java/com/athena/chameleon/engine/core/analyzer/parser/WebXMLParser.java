@@ -30,6 +30,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.lang.ArrayUtils;
 
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
@@ -48,7 +49,18 @@ public class WebXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-		
+
+        try {
+            CommonAnalyze commonAnalyze = new CommonAnalyze();
+            commonAnalyze.setItem(file.getName());
+            commonAnalyze.setLocation(file.getPath());
+            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
+            
+            analyzeDefinition.getDescripterList().add(commonAnalyze);
+        } catch (IOException e) {
+            logger.error("IOException has occurred.", e);
+        }
+        
     	Object obj = null;
     	
     	try {

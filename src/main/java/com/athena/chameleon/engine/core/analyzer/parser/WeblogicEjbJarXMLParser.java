@@ -21,11 +21,13 @@
 package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
@@ -44,7 +46,18 @@ public class WeblogicEjbJarXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-		
+
+        try {
+            CommonAnalyze commonAnalyze = new CommonAnalyze();
+            commonAnalyze.setItem(file.getName());
+            commonAnalyze.setLocation(file.getPath());
+            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
+            
+            analyzeDefinition.getDescripterList().add(commonAnalyze);
+        } catch (IOException e) {
+            logger.error("IOException has occurred.", e);
+        }
+        
     	Object obj = null;
     	
     	try {

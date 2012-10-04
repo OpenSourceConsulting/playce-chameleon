@@ -18,7 +18,7 @@
  * ---------------	----------------	------------
  * Hyo-jeong Lee	2012. 9. 13.		First Draft.
  */
-package com.athena.chameleon.web.upload.vo;
+package com.athena.chameleon.engine.entity.upload;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
