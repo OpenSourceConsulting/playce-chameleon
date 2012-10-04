@@ -20,6 +20,8 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -172,6 +174,9 @@ public class PDFMetadataDefinition {
 	 * @return the transXmlInfo
 	 */
 	public Map<String, String> getTransXmlInfo() {
+	    if(transXmlInfo == null)
+	        transXmlInfo = new HashMap<String, String>();
+	    
 		return transXmlInfo;
 	}
 	/**
@@ -184,6 +189,8 @@ public class PDFMetadataDefinition {
 	 * @return the transFileList
 	 */
 	public List<String> getTransFileList() {
+	    if(transFileList == null)
+	        transFileList = new ArrayList<String>();
 		return transFileList;
 	}
 	/**

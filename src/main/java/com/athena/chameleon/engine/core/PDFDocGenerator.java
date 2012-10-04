@@ -123,6 +123,11 @@ public class PDFDocGenerator {
             			cNum++;
         	        }
         			
+        		} else if(option.equals("root")) {
+        		    
+        		    addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data, upload);
+                    cNum++;
+                    
         		} else if(option.equals(upload.getAfterWas())) {
         			
         			addChapter(writer, chapterE, cNum, pdf, builder);
@@ -185,6 +190,8 @@ public class PDFDocGenerator {
             if(e.getName().equals("section")) {
                 if(e.getChild("child_deploy") != null) {
                     childs = setChildDeployData(rootData, upload);
+                } else if(e.getChild("trans_xml_info") != null) {
+                    childs = setTransXmlData(rootData, upload);
                 }
             }
             
@@ -627,13 +634,55 @@ public class PDFDocGenerator {
             
             child.addContent(childE1);
             child.addContent(childE2);
-            section.addContent(new Element("text").setText(entry.getKey()+"의 EJB 애플리케이션정보는다음과같습니다."));
+            section.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.ejb_application.text", String.valueOf(entry.getKey()))));
             section.addContent(child);
             childs.add(section);
 		}
 		
 		return childs;
 	}
+
+    public static List<Element> setTransXmlData(PDFMetadataDefinition data, Upload upload) {
+
+        List<Element> childs = new ArrayList<Element>();
+        Iterator iterator = data.getTransXmlInfo().entrySet().iterator();
+        
+        Element section; 
+        while (iterator.hasNext()) {
+            Entry entry = (Entry)iterator.next();
+            
+            section = new Element("section");
+            section.setAttribute("title", String.valueOf(entry.getKey()));
+            
+            section.addContent(new Element("text").setText(String.valueOf(entry.getKey())));
+            section.addContent(new Element("box").setText(String.valueOf(entry.getValue())));
+            
+            childs.add(section);
+        }
+        
+        childs.add(new Element("text").setAttribute("padding","23").setText(MessageUtil.getMessage("pdf.message.chapter.advice.trans.table.header")));
+        
+        if(data.getTransFileList().size() > 0) {
+            
+            Element child, childE1, childE2;
+            child = new Element("table");
+            childE1 = new Element("header");
+            childE2 = new Element("row");
+            
+            child.setAttribute("size", "1");
+            
+            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
+            
+            for(String s : data.getTransFileList()) {
+                childE2.addContent(new Element("col").setText(s));
+            }
+            child.addContent(childE1);
+            child.addContent(childE2);
+            childs.add(child);
+        }
+        
+        return childs;
+    }
 
 	public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload) throws Exception {
 		
