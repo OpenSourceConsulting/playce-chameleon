@@ -21,7 +21,6 @@
 package com.athena.chameleon.engine.entity.pdf;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -180,12 +179,6 @@ public class PDFMetadataDefinition {
 	    if(transFileList == null)
 	        transFileList = new ArrayList<String>();
 		return transFileList;
-	}
-	/**
-	 * @param transFileList the transFileList to set
-	 */
-	public void setTransFileList(List<String> transFileList) {
-		this.transFileList = transFileList;
 	}
     /**
      * @return the ejbRecommendList

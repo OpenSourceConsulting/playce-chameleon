@@ -22,12 +22,22 @@ package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
-import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.EnterpriseBeans;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Jboss;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.JndiName;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Method;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.MethodAttributes;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Session;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 
 /**
@@ -46,14 +56,18 @@ public class WeblogicEjbJarXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-
+		
+		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+		EjbRecommend ejbRecommend = new EjbRecommend();
+		
         try {
-            CommonAnalyze commonAnalyze = new CommonAnalyze();
-            commonAnalyze.setItem(file.getName());
-            commonAnalyze.setLocation(file.getPath());
-            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
-            
-            analyzeDefinition.getDescripterList().add(commonAnalyze);
+        	ejbRecommend = new EjbRecommend();
+    		ejbRecommend.setItem(file.getName());
+    		ejbRecommend.setTransFlag(false);
+    		ejbRecommend.setLocation(file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf("/") + 1));
+    		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
+    		
+    		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
         } catch (IOException e) {
             logger.error("IOException has occurred.", e);
         }
@@ -73,9 +87,128 @@ public class WeblogicEjbJarXMLParser extends Parser {
     	}
 		
 		// jboss.xml 변환 생성
-    	
+    	try {
+    		if(obj != null) {
+    			Jboss jboss = generateJbossXML(obj);
+    			String xmlData = JaxbUtils.marshal(Jboss.class.getPackage().getName(), jboss, "<!DOCTYPE jboss PUBLIC \"-//JBoss//DTD JBOSS//EN\" \"http://www.jboss.org/j2ee/dtd/jboss.dtd\">");
+    			rewrite(new File(file.getParentFile(), "jboss.xml"), xmlData);
+
+            	ejbRecommend = new EjbRecommend();
+        		ejbRecommend.setItem("jboss.xml");
+        		ejbRecommend.setTransFlag(true);
+        		ejbRecommend.setLocation(file.getParentFile().getAbsolutePath());
+        		ejbRecommend.setContents(xmlData);
+        		
+        		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
+    		}
+		} catch (JAXBException e) {
+			logger.error("JAXBException has occurred.", e);
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+		}
+        
     	return obj;
 	}//end of parse()
+	
+	/**
+	 * <pre>
+	 * 
+	 * </pre>
+	 * @param obj
+	 */
+	private Jboss generateJbossXML(Object obj) {
+		Jboss jboss = null;
+		EnterpriseBeans enterpriseBeans = null;
+		Session session = null;
+		JndiName jndiName = null;
+		MethodAttributes methodAttributes = null;
+		
+		if(obj instanceof com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType) {
+			com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType weblogicEjbJarType = (com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEjbJarType)obj;
+			List<com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEnterpriseBeanType> weblogicEnterpriseBeanList = weblogicEjbJarType.getWeblogicEnterpriseBean();
+			if(weblogicEnterpriseBeanList.size() > 0) {
+				jboss = new Jboss();
+				enterpriseBeans = new EnterpriseBeans();
+			
+				for(com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v9_0.WeblogicEnterpriseBeanType weblogicEnterpriseBean : weblogicEnterpriseBeanList) {
+					session = new Session();
+					
+					if(weblogicEnterpriseBean.getEjbName() != null) {
+						session.setEjbName(weblogicEnterpriseBean.getEjbName().getValue());
+					}
+					
+					if(weblogicEnterpriseBean.getJndiName() != null) {
+						jndiName = new JndiName();
+						jndiName.setvalue(weblogicEnterpriseBean.getJndiName().getValue());
+						session.setJndiName(jndiName);
+					}
+					
+					if(weblogicEnterpriseBean.getLocalJndiName() != null) {
+						session.setLocalJndiName(weblogicEnterpriseBean.getLocalJndiName().getValue());
+					}
+					
+					session.setCallByValue("false");
+					session.setClustered("False");
+					
+					if(weblogicEnterpriseBean.getTransactionDescriptor() != null) {
+						methodAttributes = new MethodAttributes();
+						Method method = new Method();
+						
+						method.setMethodName("*");
+						method.setTransactionTimeout(weblogicEnterpriseBean.getTransactionDescriptor().getTransTimeoutSeconds().getValue().toString());
+						methodAttributes.getMethod().add(method);
+					}
+					
+					enterpriseBeans.getSessionOrEntityOrMessageDriven().add(session);
+				}
+				
+				jboss.setEnterpriseBeans(enterpriseBeans);
+			}
+		} else {
+			com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v8_1.WeblogicEjbJar weblogicEjbJar = (com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v8_1.WeblogicEjbJar)obj;
+			List<com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v8_1.WeblogicEnterpriseBean> weblogicEnterpriseBeanList = weblogicEjbJar.getWeblogicEnterpriseBean();
+			if(weblogicEnterpriseBeanList.size() > 0) {
+				jboss = new Jboss();
+				enterpriseBeans = new EnterpriseBeans();
+			
+				for(com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v8_1.WeblogicEnterpriseBean weblogicEnterpriseBean : weblogicEnterpriseBeanList) {
+					session = new Session();
+					
+					if(weblogicEnterpriseBean.getEjbName() != null) {
+						session.setEjbName(weblogicEnterpriseBean.getEjbName());
+					}
+					
+					if(weblogicEnterpriseBean.getJndiName() != null) {
+						jndiName = new JndiName();
+						jndiName.setvalue(weblogicEnterpriseBean.getJndiName());
+						session.setJndiName(jndiName);
+					}
+					
+					if(weblogicEnterpriseBean.getLocalJndiName() != null) {
+						session.setLocalJndiName(weblogicEnterpriseBean.getLocalJndiName());
+					}
+					
+					session.setCallByValue("false");
+					session.setClustered("False");
+					
+					if(weblogicEnterpriseBean.getTransactionDescriptor() != null) {
+						methodAttributes = new MethodAttributes();
+						Method method = new Method();
+						
+						method.setMethodName("*");
+						method.setTransactionTimeout(weblogicEnterpriseBean.getTransactionDescriptor().getTransTimeoutSeconds());
+						methodAttributes.getMethod().add(method);
+					}
+					
+					enterpriseBeans.getSessionOrEntityOrMessageDriven().add(session);
+				}
+				
+				jboss.setEnterpriseBeans(enterpriseBeans);
+			}
+		}
+		
+		return jboss;
+	}//end of generateJbossXML()
 
 }
 //end of WeblogicEjbJarXMLParser.java

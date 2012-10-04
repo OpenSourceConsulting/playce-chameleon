@@ -523,7 +523,7 @@ public class MigrationComponent {
 			extension = sourceFile.substring(sourceFile.lastIndexOf(".") + 1);
 			if (extension.equals("zip")) {
 				metadataDefinition.setZipDefinition(analyzeDefinition);
-				new ZipAnalyzer(policy, converter, executor, analyzeDefinition).analyze(sourceFile);
+				metadataDefinition.setMigrateSourceFile(new ZipAnalyzer(policy, converter, executor, analyzeDefinition).analyze(sourceFile));
 			}
 		}
 		
@@ -533,13 +533,13 @@ public class MigrationComponent {
 			extension = deployFile.substring(deployFile.lastIndexOf(".") + 1);
 			if (extension.equals("ear")) {
 				metadataDefinition.setEarDefinition(analyzeDefinition);
-				new EarAnalyzer(policy, converter, executor, analyzeDefinition).analyze(deployFile);
+				metadataDefinition.setMigrateDeployFile(new EarAnalyzer(policy, converter, executor, analyzeDefinition).analyze(deployFile));
 			} else if (extension.equals("war")) {
 				metadataDefinition.addWarDefinitionMap(new File(deployFile).getName(), analyzeDefinition);
-				new WarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile);
+				metadataDefinition.setMigrateDeployFile(new WarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile));
 			} else if (extension.equals("jar")) {
 				metadataDefinition.addJarDefinitionMap(new File(deployFile).getName(), analyzeDefinition);
-				new JarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile);
+				metadataDefinition.setMigrateDeployFile(new JarAnalyzer(policy, converter, executor, analyzeDefinition, false).analyze(deployFile));
 			}
 		}
 		
