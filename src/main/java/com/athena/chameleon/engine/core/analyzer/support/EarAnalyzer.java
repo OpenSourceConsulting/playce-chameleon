@@ -79,6 +79,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			// 임시 디렉토리에 압축 해제
 			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
+			
+			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
 
 			// 인코딩 변경
 			converter.convert(new File(tempDir), analyzeDefinition);

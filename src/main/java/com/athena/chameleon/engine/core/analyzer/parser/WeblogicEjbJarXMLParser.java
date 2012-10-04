@@ -64,7 +64,7 @@ public class WeblogicEjbJarXMLParser extends Parser {
         	ejbRecommend = new EjbRecommend();
     		ejbRecommend.setItem(file.getName());
     		ejbRecommend.setTransFlag(false);
-    		ejbRecommend.setLocation(file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf("/") + 1));
+    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
     		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
     		
     		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
@@ -96,10 +96,11 @@ public class WeblogicEjbJarXMLParser extends Parser {
             	ejbRecommend = new EjbRecommend();
         		ejbRecommend.setItem("jboss.xml");
         		ejbRecommend.setTransFlag(true);
-        		ejbRecommend.setLocation(file.getParentFile().getAbsolutePath());
+        		ejbRecommend.setLocation(removeTempDir(file.getParent()));
         		ejbRecommend.setContents(xmlData);
         		
         		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
+        		metadataDefinition.getTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss.xml");
     		}
 		} catch (JAXBException e) {
 			logger.error("JAXBException has occurred.", e);
@@ -209,6 +210,16 @@ public class WeblogicEjbJarXMLParser extends Parser {
 		
 		return jboss;
 	}//end of generateJbossXML()
+	
+	public static void main(String[] args) {
+		WeblogicEjbJarXMLParser parser = new WeblogicEjbJarXMLParser();
+		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
+		ThreadLocalUtil.add(ChameleonConstants.PDF_METADATA_DEFINITION, metadataDefinition);
+		ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, "/Users/nices96/Desktop");
+		parser.parse(new File("/Users/nices96/Desktop/xmlparse/weblogic-ejb-jar-9_0.xml"), new AnalyzeDefinition());
+		
+		System.out.println(metadataDefinition.getTransFileList());
+	}
 
 }
 //end of WeblogicEjbJarXMLParser.java

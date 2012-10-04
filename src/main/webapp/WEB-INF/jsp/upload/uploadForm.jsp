@@ -25,19 +25,19 @@
 	});
 </script>
 
-<link href="/chameleon/css/style.css" rel="stylesheet" type="text/css" />
+<link href="<c:url value='/css/style.css'/>" rel="stylesheet" type="text/css" />
 
 <body>
 <table border="0">
 	<tr width="1024" >
-		<td align="left" width="80"><img src="/chameleon/images/chameleon-icon.png" width="80" height="80"></td>
+		<td align="left" width="80"><img src="<c:url value='/images/chameleon-icon.png'/>" width="80" height="80"></td>
 		<td align="left" width="400"><div class="title">Chameleon</div></td>
 		<td align="right" width="524" valign="bottom">Login ID: admin@osci.kr  Last Log In: 2011-12-08 13:00:00 GMT +00:00</td>
 	</tr>
 </table>
     <div id="navigation">
 			<ul>
-            	<li><a href="/chameleon/main.do">Home</a></li>
+            	<li><a href="<c:url value='/main.do'/>">Home</a></li>
                 <li id="active"><a href="migration.html">Migration</a></li>
                 <li><a href="navigation.html">Provisioning</a></li>
 				<li><a href="navigation.html">System</a></li>

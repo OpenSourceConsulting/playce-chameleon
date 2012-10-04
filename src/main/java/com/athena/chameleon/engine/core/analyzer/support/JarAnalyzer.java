@@ -25,7 +25,9 @@ import java.io.File;
 import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
@@ -72,6 +74,8 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			// 임시 디렉토리에 압축 해제
 			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
+			
+			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
 
 			// 인코딩 변경
 			converter.convert(new File(tempDir), analyzeDefinition);

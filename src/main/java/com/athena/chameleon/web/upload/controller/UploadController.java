@@ -36,7 +36,6 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
-import com.athena.chameleon.engine.entity.file.Migration;
 import com.athena.chameleon.engine.entity.upload.Upload;
 
 /**

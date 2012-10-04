@@ -33,7 +33,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import com.athena.chameleon.engine.core.PDFDocGenerator;
-import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.BaseColor;

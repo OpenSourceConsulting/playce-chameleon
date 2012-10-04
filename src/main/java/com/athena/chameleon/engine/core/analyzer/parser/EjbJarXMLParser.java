@@ -52,7 +52,7 @@ public class EjbJarXMLParser extends Parser {
         try {
             CommonAnalyze commonAnalyze = new CommonAnalyze();
             commonAnalyze.setItem(file.getName());
-            commonAnalyze.setLocation(file.getPath());
+            commonAnalyze.setLocation(removeTempDir(file.getParent()));
             commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
             
             analyzeDefinition.getDescripterList().add(commonAnalyze);

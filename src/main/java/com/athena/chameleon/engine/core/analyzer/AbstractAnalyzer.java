@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.parser.ApplicationXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.EjbJarXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusApplicationDDXMLParser;
@@ -345,5 +347,22 @@ public abstract class AbstractAnalyzer implements Analyzer {
 			logger.error("IOException has occurred.", e);
 		}
     }//end of makeClassLoading()
+    
+    /**
+     * <pre>
+     * 절대경로 상에서 압축해제를 위한 임시 디렉토리까지의 경로를 삭제한 상대 경로를 구한다.
+     * </pre>
+     * @param fullPath
+     * @return
+     */
+    protected String removeTempDir(String fullPath) {
+    	String tempPath = (String)ThreadLocalUtil.get(ChameleonConstants.TEMP_ROOT_DIR);
+    	
+    	if(StringUtils.isEmpty(tempPath)) {
+    		return fullPath;
+    	} else {
+    		return fullPath.substring(tempPath.length() + 1);
+    	}
+    }//end of removeTempDir()
     
 }//end of DependencyAnalyzer.java

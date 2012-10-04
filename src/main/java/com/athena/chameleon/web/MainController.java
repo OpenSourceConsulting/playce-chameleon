@@ -20,10 +20,6 @@
  */
 package com.athena.chameleon.web;
 
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,8 +35,6 @@ import com.athena.chameleon.web.login.vo.Login;
 @Controller("mainController")
 @RequestMapping("/")
 public class MainController {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
 
     /**
      * 

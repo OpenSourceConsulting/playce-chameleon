@@ -80,6 +80,8 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 			
+			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
+			
 			/****************************************************************************************
 			 * 
 			 * TODO Should be Delete. MAC 에서 테스트 애플리케이션 입력 시 __MACOSX 라는 garbage 디렉토리가 생김.

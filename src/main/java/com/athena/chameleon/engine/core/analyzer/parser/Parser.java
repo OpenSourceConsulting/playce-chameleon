@@ -29,9 +29,12 @@ import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 
 /**
@@ -128,4 +131,21 @@ public abstract class Parser {
         
         return result;
     }//end of fileToString()
+    
+    /**
+     * <pre>
+     * 절대경로 상에서 압축해제를 위한 임시 디렉토리까지의 경로를 삭제한 상대 경로를 구한다.
+     * </pre>
+     * @param fullPath
+     * @return
+     */
+    protected String removeTempDir(String fullPath) {
+    	String tempPath = (String)ThreadLocalUtil.get(ChameleonConstants.TEMP_ROOT_DIR);
+    	
+    	if(StringUtils.isEmpty(tempPath)) {
+    		return fullPath;
+    	} else {
+    		return fullPath.substring(tempPath.length() + 1);
+    	}
+    }//end of removeTempDir()
 }//end of Parser.java

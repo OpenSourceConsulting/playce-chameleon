@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR" />
 <title>Athena Chameleon - WAS Migration Tool</title>
 
-<link href="/chameleon/css/login-box.css" rel="stylesheet" type="text/css" />
+<link href="<c:url value='/css/login-box.css'/>" rel="stylesheet" type="text/css" />
 
 <script type="text/javascript">
 	$(document).ready(function (){
@@ -72,7 +72,7 @@ WAS Migration Tool for NCIA and Supported by Open Source Consulting.
 			<span class="login-box-options"><input type="checkbox" name="1" value="1"> Remember Me <a href="#" style="margin-left:30px;">Forgot password?</a></span>
 			<br />
 			<br />
-			<a href="#" id="loginBtn"><img src="/chameleon/images/login-btn.png" width="103" height="42" style="margin-left:90px;" /></a>
+			<a href="#" id="loginBtn"><img src="<c:url value='/images/login-btn.png'/>" width="103" height="42" style="margin-left:90px;" /></a>
 		</div>
 	</div>
  </form:form>
