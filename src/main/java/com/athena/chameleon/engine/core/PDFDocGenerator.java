@@ -21,6 +21,7 @@ import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.Dependency;
+import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
@@ -647,17 +648,19 @@ public class PDFDocGenerator {
     public static List<Element> setTransXmlData(PDFMetadataDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
-        Iterator iterator = data.getTransXmlInfo().entrySet().iterator();
+        List<EjbRecommend> dataList = data.getEjbRecommendList();
         
         Element section; 
-        while (iterator.hasNext()) {
-            Entry entry = (Entry)iterator.next();
+        for(EjbRecommend comm : dataList) {
             
             section = new Element("section");
-            section.setAttribute("title", String.valueOf(entry.getKey()));
+            if(comm.isTransFlag())
+                section.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.advice.trans.label2", comm.getItem()));
+            else
+                section.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.advice.trans.label1", comm.getItem()));
             
-            section.addContent(new Element("text").setText(String.valueOf(entry.getKey())));
-            section.addContent(new Element("box").setText(String.valueOf(entry.getValue())));
+            section.addContent(new Element("text").setText(comm.getLocation()));
+            section.addContent(new Element("box").setText(comm.getContents()));
             
             childs.add(section);
         }
