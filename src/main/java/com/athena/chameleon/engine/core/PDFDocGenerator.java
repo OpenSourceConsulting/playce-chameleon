@@ -697,10 +697,11 @@ public class PDFDocGenerator {
 		List<Element> childs = new ArrayList<Element>();
 		List<Element> childs2;
         Iterator iterator = null;
-        if(type.equals("war"))
+        if(type.equals("war")) {
             iterator = rootData.getWarDefinitionMap().entrySet().iterator();
-        else if(type.equals("jar"))
+        } else if(type.equals("jar")) {
             iterator = rootData.getJarDefinitionMap().entrySet().iterator();
+        }
         
         Element section;
 		while (iterator.hasNext()) {
