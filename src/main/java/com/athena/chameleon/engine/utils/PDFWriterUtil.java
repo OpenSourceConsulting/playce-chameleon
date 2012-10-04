@@ -175,7 +175,7 @@ public class PDFWriterUtil {
         String title = section.getTitle().getContent();
         
         Chunk c;
-        if(section.getDepth() == 3) {
+        if(section.getDepth() >= 3) {
             c = new Chunk(text, fnSection2);
         } else {
             c = new Chunk(text, fnSection);
@@ -186,7 +186,7 @@ public class PDFWriterUtil {
         sectionPh.add(c);
         sectionPh.setSpacingBefore(8);
         sectionPh.setSpacingAfter(3);
-        if(section.getDepth() == 3)
+        if(section.getDepth() >= 3)
             sectionPh.setIndentationLeft(23);
         
         section.setTitle(sectionPh);
