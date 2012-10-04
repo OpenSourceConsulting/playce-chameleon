@@ -27,6 +27,9 @@
 		<class_info/>
 	</section>
 	<section title="Web Application">
-		<child_deploy/>
+		<war_child_deploy/>
+	</section>
+	<section title="Java Archiver">
+		<jar_child_deploy/>
 	</section>
 </chapter>

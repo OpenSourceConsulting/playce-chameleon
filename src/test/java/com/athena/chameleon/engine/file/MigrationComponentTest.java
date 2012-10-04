@@ -347,6 +347,7 @@ public class MigrationComponentTest {
         
         data.setZipDefinition(zip);
         data.addWarDefinitionMap("warTest", war);
+        data.addWarDefinitionMap("warTest2", war);
         data.setEarDefinition(ear);
         ;
         //변환 대상 파일

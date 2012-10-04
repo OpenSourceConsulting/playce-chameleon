@@ -151,6 +151,9 @@ public class PDFMetadataDefinition {
 	 * @return the jarDefinitionMap
 	 */
 	public Map<String, AnalyzeDefinition> getJarDefinitionMap() {
+	    if(jarDefinitionMap == null) {
+	        jarDefinitionMap = new TreeMap<String, AnalyzeDefinition>();
+        }
 		return jarDefinitionMap;
 	}
 	/**

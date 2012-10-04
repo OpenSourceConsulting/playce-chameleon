@@ -188,8 +188,10 @@ public class PDFDocGenerator {
         for(Element e : root.getChildren()) {
             
             if(e.getName().equals("section")) {
-                if(e.getChild("child_deploy") != null) {
-                    childs = setChildDeployData(rootData, upload);
+                if(e.getChild("war_child_deploy") != null) {
+                    childs = setChildDeployData(rootData, upload, "war");
+                } else if(e.getChild("jar_child_deploy") != null) {
+                    childs = setChildDeployData(rootData, upload, "jar");
                 } else if(e.getChild("trans_xml_info") != null) {
                     childs = setTransXmlData(rootData, upload);
                 }
@@ -684,12 +686,19 @@ public class PDFDocGenerator {
         return childs;
     }
 
-	public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload) throws Exception {
+	public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload, String type) throws Exception {
 		
 		List<Element> childs = new ArrayList<Element>();
-		List<Element> childs2 = new ArrayList<Element>();
-        Iterator iterator = rootData.getWarDefinitionMap().entrySet().iterator();
+		List<Element> childs2;
+        Iterator iterator = null;
+        if(type.equals("war"))
+            iterator = rootData.getWarDefinitionMap().entrySet().iterator();
+        else if(type.equals("jar"))
+            iterator = rootData.getJarDefinitionMap().entrySet().iterator();
+        
+        Element section;
 		while (iterator.hasNext()) {
+		    childs2 = new ArrayList<Element>();
             Entry entry = (Entry)iterator.next();
             AnalyzeDefinition data = (AnalyzeDefinition)entry.getValue();
             
@@ -698,7 +707,7 @@ public class PDFDocGenerator {
             
             Element root = chapterDoc.getRootElement();
             
-            Element section = new Element("section");
+            section = new Element("section");
             section.setAttribute("title", data.getFileName());
             for(Element e : root.getChildren()) {
                 childs2.add(e.clone());
