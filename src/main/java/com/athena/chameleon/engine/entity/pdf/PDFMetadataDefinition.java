@@ -191,6 +191,8 @@ public class PDFMetadataDefinition {
      * @return the ejbRecommendList
      */
     public List<EjbRecommend> getEjbRecommendList() {
+        if(ejbRecommendList == null)
+            ejbRecommendList = new ArrayList<EjbRecommend>(); 
         return ejbRecommendList;
     }
 }

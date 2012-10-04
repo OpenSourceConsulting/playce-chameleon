@@ -465,17 +465,19 @@ public class PDFWriterUtil {
                 "", dataset, PlotOrientation.VERTICAL, false,
                 true, false);
     	
+    	//java.awt.Font labelFont = chart.getLegend().getItemFont();
+    	
     	PdfContentByte cb = writer.getDirectContent();
-    	PdfTemplate bar = cb.createTemplate(300, 150);
-        Graphics2D g2d2 = new PdfGraphics2D(bar, 300, 150);
-        Rectangle2D r2d2 = new Rectangle2D.Double(0, 0, 300, 150);
+    	PdfTemplate bar = cb.createTemplate(350, 150);
+        Graphics2D g2d2 = new PdfGraphics2D(bar, 350, 150);
+        Rectangle2D r2d2 = new Rectangle2D.Double(0, 0, 350, 150);
         chart.draw(g2d2, r2d2);
         g2d2.dispose();
         
         Image image = Image.getInstance(bar);
         image.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
         section.add(image); 
-    }
+    } 
     
     /**
      * 

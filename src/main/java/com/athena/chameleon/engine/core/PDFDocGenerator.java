@@ -274,43 +274,44 @@ public class PDFDocGenerator {
 	
 	public static List<Element> setFileSummary(AnalyzeDefinition data) {
 
-		Element child1 = new Element("table");
-		Element child2 = new Element("chart");
-		child2.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
-		
-		Element childE1 = new Element("header");
-		Element childE2 = new Element("row");
-		Element childE3;
-		
-		child1.setAttribute("size", "4");
-		
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header1")));
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header2")));
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header3")));
-		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header4")));
-	
-		Iterator iterator = data.getFileSummaryMap().entrySet().iterator();
-		
-        while (iterator.hasNext()) {
-            Entry entry = (Entry)iterator.next();
-            childE2.addContent(new Element("col").setText(((FileType)entry.getKey()).toString()));
-            childE2.addContent(new Element("col").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
-            childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getSourceEncoding()));
-            childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getTargetEncoding()));
-			
-            childE3 = new Element("data");
-			childE3.addContent(new Element("column").setText(((FileType)entry.getKey()).toString()));
-			childE3.addContent(new Element("value").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
-			child2.addContent(childE3);
-        }
-		
-        child1.addContent(childE1);
-        child1.addContent(childE2);
-		
-        List<Element> childs = new ArrayList<Element>();
-		childs.add(child1);
-		childs.add(child2);
-		
+	    List<Element> childs = new ArrayList<Element>();
+        if(data.getFileSummaryMap() != null){
+    		Element child1 = new Element("table");
+    		Element child2 = new Element("chart");
+    		child2.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
+    		
+    		Element childE1 = new Element("header");
+    		Element childE2 = new Element("row");
+    		Element childE3;
+    		
+    		child1.setAttribute("size", "4");
+    		
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header1")));
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header2")));
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header3")));
+    		childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header4")));
+    	
+    		Iterator iterator = data.getFileSummaryMap().entrySet().iterator();
+    		
+            while (iterator.hasNext()) {
+                Entry entry = (Entry)iterator.next();
+                childE2.addContent(new Element("col").setText(((FileType)entry.getKey()).toString()));
+                childE2.addContent(new Element("col").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
+                childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getSourceEncoding()));
+                childE2.addContent(new Element("col").setText(((FileSummary)entry.getValue()).getTargetEncoding()));
+    			
+                childE3 = new Element("data");
+    			childE3.addContent(new Element("column").setText(((FileType)entry.getKey()).toString()));
+    			childE3.addContent(new Element("value").setText(String.valueOf(((FileSummary)entry.getValue()).getFileCount())));
+    			child2.addContent(childE3);
+            }
+    		
+            child1.addContent(childE1);
+            child1.addContent(childE2);
+    		
+            childs.add(child1);
+    		childs.add(child2);
+	    }
 		return childs;
 	}
 
@@ -394,7 +395,9 @@ public class PDFDocGenerator {
 		Map<String, Integer> dataMap = data.getJspDirectiveMap();
 		
 		if(dataMap != null) {
-			int jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
+			int jspFileCount = 0;
+			if(data.getFileSummaryMap() != null)
+			    jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
 			
 			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
 			Element child = new Element("table");
