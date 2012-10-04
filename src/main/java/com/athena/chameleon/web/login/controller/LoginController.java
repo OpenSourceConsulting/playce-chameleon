@@ -24,6 +24,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -41,9 +43,10 @@ import com.athena.chameleon.web.login.vo.Login;
  * @version 1.0
  */
 @Controller("loginController")
-@RequestMapping("/login.do")
+@RequestMapping("/login")
 public class LoginController {
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    
     @Inject
     @Named("coreLoginService")
     private LoginService loginService;
@@ -56,10 +59,10 @@ public class LoginController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(params = "method=show")
+    @RequestMapping("/showLogin.do")
     public String showLogin(Model model) throws Exception {
     	model.addAttribute(new Login());
-    	return "/ifrm/login/show";
+    	return "/ifrm/login/loginForm";
     }
 
     /**
@@ -73,11 +76,12 @@ public class LoginController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(params = "method=login")
+    @RequestMapping("/login.do")
     public String login(Login login, ModelMap modelMap, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
 
+        logger.debug("Login Info: {}", login);
     	if (results.hasErrors()) {
-            return "/ifrm/login/show";
+            return "/ifrm/login/loginForm";
         }
 
         boolean result = this.loginService.login(login);
