@@ -463,9 +463,9 @@ public class PDFDocGenerator {
 			Element childE2 = new Element("row");
 			
 			child.setAttribute("size", "1");
-			
+			child.setAttribute("width", "150");
+            
 			Element col = new Element("col");
-			col.setAttribute("width", "200");
 			childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
 			
 			for(String text : dataList) {
@@ -486,14 +486,12 @@ public class PDFDocGenerator {
 		List<ClassAnalyze> dataList = data.getClassesConstList();
 		
 		if(dataList.size() > 0) {
-			childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.class.text", String.valueOf(data.getClassFileCount()), String.valueOf(data.getClassDirCount()))));
 			
 			Element child, childE1, childE2, col, text;
 			for (ClassAnalyze comm : dataList) {
 				
 				text = new Element("text");
 				text.setText(MessageUtil.getMessage("pdf.message.chapter.class_info.label") + comm.getClassName());
-				text.setAttribute("padding", "23");
 				childs.add(text);
 				
 				child = new Element("table");
@@ -671,6 +669,8 @@ public class PDFDocGenerator {
             for(Element e : root.getChildren()) {
             	section.addContent(e);
             }
+            
+            setDynamicSection(section, data, upload);
             
             childs.add(section);
         }

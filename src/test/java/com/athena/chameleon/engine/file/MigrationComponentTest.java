@@ -42,6 +42,7 @@ import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
 import com.athena.chameleon.engine.entity.file.MigrationFile;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
@@ -115,6 +116,7 @@ public class MigrationComponentTest {
         
         PDFMetadataDefinition data = new PDFMetadataDefinition();
         AnalyzeDefinition zip = new AnalyzeDefinition();
+        AnalyzeDefinition war = new AnalyzeDefinition();
         
         //zip - summary
         FileSummary zipSummary = new FileSummary();
@@ -132,17 +134,20 @@ public class MigrationComponentTest {
         
         fileSummaryMap.put(FileType.JSP, zipSummary);
         zip.setFileSummaryMap(fileSummaryMap);
+        war.setFileSummaryMap(fileSummaryMap);
         
         //zip - servlet
         CommonAnalyze comm = new CommonAnalyze();
         comm.setItem("NIPAFramework");
         comm.setLocation("src/main/org/nipa/web/servlet");
         zip.getServletExtendsList().add(comm);
+        war.getServletExtendsList().add(comm);
         
         comm = new CommonAnalyze();
         comm.setItem("NIPAFramework1");
         comm.setLocation("src/main/org/nipa/web/servlet1");
         zip.getServletExtendsList().add(comm);
+        war.getServletExtendsList().add(comm);
         
         //zip - ejb
         comm = new CommonAnalyze();
@@ -186,6 +191,7 @@ public class MigrationComponentTest {
         fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
         zip.getJspDependencyList().add(dependency);
+        war.getJspDependencyList().add(dependency);
         
         dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper2.jsp");
@@ -196,7 +202,8 @@ public class MigrationComponentTest {
         fileInfo.put("Line 238:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
         zip.getJspDependencyList().add(dependency);
-
+        war.getJspDependencyList().add(dependency);
+        
         //zip - property
 		dependency = new Dependency();
 		dependency.setFileName("src/main/org/nipa/migration/WebHelper.properties");
@@ -225,6 +232,7 @@ public class MigrationComponentTest {
         fileInfo.put("Line 138:", "public ContextMBean getContextMBean() {");
         dependency.setDependencyStrMap(fileInfo);
         zip.getClassDependencyList().add(dependency);
+        war.getClassDependencyList().add(dependency);
         
         dependency = new Dependency();
         dependency.setFileName("src/main/org/nipa/migration/WebHelper2.class");
@@ -234,6 +242,7 @@ public class MigrationComponentTest {
         fileInfo.put("Line 22:", "import com.bea.weblogic.jmx.ContextMBean;");
         dependency.setDependencyStrMap(fileInfo);
         zip.getClassDependencyList().add(dependency);
+        war.getClassDependencyList().add(dependency);
         
         //jsp 분석 결과
         Map<String, Integer> dataMap = new HashMap<String, Integer>();
@@ -241,8 +250,50 @@ public class MigrationComponentTest {
         dataMap.put("<%@ page language=\"java\" pageEncoding=\"java\" contentType=\"text/html; charset=EUC-KR\" %>", 200);
 
         zip.setJspDirectiveMap(dataMap);
+        war.setJspDirectiveMap(dataMap);
+        
+        //web.xml 
+        comm = new CommonAnalyze();
+        comm.setItem("display-name");
+        comm.setContents("athena-chameleon");
+        war.getDescripterList().add(comm);
+        
+        comm = new CommonAnalyze();
+        comm.setItem("filter-mapping : filter-name");
+        comm.setContents("encodingFilter");
+        war.getDescripterList().add(comm);
+        
+        //jar
+        war.getLibraryList().add("commons-io.jar");
+        war.getLibraryList().add("commons-dbcp.jar");
+        
+        war.getDeleteLibraryList().add("common.jar");
+        
+        //class 구성정보
+        ClassAnalyze classes = new ClassAnalyze();
+        classes.setClassName("com.xxx.xxx.XxxService");
+        classes.getSuperClasses().add("java.lang.Object");
+        classes.setClassModifier("public");
+        classes.setFinalClass(false);
+        classes.getFiledList().add("public java.lang.String com.osc.reflect.Employee._firstName");
+        classes.getFiledList().add("public java.lang.String com.osc.reflect.Employee._lastName");
+        classes.getMethodList().add("public int com.osc.reflect.Employee.getSalary()");
+        classes.getMethodList().add("public final native java.lang.Class java.lang.Object.getClass()");
+        war.getClassesConstList().add(classes);
+        
+        classes = new ClassAnalyze();
+        classes.setClassName("com.xxx.xxx.YyyService");
+        classes.getSuperClasses().add("java.lang.Object");
+        classes.setClassModifier("public");
+        classes.setFinalClass(true);
+        classes.getFiledList().add("public java.lang.String com.osc.reflect.Employee._firstName");
+        classes.getFiledList().add("public java.lang.String com.osc.reflect.Employee._lastName");
+        classes.getMethodList().add("public boolean java.lang.Object.equals(java.lang.Object)");
+        classes.getMethodList().add("public java.lang.String java.lang.Object.toString()");
+        war.getClassesConstList().add(classes);
         
         data.setZipDefinition(zip);
+        data.addWarDefinitionMap("warTest", war);
         
         PDFDocGenerator.createPDF(unzipDirPath+File.separator+"test.pdf", upload, data);
         
