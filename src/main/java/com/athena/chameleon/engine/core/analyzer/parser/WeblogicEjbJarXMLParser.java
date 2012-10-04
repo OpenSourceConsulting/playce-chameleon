@@ -210,16 +210,6 @@ public class WeblogicEjbJarXMLParser extends Parser {
 		
 		return jboss;
 	}//end of generateJbossXML()
-	
-	public static void main(String[] args) {
-		WeblogicEjbJarXMLParser parser = new WeblogicEjbJarXMLParser();
-		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
-		ThreadLocalUtil.add(ChameleonConstants.PDF_METADATA_DEFINITION, metadataDefinition);
-		ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, "/Users/nices96/Desktop");
-		parser.parse(new File("/Users/nices96/Desktop/xmlparse/weblogic-ejb-jar-9_0.xml"), new AnalyzeDefinition());
-		
-		System.out.println(metadataDefinition.getTransFileList());
-	}
 
 }
 //end of WeblogicEjbJarXMLParser.java
