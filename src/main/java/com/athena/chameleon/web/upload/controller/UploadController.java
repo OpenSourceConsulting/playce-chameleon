@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Revision History
- * Author			Date				Description
- * ---------------	----------------	------------
- * Hyo-jeong Lee	2012. 9. 12.		First Draft.
+ * Author           Date                Description
+ * ---------------  ----------------    ------------
+ * Hyo-jeong Lee    2012. 9. 12.        First Draft.
  */
 package com.athena.chameleon.web.upload.controller;
 
@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
@@ -48,35 +49,35 @@ import com.athena.chameleon.engine.entity.upload.Upload;
 @RequestMapping("/upload")
 public class UploadController {
 
-	@Inject
+    @Inject
     @Named("migrationComponent")
     private MigrationComponent component;
 
-	@Inject
+    @Inject
     @Named("pdfDocGenerator")
     private PDFDocGenerator pdfData;
 
-	@Value("#{filteringProperties['chameleon.upload.temp.dir']}")
-	public String uploadPath;
+    @Value("#{filteringProperties['chameleon.upload.temp.dir']}")
+    public String uploadPath;
 
-	/**
-	 * 
-	 * 업로드 입력정보 화면 호출
-	 *
-	 * @param model
-	 * @param session
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping("/form.do")
+    /**
+     * 
+     * 업로드 입력정보 화면 호출
+     *
+     * @param model
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/form.do")
     public String showUpload(Model model, HttpSession session) throws Exception {
-    	
-    	String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
-    	if(loginFlag == null || !loginFlag.equals("Y"))
-    		return "redirect:/login/loginForm.do";
-    	
-    	model.addAttribute(new Upload());
-    	return "/ifrm/upload/uploadForm";
+        
+        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
+        if(loginFlag == null || !loginFlag.equals("Y"))
+            return "redirect:/login/showLogin.do";
+        
+        model.addAttribute(new Upload());
+        return "/ifrm/upload/uploadForm";
     }
 
     /**
@@ -90,23 +91,23 @@ public class UploadController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(params = "method=upload")
-    public String upload(Upload upload, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
+    @RequestMapping("/upload.do")
+    public String upload(Upload upload, ModelMap modelMap, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
 
         String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
-    	if(loginFlag == null || !loginFlag.equals("Y"))
-    		return "redirect:/login.do?method=show";
-    	
-    	if (results.hasErrors()) {
-    		return "redirect:/upload.do?method=show";
+        if(loginFlag == null || !loginFlag.equals("Y"))
+            return "redirect:/login/showLogin.do";
+        
+        if (results.hasErrors()) {
+            return "redirect:/upload/form.do";
         }
-    	
-    	try {
-    	    String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator;
-    	    String sourceFile, deployFile = "";
-    	    File migrationFile;
-    	    
-    	    if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
+        
+        try {
+            String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator;
+            String sourceFile, deployFile = "";
+            File migrationFile;
+            
+            if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
                 
                 migrationFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
                 if (!migrationFile.exists()) {
@@ -142,13 +143,17 @@ public class UploadController {
             }
             component.migrate(sourceFile, deployFile, upload);
             
+            modelMap.addAttribute("upload", upload);
+            modelMap.addAttribute("result", true);
+            
         }
         catch (Exception ex) {
-        	ex.printStackTrace();
+            ex.printStackTrace();
+            modelMap.addAttribute("result", false);
         }
         
-    	        
-        return "";
+                
+        return "/ifrm/upload/resultForm";
     }
 
 }

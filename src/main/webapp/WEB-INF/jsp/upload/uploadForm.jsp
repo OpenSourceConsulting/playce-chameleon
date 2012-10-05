@@ -18,7 +18,7 @@
 				return false;
 			} else {
 				var form = $("#uploadForm").get(0);
-				form.action = "<c:url value='/upload.do?method=upload' />";
+				form.action = "<c:url value='/upload/upload.do' />";
 				form.submit();
 			}
 		});
@@ -38,7 +38,7 @@
     <div id="navigation">
 			<ul>
             	<li><a href="<c:url value='/main.do'/>">Home</a></li>
-                <li id="active"><a href="migration.html">Migration</a></li>
+                <li id="active"><a href="<c:url value='/upload/form.do'/>">Migration</a></li>
                 <li><a href="navigation.html">Provisioning</a></li>
 				<li><a href="navigation.html">System</a></li>
 				<li><a href="navigation.html">Contact Us</a></li>
