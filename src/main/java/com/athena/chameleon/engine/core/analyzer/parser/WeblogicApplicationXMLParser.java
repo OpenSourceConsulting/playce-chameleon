@@ -67,8 +67,18 @@ public class WeblogicApplicationXMLParser extends Parser {
     	try {
         	// http://www.bea.com/ns/weblogic/weblogic-application/1.0/weblogic-application.xsd
 			obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType.class.getPackage().getName(), file)).getValue();
-    	} catch (JAXBException e) {
-			logger.error("JAXBException has occurred.", e);
+    	} catch (JAXBException e1) {
+			try {
+	    		// http://www.bea.com/ns/weblogic/90/weblogic-application.xsd
+				obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.weblogic.v9_0.WeblogicApplicationType.class.getPackage().getName(), file)).getValue();
+			} catch (JAXBException e2) {
+	    		try {
+					// http://www.bea.com/servers/wls810/dtd/weblogic-application_2_0.dtd
+					obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.weblogic.v8_1.WeblogicApplication.class.getPackage().getName(), file);
+				} catch (JAXBException e3) {
+					logger.error("JAXBException has occurred.", e3);
+				}
+			}
     	}
     	
 		try {
