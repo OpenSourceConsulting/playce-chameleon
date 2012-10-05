@@ -68,10 +68,14 @@ public class WarAnalyzer extends AbstractAnalyzer {
 	@Override
 	public String analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
-		Assert.isTrue(file.getName().endsWith(".war"), "file name must be ends with \".war\".");
+		//Assert.isTrue(file.getName().endsWith(".war"), "file name must be ends with \".war\".");
 
 		// 입력된 파일명을 프로젝트 이름으로 사용한다.(jboss-app.xml, jboss-web.xml 파일 생성시 사용)
-		ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName().substring(0, file.getName().lastIndexOf(".")));
+		if( file.getName().endsWith(".war")) {
+		    ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName().substring(0, file.getName().lastIndexOf(".")));
+		} else {
+		    ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName());
+		}
 		
 		String newFileName = null;
 		
