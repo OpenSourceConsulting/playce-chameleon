@@ -31,6 +31,7 @@ import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
@@ -85,6 +86,11 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);
+
+			if(embed) {
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getEarDefinition()
+				.getEjbApplicationMap().put(file.getName(), analyzeDefinition.getEjbApplicationMap().get(analyzeDefinition.getFileName()));
+			}
 			
 			// 임시디렉토리를 재 압축한다.
 			newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
