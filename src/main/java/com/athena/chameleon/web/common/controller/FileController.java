@@ -50,13 +50,14 @@ public class FileController {
 	public void download(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("path") String path) throws Exception {
 		
-		Assert.notNull(path, "name must not be null");
+		Assert.notNull(path, "name must not be null.");
 		
-		String name = path.replaceAll("\\\\", "/");
-		name = name.substring(name.lastIndexOf("/")+1, name.length());
 		File file = new File(path);
 		
 		Assert.isTrue(file.exists(), path + " does not exist.");
+		
+		String name = path.replaceAll("\\\\", "/");
+		name = name.substring(name.lastIndexOf("/")+1, name.length());
 		
 		long fileSize = file.length();
 		
@@ -82,8 +83,6 @@ public class FileController {
 			response.setContentType("application/octet-stream");
 		}
 		
-        response.setHeader("Content-disposition","attachment;filename=" + URLEncoder.encode(name, "UTF-8"));
-
         if(request.getHeader("User-Agent").toLowerCase().contains("firefox") || request.getHeader("User-Agent").toLowerCase().contains("safari")) { 
             response.setHeader("Content-Disposition", "attachment; filename=\"" + new String(name.getBytes("UTF-8"), "ISO-8859-1") + "\""); 
             response.setHeader("Content-Transfer-Encoding", "binary");
