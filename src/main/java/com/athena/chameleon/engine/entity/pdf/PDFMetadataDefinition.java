@@ -47,6 +47,10 @@ public class PDFMetadataDefinition {
     private Map<String, AnalyzeDefinition> warDefinitionMap;
     //jar 분석정보
     private Map<String, AnalyzeDefinition> jarDefinitionMap;
+    //변환 application xml 정보(파일명, 파일내용)
+    private List<EjbRecommend> applicationRecommendList;
+    //변환 web xml 정보(파일명, 파일내용)
+    private List<EjbRecommend> webRecommendList;
     //변환 xml 정보(파일명, 파일내용)
     private List<EjbRecommend> ejbRecommendList;
     //변환 대상 파일 리스트
@@ -236,6 +240,22 @@ public class PDFMetadataDefinition {
      */
     public void setPdfFile(String pdfFile) {
         this.pdfFile = pdfFile;
+    }
+    /**
+     * @return the applicationRecommendList
+     */
+    public List<EjbRecommend> getApplicationRecommendList() {
+        if(applicationRecommendList == null)
+            applicationRecommendList = new ArrayList<EjbRecommend>();
+        return applicationRecommendList;
+    }
+    /**
+     * @return the webRecommendList
+     */
+    public List<EjbRecommend> getWebRecommendList() {
+        if(webRecommendList == null)
+            webRecommendList = new ArrayList<EjbRecommend>();
+        return webRecommendList;
     }
 }
 //end of PDFDefination.java

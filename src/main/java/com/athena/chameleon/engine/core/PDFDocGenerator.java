@@ -193,8 +193,12 @@ public class PDFDocGenerator {
                     childs = setChildDeployData(rootData, upload, "war");
                 } else if(e.getChild("jar_child_deploy") != null) {
                     childs = setChildDeployData(rootData, upload, "jar");
-                } else if(e.getChild("trans_xml_info") != null) {
-                    childs = setTransXmlData(rootData, upload);
+                } else if(e.getChild("trans_application_xml_info") != null) {
+                    childs = setTransXmlData(rootData, upload, "application");
+                } else if(e.getChild("trans_web_xml_info") != null) {
+                    childs = setTransXmlData(rootData, upload, "web");
+                } else if(e.getChild("trans_ejb_xml_info") != null) {
+                    childs = setTransXmlData(rootData, upload, "ejb");
                 }
             }
             
@@ -651,10 +655,16 @@ public class PDFDocGenerator {
         return childs;
     }
 
-    public static List<Element> setTransXmlData(PDFMetadataDefinition data, Upload upload) {
+    public static List<Element> setTransXmlData(PDFMetadataDefinition data, Upload upload, String type) {
 
         List<Element> childs = new ArrayList<Element>();
-        List<EjbRecommend> dataList = data.getEjbRecommendList();
+        List<EjbRecommend> dataList = null;
+        if(type.equals("application"))
+            dataList = data.getApplicationRecommendList();
+        else if(type.equals("web"))
+            dataList = data.getWebRecommendList();
+        else if(type.equals("ejb"))
+            dataList = data.getEjbRecommendList();
         
         Element section; 
         for(EjbRecommend comm : dataList) {

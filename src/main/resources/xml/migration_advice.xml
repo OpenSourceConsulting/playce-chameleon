@@ -1,28 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter>
 <chapter title="마이그레이션 권고안 – 전환시 부가작업 및 사항">
-	<section title ="Web Deployment Descript 추가">
-		<box><![CDATA[<!-- ==================================== -->
-			<!-- Filter -->
-			<!-- ==================================== -->
-			<filter>
-			    <filter-name>UTF_EncodingFilter</filter-name>
-			    <filter-class>com.osc.filters.SetCharacterEncodingFilter</filter-class>
-			    <init-param>
-			        <param-name>encoding</param-name>
-			        <param-value>UTF-8</param-value>
-			    </init-param>
-			    <init-param>
-			        <param-name>forceEncoding</param-name>
-			        <param-value>true</param-value>
-			    </init-param>
-			</filter>
-			<filter-mapping>
-			    <filter-name>UTF_EncodingFilter</filter-name>
-			    <url-pattern>*</url-pattern>
-			</filter-mapping>
-			]]>
-		</box>
+	<section title ="application Deployment Descriptor 추가">
+		<trans_application_xml_info/>
+	</section>
+	<section title ="Web Deployment Descriptor 추가">
+		<trans_web_xml_info/>
 	</section>
 	<section title="EJB Deployment Descriptor 추가">
 		<text>EJB 2.x 버전에서는 EJB Deployment Descriptor가 필요하다.
@@ -31,6 +14,6 @@
 			WebLogic의 경우엔 weblogic-ejb-jar.xml 파일에 바인딩될 JNDI이름등을 지정하게 된다.
 			JBoss에서는 jboss.xml 파일을 사용한다.
 		</text>
-		<trans_xml_info/>
+		<trans_ejb_xml_info/>
 	</section>
 </chapter>
