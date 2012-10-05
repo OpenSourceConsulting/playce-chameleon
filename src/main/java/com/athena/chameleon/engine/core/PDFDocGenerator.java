@@ -96,7 +96,7 @@ public class PDFDocGenerator {
                     addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getZipDefinition(), upload);
                     cNum++;
                     
-                } else if(option.equals("deploy") && upload.getDeploySrc() != null) {
+                } else if(option.equals("deploy") && (upload.getDeploySrc() != null && upload.getDeploySrc().getFileItem().getSize() > 0)) {
 
                     addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getZipDefinition(), upload);
                     cNum++;
@@ -228,9 +228,10 @@ public class PDFDocGenerator {
                 childs = setDependencyData(data, "class");
              else if(e.getName().equals("jsp_analyze_result")) 
                 childs = setJspAnalyzeData(data, upload);
-             else if(e.getName().equals("deploy_application_text")) 
+             else if(e.getName().equals("deploy_application_text")) { 
                 childs = setDeployApplicationText(data, upload);
-             else if(e.getName().equals("web_xml_info")) 
+                index = 1;
+             } else if(e.getName().equals("web_xml_info")) 
                 childs = setApplicationData(data, upload);
              else if(e.getName().equals("jar_xml_info")) 
                 childs = setApplicationData(data, upload);
@@ -434,7 +435,9 @@ public class PDFDocGenerator {
     public static List<Element> setDeployApplicationText(AnalyzeDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
-        childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.deploy.application.text", upload.getDeploySrc().getName())));
+        String fileName = upload.getDeploySrc().getFileItem().getName().replaceAll("\\\\", "/");
+        fileName = fileName.substring(fileName.lastIndexOf("/")+1, fileName.length());
+        childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.deploy.application.text", fileName)));
         return childs;
         
     }
@@ -477,9 +480,9 @@ public class PDFDocGenerator {
         List<Element> childs = new ArrayList<Element>();
         List<String> dataList;
         if(type.equals("D"))
-            dataList = data.getLibraryList();
-        else
             dataList = data.getDeleteLibraryList();
+        else
+            dataList = data.getLibraryList();
         
         if(dataList.size() > 0) {
             Element child = new Element("table");
@@ -575,7 +578,7 @@ public class PDFDocGenerator {
             
             for(CommonAnalyze comm : dataList) {
                 childE2.addContent(new Element("col").setText(comm.getItem()));
-                childE2.addContent(new Element("col").setText(comm.getLocation()));
+                childE2.addContent(new Element("col").setText(comm.getLocation()+File.separator+comm.getItem()));
             }
             child.addContent(childE1);
             child.addContent(childE2);
@@ -662,7 +665,7 @@ public class PDFDocGenerator {
             else
                 section.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.advice.trans.label1", comm.getItem()));
             
-            section.addContent(new Element("text").setText(comm.getLocation()));
+            section.addContent(new Element("text").setText(comm.getLocation()+File.separator+comm.getItem()));
             section.addContent(new Element("box").setText(comm.getContents()));
             
             childs.add(section);
@@ -721,7 +724,8 @@ public class PDFDocGenerator {
             Element root = chapterDoc.getRootElement();
             
             section = new Element("section");
-            section.setAttribute("title", data.getFileName());
+            section.setAttribute("title", String.valueOf(entry.getKey()));
+            
             for(Element e : root.getChildren()) {
                 childs2.add(e.clone());
             }

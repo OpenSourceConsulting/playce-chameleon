@@ -37,6 +37,7 @@ public class PDFMetadataDefinition {
 	private String migrateSourceFile;
 	private String deployFile;
 	private String migrateDeployFile;
+	private String pdfFile;
 
 	//zip 분석정보
     private AnalyzeDefinition zipDefinition;
@@ -70,6 +71,17 @@ public class PDFMetadataDefinition {
 		return migrateSourceFile;
 	}
 	/**
+     * @return the migrateSourceFile
+     */
+    public String getMigrateSourceFileName() {
+        if(migrateSourceFile == null || migrateSourceFile.isEmpty())
+            return "";
+        else {
+            String fileName = migrateSourceFile.replaceAll("\\\\", "/");
+            return fileName.substring(fileName.lastIndexOf("/")+1, fileName.length());
+        }
+    }
+	/**
 	 * @param migrateSourceFile the migrateSourceFile to set
 	 */
 	public void setMigrateSourceFile(String migrateSourceFile) {
@@ -88,10 +100,21 @@ public class PDFMetadataDefinition {
 		this.deployFile = deployFile;
 	}
 	/**
+     * @return the migrateDeployFile
+     */
+    public String getMigrateDeployFile() {
+        return migrateDeployFile;
+    }
+	/**
 	 * @return the migrateDeployFile
 	 */
-	public String getMigrateDeployFile() {
-		return migrateDeployFile;
+	public String getMigrateDeployFileName() {
+	    if(migrateDeployFile == null || migrateDeployFile.isEmpty())
+            return "";
+        else {
+            String fileName = migrateDeployFile.replaceAll("\\\\", "/");
+            return fileName.substring(fileName.lastIndexOf("/")+1, fileName.length());
+        }
 	}
 	/**
 	 * @param migrateDeployFile the migrateDeployFile to set
@@ -190,6 +213,29 @@ public class PDFMetadataDefinition {
         if(ejbRecommendList == null)
             ejbRecommendList = new ArrayList<EjbRecommend>(); 
         return ejbRecommendList;
+    }
+    /**
+     * @return the pdfFile
+     */
+    public String getPdfFile() {
+        return pdfFile;
+    }
+    /**
+     * @return the pdfFile
+     */
+    public String getPdfFileName() {
+        if(pdfFile == null || pdfFile.isEmpty())
+            return "";
+        else {
+            String fileName = pdfFile.replaceAll("\\\\", "/");
+            return fileName.substring(fileName.lastIndexOf("/")+1, fileName.length());
+        }
+    }
+    /**
+     * @param pdfFile the pdfFile to set
+     */
+    public void setPdfFile(String pdfFile) {
+        this.pdfFile = pdfFile;
     }
 }
 //end of PDFDefination.java

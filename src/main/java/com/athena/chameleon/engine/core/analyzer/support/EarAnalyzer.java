@@ -112,7 +112,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 				AnalyzeDefinition jarDefinition = null;
 				for(File jarFile : jarFileList) {
 					jarDefinition = new AnalyzeDefinition();
-					metadataDefinition.addWarDefinitionMap(jarFile.getName(), jarDefinition);
+					metadataDefinition.addJarDefinitionMap(jarFile.getName(), jarDefinition);
 					new JarAnalyzer(policy, converter, executor, jarDefinition, true).analyze(jarFile);
 				}
 			}

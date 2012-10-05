@@ -546,8 +546,10 @@ public class MigrationComponent {
 		try {
     		if (sourceFile != null) {
     		    PDFDocGenerator.createPDF(new File(sourceFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf", upload, metadataDefinition);
+    		    metadataDefinition.setPdfFile(new File(sourceFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf");
     		} else if (deployFile != null) {
     		    PDFDocGenerator.createPDF(new File(deployFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf", upload, metadataDefinition);
+    		    metadataDefinition.setPdfFile(new File(deployFile).getParentFile().getAbsolutePath()+File.separator+"Migration.pdf");
     		}
 		} catch(Exception e) {
 		    e.printStackTrace();

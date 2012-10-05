@@ -35,8 +35,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.MigrationComponent;
 import com.athena.chameleon.engine.core.PDFDocGenerator;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.upload.Upload;
 
 /**
@@ -103,7 +106,7 @@ public class UploadController {
         }
         
         try {
-            String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator;
+            String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis()  + File.separator;
             String sourceFile, deployFile = "";
             File migrationFile;
             
@@ -143,8 +146,11 @@ public class UploadController {
             }
             component.migrate(sourceFile, deployFile, upload);
             
+            PDFMetadataDefinition metaData = (PDFMetadataDefinition) ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+            
             modelMap.addAttribute("upload", upload);
             modelMap.addAttribute("result", true);
+            modelMap.addAttribute("metaData", metaData);
             
         }
         catch (Exception ex) {

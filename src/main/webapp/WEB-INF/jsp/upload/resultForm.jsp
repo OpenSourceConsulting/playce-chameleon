@@ -1,18 +1,25 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ include file="/taglib/taglibs.jsp"%>
 <script type="text/javascript">
-	$(document).ready(function (){
-		
-		if('${result}' == 'false') {
-			alert('마이그레이션 도중 에러가 발생하였습니다.');
-			location.href = "<c:url value='/upload/form.do'/>"; 
-		}
-
-	});
+$(document).ready(function (){
 	
-	function test(){
-		location.href="C:\chameleon\upload\Migration.pdf";
+	if('${result}' == 'false') {
+		alert('마이그레이션 도중 에러가 발생하였습니다.');
+		location.href = "<c:url value='/upload/form.do'/>"; 
 	}
+	
+	$('.down').click(function() {
+		if($(this).attr('val')) {
+			downloadFile($(this).attr('val'));
+		}
+	});
+
+});
+
+function downloadFile(fileName){
+	location.href="<c:url value='/download/down.do?path="+fileName+"'/>";
+}
+
 </script>
 
 <link href="<c:url value='/css/style.css'/>" rel="stylesheet" type="text/css" />
@@ -37,7 +44,6 @@
 
 <br/>
 
-<form:form modelAttribute="upload" method="post" id="uploadForm" name="uploadForm" enctype="multipart/form-data">
 	<table border="0">
 		<tr>
 			<td colspan="2"><div class="title">입력 정보</div></td>
@@ -65,14 +71,25 @@
 		<tr>
 			<td colspan="2"><div class="title">변환 결과</div></td>
 		</tr>
-		<tr height="30">
-			<td width="150"><b>변환 PDF Report: </b></td>
-			<td width="500">${upload.projectNm} <a href="javascript:test();" id="applyBtn">Download</a></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>변환 Source File: </b></td>
-			<td width="500">${upload.person}</td>
-		</tr>
+		<c:if test="${!empty metaData.pdfFile}">
+			<tr height="30">
+				<td width="200"><b>변환 PDF Report: </b></td>
+				<td width="500">${metaData.pdfFileName} <a href="javascript:void(0);" val="${metaData.pdfFile}" class="down"><input type="submit" val="${metaData.pdfFile}" class="down" value="다운로드" /></a></td>
+			</tr>
+		</c:if>
+		<c:if test="${!empty metaData.migrateSourceFile}">
+			<tr height="30">
+				<td width="200"><b>변환 프로젝트 소스: </b></td>
+				
+				<td width="500">${metaData.migrateSourceFileName} <a href="javascript:void(0);" val="${metaData.migrateSourceFile}" class="down"><input type="submit" val="${metaData.pdfFile}" class="down" value="다운로드" /></a></td>
+			</tr>
+		</c:if>
+		<c:if test="${!empty metaData.migrateDeployFile}">
+			<tr height="30">
+				<td width="200"><b>변환 디플로이 애플리케이션: </b></td>
+				<td width="500">${metaData.migrateDeployFileName} <a href="javascript:void(0);" val="${metaData.migrateDeployFile}" class="down"><input type="submit" val="${metaData.pdfFile}" class="down" value="다운로드" /></a></td>
+			</tr>
+		</c:if>
 	</table>
 	
 	<br/>
@@ -86,6 +103,5 @@
 	<div class="demo-description" style="display: none; ">
 	<p>Examples of the markup that can be used for buttons: A button element, an input of type submit and an anchor.</p>
 	</div><!-- End demo-description -->
- </form:form>
 </body>
 </html>
