@@ -74,20 +74,20 @@ public class Starter {
 			sourceFile = args[0].replaceAll("\\\\", "/");
 			if(!isExists(sourceFile) || !isValidSourceExtension(sourceFile)) {
             	System.out.println(sourceFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
-				sourceFile = getSourceFileName();
+				//sourceFile = getSourceFileName();
 			}
 			deployFile = getApplicationFileName();
 		} else if(args.length == 2) {
 			sourceFile = args[0].replaceAll("\\\\", "/");
 			if(!isExists(sourceFile) || !isValidSourceExtension(sourceFile)) {
             	System.out.println(sourceFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
-				sourceFile = getSourceFileName();
+				//sourceFile = getSourceFileName();
 			}
 
 			deployFile = args[1].replaceAll("\\\\", "/");
 			if(!isExists(deployFile) || !isValidApplicationExtension(deployFile)) {
             	System.out.println(deployFile + "은(는) 존재하지 않는 파일이거나 지원하지 않는 파일 형식입니다.");
-            	deployFile = getApplicationFileName();
+            	//deployFile = getApplicationFileName();
 			}
 		} else {
 			System.out.println("[Usage] : java -jar athena-chameleon.jar ${Project Source Archive File} ${Application Archive File}");
@@ -125,6 +125,8 @@ public class Starter {
                 fqfn = br.readLine();
                 
                 if(fqfn.equals("")) {
+                	return null;
+                	/*
                 	System.out.print("입력된 파일 정보가 없습니다. 애플리케이션 파일 입력으로 이동하시겠습니까? (y/n - default 'n') => ");
                 	
                 	String skip = br.readLine();
@@ -134,6 +136,7 @@ public class Starter {
                 	} else {
                 		continue;
                 	}
+                	*/
                 }
                 
                 if(fqfn.toLowerCase().equals("q") || fqfn.toLowerCase().equals("quit")) {
@@ -180,6 +183,8 @@ public class Starter {
                 fqfn = br.readLine();
                 
                 if(fqfn.equals("")) {
+                	return null;
+                	/*
                 	System.out.print("입력된 파일 정보가 없습니다. 계속하시겠습니까? (y/n - default 'y') => ");
                 	
                 	String skip = br.readLine();
@@ -189,6 +194,7 @@ public class Starter {
                 	} else {
                 		continue;
                 	}
+                	*/
                 }
                 
                 if(fqfn.toLowerCase().equals("q") || fqfn.toLowerCase().equals("quit")) {
