@@ -69,12 +69,27 @@ public class JarAnalyzer extends AbstractAnalyzer {
 		Assert.notNull("file", "file must not be null.");
 		//Assert.isTrue(file.getName().endsWith(".jar"), "file name must be ends with \".jar\".");
 
+		boolean isExploded = false;
+		if (file.getName().endsWith(".jar")) {
+			if (file.isDirectory()) {
+				isExploded = true;
+			}
+		} else {
+			isExploded = true;
+		}
+		
 		String newFileName = null;
 		
 		try {
 			// 임시 디렉토리에 압축 해제
-			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
-			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
+			String tempDir = null;
+			
+			if(isExploded) {
+				tempDir = file.getAbsolutePath();
+			} else {
+				tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
+				ZipUtil.decompress(file.getAbsolutePath(), tempDir);
+			}
 			
 			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
 
@@ -91,13 +106,15 @@ public class JarAnalyzer extends AbstractAnalyzer {
 				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getEarDefinition()
 				.getEjbApplicationMap().put(file.getName(), analyzeDefinition.getEjbApplicationMap().get(analyzeDefinition.getFileName()));
 			}
-			
-			// 임시디렉토리를 재 압축한다.
-			newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
-			ZipUtil.compress(tempDir, newFileName);
-			
-			// 임시 디렉토리를 삭제한다.
-			deleteDirectory(new File(tempDir));
+
+			if(!isExploded) {
+				// 임시디렉토리를 재 압축한다.
+				newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
+				ZipUtil.compress(tempDir, newFileName);
+				
+				// 임시 디렉토리를 삭제한다.
+				deleteDirectory(new File(tempDir));
+			}
 			
 			// ThreadLocal에 저장된 의존성 검사 및 DD 관련 재 가공 후 ThreadLocal에 저장
 			

@@ -70,10 +70,15 @@ public class WarAnalyzer extends AbstractAnalyzer {
 		Assert.notNull("file", "file must not be null.");
 		//Assert.isTrue(file.getName().endsWith(".war"), "file name must be ends with \".war\".");
 
+		boolean isExploded = false;
 		// 입력된 파일명을 프로젝트 이름으로 사용한다.(jboss-app.xml, jboss-web.xml 파일 생성시 사용)
-		if( file.getName().endsWith(".war")) {
+		if (file.getName().endsWith(".war")) {
+			if (file.isDirectory()) {
+				isExploded = true;
+			}
 		    ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName().substring(0, file.getName().lastIndexOf(".")));
 		} else {
+			isExploded = true;
 		    ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, file.getName());
 		}
 		
@@ -81,8 +86,14 @@ public class WarAnalyzer extends AbstractAnalyzer {
 		
 		try {
 			// 임시 디렉토리에 압축 해제
-			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
-			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
+			String tempDir = null;
+			
+			if(isExploded) {
+				tempDir = file.getAbsolutePath();
+			} else {
+				tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
+				ZipUtil.decompress(file.getAbsolutePath(), tempDir);
+			}
 			
 			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
 			
@@ -115,12 +126,14 @@ public class WarAnalyzer extends AbstractAnalyzer {
 				makeClassLoading(getWebInfDirPath(new File(tempDir)), file.getName(), null);
 			}
 			
-			// 임시디렉토리를 재 압축한다.
-			newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
-			ZipUtil.compress(tempDir, newFileName);
+			if(!isExploded) {
+				// 임시디렉토리를 재 압축한다.
+				newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
+				ZipUtil.compress(tempDir, newFileName);
 			
-			// 임시 디렉토리를 삭제한다.
-			deleteDirectory(new File(tempDir));
+				// 임시 디렉토리를 삭제한다.
+				deleteDirectory(new File(tempDir));
+			}
 			
 			/*
 			System.err.println("\n\n================== [Deploy File Result] ==================");
