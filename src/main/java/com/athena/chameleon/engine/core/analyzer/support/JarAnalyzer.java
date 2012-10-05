@@ -66,7 +66,7 @@ public class JarAnalyzer extends AbstractAnalyzer {
 	@Override
 	public String analyze(File file) {
 		Assert.notNull("file", "file must not be null.");
-		Assert.isTrue(file.getName().endsWith(".jar"), "file name must be ends with \".jar\".");
+		//Assert.isTrue(file.getName().endsWith(".jar"), "file name must be ends with \".jar\".");
 
 		String newFileName = null;
 		
