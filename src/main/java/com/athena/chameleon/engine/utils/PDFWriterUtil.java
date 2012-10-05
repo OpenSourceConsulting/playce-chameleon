@@ -477,9 +477,9 @@ public class PDFWriterUtil {
     	plot.getDomainAxis().setTickLabelFont(new java.awt.Font(labelFont.getName(), Font.NORMAL, 6));
     	
     	PdfContentByte cb = writer.getDirectContent();
-    	PdfTemplate bar = cb.createTemplate(450, 150);
-        Graphics2D g2d2 = new PdfGraphics2D(bar, 450, 150);
-        Rectangle2D r2d2 = new Rectangle2D.Double(0, 0, 450, 150);
+    	PdfTemplate bar = cb.createTemplate(500, 150);
+        Graphics2D g2d2 = new PdfGraphics2D(bar, 500, 150);
+        Rectangle2D r2d2 = new Rectangle2D.Double(0, 0, 500, 150);
         chart.draw(g2d2, r2d2);
         g2d2.dispose();
         
