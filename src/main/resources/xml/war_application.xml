@@ -23,6 +23,7 @@
 		<jsp_analyze_result/>
 	</section>
 	<section title ="디스크립터 정보">
+		<text>애플리케이션 디스크립터의 정보는 내용은 다음과 같습니다.</text>
 		<web_xml_info/>
 	</section>
 	<section title="WEB/lib 구성 내용">

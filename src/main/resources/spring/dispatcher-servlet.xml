@@ -25,6 +25,12 @@
 	    </property>
     </bean>
     
+    <bean id="downloadViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order">
+			<value>0</value>
+		</property>
+	</bean>
+    
  	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
  		<property name="defaultEncoding" value="UTF-8"/>
 		<!--<property name="maxUploadSize" value="10485769" />-->
@@ -36,9 +42,11 @@
     		<value>${chameleon.upload.temp.dir}</value>
     	</constructor-arg>
     </bean>
+    
 	<bean id="beanViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
         <property name="order" value="10" />
     </bean>
+    
     
     <bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView" />
