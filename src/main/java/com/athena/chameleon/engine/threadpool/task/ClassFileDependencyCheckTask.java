@@ -79,6 +79,9 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		className = file.getAbsolutePath()
 						.substring(rootPath.length() + 1, file.getAbsolutePath().lastIndexOf("."))
 						.replaceAll("/", ".").replaceAll("\\\\", ".");
+
+		ClassAnalyze classAnalyze = new ClassAnalyze();
+		classAnalyze.setClassName(className);
 		
 		try {
 	        Class<?> clazz = Class.forName(className);
@@ -87,8 +90,6 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			dependency.setFileName(clazz.getCanonicalName());
 			dependency.setExtension("class");
 			
-			ClassAnalyze classAnalyze = new ClassAnalyze();
-			classAnalyze.setClassName(clazz.getCanonicalName());
 			classAnalyze.setClassModifier(Modifier.toString(clazz.getModifiers()));
 			classAnalyze.setFinalClass(Modifier.isFinal(clazz.getModifiers()));
 
@@ -98,12 +99,12 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			if (dependency.getDependencyStrMap().size() > 0) {
 				analyzeDefinition.getClassDependencyList().add(dependency);
 			}
-			
-			analyzeDefinition.getClassesConstList().add(classAnalyze);
 		} catch (ClassNotFoundException e) {
 			logger.error("ClassNotFoundException has occurred : ", e);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		} finally {
+			analyzeDefinition.getClassesConstList().add(classAnalyze);
 		}
 	}
 	
@@ -279,7 +280,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		String value = null;
 		for (Member member : members) {
 			if (member instanceof Field) {
-				value = ((Field) member).toGenericString();
+				value = ((Field) member).toGenericString().replaceAll(className + ".", "");
 				classAnalyze.getFiledList().add(value);
 				
 				match = pattern.matcher(value);
@@ -287,7 +288,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 					addDependencyStrMap("Field", value);
 				}
 			} else if (member instanceof Constructor) {
-				value = ((Constructor<?>) member).toGenericString();
+				value = ((Constructor<?>) member).toGenericString().replaceAll(className + ".", "");
 				classAnalyze.getConstructorList().add(value);
 				
 				match = pattern.matcher(value);
@@ -295,7 +296,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 					addDependencyStrMap("Constructor", value);
 				}
 			} else if (member instanceof Method) {
-				value = ((Method) member).toGenericString();
+				value = ((Method) member).toGenericString().replaceAll(className + ".", "");
 				classAnalyze.getMethodList().add(value);
 				
 				match = pattern.matcher(value);

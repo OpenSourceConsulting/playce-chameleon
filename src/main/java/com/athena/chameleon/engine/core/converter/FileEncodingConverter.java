@@ -189,8 +189,8 @@ public class FileEncodingConverter {
 					
 					if(fileType.equals(FileType.JAR) && file.getParent().endsWith("lib")) {
 						// xerces.jar, xalan.jar, xml-api.jar, jboss-*.jar 파일이 존재할 경우 제거
-			    		if (file.getName().equals("xerces.jar") || file.getName().equals("xalan.jar") || 
-			    				file.getName().equals("xml-api.jar") || file.getName().startsWith("jboss-")) {
+			    		if (file.getName().startsWith("xerces") || file.getName().startsWith("xalan") || 
+			    				file.getName().startsWith("xml-api") || file.getName().startsWith("jboss-")) {
 			    			
 			    			// 삭제 파일 목록에 추가 후 파일 삭제
 			    			analyzeDefinition.getDeleteLibraryList().add(file.getName());

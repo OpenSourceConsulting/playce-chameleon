@@ -3,33 +3,32 @@
 <chapter title="엔터프라이즈 애플리케이션">
 	<text>업로드하신 애플리케이션에 포함된 표준 디스크립터는 다음과 같습니다.</text>
 	<application_list/>
-	<section title ="소스 파일 요약">
-		<text>우선 소스 파일들에 대한 개요는 다음과 같습니다.</text>
+	<section title ="파일 요약">
+		<text>우선 파일들에 대한 개요는 다음과 같습니다.</text>
 		<file_summary/>
 	</section>
 	<section title ="디스크립터 정보">
-		<text>애플리케이션 디스크립터의 정보는 내용은 다음과 같습니다.</text>
 		<application_info/>
 	</section>
 	<section title="ejb application">
 		<text>application.xml 내의 단위 모듈 애플리케이션은 다음과 같습니다.</text>
 		<ejb_application_list/>
 	</section>
-	<section title="WEB/lib 구성 내용">
+	<section title="APP-INF/lib 구성 내용">
 		<text>lib의 구성 내용은 다음과 같습니다.</text>
 		<lib_list/>
 	</section>
-	<section title="삭제된 WEB/lib 구성 내용">
+	<section title="삭제된 APP-INF/lib 구성 내용">
 		<text>삭제된 lib의 구성 내용은 다음과 같습니다.</text>
 		<delete_lib_list/>
 	</section>
-	<section title="WEB-INF/classes 구성">
+	<section title="APP-INF/classes 구성">
 		<class_info/>
 	</section>
-	<section title="Web Application">
+	<section title="Web Applications">
 		<war_child_deploy/>
 	</section>
-	<section title="Java Archiver">
+	<section title="EJB Applications">
 		<jar_child_deploy/>
 	</section>
 </chapter>

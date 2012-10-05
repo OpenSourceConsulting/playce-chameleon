@@ -145,6 +145,14 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			}
 			
 			logger.info("directory count in classes : [{}], class file count in classes : [{}]", definition.getClassDirCount(), definition.getClassFileCount());
+			
+			List<ClassAnalyze> classAnalyzeList = definition.getClassesConstList();
+			for(ClassAnalyze classAnalyze : classAnalyzeList) {
+				logger.info("getFiledListStr => {}", classAnalyze.getClassName());
+				logger.info("getClassModifier => {}", classAnalyze.getClassModifier());
+				logger.info("getFiledListStr => {}", classAnalyze.getFiledListStr());
+			}
+			
 			//*/
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);

@@ -105,7 +105,12 @@ public class Starter {
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/context-*.xml");
 		
 		MigrationComponent component = (MigrationComponent)context.getBean("migrationComponent");
-		component.migrate(sourceFile, deployFile, new Upload());
+		Upload upload = new Upload();
+		upload.setProjectNm("Test Project");
+		upload.setAfterWas("B");
+		upload.setDepartment("Development");
+		upload.setPerson("홍길동");
+		component.migrate(sourceFile, deployFile, upload);
 	}//end of main()
 	
 	/**
