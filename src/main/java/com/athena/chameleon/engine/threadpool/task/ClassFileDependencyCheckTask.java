@@ -98,6 +98,8 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			if (dependency.getDependencyStrMap().size() > 0) {
 				analyzeDefinition.getClassDependencyList().add(dependency);
 			}
+			
+			analyzeDefinition.getClassesConstList().add(classAnalyze);
 		} catch (ClassNotFoundException e) {
 			logger.error("ClassNotFoundException has occurred : ", e);
 		} catch (Exception e) {
