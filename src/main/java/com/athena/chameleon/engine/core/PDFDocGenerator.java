@@ -544,7 +544,7 @@ public class PDFDocGenerator {
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header2")));
                 childE2.addContent(new Element("col").setText(comm.getClassModifier()));
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header3")));
-                childE2.addContent(new Element("col").setText(String.valueOf(comm.isFinalClass())));
+                childE2.addContent(new Element("col").setText(comm.isFinalClass() == null ? "" : String.valueOf(comm.isFinalClass())));
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header4")));
                 childE2.addContent(new Element("col").setText(comm.getFiledListStr()));
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header5")));
@@ -659,12 +659,17 @@ public class PDFDocGenerator {
 
         List<Element> childs = new ArrayList<Element>();
         List<EjbRecommend> dataList = null;
-        if(type.equals("application"))
+        List<String> transFileList = null;
+        if(type.equals("application")) {
             dataList = data.getApplicationRecommendList();
-        else if(type.equals("web"))
+            transFileList = data.getAppTransFileList();
+        } else if(type.equals("web")) {
             dataList = data.getWebRecommendList();
-        else if(type.equals("ejb"))
+            transFileList = data.getWebTransFileList();
+        } else if(type.equals("ejb")) {
             dataList = data.getEjbRecommendList();
+            transFileList = data.getEjbTransFileList();
+        }
         
         Element section; 
         for(EjbRecommend comm : dataList) {
@@ -683,7 +688,7 @@ public class PDFDocGenerator {
         
         childs.add(new Element("text").setAttribute("padding","23").setText(MessageUtil.getMessage("pdf.message.chapter.advice.trans.table.header")));
         
-        if(data.getTransFileList().size() > 0) {
+        if(transFileList.size() > 0) {
             
             Element child, childE1, childE2;
             child = new Element("table");
@@ -694,7 +699,7 @@ public class PDFDocGenerator {
             
             childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
             
-            for(String s : data.getTransFileList()) {
+            for(String s : transFileList) {
                 childE2.addContent(new Element("col").setText(s));
             }
             child.addContent(childE1);

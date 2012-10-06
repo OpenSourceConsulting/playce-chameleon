@@ -198,6 +198,7 @@ public class FileEncodingConverter {
 			    		} else {
 			    			// 라이브러리 파일 목록에 추가
 			    			analyzeDefinition.getLibraryList().add(file.getName());
+			    			analyzeDefinition.getLibraryFullPathList().add(file.getAbsolutePath());
 			    		}
 		    			continue;
 					}

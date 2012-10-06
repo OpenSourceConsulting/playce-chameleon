@@ -20,10 +20,7 @@
  */
 package com.athena.chameleon.common.utils;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
+import org.xeustechnologies.jcl.JarClassLoader;
 
 /**
  * <pre>
@@ -45,15 +42,18 @@ public class ClasspathUtil {
 	 * @param path
 	 * @throws Exception
 	 */
-	public static void addPath(String path) throws Exception {
-		File file = new File(path);
-		URL url = file.toURI().toURL();
-		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-		Class<?> urlClass = URLClassLoader.class;
-		Method method = urlClass.getDeclaredMethod("addURL", new Class[] { URL.class });
+	public static void addPath(String path, JarClassLoader jcl) throws Exception {
+		/*
+		java.io.File file = new java.io.File(path);
+		java.net.URL url = file.toURI().toURL();
+		java.net.URLClassLoader urlClassLoader = (java.net.URLClassLoader) ClassLoader.getSystemClassLoader();
+		Class<?> urlClass = java.net.URLClassLoader.class;
+		java.lang.reflect.Method method = urlClass.getDeclaredMethod("addURL", new Class[] { java.net.URL.class });
 		method.setAccessible(true);
 		method.invoke(urlClassLoader, new Object[] { url });
+		//*/
 		
+		jcl.add(path);
 		lastAddedPath = path;
 	}//end of addPath()
 }//end of ClasspathUtil.java

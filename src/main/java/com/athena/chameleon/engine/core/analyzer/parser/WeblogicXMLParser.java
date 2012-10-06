@@ -29,7 +29,8 @@ import org.jdom2.input.SAXBuilder;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
-import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 
 /**
  * <pre>
@@ -47,17 +48,32 @@ public class WeblogicXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-
+		
+		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+		EjbRecommend ejbRecommend = new EjbRecommend();
+		
         try {
-            CommonAnalyze commonAnalyze = new CommonAnalyze();
-            commonAnalyze.setItem(file.getName());
-            commonAnalyze.setLocation(removeTempDir(file.getParent()));
-            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
-            
-            analyzeDefinition.getDescripterList().add(commonAnalyze);
+        	ejbRecommend = new EjbRecommend();
+    		ejbRecommend.setItem(file.getName());
+    		ejbRecommend.setTransFlag(false);
+    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
+    		
+    		metadataDefinition.getWebRecommendList().add(ejbRecommend);
         } catch (IOException e) {
             logger.error("IOException has occurred.", e);
         }
+
+//        try {
+//            CommonAnalyze commonAnalyze = new CommonAnalyze();
+//            commonAnalyze.setItem(file.getName());
+//            commonAnalyze.setLocation(removeTempDir(file.getParent()));
+//            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
+//            
+//            analyzeDefinition.getDescripterList().add(commonAnalyze);
+//        } catch (IOException e) {
+//            logger.error("IOException has occurred.", e);
+//        }
         
     	SAXBuilder builder = null;
     	Document doc = null;
@@ -74,6 +90,15 @@ public class WeblogicXMLParser extends Parser {
 			jbossWeb = jbossWeb.replaceAll("\\$\\{loaderRepository\\}", "com.athena.chameleon:loader=" + ThreadLocalUtil.get(ChameleonConstants.PROJECT_NAME));
 			
 			rewrite(new File(file.getParentFile(), "jboss-web.xml"), jbossWeb);
+			
+        	ejbRecommend = new EjbRecommend();
+    		ejbRecommend.setItem("jboss-web.xml");
+    		ejbRecommend.setTransFlag(true);
+    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setContents(jbossWeb);
+    		
+    		metadataDefinition.getWebRecommendList().add(ejbRecommend);
+    		metadataDefinition.getWebTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-web.xml");
         } catch (Exception e) {
 			logger.error("Unhandled exception has occurred.", e);
         }

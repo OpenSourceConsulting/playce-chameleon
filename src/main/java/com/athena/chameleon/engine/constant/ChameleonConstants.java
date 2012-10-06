@@ -45,5 +45,6 @@ public class ChameleonConstants {
 	public static final String PROJECT_NAME 			= "PROJECT_NAME";
 	
 	public static final String TEMP_ROOT_DIR			= "TEMP_ROOT_DIR";
+	public static final String DEPLOY_DIR_IN_EAR		= "DEPLOY_DIR_IN_EAR";
 	
 }//end of ChameleonConstants.java

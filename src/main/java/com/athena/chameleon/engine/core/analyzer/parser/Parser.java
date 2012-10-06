@@ -141,11 +141,18 @@ public abstract class Parser {
      */
     protected String removeTempDir(String fullPath) {
     	String tempPath = (String)ThreadLocalUtil.get(ChameleonConstants.TEMP_ROOT_DIR);
+    	String earPath = (String)ThreadLocalUtil.get(ChameleonConstants.DEPLOY_DIR_IN_EAR);
+    	
+    	if(earPath == null) {
+    		earPath = "";
+    	} else if(!earPath.endsWith(File.separator)) {
+    		earPath += File.separator;
+    	}
     	
     	if(StringUtils.isEmpty(tempPath)) {
-    		return fullPath;
+    		return earPath + fullPath;
     	} else {
-    		return fullPath.substring(tempPath.length() + 1);
+    		return earPath + fullPath.substring(tempPath.length() + 1);
     	}
     }//end of removeTempDir()
 }//end of Parser.java

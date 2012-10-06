@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xeustechnologies.jcl.JarClassLoader;
+
 
 /**
  * 분석 정보 공용 Entity
@@ -67,6 +69,11 @@ public class AnalyzeDefinition {
 	
 	//classes 구성 정보
     private List<ClassAnalyze> classesConstList;
+    
+    // Jar Class Loader for loadClass
+    private JarClassLoader jcl;
+    // lib 디렉토리 위치
+    private List<String> libraryFullPathList;
 
 	/**
 	 * @return the fileName
@@ -287,6 +294,30 @@ public class AnalyzeDefinition {
 	 */
 	public void setClassDirCount(int classDirCount) {
 		this.classDirCount = classDirCount;
+	}
+
+	/**
+	 * @return the jcl
+	 */
+	public JarClassLoader getJcl() {
+		return jcl;
+	}
+
+	/**
+	 * @param jcl the jcl to set
+	 */
+	public void setJcl(JarClassLoader jcl) {
+		this.jcl = jcl;
+	}
+
+	/**
+	 * @return the libraryFullPathList
+	 */
+	public List<String> getLibraryFullPathList() {
+		if(libraryFullPathList == null) {
+			libraryFullPathList = new ArrayList<String>();
+		}
+		return libraryFullPathList;
 	}
 
 }

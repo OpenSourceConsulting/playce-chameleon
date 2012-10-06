@@ -23,6 +23,7 @@ package com.athena.chameleon.engine.core.analyzer.support;
 import java.io.File;
 
 import org.springframework.util.Assert;
+import org.xeustechnologies.jcl.JarClassLoader;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
@@ -97,7 +98,25 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			converter.convert(new File(tempDir), analyzeDefinition);
 			
 			// 압축 해제 디렉토리를 클래스 패스에 추가한다. 
-			ClasspathUtil.addPath(tempDir);
+			JarClassLoader jcl = null;
+			
+			if(embed) {
+				jcl = ((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getEarDefinition().getJcl();
+			} 
+			
+			if(jcl == null) {
+				jcl = new JarClassLoader();
+
+				jcl.add(this.getClass().getResource("/lib/ejb-api-3.0.jar"));
+				jcl.add(this.getClass().getResource("/lib/javax.servlet-api-3.0.1.jar"));
+				jcl.add(this.getClass().getResource("/lib/javaee-api-6.0.jar"));
+				jcl.add(this.getClass().getResource("/lib/weblogic.jar"));
+				jcl.add(this.getClass().getResource("/lib/jeus.jar"));
+
+				analyzeDefinition.setJcl(jcl);
+			}
+			
+			ClasspathUtil.addPath(tempDir, jcl);
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);

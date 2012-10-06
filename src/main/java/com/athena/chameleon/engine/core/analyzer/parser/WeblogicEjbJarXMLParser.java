@@ -100,7 +100,7 @@ public class WeblogicEjbJarXMLParser extends Parser {
         		ejbRecommend.setContents(xmlData);
         		
         		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
-        		metadataDefinition.getTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss.xml");
+        		metadataDefinition.getEjbTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss.xml");
     		}
 		} catch (JAXBException e) {
 			logger.error("JAXBException has occurred.", e);

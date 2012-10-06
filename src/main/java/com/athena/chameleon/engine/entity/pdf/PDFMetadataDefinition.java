@@ -53,8 +53,12 @@ public class PDFMetadataDefinition {
     private List<EjbRecommend> webRecommendList;
     //변환 xml 정보(파일명, 파일내용)
     private List<EjbRecommend> ejbRecommendList;
-    //변환 대상 파일 리스트
-    private List<String> transFileList;
+    //application 변환 대상 파일 리스트
+    private List<String> appTransFileList;
+    //application 변환 대상 파일 리스트
+    private List<String> webTransFileList;
+    //application 변환 대상 파일 리스트
+    private List<String> ejbTransFileList;
     
 	/**
 	 * @return the sourceFile
@@ -203,12 +207,31 @@ public class PDFMetadataDefinition {
 		this.jarDefinitionMap = jarDefinitionMap;
 	}
 	/**
-	 * @return the transFileList
+	 * @return the appTransFileList
 	 */
-	public List<String> getTransFileList() {
-	    if(transFileList == null)
-	        transFileList = new ArrayList<String>();
-		return transFileList;
+	public List<String> getAppTransFileList() {
+		if(appTransFileList == null) {
+			appTransFileList = new ArrayList<String>();
+		}
+		return appTransFileList;
+	}
+	/**
+	 * @return the webTransFileList
+	 */
+	public List<String> getWebTransFileList() {
+		if(webTransFileList == null) {
+			webTransFileList = new ArrayList<String>();
+		}
+		return webTransFileList;
+	}
+	/**
+	 * @return the ejbTransFileList
+	 */
+	public List<String> getEjbTransFileList() {
+		if(ejbTransFileList == null) {
+			ejbTransFileList = new ArrayList<String>();
+		}
+		return ejbTransFileList;
 	}
     /**
      * @return the ejbRecommendList

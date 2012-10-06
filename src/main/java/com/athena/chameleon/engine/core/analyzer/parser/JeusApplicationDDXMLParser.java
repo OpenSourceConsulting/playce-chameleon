@@ -29,7 +29,8 @@ import javax.xml.bind.JAXBException;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
-import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.JbossApp;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.LoaderRepository;
 import com.athena.chameleon.engine.utils.JaxbUtils;
@@ -50,17 +51,32 @@ public class JeusApplicationDDXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-
+		
+		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
+		EjbRecommend ejbRecommend = new EjbRecommend();
+		
         try {
-            CommonAnalyze commonAnalyze = new CommonAnalyze();
-            commonAnalyze.setItem(file.getName());
-            commonAnalyze.setLocation(removeTempDir(file.getParent()));
-            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
-            
-            analyzeDefinition.getDescripterList().add(commonAnalyze);
+        	ejbRecommend = new EjbRecommend();
+    		ejbRecommend.setItem(file.getName());
+    		ejbRecommend.setTransFlag(false);
+    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
+    		
+    		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);
         } catch (IOException e) {
             logger.error("IOException has occurred.", e);
         }
+
+//        try {
+//            CommonAnalyze commonAnalyze = new CommonAnalyze();
+//            commonAnalyze.setItem(file.getName());
+//            commonAnalyze.setLocation(removeTempDir(file.getParent()));
+//            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
+//            
+//            analyzeDefinition.getDescripterList().add(commonAnalyze);
+//        } catch (IOException e) {
+//            logger.error("IOException has occurred.", e);
+//        }
         
     	Object obj = null;
 
@@ -87,6 +103,15 @@ public class JeusApplicationDDXMLParser extends Parser {
 			String xmlData = JaxbUtils.marshal(JbossApp.class.getPackage().getName(), jbossApp, "<!DOCTYPE jboss-app PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd\">");
 
 			rewrite(new File(file.getParentFile(), "jboss-app.xml"), xmlData.replaceAll(" standalone=\"yes\"", ""));
+			
+        	ejbRecommend = new EjbRecommend();
+    		ejbRecommend.setItem("jboss-app.xml");
+    		ejbRecommend.setTransFlag(true);
+    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setContents(xmlData.replaceAll(" standalone=\"yes\"", ""));
+    		
+    		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);
+    		metadataDefinition.getAppTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-app.xml");
 		} catch (JAXBException e) {
 			logger.error("JAXBException has occurred.", e);
 		} catch (IOException e) {

@@ -40,7 +40,7 @@ public class ClassAnalyze {
 	//Class Modifier
 	private String classModifier;
 	//Final class 여부
-	private boolean isFinalClass;
+	private Boolean isFinalClass;
 	//Fields
 	private List<String> filedList;
 	//Methods
@@ -95,13 +95,13 @@ public class ClassAnalyze {
 	/**
 	 * @return the isFinalClass
 	 */
-	public boolean isFinalClass() {
+	public Boolean isFinalClass() {
 		return isFinalClass;
 	}
 	/**
 	 * @param isFinalClass the isFinalClass to set
 	 */
-	public void setFinalClass(boolean isFinalClass) {
+	public void setFinalClass(Boolean isFinalClass) {
 		this.isFinalClass = isFinalClass;
 	}
 	/**

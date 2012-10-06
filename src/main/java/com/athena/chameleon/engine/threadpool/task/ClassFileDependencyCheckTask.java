@@ -84,7 +84,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		classAnalyze.setClassName(className);
 		
 		try {
-	        Class<?> clazz = Class.forName(className);
+	        Class<?> clazz = Class.forName(className, false, analyzeDefinition.getJcl());
 
 			dependency = new Dependency();
 			dependency.setFileName(clazz.getCanonicalName());
@@ -99,9 +99,14 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			if (dependency.getDependencyStrMap().size() > 0) {
 				analyzeDefinition.getClassDependencyList().add(dependency);
 			}
-		} catch (ClassNotFoundException e) {
-			logger.error("ClassNotFoundException has occurred : ", e);
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			if(e instanceof ClassNotFoundException || e instanceof NoClassDefFoundError) {
+				StringBuilder sb = new StringBuilder(className);
+				sb.append("\n(")
+					.append(e.getMessage().replaceAll("/", ".").replaceAll("\\\\", "."))
+					.append(" 클래스 참조 실패로 아래 항목을 추출할 수 없습니다.)");
+				classAnalyze.setClassName(sb.toString());
+			}
 			throw new RuntimeException(e);
 		} finally {
 			analyzeDefinition.getClassesConstList().add(classAnalyze);
