@@ -91,7 +91,7 @@ public class WeblogicEjbJarXMLParser extends Parser {
     	try {
     		if(obj != null) {
     			Jboss jboss = generateJbossXML(obj);
-    			String xmlData = JaxbUtils.marshal(Jboss.class.getPackage().getName(), jboss, "<!DOCTYPE jboss PUBLIC \"-//JBoss//DTD JBOSS//EN\" \"http://www.jboss.org/j2ee/dtd/jboss.dtd\">");
+    			String xmlData = JaxbUtils.marshal(Jboss.class.getPackage().getName(), jboss, "<!DOCTYPE jboss PUBLIC \"-//JBoss//DTD JBOSS 4.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd\">");
     			rewrite(new File(file.getParentFile(), "jboss.xml"), xmlData);
 
             	ejbRecommend = new EjbRecommend();

@@ -330,9 +330,19 @@ public abstract class AbstractAnalyzer implements Analyzer {
     		  .append("		  parent-first=\"false\">\r\n")
     		  .append("</classloading>");
     	} else {
+    		/*
     		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
 	  		  .append("		  domain=\"").append(domain).append("\"\r\n")
 	  		  .append("		  parent-domain=\"").append(patentDomain).append("\"\r\n")
+	  		  .append("		  export-all=\"NON_EMPTY\"\r\n")
+	  		  .append("		  import-all=\"true\">\r\n")
+	  		  .append("</classloading>");
+    		*/
+    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
+	  		  .append("		  name=\"").append(domain).append("\"\r\n")
+	  		  .append("		  domain=\"DefaultDomain\"\r\n")
+	  		  .append("		  parent-domain=\"Ignored\"\r\n")
+	  		  .append("		  parent-first=\"false\"\r\n")
 	  		  .append("		  export-all=\"NON_EMPTY\"\r\n")
 	  		  .append("		  import-all=\"true\">\r\n")
 	  		  .append("</classloading>");
