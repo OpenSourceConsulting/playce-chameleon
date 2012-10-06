@@ -28,7 +28,10 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.utils.JaxbUtils;
@@ -49,12 +52,19 @@ public class WebXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
+		
+        // only zip and war
+        String key = ChameleonConstants.ZIP_ROOT_DIR;
+        
+        if(StringUtils.isEmpty((String)ThreadLocalUtil.get(key))) {
+        	key = ChameleonConstants.WAR_ROOT_DIR;
+        }
 
 		CommonAnalyze commonAnalyze = null;
-        try {
+        try {            
             commonAnalyze = new CommonAnalyze();
             commonAnalyze.setItem(file.getName());
-            commonAnalyze.setLocation(removeTempDir(file.getParent()));
+            commonAnalyze.setLocation(removeTempDir(file.getParent(), key));
             commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
             
             analyzeDefinition.getDescripterList().add(commonAnalyze);

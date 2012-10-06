@@ -97,7 +97,7 @@ public class WarAnalyzer extends AbstractAnalyzer {
 				ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 			}
 			
-			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
+			ThreadLocalUtil.add(ChameleonConstants.WAR_ROOT_DIR, tempDir);
 			
 			/****************************************************************************************
 			 * 

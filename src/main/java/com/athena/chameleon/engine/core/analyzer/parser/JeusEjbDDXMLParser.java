@@ -27,6 +27,8 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
@@ -55,6 +57,13 @@ public class JeusEjbDDXMLParser extends Parser {
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
 		
+        // only zip and jar
+        String key = ChameleonConstants.ZIP_ROOT_DIR;
+        
+        if(StringUtils.isEmpty((String)ThreadLocalUtil.get(key))) {
+        	key = ChameleonConstants.JAR_ROOT_DIR;
+        }
+		
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		EjbRecommend ejbRecommend = new EjbRecommend();
 		
@@ -62,7 +71,7 @@ public class JeusEjbDDXMLParser extends Parser {
         	ejbRecommend = new EjbRecommend();
     		ejbRecommend.setItem(file.getName());
     		ejbRecommend.setTransFlag(false);
-    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
     		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
     		
     		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
@@ -94,7 +103,7 @@ public class JeusEjbDDXMLParser extends Parser {
             	ejbRecommend = new EjbRecommend();
         		ejbRecommend.setItem("jboss.xml");
         		ejbRecommend.setTransFlag(true);
-        		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+        		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
         		ejbRecommend.setContents(xmlData);
         		
         		metadataDefinition.getEjbRecommendList().add(ejbRecommend);

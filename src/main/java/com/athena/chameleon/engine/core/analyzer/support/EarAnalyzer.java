@@ -81,7 +81,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 			
-			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
+			ThreadLocalUtil.add(ChameleonConstants.EAR_ROOT_DIR, tempDir);
 
 			// 인코딩 변경
 			converter.convert(new File(tempDir), analyzeDefinition);
@@ -122,7 +122,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 					warDefinition = new AnalyzeDefinition();
 					metadataDefinition.addWarDefinitionMap(warFile.getName(), warDefinition);
 					// 변환전 web 관련 xml 및 변환 후 jboss-web.xml 파일의 경로를 표시하기 위해
-					ThreadLocalUtil.add(ChameleonConstants.DEPLOY_DIR_IN_EAR, removeTempDir(warFile.getAbsolutePath()));
+					ThreadLocalUtil.add(ChameleonConstants.DEPLOY_DIR_IN_EAR, removeTempDir(warFile.getAbsolutePath(), ChameleonConstants.EAR_ROOT_DIR));
 					new WarAnalyzer(policy, converter, executor, warDefinition, true).analyze(warFile);
 				}
 			}
@@ -137,7 +137,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
 					jarDefinition.setFileName(jarFile.getName());
 					metadataDefinition.addJarDefinitionMap(jarFile.getName(), jarDefinition);
 					// 변환전 ejb 관련 xml 및 변환 후 jboss.xml 파일의 경로를 표시하기 위해
-					ThreadLocalUtil.add(ChameleonConstants.DEPLOY_DIR_IN_EAR, removeTempDir(jarFile.getAbsolutePath()));
+					ThreadLocalUtil.add(ChameleonConstants.DEPLOY_DIR_IN_EAR, removeTempDir(jarFile.getAbsolutePath(), ChameleonConstants.EAR_ROOT_DIR));
 					new JarAnalyzer(policy, converter, executor, jarDefinition, true).analyze(jarFile);
 				}
 			}

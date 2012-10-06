@@ -28,6 +28,8 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
@@ -50,12 +52,19 @@ public class ApplicationXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
+		
+        // only zip and ear
+        String key = ChameleonConstants.ZIP_ROOT_DIR;
+        
+        if(StringUtils.isEmpty((String)ThreadLocalUtil.get(key))) {
+        	key = ChameleonConstants.EAR_ROOT_DIR;
+        }
 
 		CommonAnalyze commonAnalyze = null;
         try {
             commonAnalyze = new CommonAnalyze();
             commonAnalyze.setItem(file.getName());
-            commonAnalyze.setLocation(removeTempDir(file.getParent()));
+            commonAnalyze.setLocation(removeTempDir(file.getParent(), key));
             commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
             
             analyzeDefinition.getDescripterList().add(commonAnalyze);

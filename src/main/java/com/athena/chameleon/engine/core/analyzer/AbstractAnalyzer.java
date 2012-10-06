@@ -33,7 +33,6 @@ import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
-import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.parser.ApplicationXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.EjbJarXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusApplicationDDXMLParser;
@@ -363,10 +362,11 @@ public abstract class AbstractAnalyzer implements Analyzer {
      * 절대경로 상에서 압축해제를 위한 임시 디렉토리까지의 경로를 삭제한 상대 경로를 구한다.
      * </pre>
      * @param fullPath
+     * @param key
      * @return
      */
-    protected String removeTempDir(String fullPath) {
-    	String tempPath = (String)ThreadLocalUtil.get(ChameleonConstants.TEMP_ROOT_DIR);
+    protected String removeTempDir(String fullPath, String key) {
+    	String tempPath = (String)ThreadLocalUtil.get(key);
     	
     	if(StringUtils.isEmpty(tempPath)) {
     		return fullPath;

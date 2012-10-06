@@ -44,7 +44,10 @@ public class ChameleonConstants {
 
 	public static final String PROJECT_NAME 			= "PROJECT_NAME";
 	
-	public static final String TEMP_ROOT_DIR			= "TEMP_ROOT_DIR";
+	public static final String ZIP_ROOT_DIR				= "ZIP_ROOT_DIR";
+	public static final String EAR_ROOT_DIR				= "EAR_ROOT_DIR";
+	public static final String WAR_ROOT_DIR				= "WAR_ROOT_DIR";
+	public static final String JAR_ROOT_DIR				= "JAR_ROOT_DIR";
 	public static final String DEPLOY_DIR_IN_EAR		= "DEPLOY_DIR_IN_EAR";
 	
 }//end of ChameleonConstants.java

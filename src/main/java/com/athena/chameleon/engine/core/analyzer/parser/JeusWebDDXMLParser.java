@@ -23,6 +23,7 @@ package com.athena.chameleon.engine.core.analyzer.parser;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 
@@ -49,6 +50,13 @@ public class JeusWebDDXMLParser extends Parser {
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
 		
+        // only zip and war
+        String key = ChameleonConstants.ZIP_ROOT_DIR;
+        
+        if(StringUtils.isEmpty((String)ThreadLocalUtil.get(key))) {
+        	key = ChameleonConstants.WAR_ROOT_DIR;
+        }
+		
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		EjbRecommend ejbRecommend = new EjbRecommend();
 		
@@ -56,7 +64,8 @@ public class JeusWebDDXMLParser extends Parser {
         	ejbRecommend = new EjbRecommend();
     		ejbRecommend.setItem(file.getName());
     		ejbRecommend.setTransFlag(false);
-    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		// zip, war
+    		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
     		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
     		
     		metadataDefinition.getWebRecommendList().add(ejbRecommend);
@@ -94,7 +103,7 @@ public class JeusWebDDXMLParser extends Parser {
         	ejbRecommend = new EjbRecommend();
     		ejbRecommend.setItem("jboss-web.xml");
     		ejbRecommend.setTransFlag(true);
-    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
     		ejbRecommend.setContents(jbossWeb);
     		
     		metadataDefinition.getWebRecommendList().add(ejbRecommend);

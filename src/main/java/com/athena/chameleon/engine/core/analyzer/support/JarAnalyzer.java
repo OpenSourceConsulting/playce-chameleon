@@ -92,7 +92,7 @@ public class JarAnalyzer extends AbstractAnalyzer {
 				ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 			}
 			
-			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
+			ThreadLocalUtil.add(ChameleonConstants.JAR_ROOT_DIR, tempDir);
 
 			// 인코딩 변경
 			converter.convert(new File(tempDir), analyzeDefinition);

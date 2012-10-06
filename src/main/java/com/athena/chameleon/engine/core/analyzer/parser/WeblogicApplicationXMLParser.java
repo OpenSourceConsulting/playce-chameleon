@@ -26,6 +26,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
@@ -52,6 +54,13 @@ public class WeblogicApplicationXMLParser extends Parser {
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
 		
+        // only zip and ear
+        String key = ChameleonConstants.ZIP_ROOT_DIR;
+        
+        if(StringUtils.isEmpty((String)ThreadLocalUtil.get(key))) {
+        	key = ChameleonConstants.EAR_ROOT_DIR;
+        }
+		
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		EjbRecommend ejbRecommend = new EjbRecommend();
 		
@@ -59,7 +68,7 @@ public class WeblogicApplicationXMLParser extends Parser {
         	ejbRecommend = new EjbRecommend();
     		ejbRecommend.setItem(file.getName());
     		ejbRecommend.setTransFlag(false);
-    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
     		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
     		
     		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);
@@ -116,7 +125,7 @@ public class WeblogicApplicationXMLParser extends Parser {
         	ejbRecommend = new EjbRecommend();
     		ejbRecommend.setItem("jboss-app.xml");
     		ejbRecommend.setTransFlag(true);
-    		ejbRecommend.setLocation(removeTempDir(file.getParent()));
+    		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
     		ejbRecommend.setContents(xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
     		
     		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);

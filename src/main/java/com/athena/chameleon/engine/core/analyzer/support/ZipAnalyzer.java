@@ -69,7 +69,7 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 			
-			ThreadLocalUtil.add(ChameleonConstants.TEMP_ROOT_DIR, tempDir);
+			ThreadLocalUtil.add(ChameleonConstants.ZIP_ROOT_DIR, tempDir);
 
 			// 인코딩 변경
 			converter.convert(new File(tempDir), analyzeDefinition);

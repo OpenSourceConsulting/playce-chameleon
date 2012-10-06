@@ -137,10 +137,11 @@ public abstract class Parser {
      * 절대경로 상에서 압축해제를 위한 임시 디렉토리까지의 경로를 삭제한 상대 경로를 구한다.
      * </pre>
      * @param fullPath
+     * @param key
      * @return
      */
-    protected String removeTempDir(String fullPath) {
-    	String tempPath = (String)ThreadLocalUtil.get(ChameleonConstants.TEMP_ROOT_DIR);
+    protected String removeTempDir(String fullPath, String key) {
+    	String tempPath = (String)ThreadLocalUtil.get(key);
     	String earPath = (String)ThreadLocalUtil.get(ChameleonConstants.DEPLOY_DIR_IN_EAR);
     	
     	if(earPath == null) {
