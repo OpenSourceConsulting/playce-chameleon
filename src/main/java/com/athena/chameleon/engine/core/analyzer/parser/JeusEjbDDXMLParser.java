@@ -88,8 +88,7 @@ public class JeusEjbDDXMLParser extends Parser {
     	try {
     		if(obj != null) {
     			Jboss jboss = generateJbossXML(obj);
-    			//"<!DOCTYPE jboss PUBLIC \"-//JBoss//DTD JBOSS 4.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd\">"
-    			String xmlData = JaxbUtils.marshal(Jboss.class.getPackage().getName(), jboss).replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", "");
+    			String xmlData = JaxbUtils.marshal(Jboss.class.getPackage().getName(), jboss, "<!DOCTYPE jboss PUBLIC \"-//JBoss//DTD JBOSS 4.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd\">").replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", "");
     			rewrite(new File(file.getParentFile(), "jboss.xml"), xmlData);
 
             	ejbRecommend = new EjbRecommend();
