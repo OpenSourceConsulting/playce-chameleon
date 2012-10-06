@@ -92,8 +92,11 @@ public class WeblogicApplicationXMLParser extends Parser {
 					// http://www.bea.com/servers/wls810/dtd/weblogic-application_2_0.dtd
 	        		removeDoctype(file);
 					obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.weblogic.v8_1.WeblogicApplication.class.getPackage().getName(), file);
-				} catch (JAXBException e3) {
+					rewrite(file, ejbRecommend.getContents());
+	    		} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
+				} catch (IOException e3) {
+					logger.error("IOException has occurred.", e3);
 				}
 			}
     	}

@@ -50,9 +50,10 @@ public class ApplicationXMLParser extends Parser {
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
-		
-		try {
-            CommonAnalyze commonAnalyze = new CommonAnalyze();
+
+		CommonAnalyze commonAnalyze = null;
+        try {
+            commonAnalyze = new CommonAnalyze();
             commonAnalyze.setItem(file.getName());
             commonAnalyze.setLocation(removeTempDir(file.getParent()));
             commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
@@ -76,8 +77,11 @@ public class ApplicationXMLParser extends Parser {
 	            	// http://java.sun.com/dtd/application_1_3.dtd
 	        		removeDoctype(file);
 					obj = checkApplication(JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.v1_3.Application.class.getPackage().getName(), file), file.getParentFile().getParentFile());
-				} catch (JAXBException e3) {
+					rewrite(file, commonAnalyze.getContents());
+	        	} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
+				} catch (IOException e3) {
+					logger.error("IOException has occurred.", e3);
 				}
 			}
     	}

@@ -49,8 +49,9 @@ public class EjbJarXMLParser extends Parser {
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
 
+		CommonAnalyze commonAnalyze = null;
         try {
-            CommonAnalyze commonAnalyze = new CommonAnalyze();
+            commonAnalyze = new CommonAnalyze();
             commonAnalyze.setItem(file.getName());
             commonAnalyze.setLocation(removeTempDir(file.getParent()));
             commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
@@ -70,8 +71,11 @@ public class EjbJarXMLParser extends Parser {
 	        	// ejb-jar v2_0
         		removeDoctype(file);
 				obj = checkEjbJar(JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar.class.getPackage().getName(), file));
+				rewrite(file, commonAnalyze.getContents());
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);
+			} catch (IOException e2) {
+				logger.error("IOException has occurred.", e2);
 			}
     	}
     	

@@ -50,8 +50,9 @@ public class WebXMLParser extends Parser {
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
 		this.analyzeDefinition = analyzeDefinition;
 
+		CommonAnalyze commonAnalyze = null;
         try {
-            CommonAnalyze commonAnalyze = new CommonAnalyze();
+            commonAnalyze = new CommonAnalyze();
             commonAnalyze.setItem(file.getName());
             commonAnalyze.setLocation(removeTempDir(file.getParent()));
             commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
@@ -75,9 +76,12 @@ public class WebXMLParser extends Parser {
         			// http://java.sun.com/dtd/web-app_2_3.dtd
 	        		removeDoctype(file);
 					obj = checkEncodignFilter(JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_3.WebApp.class.getPackage().getName(), file), file.getParentFile().getAbsolutePath());
-				} catch (JAXBException e3) {
+					rewrite(file, commonAnalyze.getContents());
+            	} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
-				}
+    			} catch (IOException e3) {
+    				logger.error("IOException has occurred.", e3);
+    			}
 			}
 		}
     	
