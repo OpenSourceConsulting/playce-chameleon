@@ -748,6 +748,13 @@
 		</dependency>
 		-->
 		
+		<!-- JCL (Jar Class Loader) -->
+		<dependency>
+			<groupId>org.xeustechnologies</groupId>
+			<artifactId>jcl-core</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
 		<!--  Java EE  -->
 		<dependency>
 		   	<groupId>javax</groupId>

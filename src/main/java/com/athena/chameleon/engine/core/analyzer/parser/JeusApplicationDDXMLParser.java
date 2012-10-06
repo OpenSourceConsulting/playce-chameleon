@@ -111,7 +111,7 @@ public class JeusApplicationDDXMLParser extends Parser {
     		ejbRecommend.setContents(xmlData.replaceAll(" standalone=\"yes\"", ""));
     		
     		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);
-    		//metadataDefinition.getTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-app.xml");
+    		metadataDefinition.getAppTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-app.xml");
 		} catch (JAXBException e) {
 			logger.error("JAXBException has occurred.", e);
 		} catch (IOException e) {

@@ -21,9 +21,11 @@
 package com.athena.chameleon.engine.core.analyzer.support;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
+import org.xeustechnologies.jcl.JarClassLoader;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
@@ -111,7 +113,35 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			
 			// 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
 			if(!StringUtils.isEmpty(getClassesDirPath(new File(tempDir)))) {
-	            ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
+				JarClassLoader jcl = null;
+				
+				if(embed) {
+					jcl = ((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getEarDefinition().getJcl();
+				} 
+				
+				if(jcl == null) {
+					jcl = new JarClassLoader();
+
+					jcl.add(this.getClass().getResource("/lib/ejb-api-3.0.jar"));
+					jcl.add(this.getClass().getResource("/lib/javax.servlet-api-3.0.1.jar"));
+					jcl.add(this.getClass().getResource("/lib/javaee-api-6.0.jar"));
+					jcl.add(this.getClass().getResource("/lib/weblogic.jar"));
+					jcl.add(this.getClass().getResource("/lib/jeus.jar"));
+					
+					analyzeDefinition.setJcl(jcl);
+				}
+				
+				List<String> pathList = analyzeDefinition.getLibraryFullPathList();
+				for(String str : pathList) {
+					try {
+						jcl.add(str);
+					} catch (Exception e) {
+						// Ignore.
+						logger.error("[{}] file can't add to Class Loader.", str);
+					}
+				}
+				
+	            ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)), jcl);
 			}
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.

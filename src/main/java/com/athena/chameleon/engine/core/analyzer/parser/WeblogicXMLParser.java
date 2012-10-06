@@ -98,7 +98,7 @@ public class WeblogicXMLParser extends Parser {
     		ejbRecommend.setContents(jbossWeb);
     		
     		metadataDefinition.getWebRecommendList().add(ejbRecommend);
-    		//metadataDefinition.getTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-web.xml");
+    		metadataDefinition.getWebTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-web.xml");
         } catch (Exception e) {
 			logger.error("Unhandled exception has occurred.", e);
         }

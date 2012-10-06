@@ -132,7 +132,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 				//  Weblogic, Jeus 등 상용 WAS 의존성 검사
 			    match = pattern.matcher(lineStr);
 			    if (match.matches()) {
-			    	dependency.addDependencyStrMap(new String("Line " + Integer.toString(lineNum)), lineStr);
+			    	dependency.addDependencyStrMap(new String("Line " + Integer.toString(lineNum)) + " : ", lineStr);
 			    }
 			    
 				lineNum++;

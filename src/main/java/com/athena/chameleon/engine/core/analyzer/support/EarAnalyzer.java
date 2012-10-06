@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
+import org.xeustechnologies.jcl.JarClassLoader;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
@@ -87,7 +88,26 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			
 			// 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
 			if(!StringUtils.isEmpty(getClassesDirPath(new File(tempDir)))) {
-	            ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)));
+				JarClassLoader jcl = new JarClassLoader();
+				
+				List<String> pathList = analyzeDefinition.getLibraryFullPathList();
+				for(String str : pathList) {
+					try {
+						jcl.add(str);
+					} catch (Exception e) {
+						// Ignore.
+						logger.error("[{}] file can't add to Class Loader.", str);
+					}
+				}
+				jcl.add(this.getClass().getResource("/lib/ejb-api-3.0.jar"));
+				jcl.add(this.getClass().getResource("/lib/javax.servlet-api-3.0.1.jar"));
+				jcl.add(this.getClass().getResource("/lib/javaee-api-6.0.jar"));
+				jcl.add(this.getClass().getResource("/lib/weblogic.jar"));
+				jcl.add(this.getClass().getResource("/lib/jeus.jar"));
+				
+				analyzeDefinition.setJcl(jcl);
+				
+	            ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)), jcl);
 			}
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
@@ -101,6 +121,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 				for(File warFile : warFileList) {
 					warDefinition = new AnalyzeDefinition();
 					metadataDefinition.addWarDefinitionMap(warFile.getName(), warDefinition);
+					// 변환전 web 관련 xml 및 변환 후 jboss-web.xml 파일의 경로를 표시하기 위해
+					ThreadLocalUtil.add(ChameleonConstants.DEPLOY_DIR_IN_EAR, removeTempDir(warFile.getAbsolutePath()));
 					new WarAnalyzer(policy, converter, executor, warDefinition, true).analyze(warFile);
 				}
 			}
@@ -114,6 +136,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 					jarDefinition = new AnalyzeDefinition();
 					jarDefinition.setFileName(jarFile.getName());
 					metadataDefinition.addJarDefinitionMap(jarFile.getName(), jarDefinition);
+					// 변환전 ejb 관련 xml 및 변환 후 jboss.xml 파일의 경로를 표시하기 위해
+					ThreadLocalUtil.add(ChameleonConstants.DEPLOY_DIR_IN_EAR, removeTempDir(jarFile.getAbsolutePath()));
 					new JarAnalyzer(policy, converter, executor, jarDefinition, true).analyze(jarFile);
 				}
 			}

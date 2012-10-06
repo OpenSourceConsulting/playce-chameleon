@@ -353,9 +353,9 @@ public class MigrationComponentTest {
         data.setEarDefinition(ear);
         
         //변환 대상 파일
-        data.getTransFileList().add("bin/ejb_xml/bisEjb/META-INF/jboss.xml");
-        data.getTransFileList().add("bin/ejb_xml/comDelEjb/META-INF/jboss.xml");
-        data.getTransFileList().add("bin/ejb_xml/comEjb/META-INF/jboss.xml");
+        data.getEjbTransFileList().add("bin/ejb_xml/bisEjb/META-INF/jboss.xml");
+        data.getEjbTransFileList().add("bin/ejb_xml/comDelEjb/META-INF/jboss.xml");
+        data.getEjbTransFileList().add("bin/ejb_xml/comEjb/META-INF/jboss.xml");
         
         PDFDocGenerator.createPDF(unzipDirPath+File.separator+"test.pdf", upload, data);
         
