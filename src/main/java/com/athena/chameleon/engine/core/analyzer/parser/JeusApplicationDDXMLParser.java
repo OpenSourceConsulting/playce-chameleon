@@ -102,13 +102,13 @@ public class JeusApplicationDDXMLParser extends Parser {
 			
 			String xmlData = JaxbUtils.marshal(JbossApp.class.getPackage().getName(), jbossApp, "<!DOCTYPE jboss-app PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd\">");
 
-			rewrite(new File(file.getParentFile(), "jboss-app.xml"), xmlData.replaceAll(" standalone=\"yes\"", ""));
+			rewrite(new File(file.getParentFile(), "jboss-app.xml"), xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
 			
         	ejbRecommend = new EjbRecommend();
     		ejbRecommend.setItem("jboss-app.xml");
     		ejbRecommend.setTransFlag(true);
     		ejbRecommend.setLocation(removeTempDir(file.getParent()));
-    		ejbRecommend.setContents(xmlData.replaceAll(" standalone=\"yes\"", ""));
+    		ejbRecommend.setContents(xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
     		
     		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);
     		metadataDefinition.getAppTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-app.xml");
