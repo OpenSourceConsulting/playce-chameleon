@@ -208,7 +208,7 @@ public class WebXMLParser extends Parser {
 		            
 		            // web.xml 저장
 					String xmlData = JaxbUtils.marshal(com.athena.chameleon.engine.entity.xml.webapp.v2_5.WebAppType.class.getPackage().getName(), webApp, new String[]{"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"});
-					rewrite(new File(path, "web.xml"), xmlData.replaceAll(" standalone=\"yes\"", ""));
+					rewrite(new File(path, "web.xml"), xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
 					logger.debug("web.xml has been modified.\n{}", xmlData);
 				} catch (JAXBException e) {
 					logger.error("JAXBException has occurred.", e);
@@ -322,7 +322,7 @@ public class WebXMLParser extends Parser {
 		            
 		            // web.xml 저장
 					String xmlData = JaxbUtils.marshal(com.athena.chameleon.engine.entity.xml.webapp.v2_4.WebAppType.class.getPackage().getName(), webApp, new String[]{"http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"});
-					rewrite(new File(path, "web.xml"), xmlData.replaceAll(" standalone=\"yes\"", ""));
+					rewrite(new File(path, "web.xml"), xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
 					logger.debug("web.xml has been modified.\n{}", xmlData);
 				} catch (JAXBException e) {
 					logger.error("JAXBException has occurred.", e);
@@ -437,7 +437,7 @@ public class WebXMLParser extends Parser {
 		            
 		            // web.xml 저장
 					String xmlData = JaxbUtils.marshal(com.athena.chameleon.engine.entity.xml.webapp.v2_3.WebApp.class.getPackage().getName(), webApp, "<!DOCTYPE web-app PUBLIC \"-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN\" \"http://java.sun.com/dtd/web-app_2_3.dtd\">");
-					rewrite(new File(path, "web.xml"), xmlData.replaceAll(" standalone=\"yes\"", ""));
+					rewrite(new File(path, "web.xml"), xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
 					logger.debug("web.xml has been modified.\n{}", xmlData);
 				} catch (JAXBException e) {
 					logger.error("JAXBException has occurred.", e);
