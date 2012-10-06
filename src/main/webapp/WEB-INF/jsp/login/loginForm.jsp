@@ -66,7 +66,7 @@ WAS Migration Tool for NCIA and Supported by Open Source Consulting.
 <br />
 <br />
 <form:form modelAttribute="login" method="post" id="loginForm" name="loginForm">
-	<div id="login-box-name" style="margin-top:20px;">Email:</div><div id="login-box-field" style="margin-top:20px;"><input id="loginId" name="loginId" class="form-login" title="Username" value="" size="30" maxlength="2048" /></div>
+	<div id="login-box-name" style="margin-top:20px;">Email:</div><div id="login-box-field" style="margin-top:20px;"><input id="loginId" name="loginId" class="form-login" title="Username" value="admin@nipa.kr" size="30" maxlength="2048" /></div>
 		<div id="login-box-name">Password:</div><div id="login-box-field"><input id="password" name="password" type="password" class="form-login" title="Password" value="" size="30" maxlength="2048" /></div>
 			<br />
 			<span class="login-box-options"><input type="checkbox" name="1" value="1"> Remember Me <a href="#" style="margin-left:30px;">Forgot password?</a></span>
