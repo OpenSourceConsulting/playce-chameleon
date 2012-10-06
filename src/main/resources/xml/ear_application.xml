@@ -7,6 +7,19 @@
 		<text>우선 파일들에 대한 개요는 다음과 같습니다.</text>
 		<file_summary/>
 	</section>
+	<section title="애플리케이션 파일별 분석 결과">
+		<text>애플리케이션 파일에 대한 분석 결과 아래와 같은 벤더 의존적인 코드들이 발견되었습니다.</text>
+		<section title="EJB 상속 클래스">
+			<text>아래의 클래스들은 EJB(Enterprise Java Beans)를 상속받은 클래스들입니다.</text>
+			<pattern_ejb/>
+		</section>
+		<section title="Properties 의존성">
+			<dependency_property/>
+		</section>
+		<section title="Class 의존성">
+			<dependency_class/>
+		</section>
+	</section>
 	<section title ="디스크립터 정보">
 		<application_info/>
 	</section>

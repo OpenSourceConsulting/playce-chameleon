@@ -350,7 +350,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	}//end of getAncestor()
 	
 	private void addDependencyStrMap(String type, String value) {
-		String key = "#" + (dependency.getDependencyStrMap().size() + 1) + " : " + type;
+		String key = "#" + (dependency.getDependencyStrMap().size() + 1) + " [" + type + "] - ";
 		dependency.addDependencyStrMap(key, value);
 	}//end of addDependencyStrMap()
 

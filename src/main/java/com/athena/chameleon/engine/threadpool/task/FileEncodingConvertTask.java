@@ -122,7 +122,7 @@ public class FileEncodingConvertTask extends BaseTask {
 			input = new FileInputStream(file);
             byte[] data = IOUtils.toByteArray(input, file.length());
             IOUtils.closeQuietly(input);
-			
+            
             /*
              * CharsetDector는 다음과 같은 캐릭터셋을 지원한다.
              * 
@@ -132,29 +132,39 @@ public class FileEncodingConvertTask extends BaseTask {
              * windows-1256, KOI8-R, ISO-8859-9, IBM424_rtl, IBM424_ltr, IBM420_rtl, IBM420_ltr
              */
 			// 파일 내용을 defaultEncoding 타입으로 변경 후 문자열로 반환
-            String fileContents = new CharsetDetector().getString(data, defaultEncoding);
+            // new CharsetDetector().getString(data, defaultEncoding); 시 지원되지 않은 인코딩 타입일 경우
+            // 파일이 null로 바뀌는 현상이 발생함.
+            //String fileContents = new CharsetDetector().getString(data, defaultEncoding);
             
-            /*
-            CharsetDetector detector = new CharsetDetector();
-            detector.setDeclaredEncoding(defaultEncoding);
-            detector.setText(data);
-            com.ibm.icu.text.CharsetMatch cm = detector.detect();
-            System.out.println("Encoding => " + cm.getName());
-            System.out.println("Contents => " + cm.getString());
-            //*/
+            String fileContents = null;
+            com.ibm.icu.text.CharsetMatch cm = null;
             
-	    	// html, jsp, xml 파일의 내부에 Character Set 관련 문자열이 포함되었을 경우 UTF-8로 변경
-	    	// charset=EUC-KR, encoding="EUC-KR" 등으로 검사하지 않고 EUC-KR, ISO-8859-1 등으로 검사
-            // 추후 필요할 경우 SEARCH_CHAR_SET에 설정
-            if(ArrayUtils.contains(TARGET_SUFFIX, extension)) {
-            	fileContents = replace(fileContents);
-	    	}
+			try {
+				CharsetDetector detector = new CharsetDetector();
+				detector.setDeclaredEncoding(defaultEncoding);
+				detector.setText(data);
+				cm = detector.detect();
+				
+	            fileContents = cm.getString();
+	            
+	            //logger.debug("Encoding => {}" + cm.getName());
+	            //logger.debug("Contents => {}" + cm.getString());
+			} catch (Exception e) {
+				// Ignore...
+			}
             
-            output = new OutputStreamWriter(new FileOutputStream(file), defaultEncoding);
             if(fileContents != null) {
+    	    	// html, jsp, xml 파일의 내부에 Character Set 관련 문자열이 포함되었을 경우 UTF-8로 변경
+    	    	// charset=EUC-KR, encoding="EUC-KR" 등으로 검사하지 않고 EUC-KR, ISO-8859-1 등으로 검사
+                // 추후 필요할 경우 SEARCH_CHAR_SET에 설정
+                if(ArrayUtils.contains(TARGET_SUFFIX, extension)) {
+                	fileContents = replace(fileContents);
+    	    	}
+                
+                output = new OutputStreamWriter(new FileOutputStream(file), defaultEncoding);
                 output.write(fileContents);
+                IOUtils.closeQuietly(output);
             }
-            IOUtils.closeQuietly(output);
 		} catch (UnsupportedEncodingException e) {
 			logger.error("UnsupportedEncodingException has occurred : ", e);
 		} catch (FileNotFoundException e) {
