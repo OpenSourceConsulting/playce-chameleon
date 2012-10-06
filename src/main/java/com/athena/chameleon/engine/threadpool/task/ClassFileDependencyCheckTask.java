@@ -136,13 +136,32 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		packageParse(clazz.getPackage());
 
 		// 생성자에 대한 의존성 검사
-		memberParse(clazz.getDeclaredConstructors(), classAnalyze);
+		String errMsg = "Absent Code attribute in method that is not native or abstract in class file ";
+		try {
+			memberParse(clazz.getDeclaredConstructors(), classAnalyze);
+		} catch(Throwable t) {
+			// Ignore..
+			logger.error("Exception({}) has occurred {}'s getDeclaredConstructors().", t.getMessage(), clazz.getCanonicalName());
+			classAnalyze.getConstructorList().add("[Error] : " + t.getClass().getCanonicalName() + " - " + t.getMessage().replaceAll(errMsg, ""));
+		}
 		
 		// 변수에 대한 의존성 검사
-		memberParse(clazz.getDeclaredFields(), classAnalyze);
+		try {
+			memberParse(clazz.getDeclaredFields(), classAnalyze);
+		} catch(Throwable t) {
+			// Ignore..
+			logger.error("Exception({}) has occurred {}'s getDeclaredFields().", t.getMessage(), clazz.getCanonicalName());
+			classAnalyze.getFiledList().add("[Error] : " + t.getClass().getCanonicalName() + " - " + t.getMessage().replaceAll(errMsg, ""));
+		}
 		
 		// 메소드에 대한 의존성 검사
-		memberParse(clazz.getDeclaredMethods(), classAnalyze);
+		try {
+			memberParse(clazz.getDeclaredMethods(), classAnalyze);
+		} catch(Throwable t) {
+			// Ignore..
+			logger.error("Exception({}) has occurred {}'s getDeclaredMethods().", t.getMessage(), clazz.getCanonicalName());
+			classAnalyze.getMethodList().add("[Error] : " + t.getClass().getCanonicalName() + " - " + t.getMessage().replaceAll(errMsg, ""));
+		}
 
 		// 이너클래스에 대한 의존성 검사
 		Class<?>[] clss = clazz.getDeclaredClasses();
@@ -171,7 +190,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		if (interfaces.length != 0) {
 			for (Type intf : interfaces) {
 				value = intf.toString();
-				classAnalyze.getInterfaces().add(value);
+				classAnalyze.getInterfaces().add(value.substring(10));
 
 				// EJB 상속 여부
 				if(value.indexOf("javax.ejb.SessionBean") > -1) {

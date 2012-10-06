@@ -542,12 +542,14 @@ public class PDFDocGenerator {
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header1")));
                 childE2.addContent(new Element("col").setText(comm.getSuperClassesStr()));
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header2")));
-                childE2.addContent(new Element("col").setText(comm.getClassModifier()));
+                childE2.addContent(new Element("col").setText(comm.getInterfacesStr()));
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header3")));
-                childE2.addContent(new Element("col").setText(comm.isFinalClass() == null ? "" : String.valueOf(comm.isFinalClass())));
+                childE2.addContent(new Element("col").setText(comm.getClassModifier()));
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header4")));
-                childE2.addContent(new Element("col").setText(comm.getFiledListStr()));
+                childE2.addContent(new Element("col").setText(comm.isFinalClass() == null ? "" : String.valueOf(comm.isFinalClass())));
                 childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header5")));
+                childE2.addContent(new Element("col").setText(comm.getFiledListStr()));
+                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header6")));
                 childE2.addContent(new Element("col").setText(comm.getMethodListStr()));
                 
                 child.addContent(childE1);

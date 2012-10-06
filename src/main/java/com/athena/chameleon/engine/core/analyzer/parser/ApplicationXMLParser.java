@@ -74,6 +74,7 @@ public class ApplicationXMLParser extends Parser {
 			} catch (JAXBException e2) {
 	        	try {
 	            	// http://java.sun.com/dtd/application_1_3.dtd
+	        		removeDoctype(file);
 					obj = checkApplication(JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.v1_3.Application.class.getPackage().getName(), file), file.getParentFile().getParentFile());
 				} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);

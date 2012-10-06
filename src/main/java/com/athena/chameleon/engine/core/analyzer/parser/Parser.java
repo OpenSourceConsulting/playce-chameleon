@@ -155,4 +155,25 @@ public abstract class Parser {
     		return earPath + fullPath.substring(tempPath.length() + 1);
     	}
     }//end of removeTempDir()
+    
+    /**
+     * <pre>
+     * <!DOCTYPE >에 명시된 dtd가 존재할 경우 해당 DTD를 참조하려 하기 때문에
+     * 인터넷에 연결되지 않은 상태에서는 UnmarshalException이 발생한다.
+     * 따라서 file 내에 <!DOCTYPE >이 존재할 경우 해당 구문을 제거하고 재 저장한다.
+     * </pre>
+     * @param file
+     */
+    protected void removeDoctype(File file) {
+    	try {
+			String xmlData = fileToString(file.getAbsolutePath());
+			
+			int idx1 = xmlData.indexOf("<!DOCTYPE");
+			int idx2 = xmlData.indexOf(">", idx1);
+			
+			rewrite(file, xmlData.substring(0, idx1) + xmlData.substring(idx2 + 1));
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+		}
+    }//end of removeDoctype()
 }//end of Parser.java

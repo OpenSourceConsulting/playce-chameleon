@@ -155,6 +155,20 @@ public class ClassAnalyze {
 		}
 	}
 	/**
+	 * @return the interfaces's String
+	 */
+	public String getInterfacesStr() {
+		if(getInterfaces().size() == 0) {
+			return "";
+		} else {
+			String str = "";
+			for(String s : getInterfaces())
+				str += s+"\n";
+			
+			return str;
+		}
+	}
+	/**
 	 * @return the filedList
 	 */
 	public String getFiledListStr() {

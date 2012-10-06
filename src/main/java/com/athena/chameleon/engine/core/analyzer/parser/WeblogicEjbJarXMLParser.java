@@ -80,6 +80,7 @@ public class WeblogicEjbJarXMLParser extends Parser {
     	} catch (JAXBException e1) {
 	    	try {
 	        	// weblogic-ejb-jar v8_1
+        		removeDoctype(file);
 				obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.weblogic.v8_1.WeblogicEjbJar.class.getPackage().getName(), file);
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);

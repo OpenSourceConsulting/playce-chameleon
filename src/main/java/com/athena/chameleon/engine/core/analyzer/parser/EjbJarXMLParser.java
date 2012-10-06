@@ -68,6 +68,7 @@ public class EjbJarXMLParser extends Parser {
     	} catch (JAXBException e1) {
 	    	try {
 	        	// ejb-jar v2_0
+        		removeDoctype(file);
 				obj = checkEjbJar(JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.EjbJar.class.getPackage().getName(), file));
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);

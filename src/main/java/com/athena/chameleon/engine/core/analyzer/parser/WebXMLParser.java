@@ -73,6 +73,7 @@ public class WebXMLParser extends Parser {
 			} catch (JAXBException e2) {
             	try {
         			// http://java.sun.com/dtd/web-app_2_3.dtd
+	        		removeDoctype(file);
 					obj = checkEncodignFilter(JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.webapp.v2_3.WebApp.class.getPackage().getName(), file), file.getParentFile().getAbsolutePath());
 				} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
