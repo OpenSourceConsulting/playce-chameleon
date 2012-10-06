@@ -146,7 +146,7 @@ public class JeusEjbDDXMLParser extends Parser {
 						session.setLocalJndiName(jeusBeanType.getLocalExportName());
 					}
 					
-					session.setCallByValue("false");
+					session.setCallByValue("true");
 					session.setClustered("False");
 					
 					enterpriseBeans.getSessionOrEntityOrMessageDriven().add(session);
@@ -179,7 +179,7 @@ public class JeusEjbDDXMLParser extends Parser {
 						session.setLocalJndiName(jeusBeanType.getLocalExportName());
 					}
 					
-					session.setCallByValue("false");
+					session.setCallByValue("true");
 					session.setClustered("False");
 					
 					enterpriseBeans.getSessionOrEntityOrMessageDriven().add(session);

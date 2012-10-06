@@ -152,7 +152,7 @@ public class WeblogicEjbJarXMLParser extends Parser {
 						session.setLocalJndiName(weblogicEnterpriseBean.getLocalJndiName().getValue());
 					}
 					
-					session.setCallByValue("false");
+					session.setCallByValue("true");
 					session.setClustered("False");
 					
 					if(weblogicEnterpriseBean.getTransactionDescriptor() != null) {
@@ -193,7 +193,7 @@ public class WeblogicEjbJarXMLParser extends Parser {
 						session.setLocalJndiName(weblogicEnterpriseBean.getLocalJndiName());
 					}
 					
-					session.setCallByValue("false");
+					session.setCallByValue("true");
 					session.setClustered("False");
 					
 					if(weblogicEnterpriseBean.getTransactionDescriptor() != null) {
