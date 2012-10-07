@@ -126,7 +126,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 					commonAnalyze.setItem(file.getName());
 					commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
 					
-					analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+					analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
 				}
 				
 				//  Weblogic, Jeus 등 상용 WAS 의존성 검사
