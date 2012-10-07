@@ -87,8 +87,7 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));
 			
-			// ThreadLocal에 저장된 의존성 검사 및 DD 관련 재 가공 후 ThreadLocal에 저장
-			
+			ThreadLocalUtil.add(ChameleonConstants.ZIP_ROOT_DIR, null);
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}

@@ -201,6 +201,8 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			}
 			
 			//*/
+			
+			ThreadLocalUtil.add(ChameleonConstants.WAR_ROOT_DIR, null);
 		} catch (Exception e) {
 			logger.error("Unahandled Exception has occurred : ", e);
 		}
