@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
-import org.xeustechnologies.jcl.JarClassLoader;
 
+import com.athena.chameleon.common.jcl.JarClassLoader;
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
@@ -119,27 +119,31 @@ public class WarAnalyzer extends AbstractAnalyzer {
 					jcl = ((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getEarDefinition().getJcl();
 				} 
 				
-				if(jcl == null) {
-					jcl = new JarClassLoader();
-
-					jcl.add(this.getClass().getResource("/lib/ejb-api-3.0.jar"));
-					jcl.add(this.getClass().getResource("/lib/javax.servlet-api-3.0.1.jar"));
-					jcl.add(this.getClass().getResource("/lib/javaee-api-6.0.jar"));
-					jcl.add(this.getClass().getResource("/lib/weblogic.jar"));
-					jcl.add(this.getClass().getResource("/lib/jeus.jar"));
-					
-					analyzeDefinition.setJcl(jcl);
-				}
-				
 				List<String> pathList = analyzeDefinition.getLibraryFullPathList();
 				for(String str : pathList) {
 					try {
-						jcl.add(str);
+						if(jcl == null) {
+							jcl = new JarClassLoader(new File(str).toURI().toURL());
+						} else {
+							jcl.addJarURL(new File(str).toURI().toURL().toString());
+						}
 					} catch (Exception e) {
 						// Ignore.
 						logger.error("[{}] file can't add to Class Loader.", str);
 					}
 				}
+				
+				if(jcl == null) {
+					jcl = new JarClassLoader(this.getClass().getResource("/lib/ejb-api-3.0.jar").toString());
+				} else {
+					jcl.addJarURL(this.getClass().getResource("/lib/ejb-api-3.0.jar").toString());
+				}
+				jcl.addJarURL(this.getClass().getResource("/lib/javax.servlet-api-3.0.1.jar").toString());
+				jcl.addJarURL(this.getClass().getResource("/lib/javaee-api-6.0.jar").toString());
+				jcl.addJarURL(this.getClass().getResource("/lib/weblogic.jar").toString());
+				jcl.addJarURL(this.getClass().getResource("/lib/jeus.jar").toString());
+				
+				analyzeDefinition.setJcl(jcl);
 				
 	            ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)), jcl);
 			}

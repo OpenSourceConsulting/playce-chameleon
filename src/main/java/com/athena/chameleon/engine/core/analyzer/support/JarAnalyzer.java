@@ -23,8 +23,8 @@ package com.athena.chameleon.engine.core.analyzer.support;
 import java.io.File;
 
 import org.springframework.util.Assert;
-import org.xeustechnologies.jcl.JarClassLoader;
 
+import com.athena.chameleon.common.jcl.JarClassLoader;
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
@@ -105,16 +105,16 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			} 
 			
 			if(jcl == null) {
-				jcl = new JarClassLoader();
-
-				jcl.add(this.getClass().getResource("/lib/ejb-api-3.0.jar"));
-				jcl.add(this.getClass().getResource("/lib/javax.servlet-api-3.0.1.jar"));
-				jcl.add(this.getClass().getResource("/lib/javaee-api-6.0.jar"));
-				jcl.add(this.getClass().getResource("/lib/weblogic.jar"));
-				jcl.add(this.getClass().getResource("/lib/jeus.jar"));
-
-				analyzeDefinition.setJcl(jcl);
+				jcl = new JarClassLoader(this.getClass().getResource("/lib/ejb-api-3.0.jar").toString());
+			} else {
+				jcl.addJarURL(this.getClass().getResource("/lib/ejb-api-3.0.jar").toString());
 			}
+			jcl.addJarURL(this.getClass().getResource("/lib/javax.servlet-api-3.0.1.jar").toString());
+			jcl.addJarURL(this.getClass().getResource("/lib/javaee-api-6.0.jar").toString());
+			jcl.addJarURL(this.getClass().getResource("/lib/weblogic.jar").toString());
+			jcl.addJarURL(this.getClass().getResource("/lib/jeus.jar").toString());
+
+			analyzeDefinition.setJcl(jcl);
 			
 			ClasspathUtil.addPath(tempDir, jcl);
 			

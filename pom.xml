@@ -749,11 +749,14 @@
 		-->
 		
 		<!-- JCL (Jar Class Loader) -->
+		<!-- Default Package Class에 대한 loadClass() 시 ClassNotFoundException 발생으로 직접 구현 -->
+		<!--
 		<dependency>
 			<groupId>org.xeustechnologies</groupId>
 			<artifactId>jcl-core</artifactId>
 			<version>2.4</version>
 		</dependency>
+		-->
 		
 		<!--  Java EE  -->
 		<dependency>

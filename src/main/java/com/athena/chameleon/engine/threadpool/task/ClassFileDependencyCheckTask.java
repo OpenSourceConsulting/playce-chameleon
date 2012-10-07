@@ -218,32 +218,52 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 */
 	private void superClassParse(List<Class<?>> ancestorList, ClassAnalyze classAnalyze) {
 		String value = null;
+		boolean isServletExtends = false;
+		boolean isEjbExtends = false;
 		for (Class<?> clazz : ancestorList) {
 			value = clazz.getCanonicalName();
 			classAnalyze.getSuperClasses().add(value);
 			
 			// HttpServlet 상속 여부
-			if(value.indexOf("javax.ejb.SessionBean") > -1) {
-				CommonAnalyze commonAnalyze = new CommonAnalyze();
-				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
-				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
-				
-				analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+			if(value.indexOf("javax.servlet.http.HttpServlet") > -1) {
+				isServletExtends = true;
 			}
 			
 			// EJB 상속 여부
 			if(value.indexOf("javax.ejb.EJBHome") > -1 || value.indexOf("javax.ejb.EJBObject") > -1) {
-				CommonAnalyze commonAnalyze = new CommonAnalyze();
-				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
-				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
-				
-				analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+				isEjbExtends = true;
 			}
 			
 			match = pattern.matcher(value);
 			if(match.matches()) {
 				addDependencyStrMap("SuperClass", value);
 			}
+		}
+		
+		if(isServletExtends) {
+			CommonAnalyze commonAnalyze = new CommonAnalyze();
+			if(className.indexOf(".") > -1) {
+				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+			} else {
+				commonAnalyze.setItem(className);
+				commonAnalyze.setLocation("");
+			}
+			
+			analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+		}
+		
+		if(isEjbExtends) {
+			CommonAnalyze commonAnalyze = new CommonAnalyze();
+			if(className.indexOf(".") > -1) {
+				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+			} else {
+				commonAnalyze.setItem(className);
+				commonAnalyze.setLocation("");
+			}
+			
+			analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
 		}
 	}//end of superClassParse()
 	
