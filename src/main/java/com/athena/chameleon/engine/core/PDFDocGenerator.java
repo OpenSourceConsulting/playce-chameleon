@@ -72,9 +72,12 @@ public class PDFDocGenerator {
         if(data == null) 
             return;
         
+        //PDF 파일 생성
         Document pdf = new Document(PageSize.A4, 50, 50, 70, 65); 
         PdfWriter writer = PdfWriter.getInstance(pdf, new FileOutputStream(filePath));
         writer.setLinearPageMode();
+        
+        //Page Event 생성(목차 및 머리말, 꼬리말 생성을 위한 event)
         PDFCommonEventHelper event = new PDFCommonEventHelper();
         writer.setPageEvent(event);
         
@@ -82,6 +85,8 @@ public class PDFDocGenerator {
         int cNum = 1;
         
         SAXBuilder builder = new SAXBuilder();
+        
+        //chapter 목록 xml 호출
         File listXml = new File(PDFDocGenerator.class.getResource("/xml/chapter.xml").getFile());
         org.jdom2.Document listDoc = builder.build(listXml);
         
@@ -91,21 +96,25 @@ public class PDFDocGenerator {
                 
                 String option = chapterE.getAttributeValue("option");
                 
+                //source 파일이 들어왔을 경우 출력
                 if(option.equals("zip") && data.getZipDefinition() != null) {
                     
                     addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getZipDefinition(), upload);
                     cNum++;
-                    
+                
+                //deploy 파일이 들어왔을 경우 출력
                 } else if(option.equals("deploy") && (upload.getDeploySrc() != null && upload.getDeploySrc().getFileItem().getSize() > 0)) {
 
                     addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data.getZipDefinition(), upload);
                     cNum++;
 
+                //.ear 파일이 들어왔을 경우 출력
                 } else if(option.equals("ear") && data.getEarDefinition() != null) {
 
                     addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data, upload);
                     cNum++;
-                    
+
+                //.war 파일이 들어왔을 경우 출력
                 } else if(option.equals("war") && data.getEarDefinition() == null && data.getWarDefinitionMap() != null) {
                     Iterator iterator = data.getWarDefinitionMap().entrySet().iterator();
                     
@@ -114,7 +123,8 @@ public class PDFDocGenerator {
                         addChapterForDynamic(writer, chapterE, cNum, pdf, builder, (AnalyzeDefinition)entry.getValue(), upload);
                         cNum++;
                     }
-                    
+                 
+                //.jar 파일이 들어왔을 경우 출력
                 } else if(option.equals("jar") && data.getEarDefinition() == null && data.getJarDefinitionMap() != null) {
                     Iterator iterator = data.getJarDefinitionMap().entrySet().iterator();
                     
@@ -124,11 +134,13 @@ public class PDFDocGenerator {
                         cNum++;
                     }
                     
+                //PDFMetadataDefinition에 들어있는 data가 필요할 경우
                 } else if(option.equals("root")) {
                     
                     addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data, upload);
                     cNum++;
                     
+                //변환 was 에 따라 출력되는 chapter 
                 } else if(option.equals(upload.getAfterWas())) {
                     
                     addChapter(writer, chapterE, cNum, pdf, builder);
@@ -147,15 +159,31 @@ public class PDFDocGenerator {
         pdf.close();
     }
     
+    /**
+     * 
+     * 결과값이 동적으로 변하는 Chatper Data 생성 (data class : AnalyzeDefinition)
+     * 
+     * @param writer
+     * @param chapterE
+     * @param cNum
+     * @param pdf
+     * @param builder
+     * @param data
+     * @param upload
+     * @throws Exception
+     */
     public static void addChapterForDynamic(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder, AnalyzeDefinition data, Upload upload) throws Exception {
         
+    	//chapter 정보 xml 호출
         File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
         org.jdom2.Document chapterDoc = builder.build(chapterXml);
         
         Element root = chapterDoc.getRootElement();
         
+        //동적으로 결과값이 생성되는 정보 setting
         setDynamicSection(root, data, upload);
         
+        //chapter 생성
         Chapter chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
             
         PDFWriterUtil.setElement(writer, chapter, root);
@@ -163,15 +191,30 @@ public class PDFDocGenerator {
         pdf.add(chapter);
     }
 
+    /**
+     * 결과값이 동적으로 변하는 Chatper Data 생성 (data class : PDFMetadataDefinition)
+     * 
+     * @param writer
+     * @param chapterE
+     * @param cNum
+     * @param pdf
+     * @param builder
+     * @param data
+     * @param upload
+     * @throws Exception
+     */
     public static void addChapterForDynamic(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder, PDFMetadataDefinition data, Upload upload) throws Exception {
         
+    	//chapter 정보 xml 호출
         File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
         org.jdom2.Document chapterDoc = builder.build(chapterXml);
         
         Element root = chapterDoc.getRootElement();
         
+        //동적으로 결과값이 생성되는 정보 setting
         setDynamicSection(root, data, upload);
         
+        //chapter 생성
         Chapter chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
             
         PDFWriterUtil.setElement(writer, chapter, root);
@@ -179,6 +222,14 @@ public class PDFDocGenerator {
         pdf.add(chapter);
     }
     
+    /**
+     * 결과값이 동적으로 변하는 Data setting (data class : PDFMetadataDefinition)
+     * 
+     * @param root
+     * @param rootData
+     * @param upload
+     * @throws Exception
+     */
     public static void setDynamicSection(Element root, PDFMetadataDefinition rootData, Upload upload) throws Exception {
         
         List<Element> childs = new ArrayList<Element>();
@@ -189,15 +240,20 @@ public class PDFDocGenerator {
         for(Element e : root.getChildren()) {
             
             if(e.getName().equals("section")) {
-                if(e.getChild("war_child_deploy") != null) {
+            	if(e.getChild("war_child_deploy") != null) {
+            		//ear 하위 Web Applications 정보
                     childs = setChildDeployData(rootData, upload, "war");
                 } else if(e.getChild("jar_child_deploy") != null) {
+                	//ear 하위 EJB Applications 정보
                     childs = setChildDeployData(rootData, upload, "jar");
                 } else if(e.getChild("trans_application_xml_info") != null) {
+                	//마이그레이션 권고안 - application Deployment Descriptor 정보
                     childs = setTransXmlData(rootData, upload, "application");
                 } else if(e.getChild("trans_web_xml_info") != null) {
+                	//마이그레이션 권고안 - Web Deployment Descriptor 정보
                     childs = setTransXmlData(rootData, upload, "web");
                 } else if(e.getChild("trans_ejb_xml_info") != null) {
+                	//마이그레이션 권고안 - EJB Deployment Descriptor 정보
                     childs = setTransXmlData(rootData, upload, "ejb");
                 }
             }
@@ -209,52 +265,78 @@ public class PDFDocGenerator {
         }
     }
 
+    /**
+     * 결과값이 동적으로 변하는 Data setting (data class : AnalyzeDefinition)
+     * 
+     * @param root
+     * @param data
+     * @param upload
+     */
     public static void setDynamicSection(Element root, AnalyzeDefinition data, Upload upload) {
         
         List<Element> childs = new ArrayList<Element>();
         int index = 0;
         for(Element e : root.getChildren()) {
-            if(e.getName().equals("section")) 
+            if(e.getName().equals("section")) {
+            	// 하위 노드가 Section 일 경우 호출 
                 setDynamicSection(e, data, upload);
-             else if(e.getName().equals("file_summary")) 
+            } else if(e.getName().equals("file_summary")) {
+            	// 소스 파일 요약
                 childs = setFileSummary(data);
-             else if(e.getName().equals("pattern_servlet")) 
+            } else if(e.getName().equals("pattern_servlet")) {
+            	// Servlet 상속 클래스
                 childs = setPatternData(data, "servlet");
-             else if(e.getName().equals("pattern_ejb")) 
+            } else if(e.getName().equals("pattern_ejb")) {
+            	// EJB 상속 클래스
                 childs = setPatternData(data, "ejb");
-             else if(e.getName().equals("dependency_java")) 
+            } else if(e.getName().equals("dependency_java")) {
+            	// Java 의존성
                 childs = setDependencyData(data, "java");
-              else if(e.getName().equals("dependency_jsp")) 
+            } else if(e.getName().equals("dependency_jsp")) {
+            	// jsp 의존성
                 childs = setDependencyData(data, "jsp");
-              else if(e.getName().equals("dependency_property")) 
+            } else if(e.getName().equals("dependency_property")) {
+            	// Properties 의존성
                 childs = setDependencyData(data, "property");
-              else if(e.getName().equals("dependency_class")) 
+            } else if(e.getName().equals("dependency_class")) {
+            	// Class 의존성
                 childs = setDependencyData(data, "class");
-             else if(e.getName().equals("jsp_analyze_result")) 
+            } else if(e.getName().equals("jsp_analyze_result")) {
+            	// JSP 소스 파일 분석 결과
                 childs = setJspAnalyzeData(data, upload);
-             else if(e.getName().equals("deploy_application_text")) { 
+            } else if(e.getName().equals("deploy_application_text")) {
+            	// 디플로이 애플리케이션 개요
                 childs = setDeployApplicationText(data, upload);
                 index = 1;
-             } else if(e.getName().equals("web_xml_info")) 
+             } else if(e.getName().equals("web_xml_info")) {
+            	 // 웹 어플리케이션 디스크립터 정보
                 childs = setApplicationData(data, upload);
-             else if(e.getName().equals("jar_xml_info")) 
+             } else if(e.getName().equals("jar_xml_info")) {
+            	// EJB 어플리케이션 디스크립터 정보
                 childs = setApplicationData(data, upload);
-             else if(e.getName().equals("lib_list")) 
+             } else if(e.getName().equals("lib_list")) {
+            	 // lib 구성 내용
                 childs = setLibData(data, upload, "");
-             else if(e.getName().equals("delete_lib_list")) 
+             } else if(e.getName().equals("delete_lib_list")) {
+            	// 삭제된 lib 구성 내용
                 childs = setLibData(data, upload, "D");
-             else if(e.getName().equals("class_info")) 
+             } else if(e.getName().equals("class_info")) {
+            	 // classes 구성 정보
                 childs = setClassData(data, upload);
-             else if(e.getName().equals("application_list")) { 
+             } else if(e.getName().equals("application_list")) {
+            	 // 엔터프라이즈 어플리케이션 디스크립터 목록
                 childs = setApplicationListData(data, upload);
                 index = 2;
-             } else if(e.getName().equals("application_info")) 
+             } else if(e.getName().equals("application_info")) {
+            	// 엔터프라이즈 어플리케이션 디스크립터 정보
                 childs = setApplicationData(data, upload);
-             else if(e.getName().equals("ejb_application_list")) 
+             } else if(e.getName().equals("ejb_application_list")) {
+            	// 엔터프라이즈 어플리케이션의 EJB 단위 모듈 정보
                 childs = setEjbApplicationData(data, upload);
-             
+             }
         }
         
+        //index가 0이 아닐경우 존재할 경우 해당 index 위치에 하위 노드 생성 
         if(index == 0) {
             root.addContent(childs);
         } else {
@@ -264,11 +346,24 @@ public class PDFDocGenerator {
         
     }
 
+    /**
+     * 
+     * 챕터 생성
+     * 
+     * @param writer
+     * @param chapterE
+     * @param cNum
+     * @param pdf
+     * @param builder
+     * @throws Exception
+     */
     public static void addChapter(PdfWriter writer, Element chapterE, int cNum, Document pdf, SAXBuilder builder) throws Exception {
         
+    	//chapter 정보 xml 호출
         File chapterXml = new File(PDFDocGenerator.class.getResource(chapterE.getText()).getFile());
         org.jdom2.Document chapterDoc = builder.build(chapterXml);
         
+        //chapter 생성
         Element root = chapterDoc.getRootElement();
         Chapter chapter = PDFWriterUtil.getChapter(root.getAttributeValue("title"), cNum);
             
@@ -277,13 +372,19 @@ public class PDFDocGenerator {
         pdf.add(chapter);
     }
     
+    /**
+     * 소스 파일 요약 정보 생성
+     * 
+     * @param data
+     * @return
+     */
     public static List<Element> setFileSummary(AnalyzeDefinition data) {
 
         List<Element> childs = new ArrayList<Element>();
         if(data.getFileSummaryMap() != null){
             Element child1 = new Element("table");
             Element child2 = new Element("chart");
-            child2.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.summary.chart.title"));
+            child2.setAttribute("title", MessageUtil.getMessage("pdf.message.chart.title.file_count"));
             
             Element childE1 = new Element("header");
             Element childE2 = new Element("row");
@@ -291,10 +392,10 @@ public class PDFDocGenerator {
             
             child1.setAttribute("size", "4");
             
-            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header1")));
-            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header2")));
-            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header3")));
-            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.summary.table.header4")));
+            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.extension")));
+            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.file_count")));
+            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.source_encoding")));
+            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.target_encoding")));
         
             for (FileType fileType : FileType.values()) {
                 FileSummary summary = data.getFileSummaryMap().get(fileType);
@@ -320,6 +421,14 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * 상속 클래스 정보 생성
+     * (type : servlet, ejb)
+     * 
+     * @param data
+     * @param type
+     * @return
+     */
     public static List<Element> setPatternData(AnalyzeDefinition data, String type) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -338,11 +447,11 @@ public class PDFDocGenerator {
             
             Element col = new Element("col");
             col.setAttribute("width", "150");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.pattern.table.header1")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.file_name")));
             
             col = new Element("col");
             col.setAttribute("width", "300");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.pattern.table.header2")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.location")));
         
             for(CommonAnalyze comm : dataList) {
                 childE2.addContent(new Element("col").setText(comm.getItem()));
@@ -358,6 +467,14 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * 의존성 정보 생성
+     * (type : java, jsp, property, class)
+     * 
+     * @param data
+     * @param type
+     * @return
+     */
     public static List<Element> setDependencyData(AnalyzeDefinition data, String type) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -394,6 +511,13 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * JSP 소스 파일 분석 결과 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
     public static List<Element> setJspAnalyzeData(AnalyzeDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -404,7 +528,7 @@ public class PDFDocGenerator {
             if(data.getFileSummaryMap() != null)
                 jspFileCount = ((FileSummary)data.getFileSummaryMap().get(FileType.JSP)).getFileCount();
             
-            childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
+            childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.jsp_summary.info.text", upload.getProjectNm(), String.valueOf(jspFileCount))));
             Element child = new Element("table");
             Element childE1 = new Element("header");
             Element childE2 = new Element("row");
@@ -413,11 +537,11 @@ public class PDFDocGenerator {
             
             Element col = new Element("col");
             col.setAttribute("width", "330");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header1")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.directive")));
             
             col = new Element("col");
             col.setAttribute("width", "70");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.summary.jsp.header2")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.file_count")));
         
             Iterator iterator = dataMap.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -436,49 +560,32 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * 디플로이 애플리케이션 개요 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
     public static List<Element> setDeployApplicationText(AnalyzeDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
         String fileName = upload.getDeploySrc().getFileItem().getName().replaceAll("\\\\", "/");
         fileName = fileName.substring(fileName.lastIndexOf("/")+1, fileName.length());
-        childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.deploy.application.text", fileName)));
+        childs.add(new Element("text").setText(MessageUtil.getMessage("pdf.message.deploy_application.info.text", fileName)));
         return childs;
         
     }
 
-    public static List<Element> setXmlData(AnalyzeDefinition data, Upload upload) {
-
-        List<Element> childs = new ArrayList<Element>();
-        List<CommonAnalyze> dataList = data.getDescripterList();
-        
-        if(dataList.size() > 0) {
-            Element child = new Element("table");
-            Element childE1 = new Element("header");
-            Element childE2 = new Element("row");
-            
-            child.setAttribute("size", "2");
-            
-            Element col = new Element("col");
-            col.setAttribute("width", "150");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
-            
-            col = new Element("col");
-            col.setAttribute("width", "300");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
-        
-            for(CommonAnalyze comm : dataList) {
-                childE2.addContent(new Element("col").setText(comm.getItem()));
-                childE2.addContent(new Element("col").setText(comm.getContents()));
-            }
-            child.addContent(childE1);
-            child.addContent(childE2);
-            
-            childs.add(child);
-        }
-        
-        return childs;
-    }
-
+    /**
+     * lib 구성 내용 생성
+     * (type : D - 삭제된 lib 구성 정보)
+     * 
+     * @param data
+     * @param upload
+     * @param type
+     * @return
+     */
     public static List<Element> setLibData(AnalyzeDefinition data, Upload upload, String type) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -497,7 +604,7 @@ public class PDFDocGenerator {
             child.setAttribute("width", "150");
             
             Element col = new Element("col");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.file_name")));
             
             for(String text : dataList) {
                 childE2.addContent(new Element("col").setText(text));
@@ -511,6 +618,13 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * classes 구성 정보 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
     public static List<Element> setClassData(AnalyzeDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -522,7 +636,7 @@ public class PDFDocGenerator {
             for (ClassAnalyze comm : dataList) {
                 
                 text = new Element("text");
-                text.setText(MessageUtil.getMessage("pdf.message.chapter.class_info.label") + comm.getClassName());
+                text.setText(MessageUtil.getMessage("pdf.message.class_summary.label.class_name") + comm.getClassName());
                 childs.add(text);
                 
                 child = new Element("table");
@@ -533,23 +647,23 @@ public class PDFDocGenerator {
                 
                 col = new Element("col");
                 col.setAttribute("width", "100");
-                childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header4")));
+                childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.subject")));
                 
                 col = new Element("col");
                 col.setAttribute("width", "300");
-                childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
+                childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.contents")));
             
-                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header1")));
+                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.supper_class")));
                 childE2.addContent(new Element("col").setText(comm.getSuperClassesStr()));
-                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header2")));
+                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.interfaces")));
                 childE2.addContent(new Element("col").setText(comm.getInterfacesStr()));
-                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header3")));
+                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.class_modifier")));
                 childE2.addContent(new Element("col").setText(comm.getClassModifier()));
-                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header4")));
+                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.final_class")));
                 childE2.addContent(new Element("col").setText(comm.isFinalClass() == null ? "" : String.valueOf(comm.isFinalClass())));
-                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header5")));
+                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.fields")));
                 childE2.addContent(new Element("col").setText(comm.getFiledListStr()));
-                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.class_info.header6")));
+                childE2.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.methods")));
                 childE2.addContent(new Element("col").setText(comm.getMethodListStr()));
                 
                 child.addContent(childE1);
@@ -562,6 +676,13 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * 엔터프라이즈 어플리케이션 디스크립터 목록 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
     public static List<Element> setApplicationListData(AnalyzeDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -576,11 +697,11 @@ public class PDFDocGenerator {
             
             Element col = new Element("col");
             col.setAttribute("width", "150");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.file_name")));
             
             col = new Element("col");
             col.setAttribute("width", "300");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.pattern.table.header2")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.location")));
             
             for(CommonAnalyze comm : dataList) {
                 childE2.addContent(new Element("col").setText(comm.getItem()));
@@ -595,6 +716,13 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * 엔터프라이즈 어플리케이션 디스크립터 정보 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
     public static List<Element> setApplicationData(AnalyzeDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -615,6 +743,13 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * 엔터프라이즈 어플리케이션의 EJB 단위 모듈 정보 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
     public static List<Element> setEjbApplicationData(AnalyzeDefinition data, Upload upload) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -635,11 +770,11 @@ public class PDFDocGenerator {
             
             col = new Element("col");
             col.setAttribute("width", "150");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header2")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.contents")));
             
             col = new Element("col");
             col.setAttribute("width", "300");
-            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header1")));
+            childE1.addContent(col.setText(MessageUtil.getMessage("pdf.message.table.header.type")));
             
             List<CommonAnalyze> dataList = (List<CommonAnalyze>) entry.getValue();
             for(CommonAnalyze comm : dataList) {
@@ -649,7 +784,7 @@ public class PDFDocGenerator {
             
             child.addContent(childE1);
             child.addContent(childE2);
-            section.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.chapter.ejb_application.text", String.valueOf(entry.getKey()))));
+            section.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.ejb_application.info.text", String.valueOf(entry.getKey()))));
             section.addContent(child);
             childs.add(section);
         }
@@ -657,6 +792,15 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * 마이그레이션 권고안 Deployment Descriptor 정보 생성
+     * (type : application, web, ejb)
+     * 
+     * @param data
+     * @param upload
+     * @param type
+     * @return
+     */
     public static List<Element> setTransXmlData(PDFMetadataDefinition data, Upload upload, String type) {
 
         List<Element> childs = new ArrayList<Element>();
@@ -678,9 +822,9 @@ public class PDFDocGenerator {
             
             section = new Element("section");
             if(comm.isTransFlag())
-                section.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.advice.trans.label2", comm.getItem()));
+                section.setAttribute("title", MessageUtil.getMessage("pdf.message.advice.title.trans_complete_file", comm.getItem()));
             else
-                section.setAttribute("title", MessageUtil.getMessage("pdf.message.chapter.advice.trans.label1", comm.getItem()));
+                section.setAttribute("title", MessageUtil.getMessage("pdf.message.advice.title.trans_target_file", comm.getItem()));
             
             section.addContent(new Element("text").setText(comm.getLocation()+File.separator+comm.getItem()));
             section.addContent(new Element("box").setText(comm.getContents()));
@@ -688,7 +832,7 @@ public class PDFDocGenerator {
             childs.add(section);
         }
         
-        childs.add(new Element("text").setAttribute("padding","23").setText(MessageUtil.getMessage("pdf.message.chapter.advice.trans.table.header")));
+        childs.add(new Element("text").setAttribute("padding","23").setText(MessageUtil.getMessage("pdf.message.table.header.trans_target_file_list")));
         
         if(transFileList.size() > 0) {
             
@@ -699,7 +843,7 @@ public class PDFDocGenerator {
             
             child.setAttribute("size", "1");
             
-            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.chapter.war.xml.header3")));
+            childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.file_name")));
             
             for(String s : transFileList) {
                 childE2.addContent(new Element("col").setText(s));
@@ -712,6 +856,16 @@ public class PDFDocGenerator {
         return childs;
     }
 
+    /**
+     * ear 하위 Applications 정보
+     * (type : war - Web, jar - EJB)
+     * 
+     * @param rootData
+     * @param upload
+     * @param type
+     * @return
+     * @throws Exception
+     */
     public static List<Element> setChildDeployData(PDFMetadataDefinition rootData, Upload upload, String type) throws Exception {
         
         List<Element> childs = new ArrayList<Element>();
@@ -757,6 +911,7 @@ public class PDFDocGenerator {
         
         return childs;
     }
+    
     /**
      * 
      * PDF Title Page 구성

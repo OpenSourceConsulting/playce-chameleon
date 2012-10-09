@@ -225,11 +225,14 @@ public class PDFWriterUtil {
         for(org.jdom2.Element e1 : e.getChildren()) {
             
             if(e1.getName().equals("section")) {
+            	//하위 노드가 section일 경우 호출 
                 setSectionElement(writer, section, e1);
                 
             } else if(e1.getName().equals("text")) {
                 
-                if(e1.getAttributeValue("padding") != null) {
+            	/* 일반 text 생성
+            	   attribute : padding - 왼쪽 padding값 입력 */
+            	if(e1.getAttributeValue("padding") != null) {
                     Paragraph text = getDefault(e1.getText());
                     text.setIndentationLeft(text.getIndentationLeft()+Float.parseFloat(e1.getAttributeValue("padding")));
                     
@@ -239,26 +242,34 @@ public class PDFWriterUtil {
                 }
             
             } else if(e1.getName().equals("table")) {
+            	//표 생성
                 setTable(section, e1);
                 
             } else if(e1.getName().equals("textR")) {
+            	//글자색이 빨간색인 text 생성
                 section.add(getDefaultRed(e1.getText(), Font.ITALIC));
                 
             } else if(e1.getName().equals("textP")) {
+            	//굵은 글씨체의 text 생성
                 section.add(getDefaultPoint(e1.getText()));
                 
             } else if(e1.getName().equals("box")) {
+            	//text box 생성
                 setBox(section, e1);
                 
             } else if(e1.getName().equals("boxB")) {
+            	//배경이 검정색인 text box 생성
                 setBoxB(section, e1);
                 
             } else if(e1.getName().equals("list")) {
+            	//목록 생성
             	setList(section, e1);
             	
             } else if(e1.getName().equals("img")) {
+            	//이미지 생성
                 setImage(section, e1);
             } else if(e1.getName().equals("chart")) {
+            	//차트 생성
             	setChart(writer, section, e1);
             }
         }
