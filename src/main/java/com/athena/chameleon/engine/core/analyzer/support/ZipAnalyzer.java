@@ -30,6 +30,7 @@ import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.ArchiveType;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 
@@ -82,7 +83,7 @@ public class ZipAnalyzer extends AbstractAnalyzer {
 			
 			// 해당 zip 파일을 xxx-result.zip으로 재 압축한다.
 			newFileName = getResultFile(file);
-			ZipUtil.compress(tempDir, newFileName);
+			ZipUtil.compress(tempDir, newFileName, ArchiveType.ZIP);
 			
 			// 임시 디렉토리를 삭제한다.
 			deleteDirectory(new File(tempDir));

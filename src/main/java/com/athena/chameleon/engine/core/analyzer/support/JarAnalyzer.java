@@ -32,6 +32,7 @@ import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.ArchiveType;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
@@ -129,7 +130,7 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			if(!isExploded) {
 				// 임시디렉토리를 재 압축한다.
 				newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
-				ZipUtil.compress(tempDir, newFileName);
+				ZipUtil.compress(tempDir, newFileName, ArchiveType.JAR);
 				
 				// 임시 디렉토리를 삭제한다.
 				deleteDirectory(new File(tempDir));
