@@ -206,7 +206,9 @@ public class FileEncodingConverter {
 			    			
 			    			// 삭제 파일 목록에 추가 후 파일 삭제
 			    			analyzeDefinition.getDeleteLibraryList().add(file.getName());
-			    			file.delete();
+			    			//file.delete();
+			    			// 파일을 삭제하지 않고 .bak 확장자를 추가한다.
+			    			file.renameTo(new File(file.getAbsolutePath() + ".bak"));
 			    		} else {
 			    			// 라이브러리 파일 목록에 추가
 			    			analyzeDefinition.getLibraryList().add(file.getName());
