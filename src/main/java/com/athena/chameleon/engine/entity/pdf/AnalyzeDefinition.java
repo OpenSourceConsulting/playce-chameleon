@@ -20,6 +20,7 @@
  */
 package com.athena.chameleon.engine.entity.pdf;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,9 @@ public class AnalyzeDefinition {
     private JarClassLoader jcl;
     // lib 디렉토리 위치
     private List<String> libraryFullPathList;
+    // Ear 분석시 exploded 형태의 web app, ejb app 디렉토리를 분석하지 않기 위해 사용
+    private List<File> warFileList;
+    private List<File> jarFileList;
 
 	/**
 	 * @return the fileName
@@ -318,6 +322,40 @@ public class AnalyzeDefinition {
 			libraryFullPathList = new ArrayList<String>();
 		}
 		return libraryFullPathList;
+	}
+
+	/**
+	 * @return the warFileList
+	 */
+	public List<File> getWarFileList() {
+		if(warFileList == null) {
+			warFileList = new ArrayList<File>();
+		}
+		return warFileList;
+	}
+
+	/**
+	 * @param warFileList the warFileList to set
+	 */
+	public void setWarFileList(List<File> warFileList) {
+		this.warFileList = warFileList;
+	}
+
+	/**
+	 * @return the jarFileList
+	 */
+	public List<File> getJarFileList() {
+		if(jarFileList == null) {
+			jarFileList = new ArrayList<File>();
+		}
+		return jarFileList;
+	}
+
+	/**
+	 * @param jarFileList the jarFileList to set
+	 */
+	public void setJarFileList(List<File> jarFileList) {
+		this.jarFileList = jarFileList;
 	}
 
 }

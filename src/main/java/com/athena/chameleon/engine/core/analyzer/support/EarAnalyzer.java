@@ -21,6 +21,7 @@
 package com.athena.chameleon.engine.core.analyzer.support;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +33,7 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
+import com.athena.chameleon.engine.core.analyzer.parser.ApplicationXMLParser;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.ArchiveType;
@@ -47,9 +49,6 @@ import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecut
  * @version 1.0
  */
 public class EarAnalyzer extends AbstractAnalyzer {
-	
-	private List<File> warFileList;
-	private List<File> jarFileList;
 
 	/**
 	 * <pre>
@@ -83,6 +82,26 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 			
 			ThreadLocalUtil.add(ChameleonConstants.EAR_ROOT_DIR, tempDir);
+			
+			// EAR 패키징 파일 내부에 Web Application(s) 또는 EJB Application(s) 가 압축되지 않은 Exploded 형태로 존재할 경우
+			// EarAnalyzer는 각 Application 내부에 존재하는 파일에 대해 인코딩 변경, 라이브러리 탐색, 의존성 탐색, deployment descriptor XML 파일 처리 등의 작업을
+			// 중복해서 처리하게 된다. 따라서 EarAnalyzer는 먼저 /META-INF/application.xml 파일을 분석하여 
+			// Web Application(s), EJB Applicaiton(s)가 존재하는지 먼저 확인하고, FileEncodingConverter 를 통한 인코딩 변경, analyze()를 이용한 디렉토리 내 파일 분석 시
+			// 각 Application 디렉토리는 무시하도록 한다.
+			//File appplicationXmlFile = new File(tempDir, "META-INF/application.xml");
+			
+			File appplicationXmlFile = null;
+			if((appplicationXmlFile = getAppllicationXml(new File(tempDir))).exists()) {
+				new ApplicationXMLParser().parse(appplicationXmlFile, analyzeDefinition);
+				
+				warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+				jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			} else {
+				warFileList = new ArrayList<File>();
+				jarFileList = new ArrayList<File>();
+			}
+			analyzeDefinition.setWarFileList(warFileList);
+			analyzeDefinition.setJarFileList(jarFileList);
 
 			// 인코딩 변경
 			converter.convert(new File(tempDir), analyzeDefinition);
@@ -124,7 +143,6 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			analyze(new File(tempDir), tempDir);
 			
 			// war 파일이 존재할 경우 해당 war 파일에 대해 분석한다.
-			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
 			if(warFileList != null && warFileList.size() > 0) {
 				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 				AnalyzeDefinition warDefinition = null;
@@ -138,7 +156,6 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			}
 			
 			// jar 파일이 존재할 경우 해당 jar 파일에 대해 분석한다.
-			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
 			if(jarFileList != null && jarFileList.size() > 0) {
 				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 				AnalyzeDefinition jarDefinition = null;
@@ -169,5 +186,29 @@ public class EarAnalyzer extends AbstractAnalyzer {
 		
 		return newFileName;
 	}//end of analyze()
+
+	/**
+	 * <pre>
+	 * 지정된 디렉토리로부터 META-INF/application.xml 파일을 탐색한다.
+	 * </pre>
+	 * @param baseDir
+	 * @return
+	 */
+	private File getAppllicationXml(File baseDir) {
+		File appXmlFile = null;
+		
+        File[] files = baseDir.listFiles();
+        for (File f : files) {
+        	if (f.isDirectory()) {
+        		if(f.getName().equals("META-INF")) {
+        			appXmlFile = new File(f, "application.xml");
+        		} else {
+        			appXmlFile = getAppllicationXml(f);
+        		}
+        	}
+        }
+        
+        return appXmlFile;
+	}//end of getAppllicationXml()
 	
 }//end of EarAnalyzer.java

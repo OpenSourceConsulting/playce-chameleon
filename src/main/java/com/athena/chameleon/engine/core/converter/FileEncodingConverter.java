@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -78,6 +79,9 @@ public class FileEncodingConverter {
     private Map<FileType, FileSummary> fileSummaryMap;
     private FileSummary fileSummary;
     
+    private List<File> warFileList;
+    private List<File> jarFileList;
+    
 	/**
 	 * <pre>
 	 * 
@@ -116,6 +120,9 @@ public class FileEncodingConverter {
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		analyzeDefinition.setFileName(file.getAbsolutePath());
 		analyzeDefinition.setFileSummaryMap(fileSummaryMap);
+		
+		warFileList = analyzeDefinition.getWarFileList();
+		jarFileList = analyzeDefinition.getJarFileList();
 		
 		convertAll(file);
 		executor.getExecutor().shutdown();	
@@ -170,6 +177,11 @@ public class FileEncodingConverter {
 	 */
 	private void convertAll(File file) {
 		if (file.isDirectory()) {
+			// EJB Archive 내에 Exploded 형태로 존재하는 WEB Directory 또는 EJB Directory인 경우 탐색하지 않는다.
+			if(warFileList.contains(file) || jarFileList.contains(file)) {
+				return;
+			}
+			
 			fileSummary = fileSummaryMap.get(FileType.DIRECTORY);
 			fileSummary.addCount();
 			

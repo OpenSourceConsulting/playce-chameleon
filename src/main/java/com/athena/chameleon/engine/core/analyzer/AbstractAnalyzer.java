@@ -73,6 +73,9 @@ public abstract class AbstractAnalyzer implements Analyzer {
 	protected List<String> libFileList;
 	protected List<String> deleteFileList;
 	
+	protected List<File> warFileList;
+	protected List<File> jarFileList;
+	
 	public AbstractAnalyzer(Policy policy, FileEncodingConverter converter, ChameleonThreadPoolExecutor executor, AnalyzeDefinition analyzeDefinition) {
 		this.policy = policy;
 		this.converter = converter;
@@ -120,6 +123,11 @@ public abstract class AbstractAnalyzer implements Analyzer {
 		String extension = null;
 		for (File f : fileList) {
 			if (f.isDirectory()) {
+				// EJB Archive 내에 Exploded 형태로 존재하는 WEB Directory 또는 EJB Directory인 경우 탐색하지 않는다.
+				if(this instanceof EarAnalyzer && (warFileList.contains(file) || jarFileList.contains(file))) {
+					return;
+				}
+				
 				// classpath 내에 존재하는 디렉토리일 경우 디렉토리 갯수를 센다. 
 				if (f.getAbsolutePath().startsWith(ClasspathUtil.lastAddedPath)) {
 					analyzeDefinition.addClassDirCount();
@@ -156,7 +164,8 @@ public abstract class AbstractAnalyzer implements Analyzer {
 						}
 					} else if (f.getParent().endsWith("META-INF")) {
 						if (f.getName().equals("application.xml")) {
-							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
+							// EarAnalyzer는 application.xml 파일을 미리 파싱한다.
+							if (this instanceof ZipAnalyzer) {
 								new ApplicationXMLParser().parse(f, analyzeDefinition);
 							}
 						} else if (f.getName().equals("weblogic-application.xml")) {
