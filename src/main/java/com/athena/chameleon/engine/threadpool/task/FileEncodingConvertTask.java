@@ -31,6 +31,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.ibm.icu.text.CharsetDetector;
 
@@ -94,7 +95,9 @@ public class FileEncodingConvertTask extends BaseTask {
 	public FileEncodingConvertTask(String taskName, File file, String defaultEncoding) {
 		super(taskName);
 		setFile(file);
-		setDefaultEncoding(defaultEncoding);
+		if(StringUtils.isNotEmpty(defaultEncoding)) {
+			setDefaultEncoding(defaultEncoding);
+		}
 	}
 
 	/**
