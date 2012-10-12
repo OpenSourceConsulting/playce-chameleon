@@ -1,6 +1,8 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ include file="/taglib/taglibs.jsp"%>
 <script type="text/javascript">
+	onMenu(1);
+
 	$(document).ready(function (){
 		
 		$('#applyBtn').click(function() { 
@@ -24,29 +26,6 @@
 		});
 	});
 </script>
-
-<link href="<c:url value='/css/style.css'/>" rel="stylesheet" type="text/css" />
-
-<body>
-<table border="0">
-	<tr width="1024" >
-		<td align="left" width="80"><img src="<c:url value='/images/chameleon-icon.png'/>" width="80" height="80"></td>
-		<td align="left" width="400"><div class="title">Chameleon</div></td>
-		<td align="right" width="524" valign="bottom">Login ID: admin@osci.kr</td>
-	</tr>
-</table>
-    <div id="navigation">
-			<ul>
-            	<li><a href="<c:url value='/main.do'/>">Home</a></li>
-                <li id="active"><a href="<c:url value='/upload/form.do'/>">Migration</a></li>
-                <li><a href="navigation.html">Provisioning</a></li>
-				<li><a href="navigation.html">System</a></li>
-				<li><a href="navigation.html">Contact Us</a></li>
-			</ul>
-	</div>    
-
-<br/>
-
 <form:form modelAttribute="upload" method="post" id="uploadForm" name="uploadForm" enctype="multipart/form-data">
 	<table border="0">
 		<tr>
@@ -89,19 +68,4 @@
 			<td colspan="2"><a href="javascript:void(0);" id="applyBtn"><input type="submit" id="applyBtn" value="Start Analyze"></a></td>
 		</tr>
 	</table>
-	
-	
-	<br/>
-	<table border="0" width="1024">
-		<tr>
-			<td align="center">COPYRIGHT 2012 OPEN SOURCE CONSULTING, INC. ALL RIGHT RESERVED. SUPPORTED BY NIPA</td>
-		</tr>
-	</table>
-	
-	
-	<div class="demo-description" style="display: none; ">
-	<p>Examples of the markup that can be used for buttons: A button element, an input of type submit and an anchor.</p>
-	</div><!-- End demo-description -->
  </form:form>
-</body>
-</html>

@@ -20,6 +20,8 @@
  */
 package com.athena.chameleon.web;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,9 +47,14 @@ public class MainController {
      * @throws Exception
      */
     @RequestMapping("/main.do")
-    public String home(Model model) throws Exception {
+    public String home(Model model, HttpSession session) throws Exception {
+
+        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
+        if(loginFlag == null || !loginFlag.equals("Y"))
+            return "redirect:/login/showLogin.do";
+        
     	model.addAttribute(new Login());
-    	return "/mainPage";
+    	return "/main/mainPage";
     }
    
 }

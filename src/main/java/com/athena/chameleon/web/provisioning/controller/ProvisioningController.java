@@ -18,7 +18,7 @@
  * ---------------  ----------------    ------------
  * Hyo-jeong Lee    2012. 9. 12.        First Draft.
  */
-package com.athena.chameleon.web.upload.controller;
+package com.athena.chameleon.web.provisioning.controller;
 
 import java.io.File;
 
@@ -48,10 +48,10 @@ import com.athena.chameleon.engine.entity.upload.Upload;
  * @author Hyo-jeong Lee
  * @version 1.0
  */
-@Controller("uploadController")
-@RequestMapping("/upload")
-public class UploadController {
-
+@Controller("provisioningController")
+@RequestMapping("/provisioning")
+public class ProvisioningController {
+/*
     @Inject
     @Named("migrationComponent")
     private MigrationComponent component;
@@ -62,25 +62,25 @@ public class UploadController {
 
     @Value("#{filteringProperties['chameleon.upload.temp.dir']}")
     public String uploadPath;
-
+*/
+    
     /**
      * 
-     * 업로드 입력정보 화면 호출
+     * Was 선택화면 호출
      *
      * @param model
      * @param session
      * @return
      * @throws Exception
      */
-    @RequestMapping("/form.do")
-    public String showUpload(Model model, HttpSession session) throws Exception {
+    @RequestMapping("/selectForm.do")
+    public String showWasSelect(Model model, HttpSession session) throws Exception {
         
         String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
         if(loginFlag == null || !loginFlag.equals("Y"))
             return "redirect:/login/showLogin.do";
         
-        model.addAttribute(new Upload());
-        return "/main/upload/uploadForm";
+        return "/main/provisioning/selectForm";
     }
 
     /**
@@ -93,7 +93,7 @@ public class UploadController {
      * @param session
      * @return
      * @throws Exception
-     */
+     *//*
     @RequestMapping("/upload.do")
     public String upload(Upload upload, ModelMap modelMap, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
 
@@ -159,7 +159,8 @@ public class UploadController {
         }
         
                 
-        return "/main/upload/resultForm";
+        return "/ifrm/upload/resultForm";
     }
+    */
 
 }
