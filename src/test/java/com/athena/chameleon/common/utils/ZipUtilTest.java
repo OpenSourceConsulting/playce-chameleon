@@ -220,7 +220,7 @@ public class ZipUtilTest {
 		 * 압축 파일명만 주어진 경우 
 		 ========================================*/
 		// 초기화
-		srcFile = this.getClass().getResource("/files/archive/warTest.war").getFile();
+		srcFile = this.getClass().getResource("/files/archive/warTest.warr").getFile();
 		
 		// 테스트
 		try {
@@ -244,7 +244,7 @@ public class ZipUtilTest {
 		 * 압축 파일명과 압축 해제 디렉토리가 함께 주어진 경우
 		 ========================================*/
 		// 초기화
-		srcFile = this.getClass().getResource("/files/archive/warTest.war").getFile();
+		srcFile = this.getClass().getResource("/files/archive/warTest.warr").getFile();
 		destDir = this.getClass().getResource("/files").getFile() + File.separator + System.currentTimeMillis();;
 		
 		// 테스트
