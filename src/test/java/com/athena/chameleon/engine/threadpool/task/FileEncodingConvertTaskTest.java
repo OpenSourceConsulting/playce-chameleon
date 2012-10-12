@@ -46,7 +46,7 @@ import com.ibm.icu.text.CharsetMatch;
 
 /**
  * <pre>
- * 파일 인코딩 변환 기능을 확인하기 위핸 테스트 클래스
+ * 파일 인코딩 변환 기능을 확인하기 위한 테스트 클래스
  * </pre>
  * 
  * @author Sang-cheon Park
