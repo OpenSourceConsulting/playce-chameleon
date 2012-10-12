@@ -21,14 +21,12 @@
 package com.athena.chameleon.common.utils;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.ant.compress.taskdefs.Unzip;
+import org.apache.ant.compress.taskdefs.Zip;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Expand;
-import org.apache.tools.ant.taskdefs.Jar;
-import org.apache.tools.ant.taskdefs.Manifest;
 import org.apache.tools.ant.taskdefs.ManifestException;
 import org.apache.tools.ant.types.FileSet;
 import org.springframework.util.Assert;
@@ -86,32 +84,17 @@ public class ZipUtil {
 		} else {
 			archiveFile = new File(destFile);
 		}
-		
-		Jar jar = new Jar();
-		jar.setProject(project);
-		
-		// Set fileset information
-		jar.setDestFile(archiveFile);
-		
+
 		FileSet fileSet = new FileSet();
 		fileSet.setDir(filesetDir);
-		jar.addFileset(fileSet);
+    	fileSet.setProject(project); // project가 세팅되지 않으면 DirectoryScanner가 초기화 되지 않아 Excption이 발생함다.
+
+    	Zip zip = new Zip();
+    	zip.setProject(project); // project가 세팅되지 않으면 destFile 존재 시 Exception 발생한다.
+    	zip.setDestfile(archiveFile);
+    	zip.add(fileSet);
 		
-		// Create manifest if archive type is one of ear, war and jar.
-		if(type.equals(ArchiveType.EAR) || type.equals(ArchiveType.WAR) || type.equals(ArchiveType.JAR)) {
-			File maniFile = new File(baseDir, "META-INF/manifest.mf");
-			
-			if(!maniFile.exists()) {
-				maniFile = new File(baseDir, "META-INF/MANIFEST.MF");
-			}
-			
-			if(maniFile.exists()) {
-				Manifest manifest = new Manifest(new FileReader(maniFile));
-		        jar.addConfiguredManifest(manifest);
-			}
-		}
-		
-		jar.execute();
+    	zip.execute();
 		
 		return true;
 	}//end of compress()
@@ -140,8 +123,6 @@ public class ZipUtil {
     public static boolean decompress(String sourceFile, String destDir) throws IOException {
 		Assert.notNull(sourceFile, "sourceFile cannot be null.");
 		
-		Project project = new Project();
-		
 		File src = new File(sourceFile);
 		File dest = null;
 
@@ -154,27 +135,12 @@ public class ZipUtil {
 			dest = new File(destDir);
 		}
 		
-		Expand zip = new Expand();
-		zip.setProject(project);
-		
-		// Set fileset information
-		zip.setSrc(src);
-		zip.setDest(dest);
-		
-		zip.execute();
-		
+		Unzip unzip = new Unzip();
+    	unzip.setSrc(src);
+    	unzip.setDest(dest);
+    	unzip.execute();
+    	
 		return true;
     }//end of decompress()
-    
-    public static void main(String[] args) {
-    	try {
-			ZipUtil.decompress("/Users/nices96/Desktop/ziptest/physicial.ear", "/Users/nices96/Desktop/ziptest/physicial");
-			ZipUtil.compress("/Users/nices96/Desktop/ziptest/physicial", "/Users/nices96/Desktop/ziptest/physicial2.ear", ArchiveType.EAR);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ManifestException e) {
-			e.printStackTrace();
-		}
-    }
     
 }// end of ZipUtil.java
