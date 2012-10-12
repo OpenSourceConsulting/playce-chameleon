@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.channels.FileChannel;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -71,27 +70,10 @@ public abstract class Parser {
 	 * @throws IOException 
 	 */
 	protected void fileCopy(File sourceFile, File targetFile) throws IOException {
-		FileInputStream inputStream = null;
-		FileOutputStream outputStream = null;
-		FileChannel fcin = null;
-		FileChannel fcout = null;
+		FileInputStream inputStream = new FileInputStream(sourceFile);
+		FileOutputStream outputStream = new FileOutputStream(targetFile);
 		
-		if(!targetFile.exists()) {
-			targetFile.getParentFile().mkdirs();
-			targetFile.createNewFile();
-		}
-		
-		inputStream = new FileInputStream(sourceFile);
-		outputStream = new FileOutputStream(targetFile);
-
-		fcin = inputStream.getChannel();
-		fcout = outputStream.getChannel();
-
-		long size = fcin.size();
-		fcin.transferTo(0, size, fcout);
-
-		IOUtils.closeQuietly(fcout);
-		IOUtils.closeQuietly(fcin);
+		IOUtils.copy(inputStream, outputStream);
 		IOUtils.closeQuietly(outputStream);
 		IOUtils.closeQuietly(inputStream);
 	}//end of fileCopy
@@ -119,6 +101,9 @@ public abstract class Parser {
      * @throws IOException 
      */
     protected String fileToString(String file) throws IOException {
+    	
+    	// return IOUtils.toString(file.toURI());
+    	
         String result = null;
 
         DataInputStream in = null;

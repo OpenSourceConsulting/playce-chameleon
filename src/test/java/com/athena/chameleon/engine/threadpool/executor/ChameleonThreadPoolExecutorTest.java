@@ -44,14 +44,14 @@ public class ChameleonThreadPoolExecutorTest {
 	
 	private ChameleonThreadPoolExecutor executor;
 	
-	private static final int CNT = 10;
+	private static final int CNT = 5;
 	private int corePoolSize = 1;
 	private int maxPoolSize = 1;
-	private int queueCapacity = 5;
+	private int queueCapacity = 2;
 
 	@Before
 	public void setUp() throws Exception {
-		ApplicationContext context = new FileSystemXmlApplicationContext("file:./src/main/resources/spring/context-threadpool.xml");
+		ApplicationContext context = new FileSystemXmlApplicationContext("file:./src/main/resources/spring/context-*.xml");
     	executor = (ChameleonThreadPoolExecutor)context.getBean("taskExecutor");
     	
     	executor.setCorePoolSize(corePoolSize);
@@ -136,7 +136,7 @@ class MockTask extends BaseTask {
 	@Override
 	protected void taskRun() {
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(2000);
 		} catch (Throwable e) {
 			logger.error("[{}] is not completed!", this.taskName);
 			
