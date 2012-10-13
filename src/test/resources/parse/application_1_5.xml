@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd"
+	version="5">
+	<display-name>shopping-cart-ear</display-name>
+	<module>
+		<web>
+			<web-uri>test1.war</web-uri>
+			<context-root>/test1</context-root>
+		</web>
+	</module>
+	<module>
+		<web>
+			<web-uri>test2.war</web-uri>
+			<context-root>/test2</context-root>
+		</web>
+	</module>
+	<module>
+		<ejb>test-ejb1.jar</ejb>
+	</module>
+	<module>
+		<ejb>test-ejb2.jar</ejb>
+	</module>
+</application>

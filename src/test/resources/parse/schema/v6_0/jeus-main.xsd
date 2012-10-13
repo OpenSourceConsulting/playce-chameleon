@@ -1,0 +1,3407 @@
+<?xml version="1.0" encoding="EUC-KR"?>
+<xs:schema
+        xmlns="http://www.tmaxsoft.com/xml/ns/jeus"
+        targetNamespace="http://www.tmaxsoft.com/xml/ns/jeus"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        version="6.0">
+
+    <xs:include schemaLocation="jeus-common.xsd"/>
+    <xs:include schemaLocation="jeus-security.xsd"/>
+
+    <xs:element name="jeus-system" type="jeus-systemType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Description]: JEUS 설정 파일의 최상위 element. JEUS 시스템에 속하는 모든 노드의 설정을
+                이 element 아래에 기록한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="application" type="applicationType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                [Description]: jeus-application-dd.xml의 element이다.
+            ]]></xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+
+    <xs:complexType name="jeus-systemType">
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="unbounded" name="node" type="jeus-nodeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS ’node’는 기본적으로 JEUS가 실행 중인 서버의 머신 이름이다. JEUS 클러스터링
+                        환경에서는 각 JEUS 노드마다 하나의 <node> element를 가진다.각 서버마다 JEUSMain.xml을 가지고
+                        있으며, 이 파일을 통해서 다른 서버의 정보를 얻는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="naming-server" type="naming-serverType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Naming-Server element는 JEUS Naming Server의 정보를 포함한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="security-manager" type="security-managerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: security-manager element는 JEUS security 정보 관리에 대한 설명이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="resource" type="resourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 여기서는 JEUS와 연동되는 외부 리소스의 정보를 담고 있다. 여기서 사용되는 리소스는
+                        DB, TP monitor가 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="application" type="applicationType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS가 실행될 때 deploy가 되는 application을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="version" type="jeus-versionType" use="optional" default="5.0"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="jeus-nodeType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 노드의 이름.
+                        [Value Description]: 실제 JEUS가 동작하는 머신의 이름. 유닉스에서는 “uname -n”으로 알아낼 수
+                        있으며, Windows에서는 [시스템 등록 정보]-[네트워크 식별]에서 나오는 컴퓨터 이름이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="listener" type="listenerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 이 노드의 JEUS 시스템이
+                                사용하는 socket listener 및 socket
+                                connection request 처리에 필요한 각종
+                                속성을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="backup-node" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 node가 감시할 node를 지정한다. 지정된 node가 down되면 이 node가 boot되지 않은 경우 boot시킨다.
+                        [Value Description]: backup node로 작동할 노드의 이름.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="engine-container" type="engine-containerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 여러 개의 JEUS의 Engine을 관리하는 container이다. application은 이 container
+                        단위로 deploy되고 실행된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="class-ftp" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: class FTP는 EJB 스텁을 클라이언트로 FTP를 사용해서 전송한다. class FTP를 사용하지
+                        않으면 직접 해당 파일을 복사해줘야 한다. 이 설정이 true로 설정되지 않으면 기본적으로 class FTP 기능이
+                        비활성화 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="auto-restart" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS node가 관리하는 EngineContainer가 비정상종료되었을 때 자동으로 재시작해 줄지
+                        여부를 정한다. 기본적으로 모든 EngineContainer는 비정상종료 후 자동으로 재부팅된다. 자동으로 재부팅되지
+                        않도록 하고 싶으면 이 값을 false로 설정한다. engine-container에 auto-restart가 설정이 되어 있다면
+                        engine-container에 설정한 값이 우선시 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="sequential-start" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: EngineContainer를 순서대로 부팅할 지 여부를 정한다. 기본적으로 EngineContainer는
+                        순차적으로 부팅하도록 되어있다. EngineContainer를 동시에 부팅하고 싶으면 이 값을 false로 설정하면 된다.
+                        [Performance Recommendation]: EngineContainer를 순차적으로 부팅하게 되면 Manager에서
+                        모든 Engine Container를 하나씩 부팅하기 때문에 부팅시간은 길어지지만, 좀 더 안정적으로 부팅된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="scheduler" type="schedulerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS Scheduler에 관련된 설정을 담고있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="enable-webadmin" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: WebAdmin을 사용할지 지정한다. WebAdmin은 JEUS를 관리하는 웹 기반의 툴이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="webadmin-config" type="webadmin-configType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS WebAdmin에 대한 설정을 한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="system-logging" type="system-loggingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS Manager에서 사용할 logger의 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="log-stdout-to-raw-format-group"/>
+            <xs:element minOccurs="0" name="session-server" type="jeusmain-session-serverType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 중앙 집중식 세션 클러스터링을 제공하는 서버에 관한 설정이다.
+                                       웹 컨테이너에서 사용하는 HttpSession 클러스터링을 서비스할 수 있다.
+                                       클러스터링 환경에서 주세션서버 하나, 백업세션서버 하나만 존재 가능하다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="session-router-config" type="session-router-configType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 분산식 session clustering을 제공하는 server에 관한 설정이다.
+                        Servlet/JSP에서 사용하는 HttpSession 클러스터링을 서비스한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="jmx-manager" type="jmx-managerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS Manager JVM에서 사용하는 JMX에 대한 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:group name="log-stdout-to-raw-format-group">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="log-stdout-to-raw-format" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                  [Description]: Standard out/err를 출력할 때 그대로(raw format) 출력할 지 로그 형식으로 출력할지의 여부.
+                  기본 포멧터(formatter)를 사용할 때만 적용되며, 로그로 출력시 [STDOUT] prefix가 붙어서 나오게 된다.
+                  기본값은 true이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:complexType name="listenerType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="backlog" type="off-intType" default="128">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: $JEUS_BASEPORT로 지정한
+                                JEUS system listener port에 대한 backlog값을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ssl" type="security-sslType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: Jeus Security system에
+                                관련된 SSL 속성을 지정한다. 이
+                                element를 설정하면 Jeus Security system을 사용하는
+                                모든 socket connection에 SSL이 적용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="read-timeout" type="nonNegativeIntType" default="30000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]:새로운 socket을 받아들이고 이 socket이 목적으로하는 서비스로 분배하기 위해
+                                              패킷을 분석할 때 읽기 함수가 블록킹되는 시간을 설정한다.
+                                [Value Description]: Integer 값으로 단위는 밀리초이다.
+                                [Value Type Description]: Integer                                                 
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="listen-service-ip-only" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: IP가 여러개 할당되어 있을 때 listener를 JEUS의 
+                                service IP address(jeus.net.localip)로만 binding 할지 여부.
+                                이 설정이 켜지면 JEUS Manager, Engine Container의 baseport, 
+                                Web admin port, RMI port, JMS port, HTTP listener port 등은 모두
+                                지정된 서비스 IP로만 listen 하게 된다. (Restart 필요)
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="thread-pool" type="poolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: Jeus system listener port ($JEUS_BASEPORT)
+                                에 요청되는 socket connection처리를 위한 thread pool을 설정한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="security-sslType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="port" type="off-intType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: Jeus Security system이 SSL connection에 사용할 listen  port를 지정한다.
+                                [Value Description]: 기본값은 $JEUS_BASEPORT + 1이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jeusmain-session-serverType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="type" type="xs:token" default="primary" >
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: 세션 서버의 타입을 설정한다. 클러스터링 환경에서 "primary", "backup"은 하나씩만 존재 가능하다. JEUS 노드 클러스터링 환경이 아니라면 의미가 없다.
+                                    [Value Description]: String값으로 "primary", "backup" 중 하나를 선택한다. 디폴트 값으로 "primary"가 주어진다.
+                                    [Value Type Description]: String
+                                    [Defined Value]: [primary]: 웹 컨테이너 엔진에서 주 세션서버로 사용하고자 할때 설정한다.
+                                                     [backup]: 웹 컨테이너 엔진에서 백업 세션서버로 사용하고자 할때 설정한다.
+                                                               만약 주 세션서버가 내려가거나 이상이 생긴 상태에서 주 세션서버 대신하여 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="resolution" type="xs:long" default="60000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: session removal, session passivation등의 operation을 수행하는
+                                    thread의 활동 주기를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="thread-pool" type="poolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 중앙집중식 세션서버에서 사용되는 socket connection처리를 위한 thread pool을 설정한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="connect-timeout" type="xs:long" default="5000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 중앙집중식 세션서버들 간의 socket connection을 생성할 때 적용되는 timeout 값이다.
+                                           해당 세션서버가 주 세션서버라면 웹 컨테이너에서도 이 값을 connection timeout으로 사용한다.
+
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="read-timeout" type="xs:long" default="20000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 중앙집중식 세션서버들 간의 통신시에 적용되는 read timeout 값이다. 데이타를 보낸 후 응답을 최대 이 시간만큼 기다리게 된다.
+                                           해당 세션서버가 주 세션서버라면 웹 컨테이너에서도 이 값을 read timeout으로 사용한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="passivation-to" type="xs:long" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: memory에 존재하는 session 객체를 일정시간 사용하지 않으면 삭제하고
+                                    대신 file-db에 저장된 객체를 사용하게 하는 설정이다.
+                                    [Value Description]: -1이면 passivation을 수행하지 않는다. 0이상의 시간을 설정하면
+                                    지정된 시간 이상 사용하지 않는 memory상의 session 객체는 passivation된다. 단위는 msec이다.
+                                    기본값은 -1이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="removal-to" type="xs:long" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: file-db에 저장된 session 객체의 보존 기간을 지정한다. passivation-to의
+                                    값이 -1일 경우는 memory에 존재하는 session 객체를 제거하는 주기의 역할을 한다.
+                                    [Value Description]: -1이면 file-db에서 제거하지 않는다. 0이상의 시간을 설정한 경우에는,
+                                    생성시간으로 부터 지정 시간이 지난 session객체는 제거한다.
+                                    단위는 msec이다. 기본값은 -1이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="file-db-path" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: file-db에 경로를 지정한다.
+                                    [Value Description]: 절대 경로로 나타내야 한다. 기본 값은 $JEUS_HOME/logs/sessiondb/central/<node-name>이다. <node-name>은 중앙식 세션 서버를 서비스하고 있는 노드 이름이다.
+                                                         즉, <jeus-system><node><name> 값이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="file-db-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: file-db이름을 지정한다.
+                                    [Value Description]: 기본 값은 <node-name> 설정을 이용한다. <node-name>은 중앙식 세션 서버를 서비스하고 있는 노드 이름이다. 즉, <jeus-system><node><name> 값이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="min-hole" type="xs:int" default="1000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: 일정 시간 file-db를 운용하면 file의 크기가 필요이상 커지게 된다.
+                                    이 설정에 지정된 횟수 만큼 file I/O가 발생하면 file packing을 수행하여 필요이상
+                                    file 크기가 늘어나는 것을 막는다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="packing-rate" type="fractionType" default="0.5">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: 일정 시간 file-db를 운용하면 file의 크기가 필요이상 커지게 된다.
+                                    현재 session객체 개수 대비 file I/O 횟수가 지정된 ratio를 넘어서면 file packing을 수행하여 필요이상
+                                    file 크기가 늘어나는 것을 막는다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-to" type="xs:long" default="30000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: 얼마만큼의 시간 간격으로 backup과정을 수행할 지를 결정한다.
+                                    이 설정에 지정된 시간 주기로 update된 session 객체가 있는지를 조사하고 update된
+                                    session 객체가 존재하면 backup을 수행한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="backup-trigger" type="xs:int" default="1000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: local session manager에서 session
+                                    객체의 update가 어느 정도 발생하였을 때 backup session manager로 update된 session
+                                    객체들을 backup할지를 결정한다. 이 설정에 지정된 횟수 만큼 local session manager에 session
+                                    object update가 발생하면 backup을 수행한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-level" type="xs:token" default="set">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: JEUS 노드 클러스터링 환경에서만 의미가 있다. 웹 컨테이너의 세션객체의 수정이 어느 정도 발생하였을 때 중앙식 세션서버로 세션을 업데이트 할지를 결정한다. 주 세션서버에서만 이 설정값이 유효하며 백업 세션서버의 경우 설정할 필요 없다.
+                                    [Value Description]: String값으로 "all", "modified", "set" 중 하나를 선택한다. 디폴트 값으로 "set"이 주어진다.
+                                    [Value Type Description]: String
+                                    [Defined Value]: [all]: 세션 객체의 수정과 관계없이 항상 세션 서버로 업데이트한다.
+                                                     [modified]: 세션 객체의 수정사항을 검사하여 변경시 세션서버로 업데이트한다.
+                                                     [set]: 해당 세션의 setAttribute/putValue/removeAttribute/removeValue 함수 호출이 일어난 경우에만 세션서버로 업데이트한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="recovery-mode" type="xs:token" default="active">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: 세션 서버가 내려갔다가 다시 살아났을때 다른 살아있는 세션 서버로부터 세션들을 복구하는 모드를 결정한다.
+                                    [Value Description]: String값으로 "active", "all", "none" 중 하나를 선택한다. 디폴트 값으로 "active"가 주어진다.
+                                    [Value Type Description]: String
+                                    [Defined Value]: [active]: 다른 살아있는 세션 서버로부터 메모리에 있는 세션들만 복구한다.
+                                                     [all]: 다른 살아있는 세션 서버로부터 파일저장소 및 메모리에 있는 세션들 모두를 복구한다.
+                                                     [none]: 세션 복구를 하지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="replicated-server" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                    [Description]: JEUS 노드 클러스터링 환경이 아닐 때 현 중앙 세션 서버의 replication 세션 서버가 위치하는 JEUS의 노드 이름을 입력한다. replication 세션 서버라 함은 중앙 세션 서버끼리 백업을 수행할 때 사용되는 세션 서버를 의미한다.
+                                    [Value Description]: String값으로 JEUS 노드 이름, ex) johan
+                                    [Value Type Description]: String
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="engine-containerType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container의 이름.
+                        [Value Description]: 적절한 이름을 입력한다. 여기서 입력한 이름과 노드의 이름을 조합해서 실제
+                        Engine Container 이름이 생성된다.예) “johan_mycontainer”에서 “mycontainer”가 여기서 입력한
+                        이름이다.
+                        [Defined Value]:
+						  [default]:
+                            이 이름이 사용되면, 이 Engine Container가 JEUSManager와 동일한 JVM에서 동작하게 된다.
+                            다른 이름에 대해서는 새로운 JVM process로 Engine Container가 운영된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="id" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container의 ID
+                        [Value Description]: 이 Engine Container가 사용할 id를 0 이상 128 미만의 정수로 입력한다. 이 값은
+                          Transaction Manager가 transaction ID를 만들때에 사용하므로 recovery시에는 이 값이 fail전과 후가
+                          같아야 한다. default 값은 name의 hashcode를 바탕으로 만든다. 다른 EngineContainer와 겹치면 container
+                          boot가 실패한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="base-port" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: container별로 listen port를 사용할때 기본적으로 base port + 15 + containerID * 10 의 값이 container의 base port로 사용된다. 이 값을 직접 지정할때 사용한다.
+                        [Value Description]: 이 Engine Container가 사용할 listen port의 값. 이 값은
+                          Transaction Manager가 transaction ID를 만들때에 사용하므로 recovery시에는 이 값이 fail전과 후가
+                          같아야 한다. 다른 EngineContainer와 겹치면 container boot가 실패한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="command-option" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container의 JVM을 실행할 때 적용하는 옵션을 적어준다.
+                        이 설정을 사용하면 서로 다른 JVM 옵션들을 공백이나 엔터 문자로 구분해서 사용해야 한다.
+                        이때 엔터 문자로 구분해 놓더라도 WebAdmin 등에 의해서 JEUSMain.xml이 바뀌게 되면 한줄짜리 문자열로 변경될 수 있다.
+                        따라서 지정해야 하는 JVM 옵션 갯수가 많은 경우에 사용자에 따라 불편함을 느낄 수 있으므로 되도록 <jvm-config><jvm-option>을 사용하기 바란다.
+                        [Example]: <command-option>-Xms64m -Xmx128m</command-option>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="jvm-config" type="jvmConfigType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container의 JVM과 관련된 옵션을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="user-class-path" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: system classpath를 추가한다. 이 설정은
+                        default Engine Container에는 적용되지 않는다. default Engine Container에 적용하기 위해서는
+                        jeus.server.classpath system property를 사용하여야 한다.
+                        default가 아닌 container에 대해서는 JEUSMain.xml의 설정이 system property에 우선한다.
+                        [Value Description]: “;”로 구분되는 classpath(유닉스의 경우 “:”)
+                        [Example]: <user-class-path>c:\mylib\classes;c:\mylib\lib\mylib.jar</user-class-path>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="1" maxOccurs="unbounded" name="engine-command" type="engine-commandType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine은 J2EE 어플리케이션이 작동하기 위한 환경을 제공한다. J2EE 스펙에서의
+                        Container에 대응하는 기능이다.모든 Engine은 Engine Container가 부팅될 때 실행되며,
+                        Engine Container 하나에서는 각 Engine 타입 당 하나씩 지원한다. Engine 타입으로는
+                        Servlet, EJB, JMS, WS가 있다. 각각 EJB Engine, Servlet Engine, JMS Engine,
+                        WebServer Engine을 나타낸다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="enable-interop" type="enable-interopType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: RMI/IIOP 상호 운영성(interoperability)에 대해서 설정한다.
+             이 설정이 있으면 상호 운영을 enable 한다. EJB RMI/IIOP를 사용한다면 반드시 설정되어야 한다. 
+             이 경우 ORB에 CSI 리스너와 OTS 리스너가 구동되며, 이는 보안( 예 : "principal" )과
+             트랜잭션( 예: GTID )을 포함하는 연동을 가능하게 한다. SSL 구성이 되어 있으면 SSL도 활성화 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="start-on-boot" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 부팅 시에 이 컨테이너를 띄울지를 정한다.
+                                       이 값이 false이면 부팅 시에 이 컨테이너를 띄우지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="sequential-start" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine을 하나씩 부팅할지를 정한다. 기본적으로 모든 Engine은 하나씩 순차적으로 부팅된다.
+                        부팅 순서는 JEUSMain.xml에서 지정된 순서에 따라서 부팅된다. Engine을 동시에 부팅하고 싶다면 이 값을 false로 설정하면 된다.
+                        [Performance Recommendation]: Engine을 순차적으로 부팅하게 되면 EngineContainer의 실행시간은 길어지지만,
+                        좀 더 안정적으로 부팅된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="auto-restart" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: EngineContainer가 비정상종료되었을 때 자동으로 재부팅할지를 정한다.
+                        기본적으로 모든 EngineContainer는 비정상종료 후 자동으로 재부팅된다. 자동으로 재부팅되지 않도록
+                        하고 싶으면 이 값을 false로 설정한다. 이 값을 설정하지 않으면 node에 설정한 값이 적용된다.
+                        ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="tm-config" type="tm-configType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 트랜잭션 매니저(TM)는 Global Transaction을 시작하고 종료한다. 트랜잭션을
+                        종료할 때 TM은 RM(리소스 매니저)과 통신을 하면서 commit인지 rollback인지 결정한다.
+                        이렇게 함으로써 TM은 Global Transaction의 원자성을 보장하게 된다.그러나 실제 상황에서는
+                        많은 예외적인 상황이 발생하는데, 이에 대한 대응책으로 다양한 타임아웃 메커니즘을 제공한다.
+                        하위 element에서는 TM의 타임아웃 등을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="scheduler" type="schedulerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS Scheduler에 관련된 설정을 담고있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="user-logging" type="system-loggingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 jeus.util.UserLogger클래스를 사용해서 생성한 로그를 어떻게
+                        처리할 것인지 세팅한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="system-logging" type="system-loggingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 Engine Container에서 사용할 logger를 설정한다. 이 logger에는
+                        Engine Container에서 발생하는 error message들이 출력된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="log-stdout-to-raw-format-group"/>
+            <xs:element minOccurs="0" name="invocation-manager-action" type="action-on-resource-leakType" default="Warning">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 컴포넌트(주로 Stateless 컴포넌트 - Servlet/JSP, Stateless 세션빈, MDB)에서
+                        사용한 리소스(JDBC 커넥션 등)에 대한 로깅이나 반환 액션을 설정한다. 기본 동작은 로깅을 남기는 것(Warning)이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="jmx-manager" type="jmx-managerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JMX Manager element는 이 Engine Container의 JMX관련 모든 설정을 담고 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="use-MEJB" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: J2EE Management Spec에서 제시하는 MEJB를 사용할 것인지를 설정한다. 사용하지
+                        않는다면 MEJB를 deploy하지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="lifecycle-invocation" type="lifecycle-invocationType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container의 각종 lifecycle event에 호출할 method를 지정할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="application-path" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: application archive file들을 넣을 디렉토리를 지정한다. 상대경로인 경우에는
+                        JEUS_HOME path에서의 상대경로이다. application은 이 element의 순서대로 검색된다.
+                        default는 jeus.apphome system property로 설정한 path거나 webhome/app_home
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="res-ref" type="res-refType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 Engine Container의 JNDI에 등록할 resource reference들이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="external-resource" type="external-resourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container에서 사용할 jtmax 등의 external-resource들을 지정한다. 
+			여기서 지정한 external resource는 이 Engine Container에서만 사용할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="enable-interopType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="use-OTS" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: @Deprecated interop 상황에서 OTS는 항상 활성화 됨.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="interop-ssl-config" type="keystore-configType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: keystore/truststore file에 대한 설정을 함.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="lifecycle-invocationType">
+        <xs:sequence>
+            <xs:element name="class-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: lifecycle event의 callback method가 존재하는 fully qualified class name을 지정한다.
+                        [Example]: com.tmax.event.EngineContainerHandler
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="library-ref-group"/>
+            <xs:element maxOccurs="unbounded" name="invocation" type="invocationType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 class 내의 invocation 세부 정보를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="invocationType">
+        <xs:sequence>
+            <xs:element name="invocation-method" type="methodParamType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: 이 invocation에 사용될 method를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="invocation-argument" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: method를 호출할 때 사용하는 argument를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="invocation-type" type="invocation-typeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: 이 method가 호출되는 시점을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="invocation-typeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="BOOT">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container가 시작되고 engine들이 띄워지기 전의 시점이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="BEFORE_DEPLOY">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container가 시작되고 이 Engine Container에게 지정된 application이
+                        deploy되기 전의 시점이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="AFTER_DEPLOY">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container가 시작되고 이 Engine Container에게 지정된 application이
+                        deploy된 후의 시점이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="READY">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container가 시작되고 이 Engine Container에게 지정된 application이
+                        deploye된 후 서비스가 준비된 시점이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="BEFORE_UNDEPLOY">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container가 down 명령을 받았을 때 이 Engine Container에서 운영중인
+                        application들을 undeploy하기 전의 시점이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="AFTER_UNDEPLOY">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container가 down 명령을 받았고 이 Engine Container에서 운영중인
+                        application들을 undeploy한 후의 시점이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="engine-commandType">
+        <xs:sequence>
+            <xs:element name="type" type="engine-typeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container에 포함되는 Engine 타입.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine의 이름.
+                        [Value Description]: 적절한 이름을 입력한다. 이 이름은 <node_name>_<engine_type><engine_name>
+                        형태로 변경되어서 사용된다.예) “johan_servlet_Engine1”은 “Engine1”이라는 EJB Engine의 이름이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="system-logging" type="system-loggingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 Engine의 error log를 기록하는 logger에 대한 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="engine-typeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ejb">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: EJB engine
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="servlet">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Servlet/Web engine
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="jms">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JMS engine
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ws">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS Web Server engine (JEUS의 기본 Web server).
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="jmx-managerType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="jmx-connector" type="jmx-connectorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 다른 process에서 이 Engine Container의 JMX를 access할 때 사용하는
+                        JMX Connector를 설정한다. 기본적으로는 JEUSMP Connector를 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="html-adaptor-port" type="off-intType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JMX의 adapter중 하나인 HTML adapter의 port를 지정한다.
+                        여기에 지정된 값으로 Web Browser가 접속하게 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="snmp-adaptor" type="snmp-adaptorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JMX의 adapter중 하나인 SNMP adapter를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="mlet-url" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 Engine Container의 MBeanServer에 등록할 MLet의 URL을
+                        지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jmx-connectorType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="jmxmp-connector" type="jmxmp-connectorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JMX Connector로 JMXMP Connector를 사용한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="rmi-connector" type="rmi-connectorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JMX Connector로 RMI Connector를 사용한다. 만약
+						jmxmp-connector와 같이 설정되어 있는 경우에는 JEUS system 내부적으로는 jmxmp-connector를
+						기본적으로 사용하게 된다. 또한 이 경우에는 rmi-connector의 ref-export-name이 별도로
+						설정되어 있어야 한다. 이 이름이 JEUS에서 기본적으로 사용하는 이름과 같거나 설정이 되어있지
+						않다면 exception이 발생한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jmxmp-connectorType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="jmxmp-connector-port" type="nonNegativeIntType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 다른 process에서 이 Engine Container의 JMX를 access할 때 사용하는
+                        JEUSMP Connector의 listen port를 지정한다. 만약 이 값이 0이거나 지정하지 않으면
+						JEUSMP Connector가 사용하는 listen port를 따로 만들지 않고 jeus의 공통 port를 사용한다.
+						만약 JEUS의 JMX RemoteAPI를 사용하지 않고 다른 Runtime에서 JMXMP protocol로 접근하고자 한다면
+						이를 0이 아닌 다른 값으로 지정해야 한다.
+						[Defined Value]: [0]:
+										jeus의 공통 port를 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="rmi-connectorType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="rmi-connector-port" type="nonNegativeIntType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 다른 process에서 이 Engine Container의 JMX를 access할 때 사용하는
+                        RMI Connector의 port를 지정한다.
+			[Default Value]: 0
+			[Defined Value]: 0 : random하게 port를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: RMIConnector를 만들 때의 JMXServiceURL에 /jndi/ 다음에 들어갈 export name을 설정한다. 
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ref-export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 connector를 얻을 수 있는 jndi name을 JEUS의 기본 jndi name이 아닌 다른 name으로 지정하고자 할 때
+						사용한다. 이 export name으로 lookup하면 JMXConnector 객체를 얻을수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="snmp-adaptorType">
+        <xs:sequence>
+            <xs:element name="snmp-adaptor-port" type="snmp-adaptor-portType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: SNMP 어댑터의 리스너 포트
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="snmp-version" type="snmp-versionType" default="3">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: SNMP 버전을 지정하며 1, 2 또는 3을 지정할 수 있다
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="snmp-max-packet-size" type="snmp-max-packet-sizeType" default="4096">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+						[Description]: SNMP 패킷에 대한 최대값을 설정하며 최소 256바이트부터 설정 할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="snmp-security" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+						[Description]: 보안을 적용시킬 것 인지를 설정한다. 보안은 SNMP 버전 3에서만 지정이 가능 하다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="trap-demon" type="trap-demonType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+						[Description]: 장애 상황 발생시 TRAP 메세지를 보낼 서버를 설정한다. 여러 개 설정이 가능하며
+						설정된 모든 ip, address로 메세지를 보낸다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="pooling" type="poolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: SNMP Server에서 요청을 처리하는 쓰레드로 구성되어 있다. 아래 element는 이
+                        쓰레드를 관리하는 pool을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="trap-demonType">
+        <xs:sequence>
+            <xs:element name="ip-address" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Demon의 IP address
+                        [Value Description]: a valid IP address
+                        [Example]: <ip-address>111.111.111.1</ip-address>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="port" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Demon의 port
+                        [Value Description]: a port number
+                        [Example]: <port>8888</port>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="snmp-adaptor-portType">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="snmp-versionType">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="1"/>
+            <xs:enumeration value="2"/>
+            <xs:enumeration value="3"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="snmp-max-packet-sizeType">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="256"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="tm-configType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="use-nio" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: TM 사이의 통신을 Nonblocking I/O를 이용할지의 여부를 결정한다.
+                        [Performance Recommendation]: 많은 수의 Engine Container 및 client를 사용할 경우에는
+                        Nonblocking I/O가 더 좋은 효율을 보인다. transaction에 참여하는 JVM process의 수가 적다면
+                        Blocking I/O가 더 효율적일수 있다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="pooling" type="poolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: TM pool은 트랜잭션을 처리하는 쓰레드로 구성되어 있다. 아래 element는 이
+                        쓰레드를 관리하는 pool을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="active-timeout" type="nonNegativeLongType" default="600000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 글로벌 트랜잭션이 시작되면 이 시간 안에 commit이 실행되어야 한다. 그렇지 않으면
+                        트랜잭션 매니저가 rollback 시킨다.
+                        [Value Description]: milliseconds 단위의 시간 간격.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="prepare-timeout" type="xs:long" default="120000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: transaction이 commit될때 Root Coordinator는 이 시간 내에 Sub Coordinator와
+                        리소스 매니저로부터 ‘prepare’ 신호를 받아야 한다. 만약 받지를 못하면 Root Coordinator는
+                        글로벌 트랜잭션을 rollback 시킨다.
+                        [Value Description]: milliseconds 단위의 시간 간격.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="prepared-timeout" type="xs:long" default="60000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: transaction이 commit되어 Root Coordinator로부터 prepare message를 받으면
+                        Sub Coordinator는 prepare에 대한 응답을 Root Coordinator로 보내고 global decision을 기다린다.
+                        Sub Coordinator는 자신의 Root Coordinator로부터 여기에 설정된 시간 안에 global decision을
+                        받아야 한다. 만약 이 시간 내에 받질 못하면, Root Coordinator 로 다시 ‘prepare’에 대한 응답 메시지를
+                        보낸다. 그래도 여전히 시간 내에 global decision이 오지 않는다면, Root Coordinator로 메시지를 보내고
+                        global decision을 기다리기를 계속 한다.
+                        [Value Description]: milliseconds 단위의 시간 간격.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="commit-timeout" type="xs:long" default="240000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Root Coordinator는 Sub Coordinator와 리소스 매니저에거 commit message를
+                        보낸 후 이 시간 이내에 ‘commit’이나 ‘rollback’ 에 대한 결과를 받아야 한다. 만약 결과가 오지 않으면,
+                        Root Coordinator는 글로벌 트랜잭션을 ‘Uncompleted List’에 기록해서, 트랜잭션이 완전히 끝나지
+                        않았음을 남겨둔다.
+                        [Value Description]: milliseconds 단위의 시간 간격.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="recovery-timeout" type="xs:long" default="120000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 값은 트랜잭션 복구 시에 사용된다. 트랜잭션 매니저는 트랜잭션 복구를 위해서
+                        복구될 트랜잭션 정보를 가져오려고 한다. 만약 다른 트랜잭션 매니저에서 이 시간 내에 복구 정보를
+                        알려주지 않으면, 트랜잭션 복구를 시스템 관리자에게 남겨두고 더 이상 진행하지 않는다.
+                        [Value Description]: milliseconds 단위의 시간 간격.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="uncompleted-timeout" type="xs:long" default="86400000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 트랜잭션 매니저는 전체 트랜잭션 처리를 완료하기 위해, 실패한 글로벌 트랜잭션의
+                        목록을 보관한다. 완료되지 못한 글로벌 트랜잭션의 정보는 복구 처리시에 사용되므로, 이 타임 아웃
+                        시간까지 보관된다. 그러므로 이 시간이 너무 짧으면 복구 정보가 빨리 지워지게 되고, 트랜잭션
+                        매니저가 해당 글로벌 트랜잭션의 무결성을 복구할 수 없게 된다. 그 결과 글로벌 트랜잭션 복구를
+                        위해서, 시스템 관리자가 많은 작업을 직접 처리해야만 한다.
+                        [Value Description]: milliseconds 단위의 시간 간격.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="capacity" type="xs:int" default="10000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 값을 사용해서 JEUS 트랜잭션 매니저는 내부 구조를 최적화시킨다. 트랜잭션 매니저가
+                        동시에 처리하는 글로벌 트랜잭션의 개수를 고려해서 값을 정한다.
+                        [Performance Recommendation]: 이 값은 트랜잭션 매니저가 처리하는 동시 트랜잭션의 수에 가깝게
+                        세팅해야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="recovery-log-file" type="file-handlerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: @Deprecated. TM recovery에서 사용할 logging file에 대한 설정을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="tx-log-dir" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 현재의 Transaction Manager의 Recovery용 log file이 저장되는 directory를 설정한다. 설정하지 않았을 경우 default로 ${JEUS_HOME}/logs/TM을 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="naming-serverType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="server" type="jns-serverType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: server element는 JNSServer가 다른 JNSServer와 그것의 JNSLocal과 연결을 관리하기
+                        위해 사용하는 리소스들을 정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="local" type="localType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: local element는 JNSLocal이 JNSServer와 JNDI트리의 내용들을 얻기 위해서
+                        사용하는 리소스를 정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jns-serverType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="use-nio" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JNSServer가 Nonblocking I/O를 사용해서 통신을 할지의 여부를 지정한다.
+                        [Performance Recommendation]: 많은 수의 Engine Container 및 client를 사용할 경우에는
+                        Nonblocking I/O가 더 좋은 효율을 보인다. JNDI를 사용하는 client의 수가 적다면
+                        Blocking I/O가 더 효율적일수 있다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="export-cos-naming" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: CORBA COS Naming Service를 사용할지 설정한다. 
+                        COS Naming Server는 JEUS_BASEPORT+4 포트로 할당된다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="backlog-size" type="nonNegativeIntType" default="50">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: backlog-size element는 다른 Naming Server의 접속을 받아들이는 한계인 back log의
+                        크기를 정한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="jndi-propertyGroup"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:group name="jndi-propertyGroup">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="pooling" type="poolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: pooling element는 load-balance를 유지하기 위해서 JNSServer의 thread pool
+                      구성을 정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:complexType name="localType">
+        <xs:sequence>
+            <xs:group ref="jndi-propertyGroup"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="resourceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="data-source" type="data-sourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 어플리케이션에서 사용할 수 있는 datasource를 정의한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="mail-source" type="mail-sourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Mail Source는 클라이언트 어플리케이션에서 메일을 보낼 때 사용되어질
+                        여러 SMTP 호스트를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="url-source" type="url-sourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: URL Source 는 클라이언트가 표준 JNDI lookup 방식으로 URL resource에 접근
+                        가능하도록 하기 위해 Naming Server의 JNDI name에 URL 주소를 bind 하는데 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="message-bridge" type="message-bridgeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Message Bridge는 여러 JMS Vendor의 Destination사이에 Message bridge를 설정하는데
+                        사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="external-source" type="external-sourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 IBM MQ나 TMAX 에 연결할 때 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="external-resource" type="external-resourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 element는 webt 등의 외부 resource의 설정을 할때 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="jaxr-source" type="jaxr-sourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JAXR 어플리케이션에서 사용할 수 있는 xml-registry source를 정의 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="external-resourceType">
+        <xs:complexContent>
+            <xs:extension base="hierarchical-propertyType">
+                <xs:sequence>
+                    <xs:element name="name" type="xs:token">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: 웹관리자나 jeusadmin에서 가리킬수 있는 name을 지정한다. 다른 external-resource 설정과 중복되지 않아야 한다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="class-name" type="xs:token">
+                        <xs:annotation>
+                            <xs:documentation><![CDATA[
+                        [Description]: external resource의 설정을 적용할 class 이름을 지정한다.
+                    ]]></xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="hierarchical-propertyType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="name-prefix" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: property들에 적용되는 prefix를 지정한다.
+			[Example] : node
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element maxOccurs="unbounded" name="property" type="propertyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: property를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="property-group" type="hierarchical-propertyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 구조화된 property를 지정한다. 이때 이 property들은 상위 property의 name prefix 적용을 받는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="external-sourceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="jms-source" type="jmsSourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS Transation Manager 와 IBM MQ나 Sonic MQ 등 messasing source 제품 사이의 상호 작용을 하기위해서는
+                        아래 element들을 설정해야 한다. 이 절의 설정에 대한 자세한 정보는 해당 제품 메뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jmsSourceType">
+        <xs:sequence>
+            <xs:element name="vendor" type="jmsVendorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jms source 드라이버 밴더의 이름.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="factory-class-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jms source 드라이버의 factory 클래스 이름.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="resource-type" type="typeResourceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jms source type
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JNDI 에 등록되어 서비스 되는 이름이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="queue" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: resource-type이 Q일때만 사용된다.자세한 것은 IBM MQ 나 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="queueManager" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: T type을 제외한 ibmmq를 사용할때만 사용된다. 자세한 것은 IBM MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="topic" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: resource-type이 T일때만 사용된다.자세한 것은 IBM MQ 나 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="property" type="typePropertyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jms source 설정에 필요한 property들을 기술한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="jmsVendorType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ibmmq">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: ibm mq driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="sonicmq">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: sonic mq driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="others">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 기타 jms source driver
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="typeResourceType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="QCF">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 나 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="TCF">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 또는 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="Q">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 또는 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="T">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 또는 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="XAQCF">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 또는 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="XATCF">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 또는 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="LOCALXAQCF">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 또는 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="LOCALXATCF">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 또는 Sonic MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="mail-sourceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="mail-entry" type="mail-entryType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 각 mail entry는 JNDI naming lookup을 통해서 이용하는 e-mail host를 말한다.
+                        이 기능에 대한 더 많은 정보는 JavaMail 1.2 스펙을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="mail-entryType">
+        <xs:sequence>
+            <xs:element name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 클라이언트는 서비스에 등록되어 있는 이름을 간접적으로 사용한다. 이는 클라이언트
+                        디스크립터에서 export name으로 bind한 것이다. 이 이름은 java.mail.Session 객체로 bind된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="mail-property" type="mail-propertyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이는 mail host를 지정하거나 접근하는데 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="mail-propertyType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: mail property의 이름. property 이름은 JavaMail 1.2 스펙을 따라야 한다
+                        [Defined Value]:    [mail.user]:
+                                                서버에서 인식하는 사용자 명.
+                                            [mail.host]:
+                                                메일 서버의 IP 주소.
+                                            [mail.from]:
+                                                보내는 측의 e-mail.
+                                            [mail.transport.protocol]:
+                                                사용할 메일 프로토콜.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: mail property의 값.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="url-sourceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="url-entry" type="url-entryType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 각 entry 는 실제 URL 주소와JNDI name 을 매핑한다. 이는 URL이 Naming Server에
+                        bind 되는것을 말한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="url-entryType">
+        <xs:sequence>
+            <xs:element name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JNDI name 은 Naming Server에 URL을 bind할 때 사용된다.
+                        [Example]: <export-name>MYURL</export-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="url" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: URL은 bind된 JNDI Server의 JNDI name 에 매핑된다.
+                        [Example]: <url>http://www.foo.com</url>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="message-bridgeType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="1" name="bridge-connections" type="bridge-connectionsType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="bridges" type="bridge-entriesType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="basedir" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: non-xa mode에서 임시 저장소로 사용되는 journal store의 base dir
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="bridge-connectionsType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="connection" type="bridge-connectionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: bridge connection은 JMS Vendor로의 물리적인 연결 정보를 나타낸다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="bridge-entriesType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="bridge" type="bridge-entryType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: bridge entry는 Message를 가져와서 전달할 bridge destination들을 나타낸다.
+                         source destination과 target destination으로 구성된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="bridge-connectionType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection의 unique name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="classpath" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection의 vendor가 제공하는 class의 classpath
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="jndi-provider-url" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection이 이용할 JNDI Service의 Provider URL
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="jndi-initial-context-factory" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection이 이용할 JNDI Service의 Initial Context Factory 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="connection-factory" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection이 이용할 JMS Connection Factory 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="xa-support" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection이 XA를 지원하는지 여부
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="username" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection이 이용할 JMS Connection Factory에 필요한 username
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="password" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge connection이 이용할 JMS Connection Factory에 필요한 password
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="bridge-entryType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge entry를 구분하기 위한 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="source" type="bridge-destinationType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge entry가 Message를 가져올 bridge destination
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="target" type="bridge-destinationType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge entry가 Message를 전달할 bridge destination
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="message-selector" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge entry에 설정할 Message Selector
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="timeout" type="xs:long" default="10000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Message를 가져올 때의 timeout
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="bridge-destinationType">
+        <xs:sequence>
+            <xs:element name="connection-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge destination을 설정할 bridge connection의 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="destination" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge destination의 JMS Destination 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="type" type="bridge-destination-typeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 bridge destination의 JMS Destination의 Type
+                        queue 또는 topic을 설정할 수 있다
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="bridge-destination-typeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="queue"/>
+            <xs:enumeration value="topic"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="data-sourceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="database" type="databaseType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JDBC 드라이버의 데이터 소스 인스턴스를 생성하고 커넥션 풀을 구성하기 위한 특성들을 담고 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="cluster-ds" type="cluster-dsType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 어플리케이션 서버 차원에서 RAC의 Failover 및 Failback기능을 제공하기 위해서
+                        클러스터 데이터 소스를 사용한다. 이것은 하나의 독립적인 JNDI name을 가진 데이터 소스 인스턴스이다.
+                        이 인스턴스는 어플리케이션의 호출을 받아서 클러스터링된 데이터 소스 중에서
+                        어느 하나로 전달시켜주는 역할을 한다. Failover, Failback 옵션을 사용할 경우에는
+                        주 데이터 소스가 다운되었을 경우, 보조 데이터 소스를 선택하여 어플리케이션의 요청 사항을 처리하게 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="cluster-dsType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="data-source-id" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 클러스터 데이터 소스의 id. 하나의 노드에서 각 데이터 소스의 데이터 소스 id는 유일해야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 클러스터 데이터 소스의 JNDI 이름. 노드에서 정의된 서로 다른 데이터 소스가 같은 JNDI 이름을 가질 수 있다.
+                        특정 컨테이너에서 같은 JNDI 이름을 가지는 서로 다른 데이터 소스를 설정할 경우 에러가 나면서 부팅이 실패한다.
+                        설정되지 않으면 data-source-id와 같은 이름을 사용한다.
+                        data-source-id를 설정하지 않은 경우에는 export-name 설정값이 data-source-id가 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="data-source-target" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 클러스터 데이터 소스가 적용될 engine container name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="data-source-selector" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 클러스터 데이터 소스로부터 커넥션을 얻을 때 사용자나 개발자가  특정 컴포넌트 데이터 소스 선택에 대한 정책을 직접 정의하기를 원할 경우
+                        jeus.jdbc.helper.DataSourceSelector abstract class를 extends하여 구현하고 그 클래스의 이름(FQCN)를 적어준다.
+                        이것을 설정하면 load-balance 설정은 아무런 기능을 하지 않으며 fail-over와 fail-back을 무조건 시도한다.
+                        fail-over는 이 설정을 통하여 최초 선택된 컴포넌트 데이터  소스 다음 인덱스의 컴포넌트 데이터 소스를 시작으로 하여 한 번만 rounding하는 방식으로 이루어지며
+                        fail-back은 use-failback 설정시(check-query와 check-qeury-period 설정이 되어있어야 함)와  유사한 방식으로 이루어진다.
+                        정책을 정의할 때는 대체로 동기화를 고려해야 하며 이는 구현자의 몫이다.
+                        [Value Description]: 컴포넌트 데이터 소스를 선택하는 정책을 정의한 클래스의 FQCN
+                        [Example]: <data-source-selector>foo.bar.MyDataSourceSelector</data-source-selector>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="load-balance" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: load balancing을 사용할 지 여부.
+                        이 옵션의 값이 true이면 is-pre-conn 옵션과 use-failback 옵션은 아무런 기능을 하지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="is-pre-conn" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 기능이 사용되면, 클러스터 데이터 소스는 클러스터링 상의 모든 데이터 소스에서
+                        커넥션을 열어둔다. 이것은 성능에는 좋지만 리소스의 절약면에서는 좋지 못하다.
+                        [Performance Recommendation]: 성능 향상을 위해서는 “true”를, 리소스의 절약을 위해서는
+                        “false”를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="use-failback" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이전 버전에서는 Failover만을 지원했으므로 이에 대한 호환성 문제로 제공하는 옵션이다.
+                        backup으로 Failover 후에 primary로 Failback할 것인지 선택할 수 있다. 기본적으로 Failback을 시도한다.
+                        Failback을 위해서는 반드시 check-query 및 check-query-period를 설정해야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="1" maxOccurs="unbounded" name="data-source" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 클러스터 데이터 소스에 참여할 데이터 소스의 export name을 적는다. 리스트의
+                        첫번째 DB가 주 DB로 동작한다.
+                        [Example]: <data-source>datasource1</data-source>
+                                   <data-source>datasource2</data-source>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="databaseType">
+        <xs:sequence>
+            <xs:element name="vendor" type="vendorType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JDBC 드라이버 밴더의 이름.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="data-source-id" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스의 id. 하나의 노드에서 각 데이터 소스의 데이터 소스 id는 유일해야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스의 JNDI 이름. 노드에서 정의된 서로 다른 데이터 소스가 같은 JNDI 이름을 가질 수 있다.
+                        특정 컨테이너에서 같은 JNDI 이름을 가지는 서로 다른 데이터 소스를 설정할 경우 에러가 나면서 부팅이 실패한다.
+                        설정되지 않으면 data-source-id와 같은 이름을 사용한다.
+                        data-source-id를 설정하지 않은 경우에는 export-name 설정값이 data-source-id가 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="data-source-target" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스가 적용될 engine container name
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="data-source-class-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JDBC 드라이버의 데이터 소스 클래스의 이름. 패키지 명을 포함하는 완전한 형태여야 한다.
+                        [Example]: oracle.jdbc.pool.OracleConnectionPoolDataSource
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="data-source-type" type="data-source-typeType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스의 타입.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="database-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터베이스의 이름. Oracle의 경우 database의 SID.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="data-source-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: @Deprecated. JDBC 드라이버의 데이터 소스 클래스 인스턴스에 설정하는 이름.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="service-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: @Deprecated. 단지 i-net JDBC 드라이버에서만 해당하는 설정으로 Oracle DB의 SID를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="description" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스에 대한 설명.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="network-protocol" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: @Deprecated. Database와 연결에 사용되는 프로토콜.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="port-number" type="nonNegativeLongType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Database listener의 포트 번호.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="server-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Database가 실행되는 호스트 이름 또는 IP.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="user" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: DB 사용자 ID. 트랜잭션 처리 등을 위해서는 충분한 권한을 가지고 있어야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="password" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: DB 사용자의 password.
+                                       password를 암호화해서 저장할 때에는 {algorithm}ciphertext 와 같은 형식으로 쓴다. ex) {DES}FQrLbQ/D8O1lDVS71L28rw==
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="login-timeout" type="nonNegativeIntType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: DB와 Connection을 맺을 때 login 단계에서 기다리는 최대 시간 ( 단위 : second(초) )
+                        DB와 Connection을 맺을 때 login에서 가장 많은 시간이 걸리므로 Connection 맺는 timeout 역할을 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="driver-type" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: @Deprecated. JDBC 드라이버의 타입으로 Oracle 드라이버에만 해당되는 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="auto-commit" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스의 기본 auto-commit 설정. LocalXADataSource, XADataSource의 경우
+                        transaction이 연동되어 있지 않을 경우에는 여기에 설정된 값을 적용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="stmt-query-timeout" type="nonNegativeLongType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Statement 객체에 지정될 쿼리 타임아웃. (msec)
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="property" type="typePropertyType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스에 설정할 프로퍼티. 각 드라이버 별로 필요한 프로퍼티를 설정할 수 있다.
+                        "이름:타입=값"의 형태로 입력한다. 여러 개를 입력하고 싶을 때는 각각 새로운 줄에 입력하면 된다.
+                        타입의 경우 보통 Java의 primitive type class이며,
+                        java.lang.String일 경우에는 타입을 적을 필요없이 "이름=값"으로 적으면 된다.
+                        [Example]: DriverType:java.lang.Integer=4 (DB2의 경우)
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="action-on-connection-leak" type="action-on-resource-leakType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 컴포넌트(주로 Stateless 컴포넌트 - Servlet/JSP, Stateless 세션빈, MDB)에서
+                        사용한 JDBC 커넥션에 대한 로깅이나 반환 액션을 설정한다.
+                        설정하지 않았을 경우 기본 동작은 엔진 컨테이너에 설정한 invocation-manager-action을 따른다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="connection-pool" type="database-connection-poolType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터 소스 별로 설정하는 커넥션 풀에 대한 정보.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="transportType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="BIND">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CLIENT">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: IBM MQ 매뉴얼을 참조하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="data-source-typeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="DataSource">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Connection을 반환하는 기본적인 데이터 소스이다. 커넥션 풀링을 제공하지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ConnectionPoolDataSource">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션 풀링을 제공하는 데이터 소스이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="LocalXADataSource">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션 풀 데이터 소스가 JTA(2PC)에 참여할 수 있도록 에뮬레이션해주는 데이터 소스이다.
+                        주의할 점은 오로지 하나의 로컬 XA 데이터 소스만 2PC에 참여할 수 있다는 것이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="XADataSource">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JTA(XA, 2PC 등)가 참여 가능한 커넥션을 풀링하는 데이터 소스이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="database-connection-poolType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="pooling" type="oldPoolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: DB Connection Pooling에 관한 정보를 담고 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="wait-free-connection" type="wait-free-connectionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Pool안에 있는 모든 connection들이 점유되어 있을 때 연결요청을 핸들링하는
+                        메소드를 정의한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="delegation-datasource" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: XA 데이터 소스로 커넥션 요청이 왔을 때 트랜잭션이 연동되어 있지 않다면 여기에 설정된 커넥션 풀 데이터 소스로 커넥션을 요청한다.
+                        XA 데이터 소스에서 로컬 트랜잭션과 XA을 섞어서 사용할 때 드라이버나 DB 서버에서 발생하는 오류를 피하기 위해서 사용한다.
+                        [Value Description]: 커넥션 풀 데이터 소스의 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="max-use-count" type="nonNegativeIntType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 물리적 커넥션의 최대 사용 회수이다. 이 사용 회수 이상이 되면 새로운 커넥션으로 교체한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="delegation-dba" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 데이터베이스의 세션을 강제로 죽일 수 있는 권한(DBA 권한)을 가진 데이터베이스 데이터 소스의 이름을 설정한다.
+                        웹 매니저를 통해서 관리자가 물리적 커넥션을 강제로 끊어버리는 기능을 사용할 때 이 데이터 소스가 설정되어 있으면
+                        세션 킬 명령을 날려준다. 세션 킬 명령은 티베로, 오라클, Sybase에 대해 지원한다.
+                        [Value Description]: DBA 권한을 가진 유저로 세팅한 데이터 베이스 리소스의 JNDI 이름
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="dba-timeout" type="off-intType" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 어플리케이션이 사용하는 커넥션이 풀에 반납되지 않을 때의 타임아웃을 지정한다.
+                        보통 SQL 작업이 오래 걸려서 타임아웃이 나게 된다. 타임아웃이 되면 세션 킬 명령을 통해서 해당 커넥션을 연결 해제시키고 그 커넥션은 버린다.
+                        그러나 Statement Query Timeout(stmt-query-timeout)으로 대체할 수 있으므로 사용을 권장하지 않는다.
+                        이를 사용하면 SQL 작업이 오래 걸릴 때 타임아웃이 나게 되어 SQLException이 나게 되며 어플리케이션이 close를 하면
+                        해당 커넥션은 풀로 반납된다. Java API 문서에서 java.sql.Statement#setQueryTimeout(int)를 참고하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-query" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 어플리케이션이 JDBC 커넥션 요청을 했을 때(getConnection) 특정 select 쿼리를 보내서 커넥션의 상태를 점검(validation)하는 기능이다.
+                        JDBC 커넥션의 내부적인 에러로 인한 끊김, 방화벽에 의한 소켓 끊김 현상 등을 체크할 때 유용하다.
+                        점검이 실패하면 물리적 커넥션을 새로 만들어서 그에 대한 핸들을 어플리케이션으로 리턴해 준다.
+                        만약 클러스터 데이터 소스에 포함되는 경우에는 이것을 반드시 설정해야 한다.
+                        [Example]: <check-query>select 1 from dual</check-query>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-query-timeout" type="nonNegativeLongType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: check-query를 했을 때 DB 상황에 따라서 JDBC 드라이버가 응답을 못 받고 계속 기다릴 수 있다.
+                        이런 문제를 방지하기 위하여 JDBC 스펙에 정의된 query timeout 세팅을 사용하여 타임아웃을 줄 수 있다.
+                        만약 타임아웃이 나게 되면 커넥션이 무효한 것으로 판단한다.
+                        참고로 이를 제대로 지원하지 않는 드라이버가 있을 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="non-validation-interval" type="nonNegativeLongType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: connection 단위로 check-query를 할 때 마지막으로 커넥션을 사용한 시각과 현재 시각과의 차이가
+                        어떤 시간 간격보다 작으면 체크하지 않는다. 이 설정을 통해서 check-query로 인해 발생하는
+                        오버헤드를 줄일 수 있다. 단위는 msec이다.
+                        [Value Description]: millisecond 단위
+                        [Example]: <non-validation-interval>5000</non-validation-interval>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-query-period" type="nonNegativeLongType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JDBC 커넥션을 일정 시간마다 체크하여 문제가 있는 커넥션을 닫아준다.
+                        이 기능을 사용하려면 check-query가 반드시 설정되어야 한다.
+			            클러스터 데이터 소스에 포함되는 경우에는 데이터 소스의 상태 체크에 사용하므로 반드시 설정해야 한다.
+                        [Value Description]: check-query 주기 (msec)
+                        [Example]: <check-query-period>200000</check-query-period>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-query-retrial-count" type="nonNegativeIntType" default="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: check-query는 기본적으로 destroy policy가 FailedConnectionOnly일 때는 1번,
+                        AllConnections일 때는 하나의 커넥션에 대해서 해보고 그것이 실패하면 다른 커넥션을 한 번 더 해보므로 총 2번을 수행한다.
+                        이와 같은 기본적인 횟수가 부족하다고 판단될 경우에는 이 설정을 통해서 체크 횟수를 늘릴 수가 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-query-class" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 사용자나 개발자가 JEUS에서 제공하는 check-query 기능 대신에 커스터마이징한
+                        커넥션 점검 기능을 사용하고 싶을때, jeus.jdbc.connectionpool.JEUSConnectionChecker interface를 구현하고
+                        그 클래스의 이름(FQCN)를 적어준다.
+                        [Value Description]: 커넥션 점검 기능이 있는 클래스의 FQCN
+                        [Example]: <check-query-class>foo.bar.ABCheckConnection</check-query-class>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="destroy-policy-on-check-query" type="destroy-policy-on-check-queryType" default="FailedConnectionOnly">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JDBC 커넥션 유효성 체크가 실패했을 경우 해당 커넥션 풀에 있는 커넥션들을 어떻게 할지 정책을 결정하는 옵션이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="stmt-caching-size" type="off-intType" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JDBC 드라이버는 어플리케이션에서 PreparedStatement를 요청할 때마다 파라미터로 넘어온 SQL 문장을 파싱하게 된다.
+                        이 파싱 작업이 성능에 영향을 줄 수 있기 때문에 이를 피하기 위해서 JEUS를 통해서 PreparedStatement를 캐싱할 수 있다.
+                        이 설정은 그러한 PreparedStatement를 캐싱할 개수를 지정하는 것이다.
+                        이때 이 옵션의 제약사항을 반드시 숙지해야 한다. 이 기능을 사용하면 커넥션을 항상 열어둔 채로 사용하기 때문에
+                        커넥션을 닫았을 때 드라이버가 해주는 클리어 작업이 이뤄지지 않는다.
+                        예를 들어 Oracle JDBC 드라이버의 경우, auto-commit을 false로 해놓고 사용하다가
+                        commit이나 rollback을 하지 않고 커넥션을 닫으면 무조건 commit을 하도록 되어 있는데 이런 처리가 되지 않는다는 것이다.
+                        만약 JDBC 드라이버에서 Statement 캐쉬 기능을 제공한다면 그것을 사용하기 바란다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="stmt-fetch-size" type="off-intType" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Connection에서 만드는 statement의 fetch size를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="connection-trace" type="jdbc-connection-traceType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 커넥션이 보여줄 수 있는 정보들을 만들어 둘 것인지 지정하는 옵션이다.
+                    현재는 어떤 application에서 connection을 사용하고 있는지 알 수 있도록
+                    getConnection 할 때의 stack trace를 저장하는 기능을 제공한다.
+                    Invocation Manager를 설정했다면 warning 또는 auto-close 시에 이 정보를 뿌려준다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="use-sql-trace" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션 별로 사용하고 있는 SQL문을 보여주는 기능이다.
+                        시스템 로그를 통해서 SQL history를 볼 수 있고, jeusadmin을 통해서 커넥션 별로 현재 수행되고 있는
+                        SQL을 확인할 수 있다.
+                        서버 로그 상에는 jeus.jdbc.sql 로거의 레벨을 FINE으로 설정할 경우 보이게 된다.
+                        그리고 이 기능을 사용할 경우 JDBC 드라이버의 Statement 객체를 항상 wrapping하게 되므로
+                        JDBC 드라이버의 Statement 객체를 캐스팅해서 사용하는 어플리케이션은 이 기능을 사용할 수 없다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keep-connection-handle-open" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: XA 데이터 소스를 사용할 때 해당하는 옵션이다. 이 옵션을 true로 하면
+                        XA 커넥션을 사용하고 풀에 반납할 때 그에 대한 핸들(또는 논리적 커넥션)을 닫지 않고 열어둔다.
+                        DB2 Universal driver의 경우에 사용할 필요가 있다.
+                        그리고 이 옵션의 제약사항을 반드시 숙지해야 한다.
+                        커넥션을 항상 열어둔 채로 사용하기 때문에 커넥션을 닫았을 때 드라이버가 해주는 클리어 작업이 이뤄지지 않는다.
+                        예를 들어 Oracle JDBC 드라이버의 경우, auto-commit을 false로 해놓고 사용하다가 commit이나 rollback을 하지 않고 커넥션을 닫으면
+                        무조건 commit을 하도록 되어 있는데 이런 처리가 되지 않는다는 것이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="init-sql" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: connection을 만들고 난 뒤 가장 처음으로 수행하여야 하는 sql이 있을 경우 이 tag를 설정한다.
+                        이 sql이 실패하면 만들어진 connection을 close한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="wait-free-connectionType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="enable-wait" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션 풀에 이용 가능한 커넥션이 없고 커넥션도 더 이상 늘릴 수 없을 때
+                        요청을 처리하는 방법을 결정한다. 만약 true라면 이용 가능한 커넥션을 얻기 위해 기다린다.
+                        만약 false라면 새로운 커넥션을 만들어서 제공하지만 그 커넥션이 반환되었을 때는 풀링되지 않고 버려진다.
+                        이를 일회용(disposable) 커넥션이라고도 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="wait-time" type="nonNegativeLongType" default="10000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션을 얻기 위해 대기하는 시간을 나타낸다. 만약 이 시간이 지나면 시스템은 time-out exception을 던진다.
+                        <enable-wait>이 true일때만 유효하다.
+                        [Value Description]: millisecond 단위
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="auto-deployType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="check-absolute-path" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUSMain.xml에서 application의 absolute-path를 지정하고 이 설정을 하면
+						absolute-path로 지정된 디렉토리를 오토 디플로이 디렉토리로 설정하여
+						해당 디렉토리에 추가, 삭제되는 application에 대해서 자동적으로 deploy, undeploy를 수행한다.
+						이 태그를 설정하지 않으면, <path>에 설정된 어플리케이션에 대한 오토 디플로이를 실행한다.
+						이 값이 true이면, 디렉토리 내 모든 어플리케이션에 대해 오토 디플로이를 설정하여, 각각의 어플리케이션이
+						변경될 때 자동으로 리디플로이(redeploy)를 수행한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="auto-deploy-check-interval" type="nonNegativeLongType" default="10000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: application이 변경되었는지 check하는 주기를 설정할 수 있다.
+                        [Performance Recommendation]: 너무 자주 check하게 되면 성능저하가 생길 수 있으므로
+                        필요한 간격만큼만 설정하도록 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="applicationType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="absolute-path" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    	[Description]: 하위 application들이 존재하는 절대경로를 지정할 수 있다. 지정하지 않으면 각 container의
+                        application home directory 들에서 찾는다.
+	                ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element minOccurs="0" name="name" type="xs:token">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        	[Description]: 이 application의 name를 설정한다.module name을 archive file이나 directory name으로 하지 않고
+	                        특정한 이름을 주고 싶을 때 설정한다.deploy나 undeploy때 archive file이나 directory name대신 사용할 수 있다.
+    	                ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <!-- only can be omitted when the absolute-path of applications is specified -->
+                <xs:element minOccurs="0" name="path" type="xs:token">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                	        [Description]: 이 application의 path를 설정한다. EAR, COMPONENT 공통적으로 archive file일 경우에는
+                    	    file path, directory일 경우에는 directory path가 사용된다. 절대 경로가 아니라 file name이나 directory name일
+                        	경우에는 APP_HOME에 있다고 간주된다.
+	                    ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+
+                <xs:element minOccurs="0" name="deployment-type" type="deployment-typeType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: 이 application이 deploy되는 type을 지정한다.
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="client-component" type="client-componentType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: 이 application내의 client-component에 대한 특별한 설정을 하고 싶을때 사용한다.
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="connector-component" type="connector-componentType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: 이 application내의 connector-component에 대한 특별한 설정을 하고 싶을때 사용한다.
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="ejb-component" type="ejb-componentType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: 이 application내의 ejb-component에 대한 특별한 설정을 하고 싶을때 사용한다.
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="web-component" type="web-componentType">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                            [Description]: 이 application내의 web-component에 대한 특별한 설정을 하고 싶을때 사용한다.
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+
+            <xs:element minOccurs="0" name="absolute-ejb-jar" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                	[Description]: @Deprecated JEUSVI-1705, <ejb-component>의 <ejb-jar>을 이용할 수 있음,
+                	이 application이 EJB module이고, 외부에 있는 ejb-jar.xml을 이용하고 싶을 때 사용한다.
+                	이는 4.x의 EJB module과의 호환성을 위한 것이며, <ejb-component>의 <ejb-jar>과 동일한 효과이다.
+                	<ejb-component>의 <ejb-jar>이 우선 순위가 높으며, 현재 절대 경로만 지원한다.
+                	[Example]: d:\jeus\config\node_ejb_engine1\ejb-jar_modulename.xml
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="absolute-jeus-ejb-dd" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                	[Description]: @Deprecated JEUSVI-1705, <ejb-component>의 <jeus-ejb-dd>를 이용할 수 있음,
+                	이 application이 EJB module이고, 외부에 있는 jeus-ejb-dd.xml을 이용하고 싶을 때 사용한다.
+                	이는 4.x의 EJB module과의 호환성을 위한 것이며, <ejb-component>의 <jeus-ejb-dd>와 동일한 효과이다.
+                	<ejb-component>의 <jeus-ejb-dd>가 우선 순위가 높으며, 현재 절대 경로만 지원한다.
+                	[Example]: d:\jeus\config\node_ejb_engine1\jeus-ejb-dd_modulename.xml
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+
+            <xs:group ref="application-propertyGroup"/>
+
+            <xs:element minOccurs="0" name="auto-deploy" type="auto-deployType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application 설정에 대해 auto-deploy 기능이 적용되도록 한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="deploy-when-booting" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Jeus booting시 deploy 여부를 나타낸다.설정 하지 않으면 true이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:group name="application-propertyGroup">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="deployment-target" type="deployment-targetType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application이 deploy될 target을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="classloading" type="classloadingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application이 사용할 classloading 방식을 선택한다. 지정하지 않으면
+                        jeus.classloading system property에 설정되어 있는 값을 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="class-ftp-unit" type="class-ftp-unitType" default="JAR">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application에 포함된 EJB module의 class를 remote로 전송할 때 JAR file
+                        자체로 전송할지 한 class씩 전송할지를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="security-domain-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application에게 적용할 security domain을 설정한다. 지정하지 않으면
+                        DEFAULT_APPLICATION_DOMAIN을 사용하게 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="role-permission" type="rolePermissionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application의 모든 module에게 적용할 principal - role mapping을
+                        설정할때 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="java-security-permission" type="securityPermissionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JEUS가 J2SE security를 사용할 때 이 application에게 허용할 J2SE permission을
+                        지정할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keep-generated" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 applicaton 내의 module들에 keep-generated를 적용한다. 즉, 이 appliation이
+                        deploy과정에서 generated되어야 하는 클래스를 미리 포함하고 있다고 가정한다. 만약 설정이 되어 있지
+                        않으면 jeus.application.keepgenerated system property에 지정된
+                        값이 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="fast-deploy" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application 내의 EJB module, Web application의 webservice module에 대해
+                        fast deploy를 적용한다. 즉, 이 application이 deploy과정에서 generated되어야 하는 클래스를
+                        미리 포함하고 있다고 가정한다. 만약 설정이 되어 있지 않다면 engine의 기본 설정을 따른다.
+                        이 설정은 jeus.application.fastdeploy system property를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="library-directory" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]:
+                        library 디렉토리를 지정. 이 값은 application.xml의 library-directory 값을 
+                        override 하기를 원할 때 사용할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:group ref="library-ref-group"/>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:simpleType name="classloadingType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ISOLATED">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application의 classloader는 다른 application의 classloader와 분리되어서
+                        서로의 class들을 사용할수 없게 된다. J2EE spec에 따른 application packaging을 했을 때
+                        사용할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="SHARED">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application의 classloader는 다른 application의 classloader와 같이 쓰여서
+                        서로의 class를 순서에 따라 공유할 수 있다. JEUS 4.x이전 환경에서 개발한 application의 경우에는
+                        이 설정을 이용하여야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="class-ftp-unitType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="JAR">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application내의 class를 remote로 보낼 때 JAR 파일 단위로 보낸다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CLASS">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 application내의 class를 remote로 보낼 때 class 파일 단위로 보낸다.
+                        JEUS 4.x에서 DIR mode로 EJB를 개발했을때를 위해 사용하는 설정이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="deployment-targetType">
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="all-targets" type="all-targetsType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: 이 설정을 읽는 모든 engine container가 target에 해당된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="target" type="app-targetType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: 이 application을 deploy할 target을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="all-targetsType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="web-context-group" type="web-context-groupType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 application을 deploy할 target의 web context group을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="web-context-groupType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: 이 application내의 web module이 deploy될 때 사용될 context group 이름을 지정한다.
+                      [Value Description]: 이 application을 deploy하는 target의 Servlet Engine이 이 context group을 가지고 있어야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="virtual-host-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                      [Description]: 이 application내의 web module이 deploy될 때 사용될 virtual host 이름을 지정한다.
+                      [Value Description]: 이 context group 내에 지정된 virtual host을 가지고 있어야 한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="app-targetType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="node-name" type="xs:token">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: 이 application을 deploy할 target을 여기에 지정된 이름의 node 내의 engine container
+                        들로 지정한다.
+                        [Example]: <node-name>MyNode</node-name>
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="engine-container-name" type="xs:token">
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                        [Description]: 이 application을 deploy할 target을 여기에 지정된 이름의 engine container로 지정한다.
+                        [Example]: <engine-container-name>MyNode_container1</engine-container-name>
+                        ]]></xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:choice>
+            <xs:element minOccurs="0" name="web-context-group" type="web-context-groupType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                    [Description]: 이 application을 deploy할 target의 web context group을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="deployment-typeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="EAR">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: EAR 형태의 archive file type이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="COMPONENT">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: standalone application (.jar, .war, .rar) 형태의 archive file type이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="client-componentType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="uri" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 client component 설정에 해당하는 uri 이름이다.
+                        [Value Description]: EAR이나 COMPONENT type인 경우에는 .jar로 끝나고 EXPLODED 형태인 경우
+                            해당 directory 이름이 온다.
+                        [Example]: <uri>client.jar</uri>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="deployment-target" type="deployment-targetType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 client component를 deploy하고자 하는 target을 설정할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="connector-componentType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="uri" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 connector component 설정에 해당하는 uri 이름이다.
+                        [Value Description]: EAR이나 COMPONENT type인 경우에는 .rar로 끝나고 EXPLODED 형태인 경우
+                            해당 directory 이름이 온다.
+                        [Example]: <uri>connector.rar</uri>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ejb-componentType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="uri" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 EJB component 설정에 해당하는 uri 이름이다.
+                        [Value Description]: EAR이나 COMPONENT type인 경우에는 .jar로 끝나고 EXPLODED 형태인 경우
+                            해당 directory 이름이 온다.
+                        [Example]: <uri>ejb.jar</uri>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="deployment-target" type="deployment-targetType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 EJB component를 deploy할 target을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="client-view-path" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 EJB component의 stub class들이 존재할 directory를 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keep-generated" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 EJB component의 stub class들을 생성할때 java source file을 남길지의
+                        여부를 지정한다. 이 설정이 없으면 <application>의 설정을 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="ejb-jar" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 EJB component의 ejb-jar.xml file의 path를 설정할 수 있다. 이는 JEUS 4.x의
+                        packaging을 지원하기 위해 사용한다. 현재 절대 경로만을 지원하고 있다.
+                        [Example]: d:\jeus\config\node_ejb_engine1\ejb-jar_modulename.xml
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="jeus-ejb-dd" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 EJB component의 jeus-ejb-dd.xml file의 path를 설정할 수 있다. 이는 JEUS 4.x의
+                        packaging을 지원하기 위해 사용한다. 현재 절대 경로만을 지원하고 있다.
+                        [Example]: d:\jeus\config\node_ejb_engine1\jeus-ejb-dd_modulename.xml
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="java-security-permission" type="securityPermissionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 EJB component에게 부여할 J2SE security permission을 설정할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="web-componentType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="uri" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 web component 설정에 해당하는 uri 이름이다.
+                        [Value Description]: EAR이나 COMPONENT type인 경우에는 .war로 끝나고 EXPLODED 형태인 경우
+                            해당 directory 이름이 온다.
+                        [Example]: <uri>web.war</uri>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <!-- JEUS 6.0 -->
+            <xs:element minOccurs="0" name="context-root" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 web component의 context root를 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element minOccurs="0" name="deployment-target" type="deployment-targetType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 web component를 deploy할 target을 지정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="keep-generated" type="xs:boolean">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 web component가 웹서비스이거나 웹서비스 클라이언트를 포함하고 있을때
+						생성한 웹서비스의 Tie 및 웹서비스 클라이언트의 Stub의  java source file을 남길지의
+                        여부를 지정한다. 이 설정이 없으면 <application>의 설정을 사용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="jeus-web-dd" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 web component의 jeus-web-dd.xml file의 path를 설정할 수 있다. 이는 JEUS 4.x의
+                        packaging을 지원하기 위해 사용한다.
+                        [Example]: d:\jeus\config\node_servlet_engine1\jeus-web-dd_modulename.xml
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="java-security-permission" type="securityPermissionType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 이 web component에게 부여할 J2SE security permission을 설정할 수 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="session-timeout" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 세션 객체가 가장 최근에 사용된 이후의 유효기간을 결정한다. 유효기간 이후의 세션은 제거된다.
+                        			   web.xml에 세션 타임아웃 값보다 우선 적용된다.
+                        [Value Description]: 시간주기는 공유세션이 제거되어야 할 분단위로 표현된다.
+                        [Value Type Description]: Integer
+                        [Defined Value]: [-1]: 본 값을 설정했다면 세션타임아웃 검사는 수행되지 않는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="session-router-configType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                    [Description]: 분산식 session clustering을 제공하는 server에 관한 설정이다.
+                    Servlet/JSP에서 사용하는 HttpSession 클러스터링 및 SFSB(Stateful Session Bean)의 클러스터링을 위해 서비스를 한다.
+                    분산식 session clustering을 설정하면 해당 Container에 session clustering을 위한 session server가 기동되며
+                    이들 server들은 session clustering에 참여하는 다른 Container의 session server와 통신을 하여
+                    장애 발생시에도 세션이 유지될 수 있도록 한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" name="thread-pool" type="poolingType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 분산식 세션서버에서 사용되는 socket connection처리를 위한 thread pool을 설정한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="connect-timeout" type="xs:long" default="5000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: WebContainer에 존재하는 session server간 socket connection을
+                            생성할 때 적용되는 timeout 값이다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="read-timeout" type="xs:long" default="20000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: WebContainer에 존재하는 session server간 통신시에 적용되는
+                            read timeout 값이다. 데이타를 보낸 후 응답을 최대 이 시간만큼 기다리게 된다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="backup-trigger" type="xs:int" default="1000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: local session server에서 session
+                            객체의 update가 어느 정도 발생하였을 때 backup session server로 update된 session
+                            객체들을 backup할지를 결정한다. 이 설정에 지정된 횟수 만큼 local session server에 session
+                            object update가 발생하면 backup을 수행한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-to" type="nonNegativeLongType" default="30000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 얼마만큼의 시간 간격으로 backup과정을 수행할 지를 결정한다.
+                            이 설정에 지정된 시간 주기로 update된 session 객체가 있는지를 조사하고 update된
+                            session 객체가 존재하면 backup을 수행한다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="check-level" type="check-levelType" default="set">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: backup session server로 backup을 수행할 update된 session 객체가
+                            존재하는지를 검사할 때 적용할 검사 기준을 설정한다. 오직 web container에서만 필요하며 SFSB을 사용할때의 경우 이 값은 의미없다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="default-file-db" type="fileDbType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: update된 local session 객체를 backup하는 방법으로는
+                             backup session server에 backup하는 방법외에 local file system상에
+                             backup하는 방법도 있다. 이 설정은 이와 같이 local file system상에
+                             update된 session 객체를 backup하는 방법을 제공한다. 실제 file backup은 WEBMain.xml의 <session-config><shared> 설정에 따라서
+                             true일 경우 컨테이너별로 수행되고, false일 경우 deploy된 app별로 수행된다. 이 설정은 분산식 session clustering에 참여하는
+                             모든 Container(session-router)들에 동일하게 적용된다. 단, session-router
+                             하위 element로 "file-db"가 설정될 경우 이 설정(default-file-db)은 무시되고
+                             "file-db"설정이 적용된다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="session-router" type="session-routerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 분산식 session clustering에 참여할 Container를 지정하는데
+                            사용하는 설정이다. 이 외에도 session clustering에 참여하는 Contaienr에 기동될
+                            session server에 대한 각종 속성을 설정한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="check-levelType">
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+                    [Description]: 사용된 session을 remote web container 또는 local file db에 백업하기 전에
+                        백업할 필요가 있는지를 체크하는 것이 필요하다. 이 설정은 백업의 필요성을 체크하는 기준을 정한다.
+                        기본적으로 사용된 세션이 invalidate되었을 경우 설정한 기준에 관계없이 백업한다.
+            ]]></xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="set">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                 [Description]: 해당 session의 setAttribute/putValue/removeAttribute/removeValue 함수
+                                     호출이 일어난 경우에만 update된 것으로 간주하여 해당 session 객체를 backup한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="get">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 해당 session의 setAttribute/putValue/removeAttribute/removeValue/getAttribute/getValue 함수
+                                    호출이 일어난 경우에만 update된 것으로 간주하여 해당 session 객체를 backup한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="all">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 조건없이 사용된 세션은 모두 백업한다.
+                                    해당 session 객체가 HttpServletRequest.getSession() API로 호출될 경우 update된 것으로 간주하여 해당 session 객체를 backup한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="session-routerType">
+        <xs:sequence>
+            <xs:element name="engine-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 분산식 session clustering에 참여할 Container의 엔진 이름을 지정한다.
+                                [Example]: myNode_servlet_engine1 or myNode_ejb_engine1
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="replication-group" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 분산식 session clustering에 참여할때, 이 세션 매니저의 그룹이름을 지정한다. 지정하지 않을 경우 이 값은 node이름으로 대체된다. 
+                                [Example]: headquarters or crosstown
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="backup-group" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 분산식 session clustering에 참여한 세션 매니저 중 선호하는 백업 대상의 그룹이름을 지정한다. 다른 세션매니저의 replication-group중에 선택하면 된다. 지정하지 않을 경우 나의 그룹과 다른 그룹을 우선적으로 선택한다.
+                                [Example]: headquarters or crosstown
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="location" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                                [Description]: 물리적인 machine의 정보 또는 위치를 지정한다. 지정하지 않을 경우 항상 다른 location으로 취급된다.
+                                [Example]: tmaxh1 or was1x
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="file-db" type="fileDbType">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <metadata>
+                            <default-element>false</default-element>
+                        </metadata>
+                    </xs:appinfo>
+                    <xs:documentation><![CDATA[
+                            [Description]: "default-file-db" 설정과 동일한 역할을 하는 설정이다.
+                            단, 이 설정은 해당 Container(session-router)에만 적용된다. "default-file-db"
+                            설정보다 높은 우선 순위를 갖는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="webadmin-configType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="1" name="use-baseport" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: JEUS BASEPORT(9736)을 통해서 webadmin을 접속할지 여부를 결정한다. plain-listener의 port가 지정되면 이 정보는 무시된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="plain-listener" type="plain-listenerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: webadmin plain listener에 대한 설정
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="ssl-listener" type="ssl-listenerType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: webadmin ssl listener에 대한 설정
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="allowed-server" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: webadmin에 접근을 허용하는 호스트 리스트를 설정한다.
+                            [Example]: <allowed-server>10.10.*.*</allowed-server>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="plain-listenerType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="1" name="enabled" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: http plain listener의 사용 여부
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="port" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: http plain listener의 port number
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ssl-listenerType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="1" name="enabled" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: http ssl listener의 사용 여부
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="port" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: http ssl listener의 port number
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="ssl-config-group"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="fileDbType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="startup-clear-to" type="xs:long" default="86400000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: Container를 기동할 때 지정된 file에 저장된 session 객체들이 복구된다.
+                            만약 현재 시간과 file의 last modified time의 시간차가 이 설정에 지정된 값보다 크면 복구를
+                            시도하지 않고 file의 내용을 모두 clear한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="path" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: backup session을 저장할 file이름을 지정한다.(절대 경로)
+                            기본값은 WEBMain.xml의 <session-config><shared> 설정에 따라서 true일 경우 $(JEUS_HOME)/logs/sessiondb/<engine_name>_1.fdb 이고,
+                            false일 경우 $(JEUS_HOME)/logs/sessiondb/<context_name>_<context-path>_1.fdb
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="passivation-to" type="xs:long" default="-1">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: memory에 존재하는 session 객체를 일정시간 사용하지 않으면 삭제하고
+                            대신 file-db에 저장된 객체를 사용하게 하는 설정이다.
+                            [Value Description]: -1 또는 0이면 passivation을 수행하지 않는다. 0보다 큰 시간을 설정하면
+                            지정된 시간 이상 사용하지 않는 memory상의 session 객체는 passivation된다. 단위는 msec이다.
+                            기본값은 -1이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="min-hole" type="xs:int" default="1000">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 일정 시간 file-db를 운용하면 file의 크기가 필요이상 커지게 된다.
+                            이 설정에 지정된 횟수 만큼 file I/O가 발생하면 file packing을 수행하여 필요이상
+                            file 크기가 늘어나는 것을 막는다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="packing-rate" type="fractionType" default="0.5">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                            [Description]: 일정 시간 file-db를 운용하면 file의 크기가 필요이상 커지게 된다.
+                            현재 session객체 개수 대비 file I/O 횟수가 지정된 ratio를 넘어서면 file packing을 수행하여 필요이상
+                            file 크기가 늘어나는 것을 막는다.
+                    ]]></xs:documentation>
+                    <xs:appinfo>
+                        <metadata>
+                            <element-level>ADVANCED</element-level>
+                        </metadata>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jaxr-sourceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="jaxr-entry" type="jaxr-entryType">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JAXR Connection를 구성하기 위한 ConnectionFactory의  구성값을 담고 있다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jaxr-entryType">
+        <xs:sequence>
+            <xs:element name="export-name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JAXR ConnectionFactory의 JNDI이름. 이 값은 Naming Server에 ConnectionFactory를 등록할 때 사용될 것이다. 
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="connection-factory-class-name" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: JAXR ConnectionFactory 클래스 이름.
+                        [Example]: <connection-factory-class-name>jeus.webservices.registry.ConnectionFactoryImpl</connection-factory-class-name>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="query-manager-URL" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Target registry provider의 query manager service를 위한 URL.
+                        UDDI Registry의 Inquiry URL. 
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="lifeCycle-manager-URL" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Target registry provider의 life cycle manager service를 위한 URL.
+                        UDDI Registry의 Publishing URL. 기술되지 않으면 queryManagerURL과 같다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="authentication-method" type="xs:token" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Registry Provider의 인증을 얻기 위하여 사용하는 인증 방법. 
+                        [Example]: <authenticationMethod>UDDI_GET_AUTHTOKEN</authenticationMethod>
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="jaxr-property" type="jaxr-propertyType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: ConnectionFactory를 구성하기 위한 Configuration properties를 설정하기 위하여 사용된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jaxr-propertyType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jaxr configuration property의 이름. property 이름은 JAXR 1.0 스펙을 따라야 한다. 
+                        [Standard Properties]:    [javax.xml.registry.uddi.maxRows]:
+                        UDDI Provider에서 find operation에 대하여 return하는 열의 최대값.
+                                                  [javax.xml.registry.postalAddressScheme]:
+                                                이 Connection에 대하여 기본 postal address scheme으로 사용되는 ClassificationScheme의 id.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="value" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: jaxr property의 값. 
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="destroy-policy-on-check-queryType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="FailedConnectionOnly">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 유효성 체크가 실패한 물리적 커넥션만 닫는다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="AllConnections">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 유효성 체크가 실패했을 경우 풀에 있는 다른 커넥션을 한 번 더 체크해 보고 그래도 실패하면 해당 커넥션 풀의 모든 커넥션을 닫는다.
+                        어플리케이션이 사용하고 있던 커넥션들도 모두 닫히게 된다. 그리고 풀 리사이징 주기(<period>)에 의해서 최소 커넥션 수만큼 채워진다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="jdbc-connection-traceType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="enabled" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션 모니터링 기능을 사용할지 결정하는 옵션이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="get-connection-trace" type="xs:boolean" default="true">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션에서 "getConnection" method가 호출되었을 때 stack trace를 jeusadmin을 통해 볼 수 있는 기능이다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="auto-commit-trace" type="xs:boolean" default="false">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: 커넥션에서 "setAutoCommit" method가 호출되었을 때 log와 stack trace를 서버 로그 상에서 찍어 주는 옵션이다.
+                        이 기능을 설정한 뒤에 "jeus.jdbc.connection-trace" logger의 log level을 FINE로 설정하여야 log와 stack trace가 찍히게 된다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="jvmConfigType">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="jvm-option" type="xs:token">
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+                        [Description]: Engine Container JVM을 실행할 때 적용하는 옵션을 적어준다.
+                        여러 개의 <jvm-option>을 나열할 수 있으며,
+                        <jvm-option>에 적은 옵션은 기존의 <command-option>과 동일한 방식으로 처리한다.
+                        옵션을 적용하는 순서는, 하위 호환성을 위하여 <command-options> 에 설정된 옵션을 먼저 적용한 뒤,
+                        <jvm-option>을 나열한 순서대로 적용한다.
+                    ]]></xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

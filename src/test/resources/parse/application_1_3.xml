@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE application PUBLIC '-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN' 'http://java.sun.com/dtd/application_1_3.dtd'>
+<application>
+	<display-name>Simple example of application</display-name>
+	<description>Simple example</description>
+	<module>
+		<web>
+			<web-uri>test1.war</web-uri>
+			<context-root>/test1</context-root>
+		</web>
+	</module>
+	<module>
+		<web>
+			<web-uri>test2.war</web-uri>
+			<context-root>/test2</context-root>
+		</web>
+	</module>
+	<module>
+		<ejb>test-ejb1.jar</ejb>
+	</module>
+	<module>
+		<ejb>test-ejb2.jar</ejb>
+	</module>
+</application>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+<ejb-jar>
+	<description> CMP Test Program </description>
+	<display-name> CMP Test </display-name>
+	<enterprise-beans>
+		<session>
+			<description>Login Stateless Session Bean</description>
+			<display-name>LoginEJB</display-name>
+			<ejb-name>LoginEJB</ejb-name>
+			<home>market.login.LoginHome</home>
+			<remote>market.login.Login</remote>
+			<ejb-class>market.login.LoginEJB</ejb-class>
+			<session-type>Stateless</session-type>
+			<transaction-type>Container</transaction-type>
+			<ejb-ref>
+				<description>EJB ref</description>
+				<ejb-ref-name>ejb/UserHome</ejb-ref-name>
+				<ejb-ref-type>Entity</ejb-ref-type>
+				<home>market.user.UserHome</home>
+				<remote>market.user.User</remote>
+				<ejb-link>UserEJB</ejb-link>
+			</ejb-ref>
+		</session>
+		<entity>
+			<description>User EJB</description>
+			<display-name>UserEJB</display-name>
+			<ejb-name>UserEJB</ejb-name>
+			<home>market.user.UserHome</home>
+			<remote>market.user.User</remote>
+			<local-home>market.user.UserLocalHome</local-home>
+			<local>market.user.UserLocal</local>
+			<ejb-class>market.user.UserEJB_PMBean</ejb-class>
+			<persistence-type>Container</persistence-type>
+			<prim-key-class>java.lang.String</prim-key-class>
+			<reentrant>true</reentrant>
+			<cmp-version>2.x</cmp-version>
+			<abstract-schema-name>UserRec</abstract-schema-name>
+			<cmp-field>
+				<field-name>id</field-name>
+			</cmp-field>
+			<cmp-field>
+				<field-name>password</field-name>
+			</cmp-field>
+			<cmp-field>
+				<field-name>name</field-name>
+			</cmp-field>
+			<primkey-field>id</primkey-field>
+			<ejb-local-ref>
+				<description>Local ref</description>
+				<ejb-ref-name>ejb/OrderLocalHome</ejb-ref-name>
+				<ejb-ref-type>Entity</ejb-ref-type>
+				<local-home>market.order.OrderLocalHome</local-home>
+				<local>market.order.OrderLocal</local>
+				<ejb-link>OrderEJB</ejb-link>
+			</ejb-local-ref>
+			<resource-ref>
+				<res-ref-name>jdbc/cmp/UserDB</res-ref-name>
+				<res-type>javax.sql.DataSource</res-type>
+				<res-auth>Container</res-auth>
+				<res-sharing-scope>Shareable</res-sharing-scope>
+			</resource-ref>
+			<query>
+				<description>EJBQL</description>
+				<query-method>
+					<method-name>findByName</method-name>
+					<method-params>
+						<method-param>java.lang.String</method-param>
+					</method-params>
+				</query-method>
+				<ejb-ql>select object(u) from UserRec u where u.name = ?1</ejb-ql>
+			</query>
+		</entity>
+		<message-driven>
+			<description>This is Message Driven Examples</description>
+			<display-name>Test Message Bean</display-name>
+			<ejb-name>TestMessageBean</ejb-name>
+			<ejb-class>market.jms.LogBean</ejb-class>
+			<transaction-type>Container</transaction-type>
+			<acknowledge-mode>AUTO_ACKNOWLEDGE</acknowledge-mode>
+			<message-driven-destination>
+				<destination-type>javax.jms.Topic</destination-type>
+				<subscription-durability>NONDURABLE</subscription-durability>
+			</message-driven-destination>
+			<security-identity>
+				<run-as>
+					<description>This is Test Bean</description>
+					<role-name>Category</role-name>
+				</run-as>
+			</security-identity>
+		</message-driven>
+	</enterprise-beans>
+	<relationships>
+		<description>Relationships</description>
+		<ejb-relation>
+			<ejb-relation-name>User-Order</ejb-relation-name>
+			<ejb-relationship-role>
+				<ejb-relationship-role-name>
+					user-has-orders
+				</ejb-relationship-role-name>
+				<multiplicity>One</multiplicity>
+				<relationship-role-source>
+					<ejb-name>UserEJB</ejb-name>
+				</relationship-role-source>
+				<cmr-field>
+					<cmr-field-name>orders</cmr-field-name>
+					<cmr-field-type>java.util.Collection</cmr-field-type>
+				</cmr-field>
+			</ejb-relationship-role>
+			<ejb-relationship-role>
+				<ejb-relationship-role-name>
+					order-belongsto-user
+				</ejb-relationship-role-name>
+				<multiplicity>Many</multiplicity>
+				<relationship-role-source>
+					<ejb-name>OrderEJB</ejb-name>
+				</relationship-role-source>
+				<cmr-field>
+					<cmr-field-name>user</cmr-field-name>
+				</cmr-field>
+			</ejb-relationship-role>
+		</ejb-relation>
+	</relationships>
+	<assembly-descriptor>
+		<security-role>
+			<description>
+				This is the role for User
+			</description>
+			<role-name>User</role-name>
+		</security-role>
+		<method-permission>
+			<role-name>User</role-name>
+			<method>
+				<ejb-name>UserEJB</ejb-name>
+				<method-name>*</method-name>
+			</method>
+		</method-permission>		<container-transaction>
+			<method>
+				<ejb-name>UserEJB</ejb-name>
+				<method-name>*</method-name>
+			</method>
+			<trans-attribute>Required</trans-attribute>
+		</container-transaction>
+		<exclude-list>
+			<method>
+				<ejb-name>OrderItemEJB</ejb-name>
+				<method-name>*</method-name>
+			</method>
+		</exclude-list>
+	</assembly-descriptor>
+</ejb-jar>
