@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.tmaxsoft.com/xml/ns/jeus"
+			 xsi:schemaLocation="http://www.tmaxsoft.com/xml/ns/jeus schema/v5_0/jeus-main.xsd">
+	<absolute-path>D:\PROJECT\</absolute-path>
+	<name>A</name>
+	<path>A</path>
+	<deployment-type>COMPONENT</deployment-type>
+	<web-component/>
+	<deployment-target>
+	    <target>
+	        <engine-container-name>test_container1</engine-container-name>
+	        <web-context-group>
+	            <name>A</name>
+	        </web-context-group>
+	    </target>
+	</deployment-target>
+	<classloading>ISOLATED</classloading>
+</application>

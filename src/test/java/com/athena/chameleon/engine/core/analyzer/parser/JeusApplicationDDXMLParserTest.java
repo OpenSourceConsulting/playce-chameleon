@@ -92,13 +92,13 @@ public class JeusApplicationDDXMLParserTest {
 	
 	/**
 	 * <pre>
-	 * 5.0 버젼의 jesu-application-dd.xml 또는 JEUSMain.xml 파일에 대한 파싱 테스트
+	 * 5.0 버젼의 jesu-application-dd.xml 파일에 대한 파싱 테스트
 	 * </pre>
 	 */
 	@Test
 	public void testJeusApplicationDD_5_0() {
 		// 초기화
-		File file = new File(this.getClass().getResource("/parser/JEUSMain_5_0.xml").getFile());
+		File file = new File(this.getClass().getResource("/parser/jeus-application-dd.xml").getFile());
 		AnalyzeDefinition analyzeDefinition = new AnalyzeDefinition();
 		
 		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
@@ -133,11 +133,52 @@ public class JeusApplicationDDXMLParserTest {
 	
 	/**
 	 * <pre>
-	 * 6.0 버젼의 jesu-application-dd.xml 또는 JEUSMain.xml 파일에 대한 파싱 테스트
+	 * 5.0 버젼의 JEUSMain.xml 파일에 대한 파싱 테스트
 	 * </pre>
 	 */
 	@Test
-	public void testJeusApplicationDD_6_0() {
+	public void testJeusMain_5_0() {
+		// 초기화
+		File file = new File(this.getClass().getResource("/parser/JEUSMain_5_0.xml").getFile());
+		AnalyzeDefinition analyzeDefinition = new AnalyzeDefinition();
+		
+		PDFMetadataDefinition metadataDefinition = new PDFMetadataDefinition();
+		ThreadLocalUtil.clearSharedObject();
+		ThreadLocalUtil.add(ChameleonConstants.PDF_METADATA_DEFINITION, metadataDefinition);
+		ThreadLocalUtil.add(ChameleonConstants.PROJECT_NAME, "athena-chameleon");
+		
+		try {
+			File jboss = new File(new File(this.getClass().getResource("/parser").getFile()), "jboss-app.xml");
+			if(jboss.exists()) {
+				jboss.delete();
+			}
+			
+			// 테스트
+			new JeusApplicationDDXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			List<EjbRecommend> recommendList = metadataDefinition.getApplicationRecommendList();
+			List<String> transFileList = metadataDefinition.getAppTransFileList();
+			assertTrue("recommendList의 크기는 2이어야 합니다.", recommendList.size() == 2);
+			assertTrue("transFileList의 크기는 1이어야 합니다.", transFileList.size() == 1);
+			assertTrue("첫 번째 transFileList는 \"jboss-app.xml\"이어야 합니다.", transFileList.get(0).endsWith("jboss-app.xml"));
+			
+			// jboss-app.xml 파일 생섬 결과 검증
+			jboss = new File(this.getClass().getResource("/parser/jboss-app.xml").getFile());
+			assertTrue("jboss.xml 파일이 생성되어 있어야 합니다.", jboss.exists());
+			jboss.delete();
+		} catch(Throwable t) {
+			fail("Exception이 발생하면 안됩니다.");
+		}
+	}//end of testJeusMain_5_0()
+	
+	/**
+	 * <pre>
+	 * 6.0 버젼의 JEUSMain.xml 파일에 대한 파싱 테스트
+	 * </pre>
+	 */
+	@Test
+	public void testJeusMain_6_0() {
 		// 초기화
 		File file = new File(this.getClass().getResource("/parser/JEUSMain_6_0.xml").getFile());
 		AnalyzeDefinition analyzeDefinition = new AnalyzeDefinition();
@@ -170,7 +211,7 @@ public class JeusApplicationDDXMLParserTest {
 		} catch(Throwable t) {
 			fail("Exception이 발생하면 안됩니다.");
 		}
-	}//end of testJeusApplicationDD_6_0()
+	}//end of testJeusMain_6_0()
 
 }
 //end of JeusApplicationDDXMLParserTest.java
