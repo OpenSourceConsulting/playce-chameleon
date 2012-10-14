@@ -27,6 +27,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
@@ -52,6 +53,9 @@ public class WeblogicApplicationXMLParser extends Parser {
 	 */
 	@Override
 	public Object parse(File file, AnalyzeDefinition analyzeDefinition) {
+		Assert.notNull(file, "file cannot be null.");
+		Assert.notNull(analyzeDefinition, "analyzeDefinition cannot be null.");
+		
 		this.analyzeDefinition = analyzeDefinition;
 		
         // only zip and ear

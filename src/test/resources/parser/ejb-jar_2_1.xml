@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.1"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
+	<display-name>EJB01EJB</display-name>
+	<enterprise-beans>
+		<session>
+			<description>Login Stateless Session Bean</description>
+			<display-name>LoginEJB</display-name>
+			<ejb-name>LoginEJB</ejb-name>
+			<home>market.login.LoginHome</home>
+			<remote>market.login.Login</remote>
+			<ejb-class>market.login.LoginEJB</ejb-class>
+			<session-type>Stateless</session-type>
+			<transaction-type>Container</transaction-type>
+			<ejb-ref>
+				<description>EJB ref</description>
+				<ejb-ref-name>ejb/UserHome</ejb-ref-name>
+				<ejb-ref-type>Entity</ejb-ref-type>
+				<home>market.user.UserHome</home>
+				<remote>market.user.User</remote>
+				<ejb-link>UserEJB</ejb-link>
+			</ejb-ref>
+		</session>
+	</enterprise-beans>
+	<assembly-descriptor>
+		<container-transaction>
+			<method>
+				<ejb-name>CustomerBean01</ejb-name>
+				<method-name>*</method-name>
+			</method>
+			<trans-attribute>Required</trans-attribute>
+		</container-transaction>
+	</assembly-descriptor>
+</ejb-jar>

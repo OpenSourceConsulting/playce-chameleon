@@ -62,7 +62,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  * 
  */
-@XmlRootElement
+@XmlRootElement(name = "web-app")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "web-appType", propOrder = {
     "descriptionAndDisplayNameAndIcon"

@@ -70,6 +70,10 @@ public abstract class Parser {
 	 * @throws IOException 
 	 */
 	protected void fileCopy(File sourceFile, File targetFile) throws IOException {
+		if(!targetFile.getParentFile().exists()) {
+			targetFile.getParentFile().mkdirs();
+		}
+		
 		FileInputStream inputStream = new FileInputStream(sourceFile);
 		FileOutputStream outputStream = new FileOutputStream(targetFile);
 		
