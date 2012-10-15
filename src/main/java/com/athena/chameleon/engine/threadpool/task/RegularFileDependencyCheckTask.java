@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.util.Assert;
 
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
@@ -56,6 +57,11 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 	
 	public RegularFileDependencyCheckTask(String taskName, File file, String rootPath, Policy policy, AnalyzeDefinition analyzeDefinition) {
 		super(taskName);
+		
+		Assert.notNull(file, "file cannot be null");
+		Assert.notNull(rootPath, "rootPath cannot be null");
+		Assert.notNull(analyzeDefinition, "analyzeDefinition cannot be null");
+		
 		this.file = file;
 		this.rootPath = rootPath;
 		this.policy = policy;
