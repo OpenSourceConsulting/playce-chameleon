@@ -21,10 +21,10 @@ function onMenu(idx) {
 	<ul id="menuUi">
     	<li><a href="<c:url value='/main.do'/>">Home</a></li>
         <li><a href="<c:url value='/upload/form.do'/>">Migration</a></li>
-        <li><a href="<c:url value='/provisioning/selectForm.do'/>">Provisioning</a></li>
+        <li><a href="<c:url value='/provisioning/wasSelectForm.do'/>">Provisioning</a></li>
 		<li><a href="navigation.html">System</a></li>
 		<li><a href="navigation.html">Contact Us</a></li>
 	</ul>
-</div>    
+</div>
 
 <br/>

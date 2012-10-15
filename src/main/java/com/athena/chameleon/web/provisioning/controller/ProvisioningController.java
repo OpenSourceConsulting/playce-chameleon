@@ -20,27 +20,14 @@
  */
 package com.athena.chameleon.web.provisioning.controller;
 
-import java.io.File;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.SessionStatus;
 
-import com.athena.chameleon.common.utils.PropertyUtil;
-import com.athena.chameleon.common.utils.ThreadLocalUtil;
-import com.athena.chameleon.engine.constant.ChameleonConstants;
-import com.athena.chameleon.engine.core.MigrationComponent;
-import com.athena.chameleon.engine.core.PDFDocGenerator;
-import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
-import com.athena.chameleon.engine.entity.upload.Upload;
+import com.athena.chameleon.engine.entity.provisioning.Provisioning;
 
 /**
  * This LoginController class is a Controller class to Upload.
@@ -51,19 +38,7 @@ import com.athena.chameleon.engine.entity.upload.Upload;
 @Controller("provisioningController")
 @RequestMapping("/provisioning")
 public class ProvisioningController {
-/*
-    @Inject
-    @Named("migrationComponent")
-    private MigrationComponent component;
 
-    @Inject
-    @Named("pdfDocGenerator")
-    private PDFDocGenerator pdfData;
-
-    @Value("#{filteringProperties['chameleon.upload.temp.dir']}")
-    public String uploadPath;
-*/
-    
     /**
      * 
      * Was 선택화면 호출
@@ -73,94 +48,90 @@ public class ProvisioningController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/selectForm.do")
+    @RequestMapping("/wasSelectForm.do")
     public String showWasSelect(Model model, HttpSession session) throws Exception {
         
         String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
         if(loginFlag == null || !loginFlag.equals("Y"))
             return "redirect:/login/showLogin.do";
         
-        return "/main/provisioning/selectForm";
+        return "/main/provisioning/wasSelectForm";
     }
 
     /**
-     * 
-     * 업로드 실행
+     * Instance 입력화면 호출
      *
-     * @param upload
-     * @param results
-     * @param status
+     * @param provisioning
+     * @param modelMap
      * @param session
      * @return
      * @throws Exception
-     *//*
-    @RequestMapping("/upload.do")
-    public String upload(Upload upload, ModelMap modelMap, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
-
+     */
+    @RequestMapping("/wasInstanceForm.do")
+    public String showWasInstance(Provisioning provisioning, ModelMap modelMap, HttpSession session) throws Exception {
+        
         String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
         if(loginFlag == null || !loginFlag.equals("Y"))
             return "redirect:/login/showLogin.do";
         
-        if (results.hasErrors()) {
-            return "redirect:/upload/form.do";
-        }
+        if(provisioning == null || provisioning.getTargetWas() == null)
+            return "redirect:/provisioning/wasSelectForm.do";
         
-        try {
-            String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis()  + File.separator;
-            String sourceFile, deployFile = "";
-            File migrationFile;
-            
-            if(upload.getProjectSrc() != null && upload.getProjectSrc().getSize() > 0 ) {
-                
-                migrationFile = new File(defaultPath+upload.getProjectSrc().getOriginalFilename());
-                if (!migrationFile.exists()) {
-                    if (!migrationFile.mkdirs()) {
-                        throw new Exception("Fail to create a directory for attached file [" + migrationFile + "]");
-                    }
-                }
-                
-                migrationFile.deleteOnExit();
-                upload.getProjectSrc().transferTo(migrationFile);
-                
-                sourceFile = migrationFile.getAbsolutePath();
-            } else {
-                sourceFile = null;
-            }
-            
-            if(upload.getDeploySrc() != null && upload.getDeploySrc().getSize() > 0 ) {
-                
-                migrationFile = new File(defaultPath+upload.getDeploySrc().getOriginalFilename());
-                if (!migrationFile.exists()) {
-                    if (!migrationFile.mkdirs()) {
-                        throw new Exception("Fail to create a directory for attached file [" + migrationFile + "]");
-                    }
-                }
-                
-                migrationFile.deleteOnExit();
-                upload.getDeploySrc().transferTo(migrationFile);
-                
-                deployFile = migrationFile.getAbsolutePath();
-                
-            } else {
-                deployFile = null;
-            }
-            component.migrate(sourceFile, deployFile, upload);
-            
-            PDFMetadataDefinition metaData = (PDFMetadataDefinition) ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
-            
-            modelMap.addAttribute("upload", upload);
-            modelMap.addAttribute("result", true);
-            modelMap.addAttribute("metaData", metaData);
-            
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-            modelMap.addAttribute("result", false);
-        }
+        modelMap.addAttribute("provisioning", provisioning);
         
-                
-        return "/ifrm/upload/resultForm";
+        String returnForm = "redirect:/provisioning/wasSelectForm.do";
+        if(provisioning.getTargetWas().equals("B"))
+            returnForm = "/main/provisioning/jbossInstanceForm";
+        
+        return returnForm;
     }
-    */
+
+    /**
+     * Instance 입력화면 호출
+     *
+     * @param provisioning
+     * @param modelMap
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/dataSourceForm.do")
+    public String showDataSource(Provisioning provisioning, ModelMap modelMap, HttpSession session) throws Exception {
+        
+        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
+        if(loginFlag == null || !loginFlag.equals("Y"))
+            return "redirect:/login/showLogin.do";
+        
+        if(provisioning == null || provisioning.getTargetWas() == null)
+            return "redirect:/provisioning/wasSelectForm.do";
+        
+        return "/main/provisioning/dataSourceForm";
+    }
+
+    /**
+     * Instance 입력화면 호출
+     *
+     * @param provisioning
+     * @param modelMap
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/install.do")
+    public String installWas(Provisioning provisioning, ModelMap modelMap, HttpSession session) throws Exception {
+        
+        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
+        if(loginFlag == null || !loginFlag.equals("Y"))
+            return "redirect:/login/showLogin.do";
+        
+        if(provisioning == null || provisioning.getTargetWas() == null)
+            return "redirect:/provisioning/wasSelectForm.do";
+        
+        System.out.println(provisioning.getReflectionToString(provisioning));
+        System.out.println(provisioning.getReflectionToString(provisioning.getJbossInstance()));
+        System.out.println(provisioning.getReflectionToString(provisioning.getDataSource()));
+        
+        return "/main/provisioning/dataSourceForm";
+    }
 
 }

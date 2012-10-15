@@ -23,8 +23,6 @@ package com.athena.chameleon.engine.entity.provisioning;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-
 /**
  * This Genre class is a Value Object class for Upload.
  * 
