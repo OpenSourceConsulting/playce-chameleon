@@ -202,6 +202,7 @@ public class EarAnalyzer extends AbstractAnalyzer {
         	if (f.isDirectory()) {
         		if(f.getName().equals("META-INF")) {
         			appXmlFile = new File(f, "application.xml");
+        			break;
         		} else {
         			appXmlFile = getAppllicationXml(f);
         		}
