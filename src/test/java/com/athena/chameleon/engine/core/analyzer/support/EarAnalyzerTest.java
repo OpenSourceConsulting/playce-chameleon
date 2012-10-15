@@ -20,7 +20,8 @@
  */
 package com.athena.chameleon.engine.core.analyzer.support;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.List;
@@ -29,9 +30,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,36 +85,6 @@ public class EarAnalyzerTest {
 		if(file.exists()) {
 			file.renameTo(new File(file.getParent() + File.separator + "physicial.ear"));
 		}
-	}
-
-	/**
-	 * <pre>
-	 * 
-	 * </pre>
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * <pre>
-	 * 
-	 * </pre>
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	/**
-	 * <pre>
-	 * 
-	 * </pre>
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	/**
