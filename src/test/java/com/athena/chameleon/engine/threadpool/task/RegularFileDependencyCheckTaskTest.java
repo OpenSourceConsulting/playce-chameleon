@@ -29,6 +29,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,6 +58,22 @@ public class RegularFileDependencyCheckTaskTest {
 	@Inject
 	@Named("taskExecutor")
 	private ChameleonThreadPoolExecutor executor;
+
+	/**
+	 * <pre>
+	 * CartEJB.JAVA 파일을 CartEJB.java 파일로 변경한다.
+	 * </pre>
+	 * 
+	 * @throws java.lang.Exception
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		File file = new File(FileEncodingConvertTaskTest.class.getResource("/dependency").getFile(), "CartEJB.JAVA");
+		
+		if(file.exists()) {
+			file.renameTo(new File(FileEncodingConvertTaskTest.class.getResource("/dependency").getFile(), "CartEJB.java"));
+		}
+	}//end of setUpBeforeClass()
 
 	/**
 	 * <pre>
