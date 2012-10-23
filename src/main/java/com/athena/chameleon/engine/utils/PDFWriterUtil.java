@@ -69,6 +69,7 @@ public class PDFWriterUtil {
     public static Font     fnBox;
     public static Font     fnBoxRed;
     public static Font     fnBoxWhite;
+    public static Font     fnBoxBlack;
     public static Font     fnChapter;
     public static Font     fnSection;
     public static Font     fnSection2;
@@ -82,6 +83,7 @@ public class PDFWriterUtil {
             fnBox        = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(40, 40, 40));
             fnBoxRed     = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(255, 0, 0));
             fnBoxWhite   = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(255, 255, 255));
+            fnBoxBlack   = new Font(bfKorean, 9, Font.UNDEFINED, new BaseColor(0,   0,   0));
             fnNormalBold = new Font(bfKorean, 10, Font.BOLD);
             fnChapter    = new Font(bfKorean, 14, Font.BOLD);
             fnSection    = new Font(bfKorean, 12, Font.BOLD);
@@ -261,6 +263,10 @@ public class PDFWriterUtil {
             	//배경이 검정색인 text box 생성
                 setBoxB(section, e1);
                 
+            } else if(e1.getName().equals("boxW")) {
+            	//text box 생성
+                setBoxW(section, e1);
+                
             } else if(e1.getName().equals("list")) {
             	//목록 생성
             	setList(section, e1);
@@ -387,6 +393,50 @@ public class PDFWriterUtil {
         cell.setLeading(0.0F, 1.8F);
         cell.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
         cell.setBackgroundColor(new BaseColor(0, 0, 0));
+        
+        t.addCell(cell);
+        
+        section.add(t);
+        
+    }
+
+    /**
+     * 
+     * box 구성(Backgroud : White)
+     *
+     * @param section box가 들어갈 section 객체
+     * @param e box 정보가 들어있는 element
+     * @throws Exception
+     */
+    public static void setBoxW(Section section, Element e) throws Exception {
+
+        PdfPTable t = new PdfPTable(1);
+        t.setSpacingBefore(1);
+        t.setSpacingAfter(12);
+        
+        if(e.getAttributeValue("width") != null)
+            t.setTotalWidth(Float.parseFloat(e.getAttributeValue("width")));
+        
+        PdfPCell cell = new PdfPCell();
+        if(e.getAttributeValue("option") != null) {
+            
+            ColumnText col = new ColumnText(null);
+            for(Element e1 : e.getChildren()) {
+                 if(e1.getAttributeValue("type").equals("red"))
+                     col.addText(new Phrase(e1.getText(), fnBoxRed));
+                 else
+                     col.addText(new Phrase(e1.getText(), fnBoxBlack));
+            }
+            cell.setColumn(col);
+            
+        } else {
+            cell.setPhrase(new Phrase(e.getText(), fnBoxBlack));    
+        }
+        
+        cell.setPaddingLeft(10);
+        cell.setLeading(0.0F, 1.8F);
+        cell.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_MIDDLE);
+        cell.setBackgroundColor(new BaseColor(255, 255, 255));
         
         t.addCell(cell);
         
