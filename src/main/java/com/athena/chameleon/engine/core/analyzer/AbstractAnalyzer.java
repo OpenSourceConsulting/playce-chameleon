@@ -38,6 +38,7 @@ import com.athena.chameleon.engine.core.analyzer.parser.EjbJarXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusApplicationDDXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusEjbDDXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusWebDDXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.PomXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.WebXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.WeblogicApplicationXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.WeblogicEjbJarXMLParser;
@@ -172,7 +173,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
 								new WeblogicApplicationXMLParser().parse(f, analyzeDefinition);
 							}
-						} else if (f.getName().equals("jeus-application-dd.xml")) {
+						} else if (f.getName().equals("jeus-application-dd.xml") || f.getName().equals("JEUSMain.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
 								new JeusApplicationDDXMLParser().parse(f, analyzeDefinition);
 							}
@@ -187,6 +188,12 @@ public abstract class AbstractAnalyzer implements Analyzer {
 						} else if (f.getName().equals("jeus-ejb-dd.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
 								new JeusEjbDDXMLParser().parse(f, analyzeDefinition);
+							}
+						}
+					} else {
+						if (f.getName().equals("pom.xml")) {
+							if (this instanceof ZipAnalyzer) {
+								new PomXMLParser().parse(f, analyzeDefinition);
 							}
 						}
 					}

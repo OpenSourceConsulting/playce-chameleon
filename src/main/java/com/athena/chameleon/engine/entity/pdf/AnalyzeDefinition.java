@@ -63,6 +63,12 @@ public class AnalyzeDefinition {
 	private List<String> libraryList;
 	//삭제 라이브러리 목록 정보
 	private List<String> deleteLibraryList;
+	//pom.xml 정보 (첫 번째 : original pom.xml 의 내용, 두 번째 : scope이 변경된 pom.xml 의 내용으로 변경 대상 라이브러리가 존재할 경우에만 값이 존재)
+	private List<CommonAnalyze> mavenProjectList;
+	// pom.xml에 기술된 dependency 목록
+	private List<MavenDependency> mavenDependencyList;
+	// scope이 변경된 Maven dependency 목록
+	private List<MavenDependency> modifiedMavenDependencyList;
 	//class 파일 갯수
 	private int classFileCount;
 	//class 디렉토리 갯수
@@ -252,6 +258,69 @@ public class AnalyzeDefinition {
 			deleteLibraryList = new ArrayList<String>();
 		}
 		return deleteLibraryList;
+	}
+
+	/**
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getMavenProjectList().add(newItem);
+     * </pre>
+     * 
+	 * @return the mavenProjectList
+	 */
+	public List<CommonAnalyze> getMavenProjectList() {
+		if(mavenProjectList == null) {
+			mavenProjectList = new ArrayList<CommonAnalyze>();
+		}
+		return mavenProjectList;
+	}
+
+	/**
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getMavenDependencyList().add(newItem);
+     * </pre>
+     * 
+	 * @return the mavenDependencyList
+	 */
+	public List<MavenDependency> getMavenDependencyList() {
+		if(mavenDependencyList == null) {
+			mavenDependencyList = new ArrayList<MavenDependency>();
+		}
+		return mavenDependencyList;
+	}
+
+	/**
+	 * <p>
+     * This accessor method returns a reference to the live list, not a snapshot.
+     * Therefore any modification you make to the returned list will be present inside this object.
+     * This is why there is not a <CODE>set</CODE> method for the application property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getModifiedMavenDependencyList().add(newItem);
+     * </pre>
+     * 
+	 * @return the modifiedMavenDependencyList
+	 */
+	public List<MavenDependency> getModifiedMavenDependencyList() {
+		if(modifiedMavenDependencyList == null) {
+			modifiedMavenDependencyList = new ArrayList<MavenDependency>();
+		}
+		return modifiedMavenDependencyList;
 	}
 
 	/**

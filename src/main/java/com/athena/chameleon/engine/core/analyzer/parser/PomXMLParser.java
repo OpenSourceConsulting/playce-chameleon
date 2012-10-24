@@ -22,14 +22,20 @@ package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
 
+import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.MavenDependency;
 import com.athena.chameleon.engine.entity.xml.project.v4_0.Dependency;
 import com.athena.chameleon.engine.entity.xml.project.v4_0.Model;
 import com.athena.chameleon.engine.entity.xml.project.v4_0.Model.Dependencies;
@@ -54,6 +60,18 @@ public class PomXMLParser extends Parser {
 		Assert.notNull(analyzeDefinition, "analyzeDefinition cannot be null.");
 		
 		this.analyzeDefinition = analyzeDefinition;
+
+		CommonAnalyze commonAnalyze = null;
+        try {
+            commonAnalyze = new CommonAnalyze();
+            commonAnalyze.setItem(file.getName());
+            commonAnalyze.setLocation(removeTempDir(file.getParent(), ChameleonConstants.ZIP_ROOT_DIR));
+            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
+            
+            analyzeDefinition.getMavenProjectList().add(commonAnalyze);
+        } catch (IOException e) {
+            logger.error("IOException has occurred.", e);
+        }
         
     	Object obj = null;
     	
@@ -64,6 +82,10 @@ public class PomXMLParser extends Parser {
 			logger.error("JAXBException has occurred.", e);
 		} catch (IOException e) {
 			logger.error("IOException has occurred.", e);
+		} catch (IllegalAccessException e) {
+			logger.error("IllegalAccessException has occurred.", e);
+		} catch (InvocationTargetException e) {
+			logger.error("InvocationTargetException has occurred.", e);
 		}
     	
 		return obj;
@@ -78,22 +100,41 @@ public class PomXMLParser extends Parser {
 	 * @return
 	 * @throws IOException 
 	 * @throws JAXBException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
 	 */
-	private Object checkDependency(Object model, String path) throws JAXBException, IOException {
+	private Object checkDependency(Object model, String path) throws JAXBException, IOException, IllegalAccessException, InvocationTargetException {
 		Dependencies dependencies = ((Model)model).getDependencies();
 		List<Dependency> dependencyList = dependencies.getDependency();
 		
 		boolean isChanged = false;
+		MavenDependency mavenDependency = null;
 		for (Dependency dependency : dependencyList) {
-			if (dependency.getGroupId().equals("xerces") && dependency.getArtifactId().equals("xercesImpl")) {
+			mavenDependency = new MavenDependency();
+			BeanUtils.copyProperties(mavenDependency, dependency);
+			analyzeDefinition.getMavenDependencyList().add(mavenDependency);
+			
+			if (dependency.getGroupId().equals("xerces") && dependency.getArtifactId().equals("xercesImpl") && !StringUtils.equals(dependency.getScope(), "provided")) {
 				isChanged = true;
 				dependency.setScope("provided");
-			} else if (dependency.getGroupId().equals("xml-apis") && dependency.getArtifactId().equals("xml-apis")) {
+				
+				mavenDependency = new MavenDependency();
+				BeanUtils.copyProperties(mavenDependency, dependency);
+				analyzeDefinition.getModifiedMavenDependencyList().add(mavenDependency);
+			} else if (dependency.getGroupId().equals("xml-apis") && dependency.getArtifactId().equals("xml-apis") && !StringUtils.equals(dependency.getScope(), "provided")) {
 				isChanged = true;
 				dependency.setScope("provided");
-			}else if (dependency.getGroupId().equals("xalan") && dependency.getArtifactId().equals("xalan")) {
+				
+				mavenDependency = new MavenDependency();
+				BeanUtils.copyProperties(mavenDependency, dependency);
+				analyzeDefinition.getModifiedMavenDependencyList().add(mavenDependency);
+			} else if (dependency.getGroupId().equals("xalan") && dependency.getArtifactId().equals("xalan") && !StringUtils.equals(dependency.getScope(), "provided")) {
 				isChanged = true;
 				dependency.setScope("provided");
+				
+				mavenDependency = new MavenDependency();
+				BeanUtils.copyProperties(mavenDependency, dependency);
+				analyzeDefinition.getModifiedMavenDependencyList().add(mavenDependency);
 			}
 		}
 		
@@ -102,6 +143,14 @@ public class PomXMLParser extends Parser {
 			String xmlData = JaxbUtils.marshal(Model.class.getPackage().getName(), model, new String[]{"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"}, true);
 			rewrite(new File(path, "pom.xml"), xmlData);
 			logger.debug("pom.xml has been modified.\n{}", xmlData);
+
+			CommonAnalyze commonAnalyze = null;
+            commonAnalyze = new CommonAnalyze();
+            commonAnalyze.setItem(analyzeDefinition.getMavenProjectList().get(0).getItem());
+            commonAnalyze.setLocation(analyzeDefinition.getMavenProjectList().get(0).getLocation());
+            commonAnalyze.setContents(xmlData);
+            
+            analyzeDefinition.getMavenProjectList().add(commonAnalyze);
 		}
 
         return model;

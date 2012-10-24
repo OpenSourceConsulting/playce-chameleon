@@ -118,11 +118,16 @@ public class PomXMLParserTest {
 					assertTrue("xalan의 scope은 \"provided\"이어야 합니다.", dependency.getScope().equals("provided"));
 				}
 			}
+			
+			assertTrue("Maven Dependency 라이브러리 갯수는 14이어야 합니다.", analyzeDefinition.getMavenDependencyList().size() == 14);
+			assertTrue("Scope이 변경된 Maven Dependency 라이브러리 갯수는 3이어야 합니다.", analyzeDefinition.getModifiedMavenDependencyList().size() == 3);
+			assertTrue("pom.xml 정보는 변경 전, 변경 후 2개가 있어야 합니다.", analyzeDefinition.getMavenProjectList().size() == 2);
 
 			File pom = new File(new File(this.getClass().getResource("/parser").getFile()), "pom.xml");
 			assertTrue("pom.xml 파일이 생성되어 있어야 합니다.", pom.exists());
 			pom.delete();
 		} catch(Throwable t) {
+			t.printStackTrace();
 			fail("Exception이 발생하면 안됩니다.");
 		}
 	}//end of testPom()
