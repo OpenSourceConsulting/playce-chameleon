@@ -31,6 +31,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
+import org.w3c.dom.Element;
 
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
@@ -112,6 +113,18 @@ public class PomXMLParser extends Parser {
 		for (Dependency dependency : dependencyList) {
 			mavenDependency = new MavenDependency();
 			BeanUtils.copyProperties(mavenDependency, dependency);
+			
+			if (mavenDependency.getVersion().startsWith("${") && mavenDependency.getVersion().endsWith("}")) {
+				List<Element> elementList = ((Model)model).getProperties().getAny();
+				
+				for (Element element : elementList) {
+					if (StringUtils.equals(mavenDependency.getVersion().substring(2, mavenDependency.getVersion().length() - 1), element.getNodeName())) {
+						mavenDependency.setVersion(element.getTextContent());
+						break;
+					}
+				}
+			}
+			
 			analyzeDefinition.getMavenDependencyList().add(mavenDependency);
 			
 			if (dependency.getGroupId().equals("xerces") && dependency.getArtifactId().equals("xercesImpl") && !StringUtils.equals(dependency.getScope(), "provided")) {
