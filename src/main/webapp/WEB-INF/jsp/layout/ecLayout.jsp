@@ -120,10 +120,7 @@
 		// set EVERY 'state' here so will undo ALL layout changes
 		// used by the 'Reset State' button: myLayout.loadState( stateResetSettings )
 		var stateResetSettings = {
-			south__size:		"auto"
-		,	south__initClosed:	false
-		,	south__initHidden:	false
-		,	west__size:			200
+			west__size:			200
 		,	west__initClosed:	false
 		,	west__initHidden:	false
 		};
@@ -131,8 +128,10 @@
 		var myLayout; 
 		
 		$(document).ready(function () {
+			
 			$('#menuS').selectBox();
 
+			resizePanel();
 			// this layout could be created with NO OPTIONS - but showing some here just as a sample...
 			// myLayout = $('body').layout(); -- syntax with No Options
 		
@@ -143,11 +142,6 @@
 			,	resizable:					true	// when open, pane can be resized 
 			,	slidable:					true	// when closed, pane can 'slide' open over other panes - closes on mouse-out
 			,	livePaneResizing:			true
-		
-			//	some resizing/toggling settings
-			,	south__resizable:			false	// OVERRIDE the pane-default of 'resizable=true'
-			,	south__spacing_open:		0		// no resizer-bar when open (zero height)
-			,	south__spacing_closed:		20		// big resizer-bar when open (zero height)
 		
 			//	some pane-size settings
 			,	west__minSize:				100
@@ -175,6 +169,17 @@
 		
 			});
 		
+			$(window).resize(function() {resizePanel();});
+			
+			function resizePanel(){
+
+				var maskHeight = $(window).height();          
+				var maskWidth = $(window).width();
+				
+		 		//마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다. 
+		 		$('#test').css({'width':maskWidth-65,'height':maskHeight-130});
+
+			}
 		</script>
 			
 	<body> 
@@ -183,7 +188,7 @@
 				<a href="<c:url value='/'/>"><img src="<c:url value='/sample/images/h1_toplogo.png'/>" alt="osc" /></a>
 			</h1> 
 		</div>
-		<div id="test" style="padding: 20px; 20px; 20px; 20px;"> 
+		<div id="test" style="padding: 0px; 20px; 20px; 0px;"> 
 			<!-- allowOverflow auto-attached by option: west__showOverflowOnHover = true -->
 			<div class="ui-layout-west">
 				<tiles:insertAttribute name="left" />
@@ -192,10 +197,7 @@
 			<div class="ui-layout-center">
 				<tiles:insertAttribute name="contents" />
 			</div>
-	
-			<div class="ui-layout-south">
-				<tiles:insertAttribute name="footer" />
-			</div>
 		</div>
+		<tiles:insertAttribute name="footer" />
 	</body>
 </html>
