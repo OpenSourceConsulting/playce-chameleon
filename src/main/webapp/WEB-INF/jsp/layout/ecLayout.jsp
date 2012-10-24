@@ -172,13 +172,11 @@
 			$(window).resize(function() {resizePanel();});
 			
 			function resizePanel(){
-
 				var maskHeight = $(window).height();          
 				var maskWidth = $(window).width();
 				
 		 		//마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다. 
-		 		$('#test').css({'width':maskWidth-65,'height':maskHeight-130});
-
+		 		$('#contentsPanel').css({'width':maskWidth-65,'height':maskHeight-130});
 			}
 		</script>
 			
@@ -188,7 +186,7 @@
 				<a href="<c:url value='/'/>"><img src="<c:url value='/sample/images/h1_toplogo.png'/>" alt="osc" /></a>
 			</h1> 
 		</div>
-		<div id="test" style="padding: 0px; 20px; 20px; 0px;"> 
+		<div id="contentsPanel" style="padding: 0px; 20px; 20px; 0px;"> 
 			<!-- allowOverflow auto-attached by option: west__showOverflowOnHover = true -->
 			<div class="ui-layout-west">
 				<tiles:insertAttribute name="left" />
