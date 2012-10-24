@@ -113,4 +113,29 @@
     <definition name="/error/*" extends=".emptyTemplate">
         <put-attribute name="contents" value="/WEB-INF/jsp/error/{1}.jsp" />
     </definition>
+    
+    <!--  ec test start -->
+    
+    <!-- Sample Template Definition -->
+    <definition name="/ec/*/*/*/*" extends=".ecTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+        
+    <definition name="/ec/*/*/*" extends=".ecTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="/ec/*/*" extends=".ecTemplate">
+        <put-attribute name="contents" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition>
+
+    <definition name=".ecTemplate" template="/WEB-INF/jsp/layout/ecLayout.jsp">
+        <put-attribute name="css" value="/WEB-INF/jsp/layout/css/chameleon-css.jsp" />
+        <put-attribute name="js" value="/WEB-INF/jsp/layout/js/chameleon-js.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/layout/part/sample/top.jsp" />
+        <put-attribute name="left" value="/WEB-INF/jsp/ec/leftMenu.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/layout/part/chameleon/bottom.jsp" />
+    </definition>
+    
+	<!-- ec test nd -->    
 </tiles-definitions>
