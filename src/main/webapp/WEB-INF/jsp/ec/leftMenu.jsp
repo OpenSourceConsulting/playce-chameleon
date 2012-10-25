@@ -9,6 +9,25 @@
 	function setMenuView(idx) {
 		$('#menuDiv'+idx).toggle();
 	}
+	
+	function goPage(pageUrl) {
+		$.ajax({
+			type: "post",
+			url: pageUrl,
+			dataType: "html",			  
+			success: function(html) {
+				$('#detailForm').html(html);
+				$('#detailForm').layout({
+					inset: {
+							top:	0
+							,	bottom:	0
+							,	left:	0
+							,	right:	0
+							}
+				});
+			}
+		});
+	}
 </script>
 
 <div style="padding: 10px; 10px; 10px; 10px;">
@@ -27,7 +46,7 @@
 	<p>Event</p>
 	<a href="javascript:setMenuView('1');"><p><i>INSTANCE</i></p></a>
 	<div id="menuDiv1" style="padding: 0px 1em 3px 10px;">
-		<p>Instance</p>
+		<a href="javascript:goPage('<c:url value='/sample/gridForm.do' />');"><p>Instance</p></a>
 		<p>Spot Requests</p>
 		<p>Reserved Instances</p>
 	</div>

@@ -50,5 +50,18 @@ public class SampleController {
     public String dashBoard(Model model, HttpSession session) throws Exception {
     	return "/ec/ec/dashBoard";
     }
+
+    /**
+     * 
+     * grid 및 detail sample 호출
+     *
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/sample/gridForm.do")
+    public String gridForm(Model model, HttpSession session) throws Exception {
+    	return "/ajax/gridForm";
+    }
    
 }

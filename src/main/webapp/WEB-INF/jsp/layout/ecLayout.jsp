@@ -68,117 +68,53 @@
 			width:		100%;
 			left:		-1px;
 		}
-		.ui-layout-west ul ul {
-			/* Drop-Down */
-			bottom:		auto; 
-			margin:		0;
- 			margin-top:	2em;
+		
+		#container {
+			background:	#999;
+			min-height:	300px;
+			min-width:	600px;
+  			position:	absolute; 
+ 			top:		80px;	/* margins in pixels */ 
+ 			bottom:		50px;	/* could also use a percent */ 
+			left:		20px;
+			right:		20px;
 		}
-		ul ul li		{ padding: 1px 1em 1px 1px; }
-		ul ul li:hover	{ background-color: #FF9; }
-		ul li:hover ul	{ display:	block; background-color: #EEE; }
-	
+		
+		.inner{border: 0px;}
 	</style>
 	<script>
-		
-		function toggleLiveResizing () {
-			$.each( $.layout.config.borderPanes, function (i, pane) {
-				var o = myLayout.options[ pane ];
-				o.livePaneResizing = !o.livePaneResizing;
-			});
-		};
-		
-		function toggleStateManagement ( skipAlert, mode ) {
-			if (!$.layout.plugins.stateManagement) return;
-		
-			var options	= myLayout.options.stateManagement
-			,	enabled	= options.enabled // current setting
-			;
-			if ($.type( mode ) === "boolean") {
-				if (enabled === mode) return; // already correct
-				enabled	= options.enabled = mode
-			}
-			else
-				enabled	= options.enabled = !enabled; // toggle option
-		
-			if (!enabled) { // if disabling state management...
-				myLayout.deleteCookie(); // ...clear cookie so will NOT be found on next refresh
-				if (!skipAlert)
-					alert( 'This layout will reload as the options specify \nwhen the page is refreshed.' );
-			}
-			else if (!skipAlert)
-				alert( 'This layout will save & restore its last state \nwhen the page is refreshed.' );
-		
-			// update text on button
-			var $Btn = $('#btnToggleState'), text = $Btn.html();
-			if (enabled)
-				$Btn.html( text.replace(/Enable/i, "Disable") );
-			else
-				$Btn.html( text.replace(/Disable/i, "Enable") );
-		};
-		
-		// set EVERY 'state' here so will undo ALL layout changes
-		// used by the 'Reset State' button: myLayout.loadState( stateResetSettings )
-		var stateResetSettings = {
-			west__size:			200
-		,	west__initClosed:	false
-		,	west__initHidden:	false
-		};
-		
-		var myLayout; 
-		
-		$(document).ready(function () {
-			
-			$('#menuS').selectBox();
+		$(document).ready(function(){
 
-			resizePanel();
-			// this layout could be created with NO OPTIONS - but showing some here just as a sample...
-			// myLayout = $('body').layout(); -- syntax with No Options
-		
-			myLayout = $('#test').layout({
-		
-			//	reference only - these options are NOT required because 'true' is the default
-				closable:					true	// pane can open & close
-			,	resizable:					true	// when open, pane can be resized 
-			,	slidable:					true	// when closed, pane can 'slide' open over other panes - closes on mouse-out
-			,	livePaneResizing:			true
-		
-			//	some pane-size settings
-			,	west__minSize:				100
-			,	center__minWidth:			100
-		
-			//	some pane animation settings
-			,	west__animatePaneSizing:	false
-			,	west__fxSpeed_size:			"fast"	// 'fast' animation when resizing west-pane
-			,	west__fxSpeed_open:			1000	// 1-second animation when opening west-pane
-			,	west__fxSettings_open:		{ easing: "easeOutBounce" } // 'bounce' effect when opening
-			,	west__fxName_close:			"none"	// NO animation when closing west-pane
-		
-			//	enable showOverflow on west-pane so CSS popups will overlap north pane
-			,	west__showOverflowOnHover:	true
-		
-			//	enable state management
-			,	stateManagement__enabled:	true // automatic cookie load & save enabled by default
-		
-			,	showDebugMessages:			true // log and/or display messages from debugging & testing code
-			});
-		
-			// if there is no state-cookie, then DISABLE state management initially
-			var cookieExists = !$.isEmptyObject( myLayout.readCookie() );
-			if (!cookieExists) toggleStateManagement( true, false );
-		
-			});
-		
-			$(window).resize(function() {resizePanel();});
+			$('#menuS').selectBox();
 			
-			function resizePanel(){
-				var maskHeight = $(window).height();          
-				var maskWidth = $(window).width();
-				
-		 		//마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다. 
-		 		$('#contentsPanel').css({'width':maskWidth-65,'height':maskHeight-130});
-			}
-		</script>
+			$("#container").layout({ 
+					center__childOptions: {
+ 					center__paneSelector:	"#detailForm"	// tab-panels-wrapper
+ 						,	inset: {
+	 							top:	0
+	 							,	bottom:	0
+	 							,	left:	0
+	 							,	right:	0
+	 							}
+
+				}
+			});
+
+
+			resizeFooter();
+			
+		});
+
+
+		$(window).resize(function() {resizeFooter();});
+		
+		function resizeFooter(){
+			$('#footer').css({'top':'0'});
+			
+			var maskHeight = $(document).height();
+			$('#footer').css({'top':maskHeight-50});
+		}
+	</script>
 			
 	<body> 
 		<div class="toplogo">
@@ -186,16 +122,24 @@
 				<a href="<c:url value='/'/>"><img src="<c:url value='/sample/images/h1_toplogo.png'/>" alt="osc" /></a>
 			</h1> 
 		</div>
-		<div id="contentsPanel" style="padding: 0px; 20px; 20px; 0px;"> 
+		<div id="container" > 
 			<!-- allowOverflow auto-attached by option: west__showOverflowOnHover = true -->
 			<div class="ui-layout-west">
 				<tiles:insertAttribute name="left" />
 			</div>
 			
+<!-- 			<iframe id="mainFrame" name="mainFrame" class="ui-layout-center" -->
+<!-- 				frameborder="0" scrolling="auto" -->
+<!-- 				src="http://plugins.jquery.com/project/Layout"></iframe> -->
+					
 			<div class="ui-layout-center">
-				<tiles:insertAttribute name="contents" />
-			</div>
+				<div id="detailForm" class="inner">
+					<tiles:insertAttribute name="contents" />
+				</div>
+			</div> 
 		</div>
-		<tiles:insertAttribute name="footer" />
+		<div id="footer" style="position: absolute;">
+			<tiles:insertAttribute name="footer" />
+		</div>
 	</body>
 </html>
