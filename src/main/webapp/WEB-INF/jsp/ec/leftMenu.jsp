@@ -16,15 +16,13 @@
 			url: pageUrl,
 			dataType: "html",			  
 			success: function(html) {
-				$('#detailForm').html(html);
-				$('#detailForm').layout({
-					inset: {
-							top:	0
-							,	bottom:	0
-							,	left:	0
-							,	right:	0
-							}
-				});
+				var $container = $("#detailForm");
+	            var layout = $container.data("layout");
+
+	            if ( layout )
+	                layout.destroy();
+
+	            $container.html(html);
 			}
 		});
 	}
@@ -42,7 +40,7 @@
 	</select> 
 	<br/>
 	<br/>
-	<p>EC2 Dashboard</p>
+	<a href="javascript:goPage('<c:url value='/sample/ajax/dashBoard.do' />');"><p>EC2 Dashboard</p></a>
 	<p>Event</p>
 	<a href="javascript:setMenuView('1');"><p><i>INSTANCE</i></p></a>
 	<div id="menuDiv1" style="padding: 0px 1em 3px 10px;">

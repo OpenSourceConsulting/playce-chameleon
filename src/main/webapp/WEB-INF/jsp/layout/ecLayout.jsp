@@ -19,11 +19,18 @@
 		<tiles:insertAttribute name="css" />
 		<link type="text/css" rel="stylesheet" href="<c:url value='/css/jquery/layout/layout-default-latest.css'/>" />
 		<link type="text/css" rel="stylesheet" href="<c:url value='/css/jquery/selectbox/jquery.selectBox.css'/>" />
+		<link type="text/css" rel="stylesheet" href="<c:url value='/css/jquery/grid/ui.jqgrid.css'/>" />
+<%-- 		<link type="text/css" rel="stylesheet" href="<c:url value='/css/jquery/tab/jquery.ui.tabs.css'/>" /> --%>
 		
 		<tiles:insertAttribute name="js" />
 		<script type="text/javascript" src="<c:url value='/js/jquery/jquery-latest.js'/>"></script>
 		<script type="text/javascript" src="<c:url value='/js/jquery/jquery-ui-latest.js'/>"></script>
 		<script type="text/javascript" src="<c:url value='/js/jquery/jquery.layout-latest.js'/>"></script>
+		<script type="text/javascript" src="<c:url value='/js/jquery/i18n/grid.locale-en.js'/>"></script>
+<%-- 		<script type="text/javascript" src="<c:url value='/js/jquery/js/ui.multiselect.js'/>"></script> --%>
+		<script type="text/javascript" src="<c:url value='/js/jquery/jquery.jqGrid.min.js'/>"></script>
+<%-- 		<script type="text/javascript" src="<c:url value='/js/jquery/jquery.tablednd.js'/>"></script> --%>
+<%-- 		<script type="text/javascript" src="<c:url value='/js/jquery/jquery.contextmenu.js'/>"></script> --%>
 		<script type="text/javascript" src="<c:url value='/js/jquery/jquery.selectBox.js'/>"></script>
 	</head>
 	<style type="text/css">
@@ -46,28 +53,6 @@
 		/*
 		 *	Rules for simulated drop-down/pop-up lists
 		 */
-		ul {
-			/* rules common to BOTH inner and outer UL */
-			z-index:	100000;
-			margin:		1ex 0;
-			padding:	0;
-			list-style:	none;
-			cursor:		pointer;
-			border:		1px solid Black;
-			/* rules for outer UL only */
-			width:		15ex;
-			position:	relative;
-		}
-		ul li {
-			background-color: #ffffff;
-			padding: 0.15em 1em 0.3em 5px;
-		}
-		ul ul {
-			display:	none;
-			position:	absolute;
-			width:		100%;
-			left:		-1px;
-		}
 		
 		#container {
 			background:	#999;
