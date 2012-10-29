@@ -39,10 +39,14 @@ public class JBossInstance implements Serializable {
     private String serverPort;
     //JBoss Engine Home
     private String engineHome;
+    //신규설치 여부
+    private String newInstallYn;
     //JBoss Instance Home
     private String instanceHome;
-    //JBoss Instance Name
-    private String instanceName;
+    //JBoss Engine Name
+    private String engineName;
+    //Port Group
+    private String portGroup;
 
     /**
      * @return the serverIp
@@ -101,49 +105,77 @@ public class JBossInstance implements Serializable {
     }
 
     /**
-     * @return the instanceName
+     * @return the newInstallYn
      */
-    public String getInstanceName() {
-        return instanceName;
+    public String getNewInstallYn() {
+        return newInstallYn;
     }
 
     /**
-     * @param instanceName the instanceName to set
+     * @param newInstallYn the newInstallYn to set
      */
-    public void setInstanceName(String instanceName) {
-        this.instanceName = instanceName;
+    public void setNewInstallYn(String newInstallYn) {
+        this.newInstallYn = newInstallYn;
     }
 
-	/**
-	 * 
-	 * Model class 의 field 를 문자열로 정리하여 반환함.
-	 * 
-	 * @param object
-	 * @return
-	 */
-	@SuppressWarnings({ "rawtypes" })
-	public static String getReflectionToString(Object object) {
-		Class clazz = object.getClass();
-		Field[] fields = clazz.getDeclaredFields();
-		StringBuilder returnString = new StringBuilder();
-		for (Field field : fields) {
-			field.setAccessible(true);
-			returnString.append(field.getName());
-			returnString.append(" = ");
-			try {
-				returnString.append(field.get(object));
-			}
-			catch (IllegalArgumentException e) {
-				returnString.append("IllegalArgumentException occured!!");
-				returnString.append(e.toString());
-			}
-			catch (IllegalAccessException e) {
-				returnString.append("IllegalAccessException occured!!");
-				returnString.append(e.toString());
-			}
-			returnString.append(";");
-		}
-		return returnString.toString();
-	}
+    /**
+     * @return the engineName
+     */
+    public String getEngineName() {
+        return engineName;
+    }
+
+    /**
+     * @param engineName the engineName to set
+     */
+    public void setEngineName(String engineName) {
+        this.engineName = engineName;
+    }
+
+    /**
+     * @return the portGroup
+     */
+    public String getPortGroup() {
+        return portGroup;
+    }
+
+    /**
+     * @param portGroup the portGroup to set
+     */
+    public void setPortGroup(String portGroup) {
+        this.portGroup = portGroup;
+    }
+
+    /**
+     * 
+     * Model class 의 field 를 문자열로 정리하여 반환함.
+     * 
+     * @param object
+     * @return
+     */
+    @SuppressWarnings({ "rawtypes" })
+    public static String getReflectionToString(Object object) {
+        Class clazz = object.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+        StringBuilder returnString = new StringBuilder();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            returnString.append(field.getName());
+            returnString.append(" = ");
+            try {
+                returnString.append(field.get(object));
+            }
+            catch (IllegalArgumentException e) {
+                returnString.append("IllegalArgumentException occured!!");
+                returnString.append(e.toString());
+            }
+            catch (IllegalAccessException e) {
+                returnString.append("IllegalAccessException occured!!");
+                returnString.append(e.toString());
+            }
+            returnString.append(";");
+        }
+        return returnString.toString();
+    }
 
 }

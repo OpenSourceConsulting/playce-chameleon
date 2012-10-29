@@ -3,13 +3,7 @@
 <script>
 onMenu(2);
 </script>
-<div style="margin-top:50px;margin-left:50px;">
-	<table border="0">
-		<tr>
-			<td width="300"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=B'/>" ><img src="<c:url value='/images/jboss.jpg'/>" border="0" /></a></td>
-			<td width="120">&nbsp;</td>
-			<td width="300"><img src="<c:url value='/images/tomcat.jpg' />" border="0" /></td>
-		</tr>
-	</table>
+<div style="position:relative; width:618; height:180px; top:160px; left:180px;">
+   	<div style="float:left;"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=B'/>" ><img src="<c:url value='/images/common/bt_jboss01.png'/>" /></a></div>
+    <div style="float:left;"><a href="#"><img src="<c:url value='/images/common/bt_tomcat01.png' />" /></a></div>
 </div>
-<br/>

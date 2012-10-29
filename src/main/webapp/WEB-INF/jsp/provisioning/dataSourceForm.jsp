@@ -42,51 +42,46 @@
 <input type="hidden" id="serverIp" 		name="jbossInstance.serverIp" 		value="${provisioning.jbossInstance.serverIp}">
 <input type="hidden" id="serverPort" 	name="jbossInstance.serverPort" 	value="${provisioning.jbossInstance.serverPort}">
 <input type="hidden" id="engineHome" 	name="jbossInstance.engineHome" 	value="${provisioning.jbossInstance.engineHome}">
+<input type="hidden" id="newInstallYn" 	name="jbossInstance.newInstallYn" 	value="${provisioning.jbossInstance.newInstallYn}">
 <input type="hidden" id="instanceHome" 	name="jbossInstance.instanceHome" 	value="${provisioning.jbossInstance.instanceHome}">
-<input type="hidden" id="instanceName" 	name="jbossInstance.instanceName" 	value="${provisioning.jbossInstance.instanceName}">
+<input type="hidden" id="instanceName" 	name="jbossInstance.engineName" 	value="${provisioning.jbossInstance.engineName}">
+<input type="hidden" id="portGroup" 	name="jbossInstance.portGroup" 		value="${provisioning.jbossInstance.portGroup}">
 <input type="hidden" id="targetWas" 	name="targetWas" 					value="${provisioning.targetWas}">
 
-	<table border="0">
-		<tr>
-			<td colspan="2"><div class="title">JBoss 데이터소스 정보입력</div></td>
-		</tr>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>Database 유형 : </b></td>
-			<td width="500">
-				MySQL<input type="radio" name="dataSource.databaseType" id="databaseType" title="MySQL" checked="checked" value="mysql" border="0"/>
-				Oracle<input type="radio" name="dataSource.databaseType" id="databaseType" title="Oracle" value="oracle" border="0"/>
-				Cubrid<input type="radio" name="dataSource.databaseType" id="databaseType" title="Cubrid" value="cubrid" border="0"/>
-			</td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>JNDI 이름 : </b></td>
-			<td width="500"><input type="text" id="jndiName" name="dataSource.jndiName" title="JNDI 이름 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>Connection URL : </b></td>
-			<td width="500"><input type="text" id="connectionUrl" name="dataSource.connectionUrl" title="Connection URL 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>User Name : </b></td>
-			<td width="500"><input type="text" id="userName" name="dataSource.userName" title="User Name 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>Password : </b></td>
-			<td width="500"><input type="text" id="password" name="dataSource.password" title="Password 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>Min Pool Size : </b></td>
-			<td width="500"><input type="text" id="minPoolSize" name="dataSource.minPoolSize" title="Min Pool Size 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>Max Pool Size : </b></td>
-			<td width="500"><input type="text" id="maxPoolSize" name="dataSource.maxPoolSize" title="Max Pool Size 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td colspan="2"><a href="javascript:void(0);" id="installBtn"><input type="submit" value="Install"></a></td>
-		</tr>
-	</table>
+<div class="tit_box">JBoss 데이터소스 정보입력</div>
+   <div class="bt_tab_box01">
+   	<div class="bt_tab_txt01">JBoss</div>
+       <div class="bt_tab_txt01" style="color:#858686"><a href="#">TomCat</a></div>
+   </div>
+<div class="bg_formbox" style="height:517px;"> <!-- form배경 박스 높이를 517로 늘임 -->
+   	<div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Database 유형</p></div>
+       <div class="formbox_form01">
+       	<div class="formbox_radioform" style="margin-left:0"><input type="radio" name="dataSource.databaseType" id="databaseType1" value="mysql" title="MySQL" class="regular-radio" checked /><label for="databaseType1"></label></div>
+           <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">MySQL</p></div>
+           <div class="formbox_radioform"><input type="radio" name="dataSource.databaseType" id="databaseType2" title="Oracle" value="oracle" class="regular-radio" /><label for="databaseType2"></label></div>
+           <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">Oracle</p></div>
+           <div class="formbox_radioform"><input type="radio" name="dataSource.databaseType" id="databaseType3" title="Cubrid" value="cubrid" class="regular-radio" /><label for="databaseType3"></label></div>
+           <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">Cubrid</p></div>      	
+       </div>
+       
+       <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JNDI 이름</p></div>
+       <div class="formbox_form02"><input type="text" id="jndiName" name="dataSource.jndiName" title="JNDI 이름 입력" class="input_form02" /></div>
+       		
+       <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Connection URL</p></div>
+       <div class="formbox_form02"><input type="text" id="connectionUrl" name="dataSource.connectionUrl" title="Connection URL 입력" class="input_form02" /></div>
+       
+       <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">User Name</p></div>
+       <div class="formbox_form02"><input type="text" id="userName" name="dataSource.userName" title="User Name 입력" class="input_form02" /></div>
+       
+       <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Password</p></div>
+       <div class="formbox_form02"><input type="text" id="password" name="dataSource.password" title="Password 입력" class="input_form02" /></div>
+       
+       <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Min Pool Size</p></div>
+       <div class="formbox_form02"><input type="text" id="minPoolSize" name="dataSource.minPoolSize" title="Min Pool Size 입력" class="input_form02" /></div>
+       
+       <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Max Pool Size</p></div>
+       <div class="formbox_form02"><input type="text" id="maxPoolSize" name="dataSource.maxPoolSize" title="Max Pool Size 입력" class="input_form02" /></div>
+	
+       <div class="common_btn"><a href="javascript:void(0);" id="installBtn"><img src="<c:url value='/images/common/bt_install01.png'/>" /></a></div>        
+ </div>        
  </form:form>
