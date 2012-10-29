@@ -24,7 +24,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.athena.peacock.engine.action.Action;
+import com.athena.peacock.engine.action.ConfigurationAction;
 import com.athena.peacock.engine.action.SshAction;
+import com.athena.peacock.engine.action.ZipAction;
 import com.athena.peacock.engine.core.Command;
 import com.athena.peacock.engine.core.CommandExecutor;
 import com.athena.peacock.engine.core.InstallCommand;
@@ -59,6 +61,12 @@ public class CommandTest {
         Command command = new InstallCommand();
         SshAction ssh = new SshAction();
         command.setAction(ssh);
+        
+        ConfigurationAction config = new ConfigurationAction();
+        command.setAction(config);
+        
+        ZipAction zip = new ZipAction();
+        command.setAction(zip);
         
         command.execute();
     }

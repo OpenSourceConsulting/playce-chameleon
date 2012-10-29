@@ -31,12 +31,14 @@ import com.athena.peacock.engine.core.TargetHost;
  * @version 1.0
  */
 public class ScpAction implements Action {
-    private String command;
+    private String source;
+    private String target;
 
     public ScpAction() {}
     
-    public ScpAction(TargetHost host, String command) {
-        this.command = command;
+    public ScpAction(TargetHost host, String source, String target) {
+        this.source = source;
+        this.target = target;
     }
     /* (non-Javadoc)
      * @see com.athena.peacock.engine.action.Action#perform()
