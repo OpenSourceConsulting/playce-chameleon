@@ -61,46 +61,42 @@
 	
 </script>
 <form:form modelAttribute="upload" method="post" id="uploadForm" name="uploadForm" enctype="multipart/form-data">
-	<table border="0">
-		<tr>
-			<td colspan="2"><div class="title">Input Project</div></td>
-		</tr>
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>프로젝트명: </b></td>
-			<td width="500"><input type="text" size="40" id="projectNm" name="projectNm" title="Project명 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>담당자: </b></td>
-			<td width="500"><input type="text" id="person" name="person" title="담당자 입력" value="" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>프로젝트 소스: </b></td>
-			<td width="500"><input type="file" name="projectSrc" id="projectSrc" title="찾아보기" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>디플로이 애플리케이션 </b></td>
-			<td width="500"><input type="file" name="deploySrc" id="deploySrc" title="찾아보기" /></td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>기존 WAS </b></td>
-			<td width="500">
-				WebLogic<input type="radio" name="beforeWas" id="beforeWas" title="WEBLOGIC" checked="checked" value="W"/>
-				Jeus<input type="radio" name="beforeWas" id="beforeWas" title="JEUS" value="J"/>
-			</td>
-		</tr>
-		<tr height="30">
-			<td width="150"><b>대상 WAS </b></td>
-			<td width="500">
-				JBoss<input type="radio" name="afterWas" id="afterWas" title="JBoss" checked="checked" value="B" border="0"/>
-				Tomcat<input type="radio" name="afterWas" id="afterWas" title="Tomcat" value="T"/>
-			</td>
-		</tr>
-		<tr height="30">
-			<td colspan="2"><a href="javascript:void(0);" id="applyBtn"><input type="submit" id="applyBtn" value="Start Analyze"></a></td>
-		</tr>
-	</table>
+	<div class="tit_box">기본정보 입력</div>
 	
+	<div class="bg_formbox">
+    	<div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Project명</p></div>
+        <div class="formbox_form01"><input type="text" size="40" id="projectNm" name="projectNm" title="Project명 입력" value="" class="input_form02"/></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">담당자</p></div>
+        <div class="formbox_form02"><input type="text" id="person" name="person" title="담당자 입력" value="" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Project Source</p></div>
+        <div class="formbox_form02">
+        	<div class="formbox_sub01"><input type="file" name="projectSrc" id="projectSrc" title="찾아보기" class="input_form02"/></div>
+        </div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Deploy Source</p></div>
+        <div class="formbox_form02">
+        	<div class="formbox_sub01"><input type="file" name="deploySrc" id="deploySrc" title="찾아보기" class="input_form02" /></div>
+        </div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">기존 WAS</p></div>
+        <div class="formbox_form02">
+        	<div class="formbox_radioform" style="margin-left:0"><input type="radio" name="beforeWas" id="beforeWas1" class="regular-radio" value="W" checked /><label for="beforeWas1"></label></div>
+            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">WEB LOGIC</p></div>
+            <div class="formbox_radioform"><input type="radio" name="beforeWas" id="beforeWas2" title="JEUS" class="regular-radio" value="J" /><label for="beforeWas2"></label></div>
+            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">JEUS</p></div>  	
+        </div>
+				
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">대상 WAS</p></div>
+        <div class="formbox_form02">
+        	<div class="formbox_radioform" style="margin-left:0"><input type="radio" name="afterWas" id="afterWas1" title="JBoss" value="B" class="regular-radio" checked /><label for="afterWas1"></label></div>
+            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">JBoss</p></div>
+            <div class="formbox_radioform"><input type="radio" name="afterWas" id="afterWas2" title="Tomcat" value="T" class="regular-radio" /><label for="afterWas2"></label></div>
+            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">Tomcat</p></div>  	
+        </div>
+        
+        <div class="common_btn"><a href="javascript:void(0);" id="applyBtn"><img src="<c:url value='/images/common/bt_apply01.png' />" /></a></div>        
+    </div>        
+    
  </form:form>

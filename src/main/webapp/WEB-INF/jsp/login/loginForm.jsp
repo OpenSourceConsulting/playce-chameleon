@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR" />
 <title>Athena Chameleon - WAS Migration Tool</title>
 
-<link href="<c:url value='/css/login-box.css'/>" rel="stylesheet" type="text/css" />
+<link href="<c:url value='/css/style.css'/>" rel="stylesheet" type="text/css" />
 <style>
 body {
 	background-image: url(<c:url value='/images/login/bg001.jpg' />);

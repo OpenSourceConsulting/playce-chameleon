@@ -18,10 +18,27 @@
 	    <title>Athena Chameleon - WAS Migration Tool</title>
 		<tiles:insertAttribute name="css" />
 		<tiles:insertAttribute name="js" />
+		<style>
+		body {
+			background-image: url(<c:url value='/images/common/bg_pattern.gif' />);
+		}
+		</style>
+		<script>
+			$(document).ready(function (){
+				 $("input[type=file]").filestyle({ 
+				     image: "<c:url value='/images/common/bt_browse.png'/>",
+				     imageheight : 41,
+				     imagewidth : 107,
+				     width : 250
+				 });
+			});
+		</script>
 	</head>
 	<body> 
 		<tiles:insertAttribute name="header" />
-		<tiles:insertAttribute name="contents" />
-		<tiles:insertAttribute name="footer" />
+		<div class="body_box">
+			<tiles:insertAttribute name="contents" />
+		</div>
+<%-- 		<tiles:insertAttribute name="footer" /> --%>
 	</body>
 </html>
