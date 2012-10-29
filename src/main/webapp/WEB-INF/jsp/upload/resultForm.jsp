@@ -24,50 +24,40 @@ function downloadFile(fileName){
 
 </script>
 
-<table border="0">
-	<tr>
-		<td colspan="2"><div class="title">입력 정보</div></td>
-	</tr>
-	<tr height="30">
-		<td width="150"><b>프로젝트명: </b></td>
-		<td width="500">${upload.projectNm}</td>
-	</tr>
-	<tr height="30">
-		<td width="150"><b>담당자: </b></td>
-		<td width="500">${upload.person}</td>
-	</tr>
-	<tr height="30">
-		<td width="150"><b>기존 WAS </b></td>
-		<td width="500">${upload.beforeWas}</td>
-	</tr>
-	<tr height="30">
-		<td width="150"><b>대상 WAS </b></td>
-		<td width="500">${upload.afterWas}</td>
-	</tr>
-</table>
-<br/>
-<br/>
-<table border="0">
-	<tr>
-		<td colspan="2"><div class="title">변환 결과</div></td>
-	</tr>
-	<c:if test="${!empty metaData.pdfFile}">
-		<tr height="30">
-			<td width="200"><b>변환 PDF Report: </b></td>
-			<td width="500">${metaData.pdfFileName} <a href="javascript:void(0);" val="${metaData.pdfFile}" class="down"><input type="submit" val="${metaData.pdfFile}" class="down" value="다운로드" /></a></td>
-		</tr>
-	</c:if>
-	<c:if test="${!empty metaData.migrateSourceFile}">
-		<tr height="30">
-			<td width="200"><b>변환 프로젝트 소스: </b></td>
-			
-			<td width="500">${metaData.migrateSourceFileName} <a href="javascript:void(0);" val="${metaData.migrateSourceFile}" class="down"><input type="submit" value="다운로드" /></a></td>
-		</tr>
-	</c:if>
-	<c:if test="${!empty metaData.migrateDeployFile}">
-		<tr height="30">
-			<td width="200"><b>변환 디플로이 애플리케이션: </b></td>
-			<td width="500">${metaData.migrateDeployFileName} <a href="javascript:void(0);" val="${metaData.migrateDeployFile}" class="down"><input type="submit" value="다운로드" /></a></td>
-		</tr>
-	</c:if>
-</table>
+	<div class="tit_box">기본정보 입력</div>
+
+	<div class="bg_formbox">
+    	<div class="formbox_subtit"><p style="padding-left:12px;">입력 정보</p></div>
+    	<div class="formbox_txt01"><p style="padding-top:4px; padding-left:15px;">Project명</p></div>
+        <div class="formbox_txt01-1"><p style="padding-top:4px;">${upload.projectNm}</div>
+        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">담당자</p></div>
+        <div class="formbox_txt01-1"><p style="padding-top:2px;">${upload.person}</div>
+        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">기존 WAS</p></div>
+        <div class="formbox_txt01-1"><p style="padding-top:2px;">${upload.beforeWas}</div>
+        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">대상 WAS</p></div>
+        <div class="formbox_txt01-1"><p style="padding-top:2px;">${upload.afterWas}</div>
+        
+        <div class="formbox_subtit"><p style="padding-left:12px; margin-top:20px;">변환 결과</p></div>
+        
+        <c:if test="${!empty metaData.pdfFile}">
+	    	<div class="formbox_txt01"><p style="padding-top:25px; padding-left:15px;">변환 PDF Report</p></div>
+	        <div class="formbox_txt01-1">
+	        	<div class="formbox_sub01a"><p style="padding-top:25px;">${metaData.pdfFileName}</p></div>
+	        	<div class="formbox_sub01"><p style="padding-top:23px; padding-left:10px;"><a href="javascript:void(0);" val="${metaData.pdfFile}" class="down"><img src="<c:url value='/images/common/bt_download.png'/>" /></a></p></div>
+	        </div>
+	    </c:if>
+	    <c:if test="${!empty metaData.migrateSourceFile}">
+	        <div class="formbox_txt01"><p style="padding-top:25px; padding-left:15px;">변환 Source File</p></div>
+	        <div class="formbox_txt01-1">
+	        	<div class="formbox_sub01a"><p style="padding-top:25px;">${metaData.migrateSourceFileName}</p></div>
+	        	<div class="formbox_sub01"><p style="padding-top:23px; padding-left:10px;"><a href="javascript:void(0);" val="${metaData.migrateSourceFile}" class="down"><img src="<c:url value='/images/common/bt_download.png'/>" /></a></p></div>
+	        </div>
+	    </c:if>
+	    <c:if test="${!empty metaData.migrateDeployFile}">
+	        <div class="formbox_txt01"><p style="padding-top:25px; padding-left:15px;">변환 Deploy File</p></div>
+	        <div class="formbox_txt01-1">
+	        	<div class="formbox_sub01a"><p style="padding-top:25px;">${metaData.migrateDeployFileName}</p></div>
+	        	<div class="formbox_sub01"><p style="padding-top:23px; padding-left:10px;"><a href="javascript:void(0);" val="${metaData.migrateDeployFile}" class="down"><img src="<c:url value='/images/common/bt_download.png'/>" /></a></p></div>
+	        </div>
+	    </c:if>
+       </div>
