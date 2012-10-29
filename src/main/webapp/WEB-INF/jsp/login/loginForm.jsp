@@ -7,7 +7,11 @@
 <title>Athena Chameleon - WAS Migration Tool</title>
 
 <link href="<c:url value='/css/login-box.css'/>" rel="stylesheet" type="text/css" />
-
+<style>
+body {
+	background-image: url(<c:url value='/images/login/bg001.jpg' />);
+}
+</style>
 <script type="text/javascript">
 	$(document).ready(function (){
 		$('#loginBtn').click(function() { 
@@ -54,27 +58,22 @@
 </head>
 
 <body>
-
-
-<div style=" auto;">
-
-
-<div id="login-box">
-
-<H2>Login</H2>
-WAS Migration Tool for NCIA and Supported by Open Source Consulting.
-<br />
-<br />
-<form:form modelAttribute="login" method="post" id="loginForm" name="loginForm">
-	<div id="login-box-name" style="margin-top:20px;">Email:</div><div id="login-box-field" style="margin-top:20px;"><input id="loginId" name="loginId" class="form-login" title="Username" value="admin@nipa.kr" size="30" maxlength="2048" /></div>
-		<div id="login-box-name">Password:</div><div id="login-box-field"><input id="password" name="password" type="password" class="form-login" title="Password" value="" size="30" maxlength="2048" /></div>
-			<br />
-			<span class="login-box-options"><input type="checkbox" name="1" value="1"> Remember Me <a href="#" style="margin-left:30px;">Forgot password?</a></span>
-			<br />
-			<br />
-			<a href="#" id="loginBtn"><img src="<c:url value='/images/login-btn.png'/>" width="103" height="42" style="margin-left:90px;" /></a>
-		</div>
+	<div class="loginbox_bg">
+	<form:form modelAttribute="login" method="post" id="loginForm" name="loginForm">
+		<div class="login_formbox">
+	    	<div class="login_id01"> <p style="padding-top:8px"> ID </p> </div>
+	        <div class="login_id02">
+	        	<input id="loginId" name="loginId" type="text" maxlength="20" title="Username" value="admin@nipa.kr" class="input_form01" /> <!-- 글자 입력수 20자로 제한 -->
+	        </div>
+	        <div class="login_pw01"> <p style="padding-top:8px"> Password </p> </div>
+	        <div class="login_pw02">
+	        	<input id="password" name="password" type="password" class="input_form01" size="30" />
+	        </div>
+	        <div class="login_btn">
+	        	<a href="javascript:void(0);" id="loginBtn"><img src="<c:url value='/images/login/bt_login01.png'/>" /></a>
+	        </div>
+	    </div>
+	</form:form>
 	</div>
- </form:form>
 </body>
 </html>
