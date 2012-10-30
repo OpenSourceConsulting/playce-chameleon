@@ -24,9 +24,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 /**
- * <pre>
- * 
- * </pre>
+ * This Genre class is a Value Object class for Provisioning.
  * 
  * @author Hyo-jeong Lee
  * @version 1.0
@@ -39,6 +37,8 @@ public class Provisioning implements Serializable {
     private String targetWas;
     //Jboss Instance 정보
     private JBossInstance jbossInstance;
+    //Tomcat Instance 정보
+    private TomcatInstance tomcatInstance;
     //Data Source 정보
     private ProvisionDataSource dataSource;
     
@@ -66,6 +66,18 @@ public class Provisioning implements Serializable {
     public void setJbossInstance(JBossInstance jbossInstance) {
         this.jbossInstance = jbossInstance;
     }
+    /**
+	 * @return the tomcatInstance
+	 */
+	public TomcatInstance getTomcatInstance() {
+		return tomcatInstance;
+	}
+	/**
+	 * @param tomcatInstance the tomcatInstance to set
+	 */
+	public void setTomcatInstance(TomcatInstance tomcatInstance) {
+		this.tomcatInstance = tomcatInstance;
+	}
     /**
      * @return the dataSource
      */
@@ -110,6 +122,6 @@ public class Provisioning implements Serializable {
         }
         return returnString.toString();
     }
-
+	
 }
 //end of Provisioning.java

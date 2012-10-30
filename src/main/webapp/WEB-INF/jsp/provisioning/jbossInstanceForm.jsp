@@ -40,7 +40,7 @@
 	<div class="tit_box">JBoss 인스턴스 정보 입력</div>
     <div class="bt_tab_box01">
     	<div class="bt_tab_txt01">JBoss</div>
-        <div class="bt_tab_txt01" style="color:#858686"><a href="#">TomCat</a></div>
+        <div class="bt_tab_txt01" style="color:#858686"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=T' />">TomCat</a></div>
     </div>
 	<div class="bg_formbox">
     	<div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Server IP</p></div>

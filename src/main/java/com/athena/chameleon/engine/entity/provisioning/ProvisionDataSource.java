@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 /**
- * This Genre class is a Value Object class for Upload.
+ * This Genre class is a Value Object class for Data Source.
  * 
  * @author Hyo-jeong Lee
  * @version 1.0

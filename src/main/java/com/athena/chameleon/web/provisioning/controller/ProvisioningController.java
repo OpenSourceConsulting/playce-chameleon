@@ -82,6 +82,8 @@ public class ProvisioningController {
         String returnForm = "redirect:/provisioning/wasSelectForm.do";
         if(provisioning.getTargetWas().equals("B"))
             returnForm = "/main/provisioning/jbossInstanceForm";
+        else if(provisioning.getTargetWas().equals("T"))
+        	returnForm = "/main/provisioning/tomcatInstanceForm";
         
         return returnForm;
     }
@@ -128,7 +130,10 @@ public class ProvisioningController {
             return "redirect:/provisioning/wasSelectForm.do";
         
         System.out.println(provisioning.getReflectionToString(provisioning));
-        System.out.println(provisioning.getReflectionToString(provisioning.getJbossInstance()));
+        if(provisioning.getJbossInstance() != null)
+        	System.out.println(provisioning.getReflectionToString(provisioning.getJbossInstance()));
+        if(provisioning.getTomcatInstance() != null)
+        	System.out.println(provisioning.getReflectionToString(provisioning.getTomcatInstance()));
         System.out.println(provisioning.getReflectionToString(provisioning.getDataSource()));
         
         return "/main/provisioning/dataSourceForm";

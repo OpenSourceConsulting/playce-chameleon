@@ -94,4 +94,23 @@ public class LoginController {
         return "jsonView";
     }
 
+    /**
+     *  로그아웃
+     *
+     * @param modelMap
+     * @param results
+     * @param status
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/logout.do")
+    public String loginout(Model model, HttpSession session) throws Exception {
+
+        session.removeAttribute("loginFlag");
+        session.removeAttribute("login");
+        
+        return "redirect:/login/showLogin.do";
+    }
+
 }

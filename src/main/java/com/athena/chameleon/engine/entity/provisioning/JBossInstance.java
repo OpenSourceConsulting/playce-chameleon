@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 /**
- * This Genre class is a Value Object class for Upload.
+ * This Genre class is a Value Object class for JBoss Instance.
  * 
  * @author Hyo-jeong Lee
  * @version 1.0

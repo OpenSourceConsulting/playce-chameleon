@@ -39,23 +39,47 @@
 	});
 </script>
 <form:form modelAttribute="provisioning" method="post" id="sourceForm" name="sourceForm">
-<input type="hidden" id="serverIp" 		name="jbossInstance.serverIp" 		value="${provisioning.jbossInstance.serverIp}">
-<input type="hidden" id="serverPort" 	name="jbossInstance.serverPort" 	value="${provisioning.jbossInstance.serverPort}">
-<input type="hidden" id="engineHome" 	name="jbossInstance.engineHome" 	value="${provisioning.jbossInstance.engineHome}">
-<input type="hidden" id="newInstallYn" 	name="jbossInstance.newInstallYn" 	value="${provisioning.jbossInstance.newInstallYn}">
-<input type="hidden" id="instanceHome" 	name="jbossInstance.instanceHome" 	value="${provisioning.jbossInstance.instanceHome}">
-<input type="hidden" id="instanceName" 	name="jbossInstance.engineName" 	value="${provisioning.jbossInstance.engineName}">
-<input type="hidden" id="portGroup" 	name="jbossInstance.portGroup" 		value="${provisioning.jbossInstance.portGroup}">
 <input type="hidden" id="targetWas" 	name="targetWas" 					value="${provisioning.targetWas}">
+<c:if test="${provisioning.targetWas == 'B'}">
+	<input type="hidden" id="serverIp" 		name="jbossInstance.serverIp" 		value="${provisioning.jbossInstance.serverIp}">
+	<input type="hidden" id="serverPort" 	name="jbossInstance.serverPort" 	value="${provisioning.jbossInstance.serverPort}">
+	<input type="hidden" id="engineHome" 	name="jbossInstance.engineHome" 	value="${provisioning.jbossInstance.engineHome}">
+	<input type="hidden" id="newInstallYn" 	name="jbossInstance.newInstallYn" 	value="${provisioning.jbossInstance.newInstallYn}">
+	<input type="hidden" id="instanceHome" 	name="jbossInstance.instanceHome" 	value="${provisioning.jbossInstance.instanceHome}">
+	<input type="hidden" id="instanceName" 	name="jbossInstance.engineName" 	value="${provisioning.jbossInstance.engineName}">
+	<input type="hidden" id="portGroup" 	name="jbossInstance.portGroup" 		value="${provisioning.jbossInstance.portGroup}">
+</c:if>
+<c:if test="${provisioning.targetWas == 'T'}">
+	<input type="hidden" id="serverIp" 		name="tomcatInstance.serverIp" 		value="${provisioning.tomcatInstance.serverIp}">
+	<input type="hidden" id="serverPort" 	name="tomcatInstance.serverPort" 	value="${provisioning.tomcatInstance.serverPort}">
+	<input type="hidden" id="tomcatEngine" 	name="tomcatInstance.tomcatEngine" 	value="${provisioning.tomcatInstance.tomcatEngine}">
+	<input type="hidden" id="newInstallYn" 	name="tomcatInstance.newInstallYn" 	value="${provisioning.tomcatInstance.newInstallYn}">
+	<input type="hidden" id="javaHome" 		name="tomcatInstance.javaHome" 		value="${provisioning.tomcatInstance.javaHome}">
+	<input type="hidden" id="catalinaHome" 	name="tomcatInstance.catalinaHome" 	value="${provisioning.tomcatInstance.catalinaHome}">
+	<input type="hidden" id="serverName" 	name="tomcatInstance.serverName" 	value="${provisioning.tomcatInstance.serverName}">
+	<input type="hidden" id="httpPort" 		name="tomcatInstance.httpPort" 		value="${provisioning.tomcatInstance.httpPort}">
+	<input type="hidden" id="ajppPort" 		name="tomcatInstance.ajppPort" 		value="${provisioning.tomcatInstance.ajppPort}">
+	<input type="hidden" id="sslPort" 		name="tomcatInstance.sslPort" 		value="${provisioning.tomcatInstance.sslPort}">
+	<input type="hidden" id="shutdownPort" 	name="tomcatInstance.shutdownPort" 	value="${provisioning.tomcatInstance.shutdownPort}">
+</c:if>
 
-<div class="tit_box">JBoss 데이터소스 정보입력</div>
-   <div class="bt_tab_box01">
-   	<div class="bt_tab_txt01">JBoss</div>
-       <div class="bt_tab_txt01" style="color:#858686"><a href="#">TomCat</a></div>
-   </div>
-<div class="bg_formbox" style="height:517px;"> <!-- form배경 박스 높이를 517로 늘임 -->
-   	<div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Database 유형</p></div>
-       <div class="formbox_form01">
+   <c:if test="${provisioning.targetWas == 'B'}">
+		<div class="tit_box">JBoss 데이터소스 정보입력</div>
+	    <div class="bt_tab_box01">
+	    	<div class="bt_tab_txt01">JBoss</div>
+	        <div class="bt_tab_txt01" style="color:#858686"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=T' />">TomCat</a></div>
+	    </div>
+   </c:if>
+   <c:if test="${provisioning.targetWas == 'T'}">
+	    <div class="tit_box">Tomcat 데이터소스 정보입력</div>
+	    <div class="bt_tab_box02">
+	    	<div class="bt_tab_txt01" style="color:#858686"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=B' />">JBoss</a></div>
+	    	<div class="bt_tab_txt01">TomCat</div>
+	    </div>
+   </c:if>
+	<div class="bg_formbox" style="height:517px;"> <!-- form배경 박스 높이를 517로 늘임 -->
+   	    <div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Database 유형</p></div>
+        <div class="formbox_form01">
        	<div class="formbox_radioform" style="margin-left:0"><input type="radio" name="dataSource.databaseType" id="databaseType1" value="mysql" title="MySQL" class="regular-radio" checked /><label for="databaseType1"></label></div>
            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">MySQL</p></div>
            <div class="formbox_radioform"><input type="radio" name="dataSource.databaseType" id="databaseType2" title="Oracle" value="oracle" class="regular-radio" /><label for="databaseType2"></label></div>
