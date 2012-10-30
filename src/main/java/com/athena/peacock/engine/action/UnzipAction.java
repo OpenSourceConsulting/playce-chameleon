@@ -20,24 +20,53 @@
  */
 package com.athena.peacock.engine.action;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.athena.peacock.engine.util.ZipUtil;
+
 /**
  * <pre>
- * 
+ * 지정된 파일에 대한 압축해제를 위한 Action 클래스
  * </pre>
  * 
  * @author Ji-Woong Choi
  * @version 1.0
  */
 public class UnzipAction implements Action {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UnzipAction.class);
+	
+	// 압축해제 대상 파일
+	private String sourceFile;
+	// 압축해제 결과 디렉토리
+	private String destDir;
+	
+	public UnzipAction(String sourceFile) {
+		this(sourceFile, null);
+	}
+	
+	public UnzipAction(String sourceFile, String destDir) {
+		this.sourceFile = sourceFile;
+		this.destDir = destDir;
+	}
 
     /* (non-Javadoc)
      * @see com.athena.peacock.engine.action.Action#perform()
      */
     @Override
     public void perform() {
-        // TODO Auto-generated method stub
-        System.out.println("You should call com.athena.peacock.engine.ant.ZipService.unzip here!");
-    }
+    	logger.debug("Before decompress [{}] file to [{}]", sourceFile, destDir);
+    	
+    	try {
+    		destDir = ZipUtil.decompress(sourceFile, destDir);
+			logger.debug("[{}] Decompress has done successfully.", destDir);
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+		}
+    }//end of perform()
 
 }
-//end of ZipAction.java
+//end of UnzipAction.java

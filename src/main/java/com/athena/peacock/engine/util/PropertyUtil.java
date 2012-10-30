@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
  * <pre>
  * filtering.properties 및 config 하위의 프로퍼티 파일을 로드하여 주어진 key에 해당하는 value 값을 조회하기 위해 사용하는 유틸 클래스.
  * <b>Spring util:property를 사용한 프로퍼트 값 조회도 가능</b>
+ * 
+ * athena-chameleon 프로젝트에 일부 의존적인 내용이 있으므로 추후 peacock 전용 프로젝트 분리 시 일부 기능 수정 필요.
  * </pre>
  * 
  * @author Sang-cheon Park

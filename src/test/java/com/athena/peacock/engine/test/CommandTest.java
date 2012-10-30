@@ -65,7 +65,7 @@ public class CommandTest {
         ConfigurationAction config = new ConfigurationAction();
         command.setAction(config);
         
-        ZipAction zip = new ZipAction();
+        ZipAction zip = new ZipAction("");
         command.setAction(zip);
         
         command.execute();

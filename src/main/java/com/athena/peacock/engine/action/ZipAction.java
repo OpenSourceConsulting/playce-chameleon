@@ -20,24 +20,56 @@
  */
 package com.athena.peacock.engine.action;
 
+import java.io.IOException;
+
+import org.apache.tools.ant.taskdefs.ManifestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.athena.peacock.engine.util.ZipUtil;
+
 /**
  * <pre>
- * 
+ * 지정된 경로에 대한 압축을 수행하기 위한 Action 클래스
  * </pre>
  * 
  * @author Ji-Woong Choi
  * @version 1.0
  */
 public class ZipAction implements Action {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ZipAction.class);
+	
+	// 압축 대상 디렉토리
+	private String baseDir;
+	// 압축 결과 파일
+	private String destFile;
+	
+	public ZipAction(String baseDir) {
+		this(baseDir, null);
+	}
+	
+	public ZipAction(String baseDir, String destFile) {
+		this.baseDir = baseDir;
+		this.destFile = destFile;
+	}
 
     /* (non-Javadoc)
      * @see com.athena.peacock.engine.action.Action#perform()
      */
     @Override
     public void perform() {
-        // TODO Auto-generated method stub
-        System.out.println("You should call com.athena.peacock.engine.ant.ZipService.zip() here!");
-    }
-
+    	logger.debug("Before compress [{}] directory to [{}]", baseDir, destFile);
+    	
+    	try {
+			destFile = ZipUtil.compress(baseDir, destFile);
+			logger.debug("[{}] Compress has done successfully.", destFile);
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+		} catch (ManifestException e) {
+			logger.error("ManifestException has occurred.", e);
+		}
+    }//end of perform()
+    
 }
 //end of ZipAction.java

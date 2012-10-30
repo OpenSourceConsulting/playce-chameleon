@@ -50,7 +50,7 @@ public class ZipUtil {
 	 * @throws IOException
 	 * @throws ManifestException 
 	 */
-	public static boolean compress(String baseDir) throws IOException, ManifestException {
+	public static String compress(String baseDir) throws IOException, ManifestException {
 		return compress(baseDir, null);
 	}//end of compress()
 
@@ -64,7 +64,7 @@ public class ZipUtil {
 	 * @throws IOException
 	 * @throws ManifestException 
 	 */
-	public static boolean compress(String baseDir, String destFile) throws IOException, ManifestException {
+	public static String compress(String baseDir, String destFile) throws IOException, ManifestException {
 		Assert.notNull(baseDir, "baseDir cannot be null.");
 		
 		Project project = new Project();
@@ -92,7 +92,7 @@ public class ZipUtil {
 		
     	zip.execute();
 		
-		return true;
+		return archiveFile.getAbsolutePath();
 	}//end of compress()
 	
 	/**
@@ -103,7 +103,7 @@ public class ZipUtil {
 	 * @return
 	 * @throws IOException
 	 */
-	public static boolean decompress(String sourceFile) throws IOException {
+	public static String decompress(String sourceFile) throws IOException {
         return decompress(sourceFile, null);
     }//end of decompress()
 
@@ -113,10 +113,10 @@ public class ZipUtil {
      * </pre>
      * @param sourceFile
      * @param destDir
-     * @return
+     * @return 
      * @throws IOException
      */
-    public static boolean decompress(String sourceFile, String destDir) throws IOException {
+    public static String decompress(String sourceFile, String destDir) throws IOException {
 		Assert.notNull(sourceFile, "sourceFile cannot be null.");
 		
 		File src = new File(sourceFile);
@@ -136,7 +136,7 @@ public class ZipUtil {
     	unzip.setDest(dest);
     	unzip.execute();
     	
-		return true;
+		return dest.getAbsolutePath();
     }//end of decompress()
     
 }// end of ZipUtil.java
