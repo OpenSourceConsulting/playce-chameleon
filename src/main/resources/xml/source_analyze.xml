@@ -32,4 +32,5 @@
 	<section title="JSP 소스 파일 분석 결과">
 		<jsp_analyze_result/>
 	</section>
+	<maven_dependency/>
 </chapter>

@@ -44,6 +44,7 @@ import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
+import com.athena.chameleon.engine.entity.pdf.MavenDependency;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.upload.Upload;
 import com.athena.chameleon.engine.utils.PDFWriterUtil;
@@ -360,6 +361,9 @@ public class PDFDocGenerator {
              } else if(e.getName().equals("ejb_application_list")) {
             	// 엔터프라이즈 어플리케이션의 EJB 단위 모듈 정보
                 childs = setEjbApplicationData(data, upload);
+             } else if(e.getName().equals("maven_dependency")) {
+                 // Maven Dependency 정보
+                 childs = setMavenDependencyList(data, upload);
              }
         }
         
@@ -938,7 +942,102 @@ public class PDFDocGenerator {
         
         return childs;
     }
+
+    /**
+     * Maven Dependency 정보 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
+    public static List<Element> setMavenDependencyList(AnalyzeDefinition data, Upload upload) {
+
+        List<Element> childs = new ArrayList<Element>();
+        Element child, childE1, childE2;
+        
+        if(data.getMavenProjectList().size() > 0) {
+            
+            Element section = new Element("section");
+            section.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.title"));
+            
+            Element cSection = new Element("section");
+            cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.pom.title"));
     
+            cSection.addContent(new Element("box").setText(data.getMavenProjectList().get(0).getContents()));
+            section.addContent(cSection);
+            
+            if(data.getMavenProjectList().size() > 1) {
+                cSection = new Element("section");
+                cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.trans_pom.title"));
+        
+                cSection.addContent(new Element("box").setText(data.getMavenProjectList().get(1).getContents()));
+                section.addContent(cSection);
+            }
+            
+            if(data.getMavenDependencyList().size() > 0) {
+                cSection = new Element("section");
+                cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.lib.title"));
+                
+                cSection.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.maven_dependency.lib.title") + MessageUtil.getMessage("pdf.message.maven_dependency.lib.ather_text")));
+                
+                child = new Element("table");
+                childE1 = new Element("header");
+                childE2 = new Element("row");
+                
+                child.setAttribute("size", "3");
+                childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.trans_artifactId")));
+                childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.trans_groupId")));
+                childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.trans_version")));
+                
+                for(MavenDependency comm : data.getMavenDependencyList()) {
+                    childE2.addContent(new Element("col").setText(comm.getArtifactId()));
+                    childE2.addContent(new Element("col").setText(comm.getGroupId()));
+                    childE2.addContent(new Element("col").setText(comm.getVersion()));
+                }
+                
+                child.addContent(childE1);
+                child.addContent(childE2);
+                
+                cSection.addContent(child);
+                section.addContent(cSection);
+            }
+            
+            if(data.getModifiedMavenDependencyList().size() > 0) {
+                cSection = new Element("section");
+                cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.trans_lib.title"));
+                
+                cSection.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.maven_dependency.trans_lib.title") + MessageUtil.getMessage("pdf.message.maven_dependency.lib.ather_text")));
+                
+                child = new Element("table");
+                childE1 = new Element("header");
+                childE2 = new Element("row");
+                
+                child.setAttribute("size", "4");
+                childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.trans_artifactId")));
+                childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.trans_groupId")));
+                childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.trans_version")));
+                childE1.addContent(new Element("col").setText(MessageUtil.getMessage("pdf.message.table.header.trans_scope")));
+                
+                for(MavenDependency comm : data.getModifiedMavenDependencyList()) {
+                    childE2.addContent(new Element("col").setText(comm.getArtifactId()));
+                    childE2.addContent(new Element("col").setText(comm.getGroupId()));
+                    childE2.addContent(new Element("col").setText(comm.getVersion()));
+                    childE2.addContent(new Element("col").setText(comm.getScope()));
+                }
+                
+                child.addContent(childE1);
+                child.addContent(childE2);
+                
+                cSection.addContent(child);
+                section.addContent(cSection);
+            }
+            
+            childs.add(section);
+        }
+        
+        return childs;
+    }
+
     /**
      * 
      * PDF Title Page 구성
