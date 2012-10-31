@@ -62,10 +62,10 @@ public class CommandTest {
         SshAction ssh = new SshAction();
         command.setAction(ssh);
         
-        ConfigurationAction config = new ConfigurationAction();
+        ConfigurationAction config = new ConfigurationAction(null, null);
         command.setAction(config);
         
-        ZipAction zip = new ZipAction("");
+        ZipAction zip = new ZipAction(null);
         command.setAction(zip);
         
         command.execute();

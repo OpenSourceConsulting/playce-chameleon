@@ -20,10 +20,17 @@
  */
 package com.athena.peacock.engine.action;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
-import com.athena.peacock.engine.core.Property;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
+import com.athena.peacock.engine.core.Property;
 
 /**
  * <pre>
@@ -34,39 +41,22 @@ import com.athena.peacock.engine.core.Property;
  * @version 1.0
  */
 public class ConfigurationAction implements Action {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ConfigurationAction.class);
+	
+    /**
+     * 프로비저닝 시 변경되어야 할 파일
+     */
     private String fileName;
     
     /**
-     * 프로비저닝시 사용할 프로퍼티들을 정의
+     * 파일 내의 변경되어야 할 항목들에 대한 목록
      */
     private List<Property> properties;
-
-    /**
-     * @return the fileName
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * @param fileName the fileName to set
-     */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    /**
-     * @return the properties
-     */
-    public List<Property> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
+    
+    public ConfigurationAction(String fileName, List<Property> properties) {
+    	this.fileName = fileName;
+    	this.properties = properties;
     }
 
     /* (non-Javadoc)
@@ -74,10 +64,31 @@ public class ConfigurationAction implements Action {
      */
     @Override
     public void perform() {
-        // TODO Replace configuration variable using apache configuration
-        System.out.println("Change configuration file using properties");
-    } 
-    
+    	Assert.notNull(fileName, "filename cannot be null.");
+    	Assert.notNull(properties, "properties cannot be null.");
+    	
+    	File file = new File(fileName);
+    	
+    	Assert.isTrue(file.exists(), fileName + " does not exist.");
+    	Assert.isTrue(file.isFile(), fileName + " is not a file.");
+    	
+    	logger.debug("[{}] file's configuration will be changed.", fileName);
+    	
+    	try {
+			String fileContents = IOUtils.toString(file.toURI());
+			
+			for(Property property : properties) {
+				logger.debug("\"${{}}\" will be changed to \"{}\".", property.getKey(), property.getValue().replaceAll("\\\\", ""));
+				fileContents = fileContents.replaceAll("\\$\\{" + property.getKey() + "\\}", property.getValue());
+			}
+			
+			FileOutputStream fos = new FileOutputStream(file);
+			IOUtils.write(fileContents, fos);
+			IOUtils.closeQuietly(fos);
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+		}
+    }//end of perform()
     
 }
 //end of Configuration.java
