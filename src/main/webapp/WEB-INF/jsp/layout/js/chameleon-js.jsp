@@ -10,4 +10,18 @@
 <script type="text/javascript">
 $(function() {
 });
+
+//진행중 메시지 처리
+function wrapWindowByMask(){
+	
+	//화면의 높이와 너비를 구한다.        
+	var maskHeight = $(document).height();          
+	var maskWidth = $(window).width();           
+		//마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
+		$('#mask').css({'width':maskWidth,'height':maskHeight});
+
+	//애니메이션 효과        
+	$('#hideDiv').fadeIn(1000);    
+}
+
 </script>

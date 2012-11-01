@@ -1,9 +1,5 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" %>
 <%@ include file="/taglib/taglibs.jsp"%>
-<style>
-#mask {    position:absolute;    left:0;  top:0;  z-index:9000;    background-color:#ffffff;    display:none; filter:alpha(opacity=70); opacity:0.7; -moz-opacity:0.7 }
-#maskContents { position:absolute; text-align:center; width:100%; font: bold 15px Arial; z-index:9999; }
-</style>
 <script type="text/javascript">
 	onMenu(1);
 
@@ -31,33 +27,6 @@
 			}
 		});
 	});
-	
-	//진행중 메시지 처리
-	function wrapWindowByMask(){
-		
-		var div = $('	<div id="mask" style="display:none; ">' 
-				+ '			<div id="maskContents"> '
-				+ '				마이그레이션 진행중입니다..'
-				+ '				<br/><br/>' 
-				+ '				<img src="<c:url value="/images/spinner.gif"/>"/>' 
-				+ '			</div>'
-				+ ' 	</div> ');
-		
-		$('body').append(div);
-		
-		//화면의 높이와 너비를 구한다.        
-		var maskHeight = $(document).height();          
-		var maskWidth = $(window).width();           
- 		//마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
- 		$('#mask').css({'width':maskWidth,'height':maskHeight});
-
- 		//text를 화면 중앙에 구현.
- 		var top = (maskHeight / 2) - 70;          
-		$('#maskContents').css('top', top);
- 		
-		//애니메이션 효과        
-		$('#mask').fadeIn(1000);    
-	}
 	
 </script>
 <form:form modelAttribute="upload" method="post" id="uploadForm" name="uploadForm" enctype="multipart/form-data">

@@ -183,3 +183,62 @@ html,body {height:100%;}
 .regular-radio + label:active, .regular-radio:checked + label:active {
 	box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px 1px 3px rgba(0,0,0,0.1);
 }
+
+
+/* 2012-10-30 */
+
+.intro_box{
+	position:relative;
+	width:855px; top:30px;	
+}
+.intro_box-tit{
+	position:relative;
+	top:10px; left:60px; width:750px;
+	font:bold 25px '맑은고딕','Malgun Gothic','굴림','gulim'; color:#6dc5cf!important;
+}
+.intro_box-text{
+	position:relative;
+	top:20px; left:60px; width:750px;
+}
+.intro_box-img{
+	position:relative;
+	width:111px; height:102px; top:20px; left:30px;
+	float:left;	
+}
+
+
+/* form textarea */
+
+.style_textarea {
+	resize:vertical; width:700px; height:320px;	padding:10px;
+	scrollbar-face-color:#f1f5f5;
+	scrollbar-highlight-color:white;
+	scrollbar-3dlight-color: white;
+	scrollbar-shadow-color:white;
+	scrollbar-darkshadow-color: white;
+	scrollbar-track-color: white;
+	scrollbar-arrow-color:#6dc5cf;
+	border:none; background-color:#ffffff;
+	font:normal 12px '맑은고딕','Malgun Gothic','굴림','gulim'; color:#424242!important;
+}
+
+.style_textarea:focus {outline: 0;}
+
+
+/* Progress box */
+.pop_box00 {
+	position:absolute;
+	width:450px; height:150px; top:310px; left:360px; z-index:3;
+	background-color:#FFF; border-radius: 10px;
+	border:#6dc5cf solid 3px;
+	box-shadow:0px 10px 10px #ccc;
+	font:bold 16px '맑은고딕','Malgun Gothic','굴림','gulim'; color:#6dc5cf!important;
+}
+.pop_box00-img{
+	position:relative;
+	top:40px; left:81px; width:67px; height:69px; float:left;
+}
+.pop_box00-text{
+	position:relative;
+	top:60px; left:110px; width:250px; height:69px; float:left;
+}
