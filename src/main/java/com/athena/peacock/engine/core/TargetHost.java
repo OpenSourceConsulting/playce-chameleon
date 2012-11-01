@@ -28,134 +28,138 @@ package com.athena.peacock.engine.core;
  * @author Ji-Woong Choi
  * @version 1.0
  */
-
-
 public class TargetHost implements java.io.Serializable {
-    /**
-     * Serialiable
-     */
-    private static final long serialVersionUID = 1L;
 
-    /**
-     * Callback 받을 URL 
-     */
+	private static final long serialVersionUID = 1L;
+
+    /** Callback 받을 URL */
     private String callback;
 
-    /**
-     * 프로비저닝 대상 Hostname
-     */
-    private String hostname;
+    /** 프로비저닝 대상 host */
+    private String host;
 
-    
-    /**
-     * 프로비저닝 대상의 SSH Port 번호
-     */
+    /** 프로비저닝 대상의 SSH Port 번호 */
     private Integer port;
 
-    /**
-     * 프로비저닝 대상 Host의 Shell 계정
-     */
+    /** 프로비저닝 대상 Host의 Shell 계정 */
     private String username;
 
-    /**
-     * 프로비저닝 대상 Host의 Shell 패스워드
-     */
+    /** 프로비저닝 대상 Host의 Shell 패스워드 */
     private String password;
     
-    
-    
-    /**
-     * ssh key file
-     */
+    /** ssh key file */
     private String keyfile;
-
-
     
-    
-    /**
-     * Hostname을 반환
-     * @return
-     */
-    public String getHostname() {
-        return hostname;
-    }
+    /** is trust Y/N */
+    private boolean trust = true;
 
     /**
-     * Hostname을 설정
-     * @param hostname
-     */
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
+	 * @return the callback
+	 */
+	public String getCallback() {
+		return callback;
+	}
 
-    
-    /**
-     * SSH Port 반환
-     * @return
-     */
-    public Integer getPort() {
-        return port;
-    }
+	/**
+	 * @param callback the callback to set
+	 */
+	public void setCallback(String callback) {
+		this.callback = callback;
+	}
 
-    /**
-     * SSH 포트 설정
-     * @param port
-     */
-    public void setPort(Integer port) {
-        this.port = port;
-    }
+	/**
+	 * @return the host
+	 */
+	public String getHost() {
+		return host;
+	}
 
-    /**
-     * SSH 사용자 ID 반환
-     * @return
-     */
-    public String getUsername() {
-        return username;
-    }
+	/**
+	 * @param host the host to set
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
 
-    /**
-     * SSH 사용자 ID 설정
-     * @param username
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	/**
+	 * @return the port
+	 */
+	public Integer getPort() {
+		return port;
+	}
 
-    /**
-     * SSH 사용자 패스워드 반환 
-     * @return
-     */
-    public String getPassword() {
-        return password;
-    }
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(Integer port) {
+		this.port = port;
+	}
 
-    /**
-     * SSH 사용자 패스워드 설정
-     * @param password
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    
-    public String getKeyfile() {
-        return keyfile;
-    }
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
 
-    public void setKeyfile(String keyfile) {
-        this.keyfile = keyfile;
-    }
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
 
-    /**
-     * 문자열로 반환
-     */
-    @Override
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * @return the keyfile
+	 */
+	public String getKeyfile() {
+		return keyfile;
+	}
+
+	/**
+	 * @param keyfile the keyfile to set
+	 */
+	public void setKeyfile(String keyfile) {
+		this.keyfile = keyfile;
+	}
+
+	/**
+	 * @return the trust
+	 */
+	public boolean isTrust() {
+		return trust;
+	}
+
+	/**
+	 * @param trust the trust to set
+	 */
+	public void setTrust(boolean trust) {
+		this.trust = trust;
+	}
+
+	@Override
     public String toString() {
-        return "Action [callback=" + callback + ", hostname=" + hostname
-                + ", port=" + port + ", username="
-                + username + ", password=" + password + "]";
+        return "[callback=" + callback 
+        		+ ", host=" + host
+                + ", port=" + port 
+                + ", username=" + username 
+                + ", password=" + password 
+                + ", trust=" + trust + "]";
     }
+	
 }
-
 //end of TargetHost.java

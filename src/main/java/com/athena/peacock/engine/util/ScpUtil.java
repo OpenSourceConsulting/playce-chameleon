@@ -25,6 +25,8 @@ import org.apache.tools.ant.taskdefs.optional.ssh.Scp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.athena.peacock.engine.core.TargetHost;
+
 /**
  * <pre>
  * 목적지 호스트로의 scp 명령을 수행하기 위한 유틸리티 클래스
@@ -39,40 +41,38 @@ public class ScpUtil {
 	
 	/**
 	 * <pre>
-	 * Repository 위치의 파일을 서버로 업로드한다.
+	 * source에 해당하는 파일(또는 디렉토리)를 지정된 호스트의 target으로 전송한다.
 	 * </pre>
-	 * @param host
-	 * @param port
-	 * @param username
-	 * @param password
-	 * @param localFile
-	 * @param todir
-	 * @param keyfile
-	 * @param trust
+	 * @param targetHost
+	 * @param source
+	 * @param target
 	 */
-	public static void upload(String host, int port, String username, String password, String localFile, String todir, String keyfile, boolean trust) {
-		String destination = username + "@" + host + ":" + todir;
+	public static void upload(TargetHost targetHost, String source, String target) {
+		String destination = targetHost.getUsername() + "@" + targetHost.getHost() + ":" + target;
 		
-		logger.debug("[scp upload] " + localFile + " - " + destination);
+		logger.debug("[scp upload] " + source + " - " + destination);
+		
 		Project project = new Project();
 		
 		Scp scp = new Scp();
+		
 		// Ant Project Property
 		scp.setProject(project);
 		scp.setVerbose(true);
 
 		// Set Scp properties 
-		scp.setPort(port);
-		scp.setPassword(password);
-		scp.setFile(localFile);
+		scp.setPort(targetHost.getPort());
+		scp.setPassword(targetHost.getPassword());
+		scp.setFile(source);
 		scp.setTodir(destination);
-		scp.setTrust(trust);
+		scp.setTrust(targetHost.isTrust());
 		
-		if( keyfile != null) {
-			scp.setKeyfile(keyfile);
+		if( targetHost.getKeyfile() != null) {
+			scp.setKeyfile(targetHost.getKeyfile());
 		}
 		
 		scp.execute();
 	}//end of upload()
+	
 }
 //end of ScpUtil.java
