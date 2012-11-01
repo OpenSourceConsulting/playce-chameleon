@@ -959,20 +959,13 @@ public class PDFDocGenerator {
             
             Element section = new Element("section");
             section.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.title"));
+            section.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.maven_dependency.text", upload.getProjectNm())));
             
             Element cSection = new Element("section");
             cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.pom.title"));
     
             cSection.addContent(new Element("box").setText(data.getMavenProjectList().get(0).getContents()));
             section.addContent(cSection);
-            
-            if(data.getMavenProjectList().size() > 1) {
-                cSection = new Element("section");
-                cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.trans_pom.title"));
-        
-                cSection.addContent(new Element("box").setText(data.getMavenProjectList().get(1).getContents()));
-                section.addContent(cSection);
-            }
             
             if(data.getMavenDependencyList().size() > 0) {
                 cSection = new Element("section");
@@ -1006,7 +999,7 @@ public class PDFDocGenerator {
                 cSection = new Element("section");
                 cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.trans_lib.title"));
                 
-                cSection.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.maven_dependency.trans_lib.title") + MessageUtil.getMessage("pdf.message.maven_dependency.lib.ather_text")));
+                cSection.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.maven_dependency.trans_lib.text")));
                 
                 child = new Element("table");
                 childE1 = new Element("header");
@@ -1029,6 +1022,14 @@ public class PDFDocGenerator {
                 child.addContent(childE2);
                 
                 cSection.addContent(child);
+                section.addContent(cSection);
+            }
+
+            if(data.getMavenProjectList().size() > 1) {
+                cSection = new Element("section");
+                cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.trans_pom.title"));
+        
+                cSection.addContent(new Element("box").setText(data.getMavenProjectList().get(1).getContents()));
                 section.addContent(cSection);
             }
             
