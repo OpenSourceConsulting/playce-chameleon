@@ -20,10 +20,14 @@
  */
 package com.athena.peacock.engine.util;
 
+import java.io.File;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.optional.ssh.Scp;
+import org.apache.tools.ant.types.FileSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import com.athena.peacock.engine.core.TargetHost;
 
@@ -48,6 +52,11 @@ public class ScpUtil {
 	 * @param target
 	 */
 	public static void upload(TargetHost targetHost, String source, String target) {
+
+		Assert.notNull(targetHost, "targetHost cannot be null.");
+		Assert.notNull(source, "source cannot be null.");
+		Assert.notNull(target, "target cannot be null.");
+		
 		String destination = targetHost.getUsername() + "@" + targetHost.getHost() + ":" + target;
 		
 		logger.debug("[scp upload] " + source + " - " + destination);
@@ -63,9 +72,20 @@ public class ScpUtil {
 		// Set Scp properties 
 		scp.setPort(targetHost.getPort());
 		scp.setPassword(targetHost.getPassword());
-		scp.setFile(source);
 		scp.setTodir(destination);
 		scp.setTrust(targetHost.isTrust());
+		
+		// 전달받은 source가 디렉토리 일 경우 FileSet을 scp에 추가한다.
+		File filesetDir = new File(source);
+		if(filesetDir.isDirectory()) {
+			FileSet fileSet = new FileSet();
+			fileSet.setDir(filesetDir);
+	    	fileSet.setProject(project);
+	    	
+	    	scp.addFileset(fileSet);
+		} else {
+			scp.setFile(source);
+		}
 		
 		if( targetHost.getKeyfile() != null) {
 			scp.setKeyfile(targetHost.getKeyfile());

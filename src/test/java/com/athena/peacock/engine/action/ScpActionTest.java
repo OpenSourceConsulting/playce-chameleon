@@ -29,7 +29,7 @@ import com.athena.peacock.engine.core.TargetHost;
 
 /**
  * <pre>
- * 
+ * ScpAction을 이용한 원격지 호스트로의 파일 전송 기능을 검증하기 위한 테스트 클래스
  * </pre>
  * @author Sang-cheon Park
  * @version 1.0
@@ -43,7 +43,7 @@ public class ScpActionTest {
 
 	/**
 	 * <pre>
-	 * 
+	 * 테스트 수행전 Target Host 정보를 세팅한다.
 	 * </pre>
 	 * @throws java.lang.Exception
 	 */
@@ -51,13 +51,57 @@ public class ScpActionTest {
 	public void setUp() throws Exception {
 		targetHost = new TargetHost();
 		
-		targetHost.setHost("");
+		// 보안상의 문제로 테스트 시 수정하여 사용한다.
+		// 수정 결과를 GitHub에 Commit 금지.
+		targetHost.setHost("xxx.xxx.xxx.xxx");
+		targetHost.setPort(0);
+		targetHost.setUsername("****");
+		targetHost.setPassword("****");
 	}
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
-	}
+	public void perform() {
+		
+		/*********************
+		 * source가 File인 경우
+		 *********************/
+		// 초기화
+		source = this.getClass().getResource("/ziputil/directory/test/web.xml").getFile();
+		target = "~/scptest/file/web.xml";
+		
+		action = new ScpAction(targetHost, source, target);
+		
+		try {
+			// 테스트
+			action.perform();
+
+			// 검증
+			// 추후 SshExecUtil을 이용하여 해당 디렉토리 목록을 조회하여 검증한다.
+		} catch (Throwable t) {
+			t.printStackTrace();
+			fail("Exception이 발생하면 안됩니다. 방화벽 등의 문제로 테스트를 수행하는 네트워크 환경에 따라 테스트가 실패할 수 있습니다.");
+		}
+		
+		/*********************
+		 * source가 File인 경우
+		 *********************/
+		// 초기화
+		source = this.getClass().getResource("/ziputil/directory/test").getFile();
+		target = "~/scptest/directory/";
+		
+		action = new ScpAction(targetHost, source, target);
+		
+		try {
+			// 테스트
+			action.perform();
+
+			// 검증
+			// 추후 SshExecUtil을 이용하여 해당 디렉토리 목록을 조회하여 검증한다.
+		} catch (Throwable t) {
+			t.printStackTrace();
+			fail("Exception이 발생하면 안됩니다. 방화벽 등의 문제로 테스트를 수행하는 네트워크 환경에 따라 테스트가 실패할 수 있습니다.");
+		}
+	}//end of perform()
 
 }
 //end of ScpActionTest.java

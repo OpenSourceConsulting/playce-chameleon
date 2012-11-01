@@ -53,7 +53,7 @@ public class ScpAction implements Action {
      */
     @Override
     public void perform() {
-    	logger.debug("- Target Host Info : [{}]\n- Source : [{}]\n- Target : [{}]", new String[]{targetHost.toString(), source, target});
+    	logger.debug("\n- Target Host Info : [{}]\n- Source : [{}]\n- Target : [{}]", new String[]{targetHost.toString(), source, target});
     	
         ScpUtil.upload(targetHost, source, target);
     }//end of perform()
