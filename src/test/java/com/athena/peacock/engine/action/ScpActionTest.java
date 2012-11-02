@@ -56,7 +56,12 @@ public class ScpActionTest {
 		targetHost.setHost("xxx.xxx.xxx.xxx");
 		targetHost.setPort(0);
 		targetHost.setUsername("****");
+		
+		//*
 		targetHost.setPassword("****");
+		/*/
+		targetHost.setKeyfile("./***.pem");
+		//*/
 	}
 
 	@Test
