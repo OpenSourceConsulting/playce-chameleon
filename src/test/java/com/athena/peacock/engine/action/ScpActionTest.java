@@ -87,9 +87,9 @@ public class ScpActionTest {
 			fail("Exception이 발생하면 안됩니다. 방화벽 등의 문제로 테스트를 수행하는 네트워크 환경에 따라 테스트가 실패할 수 있습니다.");
 		}
 		
-		/*********************
-		 * source가 File인 경우
-		 *********************/
+		/*************************
+		 * source가 Directory인 경우
+		 *************************/
 		// 초기화
 		source = this.getClass().getResource("/ziputil/directory/test").getFile();
 		target = "~/scptest/directory/";
