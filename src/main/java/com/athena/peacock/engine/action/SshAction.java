@@ -20,7 +20,14 @@
  */
 package com.athena.peacock.engine.action;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.athena.peacock.engine.core.TargetHost;
+import com.athena.peacock.engine.util.SshExecUtil;
 
 /**
  * <pre>
@@ -31,21 +38,31 @@ import com.athena.peacock.engine.core.TargetHost;
  * @version 1.0
  */
 public class SshAction implements Action {
-    private String command;
+	
+	private static final Logger logger = LoggerFactory.getLogger(SshAction.class);
+	
+	private TargetHost targetHost;
+    private List<String> commandList;
 
-    public SshAction() {}
-    
-    public SshAction(TargetHost host, String command) {
-        this.command = command;
+    public SshAction(TargetHost targetHost, List<String> commandList) {
+    	this.targetHost = targetHost;
+        this.commandList = commandList;
     }
+    
     /* (non-Javadoc)
      * @see com.athena.peacock.engine.action.Action#perform()
      */
     @Override
     public void perform() {
-        // TODO Auto-generated method stub
-        System.out.println("You should call com.athena.peacock.engine.ant.SshExecService here!");
-    }
+    	logger.debug("\n- Target Host Info : [{}]", targetHost.toString());
+    	
+        try {
+			String resultMsg = SshExecUtil.executeCommand(targetHost, commandList);
+			logger.debug("Execute Command(s) Result : \n{}", resultMsg);
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+		}
+    }//end of perform()
 
 }
 //end of SshAction.java
