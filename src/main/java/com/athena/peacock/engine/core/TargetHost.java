@@ -50,7 +50,7 @@ public class TargetHost implements java.io.Serializable {
     /** ssh key file */
     private String keyfile;
     
-    /** is trust Y/N */
+    /** is trust Y/N (default : true) */
     private boolean trust = true;
 
     /**
@@ -158,6 +158,7 @@ public class TargetHost implements java.io.Serializable {
                 + ", port=" + port 
                 + ", username=" + username 
                 + ", password=" + password 
+                + ", keyfile=" + keyfile
                 + ", trust=" + trust + "]";
     }
 	
