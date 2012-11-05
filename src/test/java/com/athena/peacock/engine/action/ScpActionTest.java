@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.athena.peacock.engine.core.TargetHost;
+import com.athena.peacock.engine.util.SshExecUtil;
 
 /**
  * <pre>
@@ -81,7 +82,10 @@ public class ScpActionTest {
 			action.perform();
 
 			// 검증
-			// 추후 SshExecUtil을 이용하여 해당 디렉토리 목록을 조회하여 검증한다.
+			String command = "ls -l ~/scptest/file/web.xml";
+			String resultMsg = SshExecUtil.executeCommand(targetHost, command);
+			
+			assertTrue("디렉토리 조회 결과에 \"web.xml\"이 존재해야 합니다.", resultMsg.indexOf("web.xml") > -1);
 		} catch (Throwable t) {
 			t.printStackTrace();
 			fail("Exception이 발생하면 안됩니다. 방화벽 등의 문제로 테스트를 수행하는 네트워크 환경에 따라 테스트가 실패할 수 있습니다.");
@@ -101,7 +105,13 @@ public class ScpActionTest {
 			action.perform();
 
 			// 검증
-			// 추후 SshExecUtil을 이용하여 해당 디렉토리 목록을 조회하여 검증한다.
+			String command = "ls -Rl ~/scptest/directory";
+			String resultMsg = SshExecUtil.executeCommand(targetHost, command);
+			
+			assertTrue("디렉토리 조회 결과에 \"jsp\"가 존재해야 합니다.", resultMsg.indexOf("jsp") > -1);
+			assertTrue("디렉토리 조회 결과에 \"web.xml\"이 존재해야 합니다.", resultMsg.indexOf("web.xml") > -1);
+			assertTrue("디렉토리 조회 결과에 \"login\"이 존재해야 합니다.", resultMsg.indexOf("login") > -1);
+			assertTrue("디렉토리 조회 결과에 \"show.jsp\"가 존재해야 합니다.", resultMsg.indexOf("show.jsp") > -1);
 		} catch (Throwable t) {
 			t.printStackTrace();
 			fail("Exception이 발생하면 안됩니다. 방화벽 등의 문제로 테스트를 수행하는 네트워크 환경에 따라 테스트가 실패할 수 있습니다.");

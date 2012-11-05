@@ -20,12 +20,18 @@
  */
 package com.athena.peacock.engine.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.optional.ssh.SSHExec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+
+import com.athena.peacock.engine.core.TargetHost;
 
 /**
  * <pre>
@@ -38,50 +44,73 @@ import org.slf4j.LoggerFactory;
 public class SshExecUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(SshExecUtil.class);
+
+	private static File output = new File("exec_result.log"); // 프로젝트 root에 파일 생성.
+	private static boolean append = false;
 	
 	/**
 	 * <pre>
-	 *
+	 * 
 	 * </pre>
-	 * @param commands
+	 * @param targetHost
+	 * @param commandList
+	 * @return
+	 * @throws IOException 
 	 */
-	public static void executeCommand(List<String> commands) {
+	public static String executeCommand(TargetHost targetHost, List<String> commandList) throws IOException {
+		for(String command : commandList) {
+			executeCommand(targetHost, command);
+			append = true;
+		}
+		append = false;
 		
+		return IOUtils.toString(output.toURI());
 	}//end of executeCommand()
 	
 	/**
 	 * <pre>
-	 *
+	 * 
 	 * </pre>
-	 * @param host
-	 * @param port
-	 * @param username
-	 * @param password
-	 * @param keyfile
-	 * @param trust
+	 * @param targetHost
 	 * @param command
+	 * @return
+	 * @throws IOException 
 	 */
-	public static void executeCommand(String host, int port, String username, String password, String keyfile, boolean trust, String command) {
-		SSHExec exec = new SSHExec();
-		
+	public static String executeCommand(TargetHost targetHost, String command) throws IOException {
+    	Assert.notNull(targetHost, "targetHost cannot be null.");
+    	Assert.notNull(command, "command cannot be null.");
+
 		logger.debug("[ssh exec] " + command);
+    	
 		Project project = new Project();
 		
+		SSHExec exec = new SSHExec();
 		exec.setProject(project);
+		exec.setHost(targetHost.getHost());
+		exec.setPort(targetHost.getPort());
+		exec.setUsername(targetHost.getUsername());
+		exec.setPassword(targetHost.getPassword());
 		
-		exec.setHost(host);
-		exec.setPort(port);
-		exec.setUsername(username);
-		exec.setPassword(password);
-		
-		if( keyfile != null ) {
-			exec.setKeyfile(keyfile);
+		if (targetHost.getKeyfile() != null) {
+			exec.setKeyfile(targetHost.getKeyfile());
 		}
 		
-		exec.setTrust(trust);
+		exec.setTrust(targetHost.isTrust());
+		exec.setVerbose(true);
 		exec.setCommand(command);
 		
+		// command 실행 결과가 저장될 파일 지정
+		exec.setOutput(output);
+		exec.setAppend(append);
+
 		exec.execute();
-	}//end of execute()
+		
+		if (append) {
+			return null;
+		} else {
+			return IOUtils.toString(output.toURI());
+		}
+	}//end of executeCommand()
+
 }
 //end of SshExecUtil.java

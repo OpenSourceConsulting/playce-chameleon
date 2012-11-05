@@ -59,7 +59,7 @@ public class CommandTest {
     @Test
     public void jdkInstall() {
         Command command = new InstallCommand();
-        SshAction ssh = new SshAction();
+        SshAction ssh = new SshAction(null, null);
         command.setAction(ssh);
         
         ConfigurationAction config = new ConfigurationAction(null, null);
