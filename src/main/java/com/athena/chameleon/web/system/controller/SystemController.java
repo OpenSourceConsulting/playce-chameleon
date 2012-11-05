@@ -36,11 +36,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.athena.chameleon.common.utils.PropertyUtil;
-import com.athena.chameleon.engine.entity.provisioning.Provisioning;
 import com.ibm.icu.text.CharsetDetector;
 
 /**
- * This LoginController class is a Controller class to Upload.
+ * This SystemController class is a Controller class to System.
  * 
  * @author Hyo-jeong Lee
  * @version 1.0
@@ -50,10 +49,10 @@ import com.ibm.icu.text.CharsetDetector;
 public class SystemController {
 
     /**
+     * 코드관리 저장
      * 
-     * 코드 관리 화면 호출
-     *
      * @param model
+     * @param modelMap
      * @param session
      * @return
      * @throws Exception
@@ -77,8 +76,9 @@ public class SystemController {
 
     /**
      * 코드관리 저장
-     *
-     * @param provisioning
+     * 
+     * @param request
+     * @param response
      * @param modelMap
      * @param session
      * @return
@@ -97,57 +97,6 @@ public class SystemController {
     	
     	modelMap.addAttribute("result", true);
     	return "jsonView";
-    }
-
-    /**
-     * Instance 입력화면 호출
-     *
-     * @param provisioning
-     * @param modelMap
-     * @param session
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/dataSourceForm.do")
-    public String showDataSource(Provisioning provisioning, ModelMap modelMap, HttpSession session) throws Exception {
-        
-        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
-        if(loginFlag == null || !loginFlag.equals("Y"))
-            return "redirect:/login/showLogin.do";
-        
-        if(provisioning == null || provisioning.getTargetWas() == null)
-            return "redirect:/provisioning/wasSelectForm.do";
-        
-        return "/main/provisioning/dataSourceForm";
-    }
-
-    /**
-     * Instance 입력화면 호출
-     *
-     * @param provisioning
-     * @param modelMap
-     * @param session
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/install.do")
-    public String installWas(Provisioning provisioning, ModelMap modelMap, HttpSession session) throws Exception {
-        
-        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
-        if(loginFlag == null || !loginFlag.equals("Y"))
-            return "redirect:/login/showLogin.do";
-        
-        if(provisioning == null || provisioning.getTargetWas() == null)
-            return "redirect:/provisioning/wasSelectForm.do";
-        
-        System.out.println(provisioning.getReflectionToString(provisioning));
-        if(provisioning.getJbossInstance() != null)
-        	System.out.println(provisioning.getReflectionToString(provisioning.getJbossInstance()));
-        if(provisioning.getTomcatInstance() != null)
-        	System.out.println(provisioning.getReflectionToString(provisioning.getTomcatInstance()));
-        System.out.println(provisioning.getReflectionToString(provisioning.getDataSource()));
-        
-        return "/main/provisioning/dataSourceForm";
     }
 
 }
