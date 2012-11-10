@@ -27,7 +27,7 @@
 <form:form modelAttribute="code" method="post" id="codeForm" name="codeForm" >
 	<div class="tit_box">코드관리</div>
     <div class="bt_tab_box02">
-    	<div class="bt_tab_txt01" style="color:#858686"><a href="#">사용자매뉴얼</a></div>
+    	<div class="bt_tab_txt01" style="color:#858686"><a href="<c:url value='/system/manualForm.do' />">사용자매뉴얼</a></div>
         <div class="bt_tab_txt01">코드관리</div>
     </div>
 	<div class="bg_formbox" style="height:517px;"> <!-- form배경 박스 높이를 517로 늘임 -->

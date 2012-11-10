@@ -49,7 +49,7 @@ import com.ibm.icu.text.CharsetDetector;
 public class SystemController {
 
     /**
-     * 코드관리 저장
+     * 코드관리 화면 호출
      * 
      * @param model
      * @param modelMap
@@ -97,6 +97,25 @@ public class SystemController {
     	
     	modelMap.addAttribute("result", true);
     	return "jsonView";
+    }
+
+    /**
+     * 사용자 매뉴얼 화면 호출
+     * 
+     * @param model
+     * @param modelMap
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/manualForm.do")
+    public String showManual(Model model, ModelMap modelMap, HttpSession session) throws Exception {
+        
+        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
+        if(loginFlag == null || !loginFlag.equals("Y"))
+            return "redirect:/login/showLogin.do";
+                
+        return "/main/system/manualForm";
     }
 
 }
