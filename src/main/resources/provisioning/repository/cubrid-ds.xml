@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See http://www.jboss.org/community/wiki/Multiple1PC for information about local-tx-datasource -->
+<!-- $Id: cubrid-ds.xml 88948 2009-05-15 14:09:08Z jesper.pedersen $ -->
+<!--  Datasource config for MySQL using 3.0.9 available from:
+http://www.mysql.com/downloads/api-jdbc-stable.html
+-->
+
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>${jndi.name}</jndi-name>
+    <connection-url>${connection.url}</connection-url>
+    <driver-class>cubrid.jdbc.driver.CUBRIDDriver</driver-class>
+    <user-name>${user.name}</user-name>
+    <password>${user.password}</password>
+    <min-pool-size>${pool.min}</min-pool-size>
+    <max-pool-size>${pool.max}</max-pool-size>
+    
+
+    <!-- sql to call when connection is created
+    <new-connection-sql>some arbitrary sql</new-connection-sql>
+      -->
+    <!-- sql to call on an existing pooled connection when it is obtained from pool - MySQLValidConnectionChecker is preferred for newer drivers
+    <check-valid-connection-sql>some arbitrary sql</check-valid-connection-sql>
+      -->
+
+
+  </local-tx-datasource>
+</datasources>
+
