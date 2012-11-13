@@ -130,11 +130,12 @@ public class ProvisioningController {
             return "redirect:/provisioning/wasSelectForm.do";
         
         System.out.println(provisioning.getReflectionToString(provisioning));
-        if(provisioning.getJbossInstance() != null)
+        if(provisioning.getJbossInstance() != null) {
         	System.out.println(provisioning.getReflectionToString(provisioning.getJbossInstance()));
+        	System.out.println(provisioning.getReflectionToString(provisioning.getDataSource()));
+        }
         if(provisioning.getTomcatInstance() != null)
         	System.out.println(provisioning.getReflectionToString(provisioning.getTomcatInstance()));
-        System.out.println(provisioning.getReflectionToString(provisioning.getDataSource()));
         
         return "/main/provisioning/dataSourceForm";
     }

@@ -43,10 +43,14 @@ public class JBossInstance implements Serializable {
     private String newInstallYn;
     //JBoss Instance Home
     private String instanceHome;
-    //JBoss Engine Name
-    private String engineName;
+    //JBoss Instance Name
+    private String instanceName;
     //Port Group
     private String portGroup;
+    //SSH-Login-Id
+    private String sshLoginId;
+    //SSH-Login-password
+    private String sshLoginPassword;
 
     /**
      * @return the serverIp
@@ -119,17 +123,17 @@ public class JBossInstance implements Serializable {
     }
 
     /**
-     * @return the engineName
+     * @return the instanceName
      */
-    public String getEngineName() {
-        return engineName;
+    public String getInstanceName() {
+        return instanceName;
     }
 
     /**
-     * @param engineName the engineName to set
+     * @param instance the instanceName to set
      */
-    public void setEngineName(String engineName) {
-        this.engineName = engineName;
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
     }
 
     /**
@@ -146,36 +150,32 @@ public class JBossInstance implements Serializable {
         this.portGroup = portGroup;
     }
 
-    /**
-     * 
-     * Model class 의 field 를 문자열로 정리하여 반환함.
-     * 
-     * @param object
-     * @return
-     */
-    @SuppressWarnings({ "rawtypes" })
-    public static String getReflectionToString(Object object) {
-        Class clazz = object.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-        StringBuilder returnString = new StringBuilder();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            returnString.append(field.getName());
-            returnString.append(" = ");
-            try {
-                returnString.append(field.get(object));
-            }
-            catch (IllegalArgumentException e) {
-                returnString.append("IllegalArgumentException occured!!");
-                returnString.append(e.toString());
-            }
-            catch (IllegalAccessException e) {
-                returnString.append("IllegalAccessException occured!!");
-                returnString.append(e.toString());
-            }
-            returnString.append(";");
-        }
-        return returnString.toString();
-    }
+	/**
+	 * @return the sshLoginId
+	 */
+	public String getSshLoginId() {
+		return sshLoginId;
+	}
+
+	/**
+	 * @param sshLoginId the sshLoginId to set
+	 */
+	public void setSshLoginId(String sshLoginId) {
+		this.sshLoginId = sshLoginId;
+	}
+
+	/**
+	 * @return the sshLoginPassword
+	 */
+	public String getSshLoginPassword() {
+		return sshLoginPassword;
+	}
+
+	/**
+	 * @param sshLoginPassword the sshLoginPassword to set
+	 */
+	public void setSshLoginPassword(String sshLoginPassword) {
+		this.sshLoginPassword = sshLoginPassword;
+	}
 
 }

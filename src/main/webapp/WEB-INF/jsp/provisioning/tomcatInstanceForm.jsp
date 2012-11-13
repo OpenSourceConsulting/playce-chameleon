@@ -5,7 +5,7 @@
 
 	$(document).ready(function (){
 		
-		$('#nextBtn').click(function() { 
+		$('#installBtn').click(function() { 
 			if(!$('#serverIp').val()) {
 				alert('Server IP가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#serverIp').focus();
@@ -46,9 +46,17 @@
 				alert('SHUTDOWN_PORT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#shutdownPort').focus();
 				return false;
+			} else if(!$('#sshLoginId').val()) {
+				alert('Ssh-login-id가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#sshLoginId').focus();
+				return false;
+			} else if(!$('#sshLoginPassword').val()) {
+				alert('Ssh password가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#sshLoginPassword').focus();
+				return false;
 			} else {
 				var form = $("#instanceForm").get(0);
-				form.action = "<c:url value='/provisioning/dataSourceForm.do' />";
+				form.action = "<c:url value='/provisioning/install.do' />";
 				form.submit();
 			}
 		});
@@ -62,7 +70,7 @@
     	<div class="bt_tab_txt01" style="color:#858686"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=B' />">JBoss</a></div>
     	<div class="bt_tab_txt01">TomCat</div>
     </div>
-	<div class="bg_formbox" style="height:670px;"> <!-- form배경 박스 높이를 670로 늘임 -->
+	<div class="bg_formbox" style="height:780px;"> <!-- form배경 박스 높이를 670로 늘임 -->
     	<div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Server IP</p></div>
         <div class="formbox_form01"><input type="text" id="serverIp" name="tomcatInstance.serverIp" title="Server IP 입력" class="input_form02" /></div>
         
@@ -71,12 +79,12 @@
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">TOMCAT ENGINE</p></div>
         <div class="formbox_form02">
-        	<div class="formbox_sub01"><input type="text" id="tomcatEngine" name="tomcatInstance.tomcatEngine" title="TOMCAT ENGINE 입력" class="input_form02" style="width:250px"/></div> <!-- Inputbox 가로폭을 250으로 줄임 -->
-        	<div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">신규설치 :</p></div>
-            <div class="formbox_radioform" style="margin-left:10px"><input type="radio" id="newInstallY" name="tomcatInstance.newInstallYn" value="Y" class="regular-radio" checked /><label for="newInstallY"></label></div>
-	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">Yes</p></div>
-	        <div class="formbox_radioform"><input type="radio" id="newInstallN" name="tomcatInstance.newInstallYn" value="N" class="regular-radio" /><label for="newInstallN"></label></div>
-	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">No</p></div>
+        	<div class="formbox_sub01"><input type="text" id="tomcatEngine" name="tomcatInstance.tomcatEngine" title="TOMCAT ENGINE 입력" class="input_form02" /></div> <!-- Inputbox 가로폭을 250으로 줄임 -->
+<!--         	<div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">신규설치 :</p></div> -->
+<!--             <div class="formbox_radioform" style="margin-left:10px"><input type="radio" id="newInstallY" name="tomcatInstance.newInstallYn" value="Y" class="regular-radio" checked /><label for="newInstallY"></label></div> -->
+<!-- 	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">Yes</p></div> -->
+<!-- 	        <div class="formbox_radioform"><input type="radio" id="newInstallN" name="tomcatInstance.newInstallYn" value="N" class="regular-radio" /><label for="newInstallN"></label></div> -->
+<!-- 	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">No</p></div> -->
         </div>
            
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JAVA_HOME</p></div>
@@ -100,6 +108,12 @@
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SHUTDOWN_PORT</p></div>
         <div class="formbox_form02"><input type="text" id="shutdownPort" name="tomcatInstance.shutdownPort" title="SHUTDOWN_PORT 입력" class="input_form02" /></div>
         
-        <div class="common_btn"><a href="javascript:void(0);" id="nextBtn"><img src="<c:url value='/images/common/bt_next01.png'/>" /></a></div>        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Ssh-login-id</p></div>
+        <div class="formbox_form02"><input type="text" id="sshLoginId" name="tomcatInstance.sshLoginId" title="Ssh-login-id 입력" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Ssh password</p></div>
+        <div class="formbox_form02"><input type="text" id="sshLoginPassword" name="tomcatInstance.sshLoginPassword" title="Ssh password 입력" class="input_form02" /></div>
+        
+        <div class="common_btn"><a href="javascript:void(0);" id="installBtn"><img src="<c:url value='/images/common/bt_install01.png'/>" /></a></div>        
     </div>        
  </form:form>
