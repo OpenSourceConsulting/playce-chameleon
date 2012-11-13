@@ -44,8 +44,8 @@
 <input type="hidden" id="serverPort" 	name="jbossInstance.serverPort" 	value="${provisioning.jbossInstance.serverPort}">
 <input type="hidden" id="engineHome" 	name="jbossInstance.engineHome" 	value="${provisioning.jbossInstance.engineHome}">
 <input type="hidden" id="newInstallYn" 	name="jbossInstance.newInstallYn" 	value="${provisioning.jbossInstance.newInstallYn}">
-<input type="hidden" id="instanceHome" 	name="jbossInstance.instanceHome" 	value="${provisioning.jbossInstance.instanceHome}">
-<input type="hidden" id="instanceName" 	name="jbossInstance.instanceName" 	value="${provisioning.jbossInstance.instanceName}">
+<input type="hidden" id="serverHome" 	name="jbossInstance.serverHome" 	value="${provisioning.jbossInstance.serverHome}">
+<input type="hidden" id="serverName" 	name="jbossInstance.serverName" 	value="${provisioning.jbossInstance.serverName}">
 <input type="hidden" id="portGroup" 	name="jbossInstance.portGroup" 		value="${provisioning.jbossInstance.portGroup}">
 <input type="hidden" id="sshLoginId" 	name="jbossInstance.sshLoginId" 	value="${provisioning.jbossInstance.sshLoginId}">
 <input type="hidden" id="sshLoginPassword" 	name="jbossInstance.sshLoginPassword" 		value="${provisioning.jbossInstance.sshLoginPassword}">
@@ -77,7 +77,7 @@
        <div class="formbox_form02"><input type="text" id="userName" name="dataSource.userName" title="User Name 입력" class="input_form02" /></div>
        
        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Password</p></div>
-       <div class="formbox_form02"><input type="text" id="password" name="dataSource.password" title="Password 입력" class="input_form02" /></div>
+       <div class="formbox_form02"><input type="password" id="password" name="dataSource.password" title="Password 입력" class="input_form02" /></div>
        
        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Min Pool Size</p></div>
        <div class="formbox_form02"><input type="text" id="minPoolSize" name="dataSource.minPoolSize" title="Min Pool Size 입력" class="input_form02" /></div>

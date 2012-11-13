@@ -21,7 +21,9 @@
 package com.athena.chameleon.engine.entity.provisioning;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * This Genre class is a Value Object class for Data Source.
@@ -146,36 +148,9 @@ public class ProvisionDataSource implements Serializable {
         this.maxPoolSize = maxPoolSize;
     }
 
-    /**
-     * 
-     * Model class 의 field 를 문자열로 정리하여 반환함.
-     * 
-     * @param object
-     * @return
-     */
-    @SuppressWarnings({ "rawtypes" })
-    public static String getReflectionToString(Object object) {
-        Class clazz = object.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-        StringBuilder returnString = new StringBuilder();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            returnString.append(field.getName());
-            returnString.append(" = ");
-            try {
-                returnString.append(field.get(object));
-            }
-            catch (IllegalArgumentException e) {
-                returnString.append("IllegalArgumentException occured!!");
-                returnString.append(e.toString());
-            }
-            catch (IllegalAccessException e) {
-                returnString.append("IllegalAccessException occured!!");
-                returnString.append(e.toString());
-            }
-            returnString.append(";");
-        }
-        return returnString.toString();
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
 
 }
