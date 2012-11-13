@@ -10,10 +10,10 @@
 # This is tomcat env.sh for iosp by Open Source Consulting, Inc
 
 ## Set Tomcat base env
-export JAVA_HOME=/iosp/jdk
-export SERVER_NAME=template
-export CATALINA_HOME=/iosp/tomcat
-export CATALINA_BASE=/iosp/comp/$SERVER_NAME
+export JAVA_HOME=${java.home}
+export SERVER_NAME=${server.name}
+export CATALINA_HOME=${catalina.home}
+export CATALINA_BASE=${catalina.base}
 
 ## Set Port Configuration
 #########################################
@@ -22,12 +22,12 @@ export CATALINA_BASE=/iosp/comp/$SERVER_NAME
 #  SSL_PORT : 8443			#
 #  SHUTDOWN_PORT : 8005			#
 #########################################
-export HTTP_PORT=8180
-export AJP_PORT=8109
-export SSL_PORT=8543
-export SHUTDOWN_PORT=8105
+export HTTP_PORT=${http.port}
+export AJP_PORT=${ajp.port}
+export SSL_PORT=${ssl.port}
+export SHUTDOWN_PORT=${shutdown.port}
 
-export COMP_USER=root
+export COMP_USER=${user.account}
 
 if [ "x$JAVA_OPTS" = "x" ]; then
    JAVA_OPTS="-server"
