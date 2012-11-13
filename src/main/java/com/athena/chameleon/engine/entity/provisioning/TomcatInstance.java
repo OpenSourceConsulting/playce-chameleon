@@ -55,7 +55,11 @@ public class TomcatInstance implements Serializable {
     private String sslPort;
     //SHUTDOWN_PORT
     private String shutdownPort;
-    
+    //SSH-Login-Id
+    private String sshLoginId;
+    //SSH-Login-password
+    private String sshLoginPassword;
+
 	/**
 	 * @return the serverIp
 	 */
@@ -210,36 +214,32 @@ public class TomcatInstance implements Serializable {
 		this.shutdownPort = shutdownPort;
 	}
 
-    /**
-     * 
-     * Model class 의 field 를 문자열로 정리하여 반환함.
-     * 
-     * @param object
-     * @return
-     */
-    @SuppressWarnings({ "rawtypes" })
-    public static String getReflectionToString(Object object) {
-        Class clazz = object.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-        StringBuilder returnString = new StringBuilder();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            returnString.append(field.getName());
-            returnString.append(" = ");
-            try {
-                returnString.append(field.get(object));
-            }
-            catch (IllegalArgumentException e) {
-                returnString.append("IllegalArgumentException occured!!");
-                returnString.append(e.toString());
-            }
-            catch (IllegalAccessException e) {
-                returnString.append("IllegalAccessException occured!!");
-                returnString.append(e.toString());
-            }
-            returnString.append(";");
-        }
-        return returnString.toString();
-    }
+	/**
+	 * @return the sshLoginId
+	 */
+	public String getSshLoginId() {
+		return sshLoginId;
+	}
+
+	/**
+	 * @param sshLoginId the sshLoginId to set
+	 */
+	public void setSshLoginId(String sshLoginId) {
+		this.sshLoginId = sshLoginId;
+	}
+
+	/**
+	 * @return the sshLoginPassword
+	 */
+	public String getSshLoginPassword() {
+		return sshLoginPassword;
+	}
+
+	/**
+	 * @param sshLoginPassword the sshLoginPassword to set
+	 */
+	public void setSshLoginPassword(String sshLoginPassword) {
+		this.sshLoginPassword = sshLoginPassword;
+	}
 
 }
