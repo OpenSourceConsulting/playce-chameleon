@@ -12,7 +12,11 @@
 ## Set Tomcat base env
 export JAVA_HOME=${java.home}
 export SERVER_NAME=${server.name}
+# The following variable is to point where tomcat engine is installed
+# Ex: export CATALINA_HOME=/opt/tomcat-6.0.25
 export CATALINA_HOME=${catalina.home}
+# Please set the tomcat instance name(Business level)
+# Ex: export CATALINA_BASE=/BizPlatform/servers/$SERVER_NAME
 export CATALINA_BASE=${catalina.base}
 
 ## Set Port Configuration
@@ -45,12 +49,12 @@ if [ "x$JAVA_OPTS" = "x" ]; then
 #   JAVA_OPTS="$JAVA_OPTS -Xss128k"
 
    JAVA_OPTS="$JAVA_OPTS -verbose:gc"
-   JAVA_OPTS="$JAVA_OPTS -Xloggc:$GPEC_DIR/logs/$SERVER_NAME/gc.log"
+   JAVA_OPTS="$JAVA_OPTS -Xloggc:$CATALINA_BASE/logs/gc.log"
    JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails"
    JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCTimeStamps"
    JAVA_OPTS="$JAVA_OPTS -XX:+PrintHeapAtGC"
    JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
-   JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=$GPEC_DIR/logs/$SERVER_NAME/java_pid.hprof"
+   JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=$CATALINA_BASE/logs/java_pid.hprof"
 
 #   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote"
 #   JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.port=8186"
