@@ -47,12 +47,18 @@ public class JBossInstance implements Serializable {
     private String serverHome;
     //JBoss Server Name
     private String serverName;
-    //Port Group
-    private String portGroup;
     //SSH-Login-Id
     private String sshLoginId;
     //SSH-Login-password
     private String sshLoginPassword;
+    //JBoss Home
+    private String jbossHome;
+    //Partition Name
+    private String partitionName;
+    //Bind Address
+    private String bindAddress;
+    //Bind Port
+    private String bindPort;
 
     /**
      * @return the serverIp
@@ -138,20 +144,6 @@ public class JBossInstance implements Serializable {
         this.serverName = serverName;
     }
 
-    /**
-     * @return the portGroup
-     */
-    public String getPortGroup() {
-        return portGroup;
-    }
-
-    /**
-     * @param portGroup the portGroup to set
-     */
-    public void setPortGroup(String portGroup) {
-        this.portGroup = portGroup;
-    }
-
 	/**
 	 * @return the sshLoginId
 	 */
@@ -184,5 +176,61 @@ public class JBossInstance implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
+
+	/**
+	 * @return the jbossHome
+	 */
+	public String getJbossHome() {
+		return jbossHome;
+	}
+
+	/**
+	 * @param jbossHome the jbossHome to set
+	 */
+	public void setJbossHome(String jbossHome) {
+		this.jbossHome = jbossHome;
+	}
+
+	/**
+	 * @return the partitionName
+	 */
+	public String getPartitionName() {
+		return partitionName;
+	}
+
+	/**
+	 * @param partitionName the partitionName to set
+	 */
+	public void setPartitionName(String partitionName) {
+		this.partitionName = partitionName;
+	}
+
+	/**
+	 * @return the bindAddress
+	 */
+	public String getBindAddress() {
+		return bindAddress;
+	}
+
+	/**
+	 * @param bindAddress the bindAddress to set
+	 */
+	public void setBindAddress(String bindAddress) {
+		this.bindAddress = bindAddress;
+	}
+
+	/**
+	 * @return the bindPort
+	 */
+	public String getBindPort() {
+		return bindPort;
+	}
+
+	/**
+	 * @param bindPort the bindPort to set
+	 */
+	public void setBindPort(String bindPort) {
+		this.bindPort = bindPort;
+	}
 
 }

@@ -128,10 +128,17 @@ public class ProvisioningController {
         
         if(provisioning == null || provisioning.getTargetWas() == null)
             return "redirect:/provisioning/wasSelectForm.do";
+
+        modelMap.addAttribute("provisioning", provisioning);
         
-        System.out.println(provisioning);
+
+        String returnForm = "redirect:/provisioning/wasSelectForm.do";
+        if(provisioning.getTargetWas().equals("B"))
+            returnForm = "/main/provisioning/jbossResultForm";
+        else if(provisioning.getTargetWas().equals("T"))
+        	returnForm = "/main/provisioning/tomcatResultForm";
         
-        return "/main/provisioning/dataSourceForm";
+        return returnForm;
     }
 
 }

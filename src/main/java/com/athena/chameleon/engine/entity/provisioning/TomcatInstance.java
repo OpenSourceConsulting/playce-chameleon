@@ -39,8 +39,8 @@ public class TomcatInstance implements Serializable {
     private String serverIp;
     //Server Port
     private String serverPort;
-    //TOMCAT ENGINE
-    private String tomcatEngine;
+    //CATALINA_BASE
+    private String catalinaBase;
     //신규설치 여부
     private String newInstallYn;
     //JAVA_HOME
@@ -51,8 +51,8 @@ public class TomcatInstance implements Serializable {
     private String serverName;
     //HTTP_PORT
     private String httpPort;
-    //AJPP_PORT
-    private String ajppPort;
+    //AJP_PORT
+    private String ajpPort;
     //SSL_PORT
     private String sslPort;
     //SHUTDOWN_PORT
@@ -61,6 +61,8 @@ public class TomcatInstance implements Serializable {
     private String sshLoginId;
     //SSH-Login-password
     private String sshLoginPassword;
+    //USER_ACCOUNT
+    private String userAccount;
 
 	/**
 	 * @return the serverIp
@@ -88,20 +90,6 @@ public class TomcatInstance implements Serializable {
 	 */
 	public void setServerPort(String serverPort) {
 		this.serverPort = serverPort;
-	}
-
-	/**
-	 * @return the tomcatEngine
-	 */
-	public String getTomcatEngine() {
-		return tomcatEngine;
-	}
-
-	/**
-	 * @param tomcatEngine the tomcatEngine to set
-	 */
-	public void setTomcatEngine(String tomcatEngine) {
-		this.tomcatEngine = tomcatEngine;
 	}
 
 	/**
@@ -175,20 +163,6 @@ public class TomcatInstance implements Serializable {
 	}
 
 	/**
-	 * @return the ajppPort
-	 */
-	public String getAjppPort() {
-		return ajppPort;
-	}
-
-	/**
-	 * @param ajppPort the ajppPort to set
-	 */
-	public void setAjppPort(String ajppPort) {
-		this.ajppPort = ajppPort;
-	}
-
-	/**
 	 * @return the sslPort
 	 */
 	public String getSslPort() {
@@ -248,5 +222,47 @@ public class TomcatInstance implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
+
+	/**
+	 * @return the catalinaBase
+	 */
+	public String getCatalinaBase() {
+		return catalinaBase;
+	}
+
+	/**
+	 * @param catalinaBase the catalinaBase to set
+	 */
+	public void setCatalinaBase(String catalinaBase) {
+		this.catalinaBase = catalinaBase;
+	}
+
+	/**
+	 * @return the ajpPort
+	 */
+	public String getAjpPort() {
+		return ajpPort;
+	}
+
+	/**
+	 * @param ajpPort the ajpPort to set
+	 */
+	public void setAjpPort(String ajpPort) {
+		this.ajpPort = ajpPort;
+	}
+
+	/**
+	 * @return the userAccount
+	 */
+	public String getUserAccount() {
+		return userAccount;
+	}
+
+	/**
+	 * @param userAccount the userAccount to set
+	 */
+	public void setUserAccount(String userAccount) {
+		this.userAccount = userAccount;
+	}
 
 }

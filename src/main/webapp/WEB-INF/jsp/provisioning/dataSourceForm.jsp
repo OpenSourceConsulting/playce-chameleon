@@ -31,6 +31,8 @@
 				$('#maxPoolSize').focus();
 				return false;
 			} else {
+				wrapWindowByMask();
+				
 				var form = $("#sourceForm").get(0);
 				form.action = "<c:url value='/provisioning/install.do' />";
 				form.submit();
@@ -46,7 +48,10 @@
 <input type="hidden" id="newInstallYn" 	name="jbossInstance.newInstallYn" 	value="${provisioning.jbossInstance.newInstallYn}">
 <input type="hidden" id="serverHome" 	name="jbossInstance.serverHome" 	value="${provisioning.jbossInstance.serverHome}">
 <input type="hidden" id="serverName" 	name="jbossInstance.serverName" 	value="${provisioning.jbossInstance.serverName}">
-<input type="hidden" id="portGroup" 	name="jbossInstance.portGroup" 		value="${provisioning.jbossInstance.portGroup}">
+<input type="hidden" id="jbossHome" 	name="jbossInstance.jbossHome" 		value="${provisioning.jbossInstance.jbossHome}">
+<input type="hidden" id="partitionName" name="jbossInstance.partitionName" 	value="${provisioning.jbossInstance.partitionName}">
+<input type="hidden" id="bindAddress" 	name="jbossInstance.bindAddress" 	value="${provisioning.jbossInstance.bindAddress}">
+<input type="hidden" id="bindPort" 		name="jbossInstance.bindPort" 		value="${provisioning.jbossInstance.bindPort}">
 <input type="hidden" id="sshLoginId" 	name="jbossInstance.sshLoginId" 	value="${provisioning.jbossInstance.sshLoginId}">
 <input type="hidden" id="sshLoginPassword" 	name="jbossInstance.sshLoginPassword" 		value="${provisioning.jbossInstance.sshLoginPassword}">
 

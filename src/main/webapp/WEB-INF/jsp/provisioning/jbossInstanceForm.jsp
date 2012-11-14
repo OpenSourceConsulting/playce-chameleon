@@ -22,6 +22,10 @@
 				alert('SSH Login Password가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#sshLoginPassword').focus();
 				return false;
+			} else if(!$('#jbossHome').val()) {
+				alert('JBoss Home이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#jbossHome').focus();
+				return false;
 			} else if(!$('#engineHome').val()) {
 				alert('JBoss Engine Home이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#engineHome').focus();
@@ -33,6 +37,14 @@
 			} else if(!$('#serverName').val()) {
 				alert('JBoss Server Name이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#serverName').focus();
+				return false;
+			} else if(!$('#partitionName').val()) {
+				alert('Partition Name이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#partitionName').focus();
+				return false;
+			} else if(!$('#bindAddress').val()) {
+				alert('Bind Address가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#bindAddress').focus();
 				return false;
 			} else {
 				var form = $("#instanceForm").get(0);
@@ -50,7 +62,7 @@
     	<div class="bt_tab_txt01">JBoss</div>
         <div class="bt_tab_txt01" style="color:#858686"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=T' />">Tomcat</a></div>
     </div>
-	<div class="bg_formbox" style="height:600px;">
+	<div class="bg_formbox" style="height:740px;">
     	<div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Server IP</p></div>
         <div class="formbox_form01"><input type="text" id="serverIp" name="jbossInstance.serverIp" title="Server IP 입력" class="input_form02" /></div>
         
@@ -62,6 +74,9 @@
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SSH Login Password</p></div>
         <div class="formbox_form02"><input type="password" id="sshLoginPassword" name="jbossInstance.sshLoginPassword" title="Ssh password 입력" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Home</p></div>
+        <div class="formbox_form02"><input type="text" id="jbossHome" name="jbossInstance.jbossHome" title="JBoss Home 입력" class="input_form02" /></div>
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Engine Home</p></div>
         <div class="formbox_form02">
@@ -79,15 +94,21 @@
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Server Name</p></div>
         <div class="formbox_form02"><input type="text" id="serverName" name="jbossInstance.serverName" title="JBoss Server Name 입력" class="input_form02" /></div>
         
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Port Group</p></div>
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Partition Name</p></div>
+        <div class="formbox_form02"><input type="text" id="partitionName" name="jbossInstance.partitionName" title="Partition Name 입력" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Bind Address</p></div>
+        <div class="formbox_form02"><input type="text" id="bindAddress" name="jbossInstance.bindAddress" title="Bind Address 입력" value="0.0.0.0" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Bind Port</p></div>
         <div class="formbox_form02">
-       	   <div class="formbox_radioform" style="margin-left:0"><input type="radio" id="portGroup1" name="jbossInstance.portGroup" value="ports-default" class="regular-radio" checked /><label for="portGroup1"></label></div>
+       	   <div class="formbox_radioform" style="margin-left:0"><input type="radio" id="portGroup1" name="jbossInstance.bindPort" value="ports-default" class="regular-radio" checked /><label for="portGroup1"></label></div>
            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">ports-default</p></div>
-           <div class="formbox_radioform"><input type="radio" id="portGroup2" name="jbossInstance.portGroup" value="ports-01" class="regular-radio" /><label for="portGroup2"></label></div>
+           <div class="formbox_radioform"><input type="radio" id="portGroup2" name="jbossInstance.bindPort" value="ports-01" class="regular-radio" /><label for="portGroup2"></label></div>
            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">ports-01</p></div>
-           <div class="formbox_radioform"><input type="radio" id="portGroup3" name="jbossInstance.portGroup" value="ports-02" class="regular-radio" /><label for="portGroup3"></label></div>
+           <div class="formbox_radioform"><input type="radio" id="portGroup3" name="jbossInstance.bindPort" value="ports-02" class="regular-radio" /><label for="portGroup3"></label></div>
            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">ports-02</p></div>
-           <div class="formbox_radioform"><input type="radio" id="portGroup4" name="jbossInstance.portGroup" value="ports-03" class="regular-radio" /><label for="portGroup4"></label></div>
+           <div class="formbox_radioform"><input type="radio" id="portGroup4" name="jbossInstance.bindPort" value="ports-03" class="regular-radio" /><label for="portGroup4"></label></div>
            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">ports-03</p></div>        	
        </div>
 

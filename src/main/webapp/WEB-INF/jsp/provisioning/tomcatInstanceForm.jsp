@@ -22,9 +22,9 @@
 				alert('SSH Login Password가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#sshLoginPassword').focus();
 				return false;
-			} else if(!$('#tomcatEngine').val()) {
-				alert('TOMCAT ENGINE이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
-				$('#tomcatEngine').focus();
+			} else if(!$('#catalinaBase').val()) {
+				alert('CATALINA_BASE가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#catalinaBase').focus();
 				return false;
 			} else if(!$('#javaHome').val()) {
 				alert('JAVA_HOME이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
@@ -42,9 +42,9 @@
 				alert('HTTP_PORT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#httpPort').focus();
 				return false;
-			} else if(!$('#ajppPort').val()) {
-				alert('AJPP_PORT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
-				$('#ajppPort').focus();
+			} else if(!$('#ajpPort').val()) {
+				alert('AJP_PORT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#ajpPort').focus();
 				return false;
 			} else if(!$('#sslPort').val()) {
 				alert('SSL_PORT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
@@ -54,7 +54,13 @@
 				alert('SHUTDOWN_PORT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#shutdownPort').focus();
 				return false;
+			} else if(!$('#userAccount').val()) {
+				alert('USER_ACCOUNT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#userAccount').focus();
+				return false;
 			} else {
+				wrapWindowByMask();
+				
 				var form = $("#instanceForm").get(0);
 				form.action = "<c:url value='/provisioning/install.do' />";
 				form.submit();
@@ -70,7 +76,7 @@
     	<div class="bt_tab_txt01" style="color:#858686"><a href="<c:url value='/provisioning/wasInstanceForm.do?targetWas=B' />">JBoss</a></div>
     	<div class="bt_tab_txt01">TomCat</div>
     </div>
-	<div class="bg_formbox" style="height:780px;"> <!-- form배경 박스 높이를 670로 늘임 -->
+	<div class="bg_formbox" style="height:850px;"> <!-- form배경 박스 높이를 670로 늘임 -->
     	<div class="formbox_txt01"><p style="padding-top:11px; padding-left:15px;">Server IP</p></div>
         <div class="formbox_form01"><input type="text" id="serverIp" name="tomcatInstance.serverIp" title="Server IP 입력" class="input_form02" /></div>
         
@@ -83,9 +89,9 @@
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SSH Login Password</p></div>
         <div class="formbox_form02"><input type="password" id="sshLoginPassword" name="tomcatInstance.sshLoginPassword" title="Ssh password 입력" class="input_form02" /></div>
         
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">TOMCAT ENGINE</p></div>
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">CATALINA_BASE</p></div>
         <div class="formbox_form02">
-        	<div class="formbox_sub01"><input type="text" id="tomcatEngine" name="tomcatInstance.tomcatEngine" title="TOMCAT ENGINE 입력" class="input_form02" /></div> <!-- Inputbox 가로폭을 250으로 줄임 -->
+        	<div class="formbox_sub01"><input type="text" id="catalinaBase" name="tomcatInstance.catalinaBase" title="CATALINA_BASE 입력" class="input_form02" /></div> <!-- Inputbox 가로폭을 250으로 줄임 -->
 <!--         	<div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">신규설치 :</p></div> -->
 <!--             <div class="formbox_radioform" style="margin-left:10px"><input type="radio" id="newInstallY" name="tomcatInstance.newInstallYn" value="Y" class="regular-radio" checked /><label for="newInstallY"></label></div> -->
 <!-- 	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">Yes</p></div> -->
@@ -105,14 +111,17 @@
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">HTTP_PORT</p></div>
         <div class="formbox_form02"><input type="text" id="httpPort" name="tomcatInstance.httpPort" title="HTTP_PORT 입력" class="input_form02" /></div>
         
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">AJPP_PORT</p></div>
-        <div class="formbox_form02"><input type="text" id="ajppPort" name="tomcatInstance.ajppPort" title="AJPP_PORT 입력" class="input_form02" /></div>
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">AJP_PORT</p></div>
+        <div class="formbox_form02"><input type="text" id="ajpPort" name="tomcatInstance.ajpPort" title="AJP_PORT 입력" class="input_form02" /></div>
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SSL_PORT</p></div>
         <div class="formbox_form02"><input type="text" id="sslPort" name="tomcatInstance.sslPort" title="SSL_PORT 입력" class="input_form02" /></div>
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SHUTDOWN_PORT</p></div>
         <div class="formbox_form02"><input type="text" id="shutdownPort" name="tomcatInstance.shutdownPort" title="SHUTDOWN_PORT 입력" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">USER_ACCOUNT</p></div>
+        <div class="formbox_form02"><input type="text" id="userAccount" name="tomcatInstance.userAccount" title="USER_ACCOUNT 입력" class="input_form02" /></div>
         
         <div class="common_btn"><a href="javascript:void(0);" id="installBtn"><img src="<c:url value='/images/common/bt_install01.png'/>" /></a></div>        
     </div>        
