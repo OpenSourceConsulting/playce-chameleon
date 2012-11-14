@@ -21,7 +21,9 @@
 package com.athena.chameleon.engine.entity.provisioning;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * This Genre class is a Value Object class for JBoss Instance.
@@ -41,10 +43,10 @@ public class JBossInstance implements Serializable {
     private String engineHome;
     //신규설치 여부
     private String newInstallYn;
-    //JBoss Instance Home
-    private String instanceHome;
-    //JBoss Instance Name
-    private String instanceName;
+    //JBoss Server Home
+    private String serverHome;
+    //JBoss Server Name
+    private String serverName;
     //Port Group
     private String portGroup;
     //SSH-Login-Id
@@ -95,17 +97,17 @@ public class JBossInstance implements Serializable {
     }
 
     /**
-     * @return the instanceHome
+     * @return the serverHome
      */
-    public String getInstanceHome() {
-        return instanceHome;
+    public String getServerHome() {
+        return serverHome;
     }
 
     /**
-     * @param instanceHome the instanceHome to set
+     * @param serverHome the serverHome to set
      */
-    public void setInstanceHome(String instanceHome) {
-        this.instanceHome = instanceHome;
+    public void setServerHome(String serverHome) {
+        this.serverHome = serverHome;
     }
 
     /**
@@ -123,17 +125,17 @@ public class JBossInstance implements Serializable {
     }
 
     /**
-     * @return the instanceName
+     * @return the serverName
      */
-    public String getInstanceName() {
-        return instanceName;
+    public String getServerName() {
+        return serverName;
     }
 
     /**
-     * @param instance the instanceName to set
+     * @param serverName the serverName to set
      */
-    public void setInstanceName(String instanceName) {
-        this.instanceName = instanceName;
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 
     /**
@@ -177,5 +179,10 @@ public class JBossInstance implements Serializable {
 	public void setSshLoginPassword(String sshLoginPassword) {
 		this.sshLoginPassword = sshLoginPassword;
 	}
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 
 }

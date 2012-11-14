@@ -14,6 +14,14 @@
 				alert('Server Port가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#serverPort').focus();
 				return false;
+			} else if(!$('#sshLoginId').val()) {
+				alert('SSH Login ID가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#sshLoginId').focus();
+				return false;
+			} else if(!$('#sshLoginPassword').val()) {
+				alert('SSH Login Password가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
+				$('#sshLoginPassword').focus();
+				return false;
 			} else if(!$('#tomcatEngine').val()) {
 				alert('TOMCAT ENGINE이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#tomcatEngine').focus();
@@ -46,14 +54,6 @@
 				alert('SHUTDOWN_PORT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#shutdownPort').focus();
 				return false;
-			} else if(!$('#sshLoginId').val()) {
-				alert('Ssh-login-id가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
-				$('#sshLoginId').focus();
-				return false;
-			} else if(!$('#sshLoginPassword').val()) {
-				alert('Ssh password가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
-				$('#sshLoginPassword').focus();
-				return false;
 			} else {
 				var form = $("#instanceForm").get(0);
 				form.action = "<c:url value='/provisioning/install.do' />";
@@ -76,6 +76,12 @@
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Server Port</p></div>
         <div class="formbox_form02"><input type="text" id="serverPort" name="tomcatInstance.serverPort" title="Server Port 입력" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SSH Login ID</p></div>
+        <div class="formbox_form02"><input type="text" id="sshLoginId" name="tomcatInstance.sshLoginId" title="Ssh-login-id 입력" class="input_form02" /></div>
+        
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SSH Login Password</p></div>
+        <div class="formbox_form02"><input type="password" id="sshLoginPassword" name="tomcatInstance.sshLoginPassword" title="Ssh password 입력" class="input_form02" /></div>
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">TOMCAT ENGINE</p></div>
         <div class="formbox_form02">
@@ -107,12 +113,6 @@
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">SHUTDOWN_PORT</p></div>
         <div class="formbox_form02"><input type="text" id="shutdownPort" name="tomcatInstance.shutdownPort" title="SHUTDOWN_PORT 입력" class="input_form02" /></div>
-        
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Ssh-login-id</p></div>
-        <div class="formbox_form02"><input type="text" id="sshLoginId" name="tomcatInstance.sshLoginId" title="Ssh-login-id 입력" class="input_form02" /></div>
-        
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Ssh password</p></div>
-        <div class="formbox_form02"><input type="text" id="sshLoginPassword" name="tomcatInstance.sshLoginPassword" title="Ssh password 입력" class="input_form02" /></div>
         
         <div class="common_btn"><a href="javascript:void(0);" id="installBtn"><img src="<c:url value='/images/common/bt_install01.png'/>" /></a></div>        
     </div>        

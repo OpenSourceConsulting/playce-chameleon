@@ -21,7 +21,9 @@
 package com.athena.chameleon.engine.entity.provisioning;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * This Genre class is a Value Object class for Tomcat Instance.
@@ -241,5 +243,10 @@ public class TomcatInstance implements Serializable {
 	public void setSshLoginPassword(String sshLoginPassword) {
 		this.sshLoginPassword = sshLoginPassword;
 	}
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 
 }
