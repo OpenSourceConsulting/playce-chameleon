@@ -52,7 +52,7 @@ public class JBossProvisioning {
 
 	/**
 	 * <pre>
-	 *
+	 * 
 	 * </pre>
 	 * @param provisioning
 	 * @throws IOException 
@@ -77,7 +77,7 @@ public class JBossProvisioning {
 		
 		property = new Property();
 		property.setKey("jboss.home");
-//		property.setValue(instance.getJbossHome());
+		property.setValue(instance.getJbossHome());
 		properties.add(property);
 		
 		property = new Property();
@@ -92,17 +92,17 @@ public class JBossProvisioning {
 		
 		property = new Property();
 		property.setKey("partition.name");
-//		property.setValue(instance.getPartitionName());
+		property.setValue(instance.getPartitionName());
 		properties.add(property);
 		
 		property = new Property();
 		property.setKey("bind.address");
-//		property.setValue(instance.getBindAddress());
+		property.setValue(instance.getBindAddress());
 		properties.add(property);
 		
 		property = new Property();
 		property.setKey("bind.port");
-		property.setValue(instance.getPortGroup());
+		property.setValue(instance.getBindPort());
 		properties.add(property);
 		
 		action = new ConfigurationAction(newFile.getAbsolutePath(), properties);
@@ -124,22 +124,22 @@ public class JBossProvisioning {
 		
 		
 		/****************************************************************************
-		 * 3. ScpAction을 이용해 설정 변경된 env.sh 파일을 Engine Home 하위의 bin 디렉토리로 
-		 *    업로드 한다.
+		 * 3. ScpAction을 이용해 설정 변경된 env.sh 파일을 Target 서버로 업로드한다. 
+		 *    (SSH 로그인 아이디의 홈 디렉토리)
 		 ****************************************************************************/
 		action = new ScpAction(targetHost, newFile.getAbsolutePath(), "~/env.sh");
 		command.setAction(action);
 		
 		
 		/****************************************************************************
-		 * 4. SshAction을 이용해 업로드 된 파일을 지정된 Engine Home 디렉토리에 압축 해제한다.
-		 *    env.sh 파일을 Engine Home 디렉토리 하위의 bin 디렉토리로 이동시킨다.
-		 *    Engine Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
+		 * 4. SshAction을 이용해 업로드 된 파일을 지정된 Server Home 디렉토리에 압축 해제한다.
+		 *    env.sh 파일을 Server Home 디렉토리 하위의 bin 디렉토리로 이동시킨다.
+		 *    Server Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
 		 ****************************************************************************/
 		List<String> commandList = new ArrayList<String>();
-		commandList.add("unzip ~/jboss-cluster-template-5.1.2.zip -d " + instance.getEngineHome());
-		commandList.add("mv ~/env.sh " + instance.getEngineHome() + "/bin");
-		commandList.add("chmod 755 " + instance.getEngineHome() + "/bin");
+		commandList.add("unzip ~/jboss-cluster-template-5.1.2.zip -d " + instance.getServerHome());
+		commandList.add("mv ~/env.sh " + instance.getServerHome() + "/bin");
+		commandList.add("chmod 755 " + instance.getServerHome() + "/bin");
 		
 		action = new SshAction(targetHost, commandList);
 		command.setAction(action);
@@ -150,6 +150,22 @@ public class JBossProvisioning {
 		 *    입력된 값으로 치환한다.
 		 ****************************************************************************/
 		ProvisionDataSource dataSource = provisioning.getDataSource();
+		
+		File origDs = null;
+		File newDs = null;
+
+		String dbType = dataSource.getDatabaseType();
+		if (dbType.equals("mysql")) {
+			origDs = new File(new File(this.getClass().getResource("/provisioning/repository").getFile()), "mysql-ds.xml");
+		} else if (dbType.equals("oracle")) {
+			origDs = new File(new File(this.getClass().getResource("/provisioning/repository").getFile()), "oracle-ds.xml");
+		} else {
+			origDs = new File(new File(this.getClass().getResource("/provisioning/repository").getFile()), "cubrid-ds.xml");
+		}
+		newDs = new File(new File(this.getClass().getResource("/provisioning/repository").getFile()), instance.getServerName() + "-ds.xml");
+		
+		copy(origDs, newDs);
+		
 		properties = new ArrayList<Property>();
 		
 		property = new Property();
@@ -182,7 +198,7 @@ public class JBossProvisioning {
 		property.setValue(dataSource.getMaxPoolSize());
 		properties.add(property);
 		
-		action = new ConfigurationAction(newFile.getAbsolutePath(), properties);
+		action = new ConfigurationAction(newDs.getAbsolutePath(), properties);
 		command.setAction(action);
 		
 		
@@ -193,8 +209,6 @@ public class JBossProvisioning {
 		
 	}//end of doProvision()
 	
-
-
 	/**
 	 * <pre>
 	 * source 파일을 target으로 복사한다.

@@ -34,9 +34,6 @@ $(document).ready(function (){
         <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">JBoss Home</p></div>
         <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.jbossInstance.jbossHome}</div>
         
-        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">JBoss Engine Home</p></div>
-        <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.jbossInstance.engineHome}</div>
-        
         <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">JBoss Server Home</p></div>
         <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.jbossInstance.serverHome}</div>
         

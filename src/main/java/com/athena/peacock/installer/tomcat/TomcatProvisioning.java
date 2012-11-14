@@ -91,7 +91,7 @@ public class TomcatProvisioning {
 		
 		property = new Property();
 		property.setKey("catalina.base");
-//		property.setValue(instance.getCatalinaBase());
+		property.setValue(instance.getCatalinaBase());
 		properties.add(property);
 		
 		property = new Property();
@@ -101,7 +101,7 @@ public class TomcatProvisioning {
 		
 		property = new Property();
 		property.setKey("ajp.port");
-		property.setValue(instance.getAjppPort());
+		property.setValue(instance.getAjpPort());
 		properties.add(property);
 		
 		property = new Property();
@@ -116,7 +116,7 @@ public class TomcatProvisioning {
 		
 		property = new Property();
 		property.setKey("user.account");
-//		property.setValue(instance.getUserAccount());
+		property.setValue(instance.getUserAccount());
 		properties.add(property);
 		
 		action = new ConfigurationAction(newFile.getAbsolutePath(), properties);
@@ -138,22 +138,22 @@ public class TomcatProvisioning {
 		
 		
 		/****************************************************************************
-		 * 3. ScpAction을 이용해 설정 변경된 env.sh 파일을 Engine Home 하위의 bin 디렉토리로 
-		 *    업로드 한다.
+		 * 3. ScpAction을 이용해 설정 변경된 env.sh 파일을 Target 서버로 업로드한다. 
+		 *    (SSH 로그인 아이디의 홈 디렉토리)
 		 ****************************************************************************/
 		action = new ScpAction(targetHost, newFile.getAbsolutePath(), "~/env.sh");
 		command.setAction(action);
 		
 		
 		/****************************************************************************
-		 * 4. SshAction을 이용해 업로드 된 파일을 지정된 Engine Home 디렉토리에 압축 해제한다.
-		 *    env.sh 파일을 Engine Home 디렉토리 하위의 bin 디렉토리로 이동시킨다.
-		 *    Engine Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
+		 * 4. SshAction을 이용해 업로드 된 파일을 지정된 Server Home(Catalina Base) 디렉토리에 압축 해제한다.
+		 *    env.sh 파일을 Server Home 디렉토리 하위의 bin 디렉토리로 이동시킨다.
+		 *    Server Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
 		 ****************************************************************************/
 		List<String> commandList = new ArrayList<String>();
-//		commandList.add("unzip ~/tomcat-template-6.0.XX.zip -d " + instance.getCatalinaBase());
-//		commandList.add("mv ~/env.sh " + instance.getCatalinaBase() + "/bin");
-//		commandList.add("chmod 755 " + instance.getCatalinaBase() + "/bin");
+		commandList.add("unzip ~/tomcat-template-6.0.XX.zip -d " + instance.getCatalinaBase());
+		commandList.add("mv ~/env.sh " + instance.getCatalinaBase() + "/bin");
+		commandList.add("chmod 755 " + instance.getCatalinaBase() + "/bin");
 		
 		action = new SshAction(targetHost, commandList);
 		command.setAction(action);

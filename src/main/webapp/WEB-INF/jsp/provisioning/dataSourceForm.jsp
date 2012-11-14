@@ -44,7 +44,6 @@
 <input type="hidden" id="targetWas" 	name="targetWas" 					value="${provisioning.targetWas}">
 <input type="hidden" id="serverIp" 		name="jbossInstance.serverIp" 		value="${provisioning.jbossInstance.serverIp}">
 <input type="hidden" id="serverPort" 	name="jbossInstance.serverPort" 	value="${provisioning.jbossInstance.serverPort}">
-<input type="hidden" id="engineHome" 	name="jbossInstance.engineHome" 	value="${provisioning.jbossInstance.engineHome}">
 <input type="hidden" id="newInstallYn" 	name="jbossInstance.newInstallYn" 	value="${provisioning.jbossInstance.newInstallYn}">
 <input type="hidden" id="serverHome" 	name="jbossInstance.serverHome" 	value="${provisioning.jbossInstance.serverHome}">
 <input type="hidden" id="serverName" 	name="jbossInstance.serverName" 	value="${provisioning.jbossInstance.serverName}">

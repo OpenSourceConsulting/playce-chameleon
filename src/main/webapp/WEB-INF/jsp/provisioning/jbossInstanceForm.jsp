@@ -26,10 +26,6 @@
 				alert('JBoss Home이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#jbossHome').focus();
 				return false;
-			} else if(!$('#engineHome').val()) {
-				alert('JBoss Engine Home이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
-				$('#engineHome').focus();
-				return false;
 			} else if(!$('#serverHome').val()) {
 				alert('JBoss Server Home이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#serverHome').focus();
@@ -78,21 +74,21 @@
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Home</p></div>
         <div class="formbox_form02"><input type="text" id="jbossHome" name="jbossInstance.jbossHome" title="JBoss Home 입력" class="input_form02" /></div>
         
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Engine Home</p></div>
-        <div class="formbox_form02">
-	        <div class="formbox_sub01"><input type="text" id="engineHome" name="jbossInstance.engineHome" title="JBoss Engine Home 입력" class="input_form02"/></div> <!-- Inputbox 가로폭을 250으로 줄임 -->
+<!--        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Engine Home</p></div> -->
+<!--        <div class="formbox_form02"> -->
+<!--	        <div class="formbox_sub01"><input type="text" id="engineHome" name="jbossInstance.engineHome" title="JBoss Engine Home 입력" class="input_form02"/></div> --> <!-- Inputbox 가로폭을 250으로 줄임 -->
 <!-- 	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">신규설치 :</p></div> -->
 <!-- 	        <div class="formbox_radioform" style="margin-left:10px"><input type="radio" id="newInstallY" name="jbossInstance.newInstallYn" value="Y" class="regular-radio" checked /><label for="newInstallY"></label></div> -->
 <!-- 	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">Yes</p></div> -->
 <!-- 	        <div class="formbox_radioform"><input type="radio" id="newInstallN" name="jbossInstance.newInstallYn" value="N" class="regular-radio" /><label for="newInstallN"></label></div> -->
 <!-- 	        <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">No</p></div> -->
-     	</div>
+<!--     	</div> -->
      	
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Server Home</p></div>
-        <div class="formbox_form02"><input type="text" id="serverHome" name="jbossInstance.serverHome" title="JBoss Server Home 입력" class="input_form02" /></div>
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Server Home</p></div>
+        <div class="formbox_form02"><input type="text" id="serverHome" name="jbossInstance.serverHome" title="Server Home 입력" class="input_form02" /></div>
         
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">JBoss Server Name</p></div>
-        <div class="formbox_form02"><input type="text" id="serverName" name="jbossInstance.serverName" title="JBoss Server Name 입력" class="input_form02" /></div>
+        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Server Name</p></div>
+        <div class="formbox_form02"><input type="text" id="serverName" name="jbossInstance.serverName" title="Server Name 입력" class="input_form02" /></div>
         
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Partition Name</p></div>
         <div class="formbox_form02"><input type="text" id="partitionName" name="jbossInstance.partitionName" title="Partition Name 입력" class="input_form02" /></div>

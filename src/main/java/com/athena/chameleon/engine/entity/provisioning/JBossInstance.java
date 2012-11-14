@@ -39,8 +39,6 @@ public class JBossInstance implements Serializable {
     private String serverIp;
     //Server Port
     private String serverPort;
-    //JBoss Engine Home
-    private String engineHome;
     //신규설치 여부
     private String newInstallYn;
     //JBoss Server Home
@@ -86,20 +84,6 @@ public class JBossInstance implements Serializable {
      */
     public void setServerPort(String serverPort) {
         this.serverPort = serverPort;
-    }
-
-    /**
-     * @return the engineHome
-     */
-    public String getEngineHome() {
-        return engineHome;
-    }
-
-    /**
-     * @param engineHome the engineHome to set
-     */
-    public void setEngineHome(String engineHome) {
-        this.engineHome = engineHome;
     }
 
     /**

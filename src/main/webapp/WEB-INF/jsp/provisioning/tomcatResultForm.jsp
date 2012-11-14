@@ -31,17 +31,17 @@ $(document).ready(function (){
         <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">SSH Login Password</p></div>
         <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.tomcatInstance.sshLoginPassword}</div>
         
-        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">CATALINA_BASE</p></div>
-        <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.tomcatInstance.catalinaBase}</div>
-        
         <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">JAVA_HOME</p></div>
         <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.tomcatInstance.javaHome}</div>
+        
+        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">SERVER_NAME</p></div>
+        <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.tomcatInstance.serverName}</div>
         
         <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">CATALINA_HOME</p></div>
         <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.tomcatInstance.catalinaHome}</div>
         
-        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">SERVER_NAME</p></div>
-        <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.tomcatInstance.serverName}</div>
+        <div class="formbox_txt01"><p style="padding-top:2px; padding-left:15px;">CATALINA_BASE</p></div>
+        <div class="formbox_txt01-1"><p style="padding-top:2px;">${provisioning.tomcatInstance.catalinaBase}</div>
         
     	<div class="formbox_txt01"><p style="padding-top:4px; padding-left:15px;">HTTP_PORT</p></div>
         <div class="formbox_txt01-1"><p style="padding-top:4px;">${provisioning.tomcatInstance.httpPort}</div>
