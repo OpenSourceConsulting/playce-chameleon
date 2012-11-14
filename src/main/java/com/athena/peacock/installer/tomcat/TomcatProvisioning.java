@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.athena.chameleon.engine.entity.provisioning.Provisioning;
 import com.athena.chameleon.engine.entity.provisioning.TomcatInstance;
@@ -41,7 +43,7 @@ import com.athena.peacock.engine.core.TargetHost;
 
 /**
  * <pre>
- *
+ * Provisioning 화면에서 입력된 정보를 이용하여 Tomcat Provisioning을 수행한다.
  * </pre>
  * 
  * @author Sang-cheon Park
@@ -49,6 +51,8 @@ import com.athena.peacock.engine.core.TargetHost;
  */
 public class TomcatProvisioning {
 
+	private static final Logger logger = LoggerFactory.getLogger(TomcatProvisioning.class);
+			
 	/**
 	 * <pre>
 	 *
@@ -57,6 +61,8 @@ public class TomcatProvisioning {
 	 * @throws IOException 
 	 */
 	public void doProvision(Provisioning provisioning) throws IOException {
+		
+		logger.debug("[Tomcat Provisioning] Input Parameter : [{}]", provisioning);
 		
 		InstallCommand command = new InstallCommand();
 		Action action = null;
@@ -147,13 +153,13 @@ public class TomcatProvisioning {
 		
 		/****************************************************************************
 		 * 4. SshAction을 이용해 업로드 된 파일을 지정된 Server Home(Catalina Base) 디렉토리에 압축 해제한다.
-		 *    env.sh 파일을 Server Home 디렉토리 하위의 bin 디렉토리로 이동시킨다.
-		 *    Server Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
+		 *    env.sh 파일을 Server Home 디렉토리로 이동시킨다.
+		 *    Server Home 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
 		 ****************************************************************************/
 		List<String> commandList = new ArrayList<String>();
-		commandList.add("unzip ~/tomcat-template-6.0.XX.zip -d " + instance.getCatalinaBase());
-		commandList.add("mv ~/env.sh " + instance.getCatalinaBase() + "/bin");
-		commandList.add("chmod 755 " + instance.getCatalinaBase() + "/bin");
+		commandList.add("unzip -o ~/tomcat-template-6.0.XX.zip -d " + instance.getCatalinaBase());
+		commandList.add("mv ~/env.sh " + instance.getCatalinaBase());
+		commandList.add("chmod 755 " + instance.getCatalinaBase() + "/*.sh");
 		
 		action = new SshAction(targetHost, commandList);
 		command.setAction(action);

@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.athena.chameleon.engine.entity.provisioning.JBossInstance;
 import com.athena.chameleon.engine.entity.provisioning.ProvisionDataSource;
@@ -42,13 +44,15 @@ import com.athena.peacock.engine.core.TargetHost;
 
 /**
  * <pre>
- * 
+ * Provisioning 화면에서 입력된 정보를 이용하여 JBoss Provisioning을 수행한다.
  * </pre>
  * 
  * @author Ji-Woong Choi
  * @version 1.0
  */
 public class JBossProvisioning {
+	
+	private static final Logger logger = LoggerFactory.getLogger(JBossProvisioning.class);
 
 	/**
 	 * <pre>
@@ -58,6 +62,8 @@ public class JBossProvisioning {
 	 * @throws IOException 
 	 */
 	public void doProvision(Provisioning provisioning) throws IOException {
+		
+		logger.debug("[JBoss Provisioning] Input Parameter : [{}]", provisioning);
 		
 		InstallCommand command = new InstallCommand();
 		Action action = null;
@@ -137,9 +143,9 @@ public class JBossProvisioning {
 		 *    Server Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
 		 ****************************************************************************/
 		List<String> commandList = new ArrayList<String>();
-		commandList.add("unzip ~/jboss-cluster-template-5.1.2.zip -d " + instance.getServerHome());
+		commandList.add("unzip -o ~/jboss-cluster-template-5.1.2.zip -d " + instance.getServerHome());
 		commandList.add("mv ~/env.sh " + instance.getServerHome() + "/bin");
-		commandList.add("chmod 755 " + instance.getServerHome() + "/bin");
+		commandList.add("chmod 755 " + instance.getServerHome() + "/bin/*.sh");
 		
 		action = new SshAction(targetHost, commandList);
 		command.setAction(action);

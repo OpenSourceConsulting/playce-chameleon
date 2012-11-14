@@ -23,6 +23,9 @@ package com.athena.peacock.engine.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.athena.peacock.engine.action.Action;
 
 /**
@@ -34,6 +37,8 @@ import com.athena.peacock.engine.action.Action;
  * @version 1.0
  */
 public class InstallCommand implements Command {
+	
+	private static final Logger logger = LoggerFactory.getLogger(InstallCommand.class);
 
     private List<Action> actions = new ArrayList<Action>();
     
@@ -61,13 +66,16 @@ public class InstallCommand implements Command {
      */
     @Override
     public boolean execute() {
-        // TODO Auto-generated method stub
-        for( Action action : actions) {
+        for (Action action : actions) {
+        	logger.debug("[{}] will be start.", action.getClass().getCanonicalName());
+        	
             action.perform();
             
+        	logger.debug("[{}] has done.", action.getClass().getCanonicalName());
         }
+        
         return true;
-    }
+    }//end of execute()
 
 }
 //end of InstallCommand.java
