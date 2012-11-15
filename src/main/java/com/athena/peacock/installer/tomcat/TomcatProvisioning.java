@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.athena.chameleon.engine.entity.provisioning.Provisioning;
+import com.athena.chameleon.engine.entity.provisioning.ProvisioningResult;
 import com.athena.chameleon.engine.entity.provisioning.TomcatInstance;
 import com.athena.peacock.engine.action.Action;
 import com.athena.peacock.engine.action.ConfigurationAction;
@@ -58,11 +59,14 @@ public class TomcatProvisioning {
 	 *
 	 * </pre>
 	 * @param provisioning
+	 * @return
 	 * @throws IOException 
 	 */
-	public void doProvision(Provisioning provisioning) throws IOException {
+	public ProvisioningResult doProvision(Provisioning provisioning) throws IOException {
 		
 		logger.debug("[Tomcat Provisioning] Input Parameter : [{}]", provisioning);
+		
+		ProvisioningResult provisioningResult = new ProvisioningResult();
 		
 		InstallCommand command = new InstallCommand();
 		Action action = null;
@@ -127,6 +131,8 @@ public class TomcatProvisioning {
 		
 		action = new ConfigurationAction(newFile.getAbsolutePath(), properties);
 		command.setAction(action);
+
+		provisioningResult.getProcessSequence().add("1. 입력된 변수를 이용하여 환경설정 파일을 작성합니다.");
 		
 		
 		/****************************************************************************
@@ -150,6 +156,8 @@ public class TomcatProvisioning {
 		action = new ScpAction(targetHost, newFile.getAbsolutePath(), "~/env.sh");
 		command.setAction(action);
 		
+		provisioningResult.getProcessSequence().add("2. Tomcat 템플릿 및 작성된 환경설정 파일을 지정된 서버로 업로드 합니다.");
+		
 		
 		/****************************************************************************
 		 * 4. SshAction을 이용해 업로드 된 파일을 지정된 Server Home(Catalina Base) 디렉토리에 압축 해제한다.
@@ -164,13 +172,18 @@ public class TomcatProvisioning {
 		action = new SshAction(targetHost, commandList);
 		command.setAction(action);
 		
+		provisioningResult.getProcessSequence().add("3. [SSH 실행 결과 참조] 업로드 된 Tomcat 템플릿을 압축 해제합니다.");
+		provisioningResult.getProcessSequence().add("4. [SSH 실행 결과 참조] 업로드 된 환경설정 파일을 압축 해제 디렉토리 하위로 복사합니다.");
+		provisioningResult.getProcessSequence().add("5. [SSH 실행 결과 참조] Shell Script 파일에 대한 실행 권한을 추가합니다.");
+		
 		
 		/************************
 		 * 7. InstallCommand 실행
 		 ************************/
 		command.execute();
+		provisioningResult.setSucceed(true);
 
-		
+		return provisioningResult;
 	}//end of doProvision()
 
 	/**
