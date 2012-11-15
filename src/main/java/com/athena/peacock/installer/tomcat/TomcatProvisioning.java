@@ -133,7 +133,7 @@ public class TomcatProvisioning {
 		action = new ConfigurationAction(newFile.getAbsolutePath(), properties);
 		command.setAction(action);
 
-		provisioningResult.getProcessSequence().add("1. 입력된 변수를 이용하여 환경설정 파일을 작성합니다.");
+		provisioningResult.getProcessSequence().add("1. 입력된 정보를 이용하여 환경설정 파일을 작성합니다.");
 		
 		
 		/****************************************************************************
