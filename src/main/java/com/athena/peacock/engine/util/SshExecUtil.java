@@ -20,7 +20,9 @@
  */
 package com.athena.peacock.engine.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,8 +47,10 @@ public class SshExecUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(SshExecUtil.class);
 
-	private static File output = new File("exec_result.log"); // 프로젝트 root에 파일 생성.
-	private static boolean append = false;
+	public static File output = new File("exec_result.log"); // 프로젝트 root에 파일 생성.
+	
+	private static FileWriter fstream = null;
+	private static BufferedWriter out = null;
 	
 	/**
 	 * <pre>
@@ -54,17 +58,18 @@ public class SshExecUtil {
 	 * </pre>
 	 * @param targetHost
 	 * @param commandList
-	 * @return
 	 * @throws IOException 
 	 */
-	public static String executeCommand(TargetHost targetHost, List<String> commandList) throws IOException {
-		for(String command : commandList) {
-			executeCommand(targetHost, command);
-			append = true;
-		}
-		append = false;
+	public static void executeCommand(TargetHost targetHost, List<String> commandList) throws IOException {
+		fstream = new FileWriter(output, false);
+		out = new BufferedWriter(fstream);
 		
-		return IOUtils.toString(output.toURI());
+		for(String command : commandList) {
+			out.write("[" + targetHost.getUsername() + "@" + targetHost.getHost() + " ~]$ " + command + "\n");
+			out.write(executeCommand(targetHost, command));
+		}
+		
+		IOUtils.closeQuietly(out);
 	}//end of executeCommand()
 	
 	/**
@@ -79,9 +84,11 @@ public class SshExecUtil {
 	public static String executeCommand(TargetHost targetHost, String command) throws IOException {
     	Assert.notNull(targetHost, "targetHost cannot be null.");
     	Assert.notNull(command, "command cannot be null.");
-
-		logger.debug("[ssh exec] " + command);
     	
+    	File result = new File(SshExecUtil.class.getResource(".").getFile(), "result.log");
+    	
+		logger.debug("[ssh exec] " + command);
+		
 		Project project = new Project();
 		
 		SSHExec exec = new SSHExec();
@@ -100,16 +107,12 @@ public class SshExecUtil {
 		exec.setCommand(command);
 		
 		// command 실행 결과가 저장될 파일 지정
-		exec.setOutput(output);
-		exec.setAppend(append);
+		exec.setOutput(result);
+		exec.setAppend(false);
 
 		exec.execute();
 		
-		if (append) {
-			return null;
-		} else {
-			return IOUtils.toString(output.toURI());
-		}
+		return IOUtils.toString(result.toURI());
 	}//end of executeCommand()
 
 }

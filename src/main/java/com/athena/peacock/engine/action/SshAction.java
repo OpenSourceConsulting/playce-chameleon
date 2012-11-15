@@ -23,6 +23,7 @@ package com.athena.peacock.engine.action;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +58,8 @@ public class SshAction implements Action {
     	logger.debug("\n- Target Host Info : [{}]", targetHost.toString());
     	
         try {
-			String resultMsg = SshExecUtil.executeCommand(targetHost, commandList);
-			logger.debug("Execute Command(s) Result : \n{}", resultMsg);
+			SshExecUtil.executeCommand(targetHost, commandList);
+			logger.debug("Execute Command(s) Result : \n{}", IOUtils.toString(SshExecUtil.output.toURI()));
 		} catch (IOException e) {
 			logger.error("IOException has occurred.", e);
 		}

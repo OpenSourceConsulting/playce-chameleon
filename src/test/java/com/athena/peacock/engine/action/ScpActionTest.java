@@ -20,7 +20,8 @@
  */
 package com.athena.peacock.engine.action;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +85,6 @@ public class ScpActionTest {
 			// 검증
 			String command = "ls -l ~/scptest/file/web.xml";
 			String resultMsg = SshExecUtil.executeCommand(targetHost, command);
-			
 			assertTrue("디렉토리 조회 결과에 \"web.xml\"이 존재해야 합니다.", resultMsg.indexOf("web.xml") > -1);
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -107,7 +107,6 @@ public class ScpActionTest {
 			// 검증
 			String command = "ls -Rl ~/scptest/directory";
 			String resultMsg = SshExecUtil.executeCommand(targetHost, command);
-			
 			assertTrue("디렉토리 조회 결과에 \"jsp\"가 존재해야 합니다.", resultMsg.indexOf("jsp") > -1);
 			assertTrue("디렉토리 조회 결과에 \"web.xml\"이 존재해야 합니다.", resultMsg.indexOf("web.xml") > -1);
 			assertTrue("디렉토리 조회 결과에 \"login\"이 존재해야 합니다.", resultMsg.indexOf("login") > -1);

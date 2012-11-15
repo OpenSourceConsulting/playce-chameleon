@@ -73,10 +73,10 @@ public class JBossProvisioning {
 		/****************************************************************************
 		 * 1. ConfigurationAction을 이용해 env.sh 파일에 포함된 환경변수를 입력된 값으로 치환한다.
 		 ****************************************************************************/
-		File origFile = new File(new File(this.getClass().getResource("/provisioning/environment/jboss").getFile()), "env.sh");
-		File newFile = new File(new File(this.getClass().getResource("/provisioning/environment/jboss").getFile()), instance.getServerName() + ".sh");
+		File origEnv = new File(new File(this.getClass().getResource("/provisioning/environment/jboss").getFile()), "env.sh");
+		File newEnv = new File(new File(this.getClass().getResource("/provisioning/environment/jboss").getFile()), instance.getServerName() + ".sh");
 		
-		copy(origFile, newFile);
+		copy(origEnv, newEnv);
 
 		List<Property> properties = new ArrayList<Property>();
 		Property property = null;
@@ -111,48 +111,12 @@ public class JBossProvisioning {
 		property.setValue(instance.getBindPort());
 		properties.add(property);
 		
-		action = new ConfigurationAction(newFile.getAbsolutePath(), properties);
+		action = new ConfigurationAction(newEnv.getAbsolutePath(), properties);
 		command.setAction(action);
 		
 		
 		/****************************************************************************
-		 * 2. ScpAction을 이용해 JBoss Template 파일을 Target 서버로 업로드한다. 
-		 *    (SSH 로그인 아이디의 홈 디렉토리)
-		 ****************************************************************************/
-		TargetHost targetHost = new TargetHost();
-		targetHost.setHost(instance.getServerIp());
-		targetHost.setPort(Integer.parseInt(instance.getServerPort()));
-		targetHost.setUsername(instance.getSshLoginId());
-		targetHost.setPassword(instance.getSshLoginPassword());
-		
-		action = new ScpAction(targetHost, this.getClass().getResource("/provisioning/repository/jboss-cluster-template-5.1.2.zip").getFile(), "~/");
-		command.setAction(action);
-		
-		
-		/****************************************************************************
-		 * 3. ScpAction을 이용해 설정 변경된 env.sh 파일을 Target 서버로 업로드한다. 
-		 *    (SSH 로그인 아이디의 홈 디렉토리)
-		 ****************************************************************************/
-		action = new ScpAction(targetHost, newFile.getAbsolutePath(), "~/env.sh");
-		command.setAction(action);
-		
-		
-		/****************************************************************************
-		 * 4. SshAction을 이용해 업로드 된 파일을 지정된 Server Home 디렉토리에 압축 해제한다.
-		 *    env.sh 파일을 Server Home 디렉토리 하위의 bin 디렉토리로 이동시킨다.
-		 *    Server Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
-		 ****************************************************************************/
-		List<String> commandList = new ArrayList<String>();
-		commandList.add("unzip -o ~/jboss-cluster-template-5.1.2.zip -d " + instance.getServerHome());
-		commandList.add("mv ~/env.sh " + instance.getServerHome() + "/bin");
-		commandList.add("chmod 755 " + instance.getServerHome() + "/bin/*.sh");
-		
-		action = new SshAction(targetHost, commandList);
-		command.setAction(action);
-		
-		
-		/****************************************************************************
-		 * 5. 선택된 DB 환경에 따른 DataSource 설정 파일로부터 ConfigurationAction을 이용하여
+		 * 2. 선택된 DB 환경에 따른 DataSource 설정 파일로부터 ConfigurationAction을 이용하여
 		 *    입력된 값으로 치환한다.
 		 ****************************************************************************/
 		ProvisionDataSource dataSource = provisioning.getDataSource();
@@ -208,6 +172,52 @@ public class JBossProvisioning {
 		command.setAction(action);
 		
 		
+		/****************************************************************************
+		 * 3. ScpAction을 이용해 JBoss Template 파일을 Target 서버로 업로드한다. 
+		 *    (SSH 로그인 아이디의 홈 디렉토리)
+		 ****************************************************************************/
+		TargetHost targetHost = new TargetHost();
+		targetHost.setHost(instance.getServerIp());
+		targetHost.setPort(Integer.parseInt(instance.getServerPort()));
+		targetHost.setUsername(instance.getSshLoginId());
+		targetHost.setPassword(instance.getSshLoginPassword());
+		
+		action = new ScpAction(targetHost, this.getClass().getResource("/provisioning/repository/jboss-cluster-template-5.1.2.zip").getFile(), "~/");
+		command.setAction(action);
+		
+		
+		/****************************************************************************
+		 * 4. ScpAction을 이용해 설정 변경된 env.sh 파일을 Target 서버로 업로드한다. 
+		 *    (SSH 로그인 아이디의 홈 디렉토리)
+		 ****************************************************************************/
+		action = new ScpAction(targetHost, newEnv.getAbsolutePath(), "~/env.sh");
+		command.setAction(action);
+		
+		
+		/****************************************************************************
+		 * 5. ScpAction을 이용해 설정 변경된 *-ds.xml 파일을 Target 서버로 업로드한다. 
+		 *    (SSH 로그인 아이디의 홈 디렉토리)
+		 ****************************************************************************/
+		action = new ScpAction(targetHost, newDs.getAbsolutePath(), "~/" + newDs.getName());
+		command.setAction(action);
+		
+		
+		/****************************************************************************
+		 * 6. SshAction을 이용해 업로드 된 파일을 지정된 Server Home 디렉토리에 압축 해제한다.
+		 *    env.sh 파일을 Server Home 디렉토리 하위의 bin 디렉토리로 복사한다.
+		 *    *-ds.xml 파일을 Server Home 디렉토리 하위의 deploy 디렉토리로 복사한다.
+		 *    Server Home 디렉토리 하위의 bin 디렉토리에 존재하는 *.sh 파일들의 퍼미션을 755로 변경한다.
+		 ****************************************************************************/
+		List<String> commandList = new ArrayList<String>();
+		commandList.add("unzip -o ~/jboss-cluster-template-5.1.2.zip -d " + instance.getServerHome() + "/" + instance.getServerName());
+		commandList.add("cp ~/env.sh " + instance.getServerHome() + "/" + instance.getServerName() + "/bin");
+		commandList.add("cp ~/" + newDs.getName() + " " + instance.getServerHome() + "/" + instance.getServerName() + "/deploy");
+		commandList.add("chmod 755 " + instance.getServerHome() + "/" + instance.getServerName() + "/bin/*.sh");
+		
+		action = new SshAction(targetHost, commandList);
+		command.setAction(action);
+		
+		
 		/************************
 		 * 7. InstallCommand 실행
 		 ************************/
@@ -231,6 +241,6 @@ public class JBossProvisioning {
 		IOUtils.closeQuietly(outputStream);
 		IOUtils.closeQuietly(inputStream);
 	}//end of copy()
-
+	
 }
 //end of JBossProvisioning.java

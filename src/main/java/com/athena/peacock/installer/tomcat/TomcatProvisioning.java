@@ -158,7 +158,7 @@ public class TomcatProvisioning {
 		 ****************************************************************************/
 		List<String> commandList = new ArrayList<String>();
 		commandList.add("unzip -o ~/tomcat-template-6.0.XX.zip -d " + instance.getCatalinaBase());
-		commandList.add("mv ~/env.sh " + instance.getCatalinaBase());
+		commandList.add("cp ~/env.sh " + instance.getCatalinaBase());
 		commandList.add("chmod 755 " + instance.getCatalinaBase() + "/*.sh");
 		
 		action = new SshAction(targetHost, commandList);
