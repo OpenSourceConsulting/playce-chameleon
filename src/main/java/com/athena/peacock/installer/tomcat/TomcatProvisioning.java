@@ -41,6 +41,7 @@ import com.athena.peacock.engine.action.SshAction;
 import com.athena.peacock.engine.core.InstallCommand;
 import com.athena.peacock.engine.core.Property;
 import com.athena.peacock.engine.core.TargetHost;
+import com.athena.peacock.engine.util.SshExecUtil;
 
 /**
  * <pre>
@@ -182,7 +183,8 @@ public class TomcatProvisioning {
 		 ************************/
 		command.execute();
 		provisioningResult.setSucceed(true);
-
+		provisioningResult.setSshExecuteResult(IOUtils.toString(SshExecUtil.output.toURI()));
+		
 		return provisioningResult;
 	}//end of doProvision()
 

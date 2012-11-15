@@ -42,6 +42,7 @@ import com.athena.peacock.engine.action.SshAction;
 import com.athena.peacock.engine.core.InstallCommand;
 import com.athena.peacock.engine.core.Property;
 import com.athena.peacock.engine.core.TargetHost;
+import com.athena.peacock.engine.util.SshExecUtil;
 
 /**
  * <pre>
@@ -175,7 +176,6 @@ public class JBossProvisioning {
 		action = new ConfigurationAction(newDs.getAbsolutePath(), properties);
 		command.setAction(action);
 		
-		provisioningResult.setDataSourceContents(IOUtils.toString(newDs.toURI()));
 		provisioningResult.getProcessSequence().add("1. 입력된 변수를 이용하여 환경설정 파일을 작성합니다.");
 
 		
@@ -226,7 +226,6 @@ public class JBossProvisioning {
 		action = new SshAction(targetHost, commandList);
 		command.setAction(action);
 
-		provisioningResult.setDataSourceLocation(instance.getServerHome() + "/" + instance.getServerName() + "/deploy/" + newDs.getName());
 		provisioningResult.getProcessSequence().add("3. [SSH 실행 결과 참조] 업로드 된 JBoss 템플릿을 압축 해제합니다.");
 		provisioningResult.getProcessSequence().add("4. [SSH 실행 결과 참조] 업로드 된 환경설정 파일을 압축 해제 디렉토리 하위로 복사합니다.");
 		provisioningResult.getProcessSequence().add("5. [SSH 실행 결과 참조] Shell Script 파일에 대한 실행 권한을 추가합니다.");
@@ -236,6 +235,9 @@ public class JBossProvisioning {
 		 ************************/
 		command.execute();
 		provisioningResult.setSucceed(true);
+		provisioningResult.setDataSourceContents(IOUtils.toString(newDs.toURI()));
+		provisioningResult.setDataSourceLocation(instance.getServerHome() + "/" + instance.getServerName() + "/deploy/" + newDs.getName());
+		provisioningResult.setSshExecuteResult(IOUtils.toString(SshExecUtil.output.toURI()));
 		
 		return provisioningResult;
 	}//end of doProvision()

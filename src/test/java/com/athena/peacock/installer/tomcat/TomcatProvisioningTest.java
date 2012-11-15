@@ -20,14 +20,13 @@
  */
 package com.athena.peacock.installer.tomcat;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.athena.chameleon.engine.entity.provisioning.Provisioning;
+import com.athena.chameleon.engine.entity.provisioning.ProvisioningResult;
 import com.athena.chameleon.engine.entity.provisioning.TomcatInstance;
 
 /**
@@ -71,8 +70,10 @@ public class TomcatProvisioningTest {
 		provisioning.setTomcatInstance(instance);
 		
 		try {
-			new TomcatProvisioning().doProvision(provisioning);
-		} catch (IOException e) {
+			ProvisioningResult provisioningResult = new TomcatProvisioning().doProvision(provisioning);
+			Thread.sleep(200);
+			System.err.println(provisioningResult);
+		} catch (Exception e) {
 			e.printStackTrace();   
 			fail("Not yet implemented");
 		}

@@ -20,9 +20,7 @@
  */
 package com.athena.peacock.installer.jboss;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +28,7 @@ import org.junit.Test;
 import com.athena.chameleon.engine.entity.provisioning.JBossInstance;
 import com.athena.chameleon.engine.entity.provisioning.ProvisionDataSource;
 import com.athena.chameleon.engine.entity.provisioning.Provisioning;
+import com.athena.chameleon.engine.entity.provisioning.ProvisioningResult;
 
 /**
  * <pre>
@@ -79,9 +78,11 @@ public class JBossProvisioningTest {
 		provisioning.setDataSource(dataSource);
 		
 		try {
-			new JBossProvisioning().doProvision(provisioning);
-		} catch (IOException e) {
-			e.printStackTrace();
+			ProvisioningResult provisioningResult = new JBossProvisioning().doProvision(provisioning);
+			Thread.sleep(200);
+			System.err.println(provisioningResult);
+		} catch (Exception e) {
+			e.printStackTrace();   
 			fail("Not yet implemented");
 		}
 	}
