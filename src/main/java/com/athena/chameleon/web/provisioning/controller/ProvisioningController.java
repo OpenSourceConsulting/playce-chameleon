@@ -20,9 +20,6 @@
  */
 package com.athena.chameleon.web.provisioning.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -36,7 +33,7 @@ import com.athena.peacock.installer.jboss.JBossProvisioning;
 import com.athena.peacock.installer.tomcat.TomcatProvisioning;
 
 /**
- * This LoginController class is a Controller class to Upload.
+ * This ProvisioningController class is a Controller class to Provisioning.
  * 
  * @author Hyo-jeong Lee
  * @version 1.0

@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.athena.chameleon.web.login.vo.Login;
 
 /**
- * This LoginController class is a Controller class to Login.
+ * This MainController class is a Controller class to Main.
  * 
  * @author Hyo-jeong Lee
  * @version 1.0

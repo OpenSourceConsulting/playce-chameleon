@@ -43,7 +43,7 @@ import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.upload.Upload;
 
 /**
- * This LoginController class is a Controller class to Upload.
+ * This UploadController class is a Controller class to Upload.
  * 
  * @author Hyo-jeong Lee
  * @version 1.0
