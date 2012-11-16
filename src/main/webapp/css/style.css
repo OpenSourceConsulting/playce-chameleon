@@ -101,6 +101,10 @@ html,body {height:100%;}
 .formbox_text00 {position:relative; width:720px; height:41px; top:47px; left:64px; text-align:left; 
 				  font:bold 12px '맑은고딕','Malgun Gothic','굴림','gulim'; color:#a2a2a2!important;}
 
+.formbox_txt01-2 {position:relative; float:left; width:196px; height:41px; top:47px; left:64px; text-align:left; color:#6dc5cf!important; float: left;}
+.formbox_txt01-3 {position:relative; float:left; width:196px; height:41px; top:47px; left:64px; text-align:left; color:#6dc5cf!important; }
+.formbox_txt03 {position:relative; width:178px; height:41px; top:47px; left:64px; text-align:left; width:730px; float: left;}
+
 .formbox_sub01 {float:left;}
 .formbox_sub01a {width:150px; overflow:hidden; float:left;}
 

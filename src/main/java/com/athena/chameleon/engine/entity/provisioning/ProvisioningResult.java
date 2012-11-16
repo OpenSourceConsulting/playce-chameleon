@@ -55,6 +55,7 @@ public class ProvisioningResult implements Serializable {
 	public boolean isSucceed() {
 		return isSucceed;
 	}
+
 	/**
 	 * @param isSucceed the isSucceed to set
 	 */

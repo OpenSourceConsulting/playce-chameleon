@@ -20,6 +20,9 @@
  */
 package com.athena.chameleon.web.provisioning.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -28,6 +31,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.athena.chameleon.engine.entity.provisioning.Provisioning;
+import com.athena.chameleon.engine.entity.provisioning.ProvisioningResult;
+import com.athena.peacock.installer.jboss.JBossProvisioning;
+import com.athena.peacock.installer.tomcat.TomcatProvisioning;
 
 /**
  * This LoginController class is a Controller class to Upload.
@@ -129,14 +135,21 @@ public class ProvisioningController {
         if(provisioning == null || provisioning.getTargetWas() == null)
             return "redirect:/provisioning/wasSelectForm.do";
 
+        
         modelMap.addAttribute("provisioning", provisioning);
         
-
         String returnForm = "redirect:/provisioning/wasSelectForm.do";
-        if(provisioning.getTargetWas().equals("B"))
+        
+        ProvisioningResult provisioningResult = null;
+        if(provisioning.getTargetWas().equals("B")) {
             returnForm = "/main/provisioning/jbossResultForm";
-        else if(provisioning.getTargetWas().equals("T"))
+            provisioningResult = new JBossProvisioning().doProvision(provisioning);
+        } else if(provisioning.getTargetWas().equals("T")) {
         	returnForm = "/main/provisioning/tomcatResultForm";
+        	provisioningResult = new TomcatProvisioning().doProvision(provisioning);
+        }
+        
+        modelMap.addAttribute("provisioningResult", provisioningResult);
         
         return returnForm;
     }

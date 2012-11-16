@@ -85,7 +85,9 @@ public class SshExecUtil {
     	Assert.notNull(targetHost, "targetHost cannot be null.");
     	Assert.notNull(command, "command cannot be null.");
     	
-    	File result = new File(SshExecUtil.class.getResource(".").getFile(), "result.log");
+    	System.out.println(SshExecUtil.class.getClassLoader());
+    	System.out.println(SshExecUtil.class.getClassLoader().getResource("."));
+        File result = new File(SshExecUtil.class.getClassLoader().getResource(".").getFile(), "result.log");
     	
 		logger.debug("[ssh exec] " + command);
 		
