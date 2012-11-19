@@ -58,12 +58,40 @@
 				alert('USER_ACCOUNT가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#userAccount').focus();
 				return false;
-			} else {
-				wrapWindowByMask();
 				
-				var form = $("#instanceForm").get(0);
-				form.action = "<c:url value='/provisioning/install.do' />";
-				form.submit();
+			} else if(!ipValidate($('#serverIp').val())) {
+				alert('Server IP가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#serverIp').focus();
+				return false;
+			} else if(!portValidate($('#serverPort').val())) {
+				alert('Server Port가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#serverPort').focus();
+				return false;
+			} else if(!portValidate($('#httpPort').val())) {
+				alert('HTTP_PORT가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#httpPort').focus();
+				return false;
+			} else if(!portValidate($('#ajpPort').val())) {
+				alert('AJP_PORT가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#ajpPort').focus();
+				return false;
+			} else if(!portValidate($('#sslPort').val())) {
+				alert('SSL_PORT가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#sslPort').focus();
+				return false;
+			} else if(!portValidate($('#shutdownPort').val())) {
+				alert('SHUTDOWN_PORT가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#shutdownPort').focus();
+				return false;
+			} else {
+				
+				if(confirm('인스톨을 진행하시겠습니까?')) {
+					wrapWindowByMask();
+					
+					var form = $("#instanceForm").get(0);
+					form.action = "<c:url value='/provisioning/install.do' />";
+					form.submit();
+				}
 			}
 		});
 	});

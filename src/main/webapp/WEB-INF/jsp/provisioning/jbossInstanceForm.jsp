@@ -42,6 +42,18 @@
 				alert('Bind Address가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#bindAddress').focus();
 				return false;
+			} else if(!ipValidate($('#serverIp').val())) {
+				alert('Server IP가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#serverIp').focus();
+				return false;
+			} else if(!portValidate($('#serverPort').val())) {
+				alert('Server Port가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#serverPort').focus();
+				return false;
+			} else if(!ipValidate($('#bindAddress').val())) {
+				alert('Bind Address가 형식에 맞지 않습니다. 정확한 정보를 입력하여 주십시오.');
+				$('#bindAddress').focus();
+				return false;
 			} else {
 				var form = $("#instanceForm").get(0);
 				form.action = "<c:url value='/provisioning/dataSourceForm.do' />";

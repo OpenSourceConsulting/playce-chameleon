@@ -30,12 +30,22 @@
 				alert('Max Pool Size가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#maxPoolSize').focus();
 				return false;
+			} else if(!digitValidate($('#minPoolSize').val())) {
+				alert('Min Pool Size는 숫자만 입력가능합니다. 정확한 정보를 입력하여 주십시오.');
+				$('#minPoolSize').focus();
+				return false;
+			} else if(!digitValidate($('#maxPoolSize').val())) {
+				alert('Max Pool Size는 숫자만 입력가능합니다. 정확한 정보를 입력하여 주십시오.');
+				$('#maxPoolSize').focus();
+				return false;
 			} else {
-				wrapWindowByMask();
-				
-				var form = $("#sourceForm").get(0);
-				form.action = "<c:url value='/provisioning/install.do' />";
-				form.submit();
+				if(confirm('인스톨을 진행하시겠습니까?')) {
+					wrapWindowByMask();
+					
+					var form = $("#sourceForm").get(0);
+					form.action = "<c:url value='/provisioning/install.do' />";
+					form.submit();
+				}
 			}
 		});
 	});

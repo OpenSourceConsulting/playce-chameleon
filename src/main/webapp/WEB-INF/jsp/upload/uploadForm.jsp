@@ -7,26 +7,70 @@
 		
 		$('#applyBtn').click(function() { 
 			if(!$('#projectNm').val()) {
-				alert('Project 명을 입력하세요.');
+				alert('Project 명이 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#projectNm').focus();
 				return false;
 			} else if(!$('#person').val()) {
-				alert('담당자를 입력하세요.');
+				alert('담당자가 입력되지 않았습니다. 정보를 입력하여 주십시오.');
 				$('#person').focus();
 				return false;
 			} else if((!$('#projectSrc').val()) && (!$('#deploySrc').val())) {
-				alert('Project Source 나 Deploy Source 중 한 항목 이상 업로드하세요.');
+				alert('Project Source 나 Deploy Source 중 한 항목 이상 업로드하여 주십시오.');
 				$('#projectSrc').focus();
 				return false;
+			} else if(!fileExpCheck($('#projectSrc').val(), 'project')) {
+				return false;
+			} else if(!fileExpCheck($('#deploySrc').val(), 'deploy')) {
+				return false;
 			} else {
-				wrapWindowByMask();
-				
-				var form = $("#uploadForm").get(0);
-				form.action = "<c:url value='/upload/upload.do' />";
-				form.submit();
+				if(confirm('마이그레이션을 진행하시겠습니까?')) {
+					wrapWindowByMask();
+					
+					var form = $("#uploadForm").get(0);
+					form.action = "<c:url value='/upload/upload.do' />";
+					form.submit();
+				}
 			}
+
 		});
 	});
+	
+	//확장자 체크
+	function fileExpCheck(fileName, type) {
+		var fieldName = 'Project Source';
+		if(type == 'deploy')
+			fieldName=  'Deploy Source';
+		
+		if(fileName == '') {
+			return true;
+		}
+		
+		if(fileName.lastIndexOf('.') < 0) {
+			alert(fieldName + '에 잘못된 파일이 첨부되었습니다.');
+			return false;
+		} else {
+			var fileExp = fileName.substring(fileName.lastIndexOf('.')+1,fileName.length).toUpperCase();
+			if(type == 'project' && fileExp != 'ZIP') {
+				alert(fieldName + '는 ZIP 파일만 업로드 가능합니다.');
+				$('#projectSrc').parents('.formbox_sub01').find('input').val('');
+				$('#projectSrc').select();
+				document.selection.clear();
+				
+				$('#projectSrc').focus();
+				return false;
+			} else if(type == 'deploy' && fileExp != 'WAR' && fileExp != 'JAR' && fileExp != 'EAR') {
+				alert(fieldName + '는 WAR, JAR, EAR 파일만 업로드 가능합니다.');
+				$('#deploySrc').parents('.formbox_sub01').find('input').val('');
+				$('#deploySrc').select();
+				document.selection.clear();
+				
+				$('#deploySrc').focus(); 
+				return false;
+			}
+		}
+		
+		return true;
+	}
 	
 </script>
 <form:form modelAttribute="upload" method="post" id="uploadForm" name="uploadForm" enctype="multipart/form-data">

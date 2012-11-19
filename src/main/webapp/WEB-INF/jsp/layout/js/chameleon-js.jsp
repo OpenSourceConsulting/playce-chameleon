@@ -4,6 +4,7 @@
 <script type="text/javascript" src="<c:url value='/js/jquery/jquery-ui-1.8.16.custom.min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/jquery/jquery.ui.datepicker-ko.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/jquery/jquery.filestyle.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/validator.js'/>"></script>
 <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 <!--[if IE 6]><script type="text/javascript" src="/js/xxx.js" /><![endif]-->
 <!--[if IE 7]><script type="text/javascript" src="/js/xxx.js" /><![endif]-->
