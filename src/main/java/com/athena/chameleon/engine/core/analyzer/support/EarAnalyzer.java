@@ -90,8 +90,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			// 각 Application 디렉토리는 무시하도록 한다.
 			//File appplicationXmlFile = new File(tempDir, "META-INF/application.xml");
 			
-			File appplicationXmlFile = null;
-			if((appplicationXmlFile = getAppllicationXml(new File(tempDir))).exists()) {
+			File appplicationXmlFile = getAppllicationXml(new File(tempDir));
+			if(appplicationXmlFile != null && appplicationXmlFile.exists()) {
 				new ApplicationXMLParser().parse(appplicationXmlFile, analyzeDefinition);
 				
 				warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
