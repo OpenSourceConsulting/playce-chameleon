@@ -29,7 +29,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
@@ -53,7 +52,6 @@ import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
 import com.athena.chameleon.engine.threadpool.task.ClassFileDependencyCheckTask;
 import com.athena.chameleon.engine.threadpool.task.RegularFileDependencyCheckTask;
-
 
 /**
  * <pre>
@@ -332,45 +330,44 @@ public abstract class AbstractAnalyzer implements Analyzer {
      * @param patentDomain
      */
     protected void makeClassLoading(File parentPath, String domain, String patentDomain) {
-    	Assert.notNull(parentPath, "parentPath must not be null");
-    	Assert.notNull(domain, "domain must not be null");
-    	
-    	StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
-    	
-    	if(StringUtils.isEmpty(patentDomain)) {
-    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
-    		  .append("		  domain=\"").append(domain).append("\"\r\n")
-    		  .append("		  export-all=\"NON_EMPTY\"\r\n")
-    		  .append("		  import-all=\"true\"\r\n")
-    		  .append("		  parent-first=\"false\">\r\n")
-    		  .append("</classloading>");
-    	} else {
-    		/*
-    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
-	  		  .append("		  domain=\"").append(domain).append("\"\r\n")
-	  		  .append("		  parent-domain=\"").append(patentDomain).append("\"\r\n")
-	  		  .append("		  export-all=\"NON_EMPTY\"\r\n")
-	  		  .append("		  import-all=\"true\">\r\n")
-	  		  .append("</classloading>");
-    		*/
-    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
-	  		  .append("		  name=\"").append(domain).append("\"\r\n")
-	  		  .append("		  domain=\"DefaultDomain\"\r\n")
-	  		  .append("		  parent-domain=\"Ignored\"\r\n")
-	  		  .append("		  parent-first=\"false\"\r\n")
-	  		  .append("		  export-all=\"NON_EMPTY\"\r\n")
-	  		  .append("		  import-all=\"true\">\r\n")
-	  		  .append("</classloading>");
+    	if (parentPath != null && domain != null) {
+	    	StringBuilder sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+	    	
+	    	if (StringUtils.isEmpty(patentDomain)) {
+	    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
+	    		  .append("		  domain=\"").append(domain).append("\"\r\n")
+	    		  .append("		  export-all=\"NON_EMPTY\"\r\n")
+	    		  .append("		  import-all=\"true\"\r\n")
+	    		  .append("		  parent-first=\"false\">\r\n")
+	    		  .append("</classloading>");
+	    	} else {
+	    		/*
+	    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
+		  		  .append("		  domain=\"").append(domain).append("\"\r\n")
+		  		  .append("		  parent-domain=\"").append(patentDomain).append("\"\r\n")
+		  		  .append("		  export-all=\"NON_EMPTY\"\r\n")
+		  		  .append("		  import-all=\"true\">\r\n")
+		  		  .append("</classloading>");
+	    		*/
+	    		sb.append("<classloading xmlns=\"urn:jboss:classloading:1.0\"\r\n")
+		  		  .append("		  name=\"").append(domain).append("\"\r\n")
+		  		  .append("		  domain=\"DefaultDomain\"\r\n")
+		  		  .append("		  parent-domain=\"Ignored\"\r\n")
+		  		  .append("		  parent-first=\"false\"\r\n")
+		  		  .append("		  export-all=\"NON_EMPTY\"\r\n")
+		  		  .append("		  import-all=\"true\">\r\n")
+		  		  .append("</classloading>");
+	    	}
+	    	
+	    	try {
+				File file = new File(parentPath, "jboss-classloading.xml");
+				FileWriter fw = new FileWriter(file);
+				fw.write(sb.toString());
+				IOUtils.closeQuietly(fw);
+			} catch (IOException e) {
+				logger.error("IOException has occurred.", e);
+			}
     	}
-    	
-    	try {
-			File file = new File(parentPath, "jboss-classloading.xml");
-			FileWriter fw = new FileWriter(file);
-			fw.write(sb.toString());
-			IOUtils.closeQuietly(fw);
-		} catch (IOException e) {
-			logger.error("IOException has occurred.", e);
-		}
     }//end of makeClassLoading()
     
     /**
