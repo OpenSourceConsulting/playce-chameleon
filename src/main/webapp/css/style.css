@@ -246,3 +246,6 @@ html,body {height:100%;}
 	position:relative;
 	top:60px; left:110px; width:250px; height:69px; float:left;
 }
+
+
+a:link p,a:visited p{color:#d54153 !important; text-decoration:none !important;}

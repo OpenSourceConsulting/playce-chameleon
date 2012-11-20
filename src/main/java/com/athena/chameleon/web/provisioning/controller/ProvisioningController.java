@@ -138,6 +138,7 @@ public class ProvisioningController {
         String returnForm = "redirect:/provisioning/wasSelectForm.do";
         
         ProvisioningResult provisioningResult = null;
+        
         if(provisioning.getTargetWas().equals("B")) {
             returnForm = "/main/provisioning/jbossResultForm";
             provisioningResult = new JBossProvisioning().doProvision(provisioning);
