@@ -854,9 +854,10 @@ public class PDFDocGenerator {
             section = new Element("section");
             if(comm.isTransFlag())
                 section.setAttribute("title", MessageUtil.getMessage("pdf.message.advice.title.trans_complete_file", comm.getItem()));
-            else
+            else {
                 section.setAttribute("title", MessageUtil.getMessage("pdf.message.advice.title.trans_target_file", comm.getItem()));
-            
+                section.addContent(new Element("textR").setText(MessageUtil.getMessage("pdf.message.advice.trans_target_file.text", comm.getItem())));
+            }
             section.addContent(new Element("text").setText(comm.getLocation()+File.separator+comm.getItem()));
             section.addContent(new Element("box").setText(comm.getContents()));
             
