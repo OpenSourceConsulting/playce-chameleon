@@ -141,14 +141,12 @@ public class ProvisioningController {
         
         if(provisioning.getTargetWas().equals("B")) {
             returnForm = "/main/provisioning/jbossResultForm";
-            //provisioningResult = new JBossProvisioning().doProvision(provisioning);
+            provisioningResult = new JBossProvisioning().doProvision(provisioning);
         } else if(provisioning.getTargetWas().equals("T")) {
         	returnForm = "/main/provisioning/tomcatResultForm";
-        	//provisioningResult = new TomcatProvisioning().doProvision(provisioning);
+        	provisioningResult = new TomcatProvisioning().doProvision(provisioning);
         }
         
-        provisioningResult = new ProvisioningResult();
-        provisioningResult.setSucceed(true);
         modelMap.addAttribute("provisioningResult", provisioningResult);
         
         return returnForm;
