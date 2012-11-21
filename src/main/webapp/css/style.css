@@ -249,3 +249,8 @@ html,body {height:100%;}
 
 
 a:link p,a:visited p{color:#d54153 !important; text-decoration:none !important;}
+
+.textbox_sub2 {margin-top:15px; font:normal 13px '맑은고딕','Malgun Gothic','굴림','gulim'; color:#a2a2a2!important;}
+.textbox_sub2 p{margin-bottom: 5px;}
+.textbox_sub2 p.subtit{color:#697676; font-weight:bold; font-size: 16px;}
+.textbox_sub2 img{margin-bottom: 22px; max-width: 680px;}
