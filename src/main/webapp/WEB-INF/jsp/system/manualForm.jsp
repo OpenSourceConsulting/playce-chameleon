@@ -71,7 +71,9 @@
 	        <div class="textbox">
 	        	<div class="textbox_tit">3.	Provisioning</div>
 	        	<div class="textbox_sub2">
-	        		<p>Provisioning 도구는 …………………..이다.</p>
+	        		<p>사전적인 의미로 준비, 예비라는 용어로써 IT에서의 프로비저닝은 자원을 준비해 놓은 상태에서 정의된 정책 및 서비스를 사용자에게 내려주는 것을 말한다.  즉 IT 인프라 자원을 사용자 또는 비즈니스의 요구사항에 맞게 할당, 배치, 배포하여 시스템을 즉시 사용가능하도록 만드는 것을 가리킨다.<br/><br/>
+			  		 본 프로비저닝 도구는 미리 구성된 JBoss/Tomcat을 설치, 배포함으로써 사용자가 설정에 대한 부분을 손쉽게 구성할 수 있도록 돕는 역할을 수행한다. 웹 애플리케이션 서버를 모르는 사용자의 경우 설치부터 어려울지 있지만 이러한 프로비저닝을 사용하면 관리를 쉽게 할 수 있다. <br/><br/>
+			  		 Athena Chameleon 시스템에서 프로비저닝을 진행시 다음 절차를 따른다.</p>
 	        		<br/>
 	        		
 	        		<p class="subtit">3.1	Provisioning 대상 Was 선택 </p>
@@ -153,7 +155,7 @@
 			<div class="textbox">
 				<div class="textbox_tit">4.	System</div>
 	        	<div class="textbox_sub2" >
-	        		<p>System은  ….. 이다.</p>
+	        		<p>System 메뉴는  본 Athena Chameleon 시스템을 좀 더 편리하게 사용할 수 있도록 관리하는 메뉴로 코드관리 및 사용자 편이를 위한 사용자 메뉴얼을 확인 할 수 있다.</p>
 	        		<br/>
 	        		
 	        		<p class="subtit">4.1	사용자 매뉴얼</p>
