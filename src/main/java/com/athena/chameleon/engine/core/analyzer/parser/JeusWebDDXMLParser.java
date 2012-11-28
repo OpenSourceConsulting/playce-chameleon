@@ -96,12 +96,17 @@ public class JeusWebDDXMLParser extends Parser {
         	builder = new SAXBuilder();
         	doc = builder.build(file);
 
-			context = doc.getRootElement().getChild("context-path", doc.getRootElement().getNamespace()).getText();
-			
-			String jbossWeb = fileToString("./src/main/resources/jbossweb/jboss-web.xml");
-			jbossWeb = jbossWeb.replaceAll("\\$\\{contextRoot\\}", context);
+			// src/main/resources/jbossweb/jboss-web.xml
+        	String jbossWeb = fileToString(this.getClass().getResource("/jbossweb/jboss-web.xml").getFile());
 			jbossWeb = jbossWeb.replaceAll("\\$\\{loaderRepository\\}", "com.athena.chameleon:loader=" + ThreadLocalUtil.get(ChameleonConstants.PROJECT_NAME));
 			
+        	if(doc.getRootElement().getChild("context-root", doc.getRootElement().getNamespace()) != null) {
+    			context = doc.getRootElement().getChild("context-root", doc.getRootElement().getNamespace()).getText();
+    			jbossWeb = jbossWeb.replaceAll("\\$\\{contextRoot\\}", context);
+        	} else {
+        		jbossWeb = jbossWeb.replaceAll("<context-root>\\$\\{contextRoot\\}</context-root>", "");
+        	}
+        	
 			rewrite(new File(file.getParentFile(), "jboss-web.xml"), jbossWeb);
 			
         	ejbRecommend = new EjbRecommend();
