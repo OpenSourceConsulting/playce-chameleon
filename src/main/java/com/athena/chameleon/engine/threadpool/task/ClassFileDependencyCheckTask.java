@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServlet;
+
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
@@ -94,6 +96,24 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			classAnalyze.setFinalClass(Modifier.isFinal(clazz.getModifiers()));
 
 			pattern = policy.getPattern();
+
+	        // HttpServlet 상속 체크
+			boolean isServletExtends = isExtendsServlet(clazz);
+			
+			if(isServletExtends) {
+				CommonAnalyze commonAnalyze = new CommonAnalyze();
+				if(className.indexOf(".") > -1) {
+					commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+					commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+				} else {
+					commonAnalyze.setItem(className);
+					commonAnalyze.setLocation("");
+				}
+				
+				analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+			}
+
+			// reflection을 이용한 class 분석
 			classParse(clazz, classAnalyze);
 
 			if (dependency.getDependencyStrMap().size() > 0) {
@@ -191,7 +211,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			for (Type intf : interfaces) {
 				value = intf.toString();
 				classAnalyze.getInterfaces().add(value.substring(10));
-
+				
 				// EJB 상속 여부
 				if(value.indexOf("javax.ejb.SessionBean") > -1) {
 					CommonAnalyze commonAnalyze = new CommonAnalyze();
@@ -218,16 +238,10 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 */
 	private void superClassParse(List<Class<?>> ancestorList, ClassAnalyze classAnalyze) {
 		String value = null;
-		boolean isServletExtends = false;
 		boolean isEjbExtends = false;
 		for (Class<?> clazz : ancestorList) {
 			value = clazz.getCanonicalName();
 			classAnalyze.getSuperClasses().add(value);
-			
-			// HttpServlet 상속 여부
-			if(value.indexOf("javax.servlet.http.HttpServlet") > -1) {
-				isServletExtends = true;
-			}
 			
 			// EJB 상속 여부
 			if(value.indexOf("javax.ejb.EJBHome") > -1 || value.indexOf("javax.ejb.EJBObject") > -1) {
@@ -238,19 +252,6 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			if(match.matches()) {
 				addDependencyStrMap("SuperClass", value);
 			}
-		}
-		
-		if(isServletExtends) {
-			CommonAnalyze commonAnalyze = new CommonAnalyze();
-			if(className.indexOf(".") > -1) {
-				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
-				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
-			} else {
-				commonAnalyze.setItem(className);
-				commonAnalyze.setLocation("");
-			}
-			
-			analyzeDefinition.getServletExtendsList().add(commonAnalyze);
 		}
 		
 		if(isEjbExtends) {
@@ -286,6 +287,17 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 					commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
 					
 					analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+				} else if(value.indexOf("@org.springframework.stereotype.Controller") > -1) {
+					CommonAnalyze commonAnalyze = new CommonAnalyze();
+					if(className.indexOf(".") > -1) {
+						commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+						commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+					} else {
+						commonAnalyze.setItem(className);
+						commonAnalyze.setLocation("");
+					}
+					
+					analyzeDefinition.getServletExtendsList().add(commonAnalyze);
 				}
 				
 				match = pattern.matcher(value);
@@ -368,6 +380,30 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		
 		return ancestorList;
 	}//end of getAncestor()
+	
+	/**
+	 * <pre>
+	 * HttpServlet 상속 여부 체크
+	 * </pre>
+	 * @param clazz
+	 * @return
+	 */
+	private boolean isExtendsServlet(Class<?> clazz) {
+		boolean result = false;
+		
+		try {
+			Object obj = Class.forName(clazz.getCanonicalName()).newInstance();
+			result = (obj instanceof HttpServlet);
+		} catch (InstantiationException e) {
+			logger.error("InstantiationException has occurred.", e);
+		} catch (IllegalAccessException e) {
+			logger.error("IllegalAccessException has occurred.", e);
+		} catch (ClassNotFoundException e) {
+			logger.error("ClassNotFoundException has occurred.", e);
+		}
+		
+		return result;
+	}//end of isExtendsServlet()
 	
 	private void addDependencyStrMap(String type, String value) {
 		String key = "#" + (dependency.getDependencyStrMap().size() + 1) + " [" + type + "] - ";
