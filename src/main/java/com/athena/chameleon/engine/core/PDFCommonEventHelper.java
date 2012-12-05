@@ -165,6 +165,9 @@ public class PDFCommonEventHelper extends PdfPageEventHelper {
         
         float width = x2-x1-tit.getWidthPoint()-number.getWidthPoint()-(depth*12);
         
+        if((x2-x1) < tit.getWidthPoint())
+        	width = x2-x1-(tit.getWidthPoint()-(x2-x1))-number.getWidthPoint()-(depth*12)-65;
+        
         float i=point.getWidthPoint();
         while(i < width) {
             p.add(point);

@@ -19,7 +19,10 @@ $(document).ready(function (){
 });
 
 function downloadFile(fileName){
-	location.href="<c:url value='/file/download.do?path="+fileName+"'/>";
+	$('#path').val(fileName);
+	var form = $("#downloadForm").get(0);
+	form.action = "<c:url value='/file/download.do' />";
+	form.submit();
 }
 
 </script>
@@ -42,22 +45,25 @@ function downloadFile(fileName){
         <c:if test="${!empty metaData.pdfFile}">
 	    	<div class="formbox_txt01"><p style="padding-top:25px; padding-left:15px;">변환 PDF Report</p></div>
 	        <div class="formbox_txt01-1">
-	        	<div class="formbox_sub01a"><p style="padding-top:25px;">${metaData.pdfFileName}</p></div>
+	        	<div class="formbox_sub01a" style="width:300px;"><p style="padding-top:25px;">${metaData.pdfFileName}</p></div>
 	        	<div class="formbox_sub01"><p style="padding-top:23px; padding-left:10px;"><a href="javascript:void(0);" val="${metaData.pdfFile}" class="down"><img src="<c:url value='/images/common/bt_download.png'/>" /></a></p></div>
 	        </div>
 	    </c:if>
 	    <c:if test="${!empty metaData.migrateSourceFile}">
 	        <div class="formbox_txt01"><p style="padding-top:25px; padding-left:15px;">변환 Source File</p></div>
 	        <div class="formbox_txt01-1">
-	        	<div class="formbox_sub01a"><p style="padding-top:25px;">${metaData.migrateSourceFileName}</p></div>
+	        	<div class="formbox_sub01a" style="width:300px;"><p style="padding-top:25px;">${metaData.migrateSourceFileName}</p></div>
 	        	<div class="formbox_sub01"><p style="padding-top:23px; padding-left:10px;"><a href="javascript:void(0);" val="${metaData.migrateSourceFile}" class="down"><img src="<c:url value='/images/common/bt_download.png'/>" /></a></p></div>
 	        </div>
 	    </c:if>
 	    <c:if test="${!empty metaData.migrateDeployFile}">
 	        <div class="formbox_txt01"><p style="padding-top:25px; padding-left:15px;">변환 Deploy File</p></div>
 	        <div class="formbox_txt01-1">
-	        	<div class="formbox_sub01a"><p style="padding-top:25px;">${metaData.migrateDeployFileName}</p></div>
+	        	<div class="formbox_sub01a" style="width:300px;"><p style="padding-top:25px;">${metaData.migrateDeployFileName}</p></div>
 	        	<div class="formbox_sub01"><p style="padding-top:23px; padding-left:10px;"><a href="javascript:void(0);" val="${metaData.migrateDeployFile}" class="down"><img src="<c:url value='/images/common/bt_download.png'/>" /></a></p></div>
 	        </div>
 	    </c:if>
        </div>
+       <form id="downloadForm" name="downloadForm" method="post" >
+       	   <input type="hidden" id="path" name="path" value=""/>
+       </form>
