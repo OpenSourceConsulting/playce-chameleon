@@ -77,6 +77,8 @@ public class Upload implements Serializable {
 	        return "WEB LOGIC";
 	    else if(beforeWas.equals("J"))
 	        return "JEUS";
+	    else if(beforeWas.equals("S"))
+	        return "WEBSPHERE";
 	    else 
 	        return beforeWas;
 	}

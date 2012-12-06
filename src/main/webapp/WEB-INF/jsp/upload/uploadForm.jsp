@@ -99,6 +99,8 @@
             <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">WEB LOGIC</p></div>
             <div class="formbox_radioform"><input type="radio" name="beforeWas" id="beforeWas2" title="JEUS" class="regular-radio" value="J" /><label for="beforeWas2"></label></div>
             <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">JEUS</p></div>  	
+            <div class="formbox_radioform"><input type="radio" name="beforeWas" id="beforeWas3" title="WEBSPHERE" class="regular-radio" value="S" /><label for="beforeWas3"></label></div>
+            <div class="formbox_radiotxt"><p style="padding-top:11px; padding-left:0;">WEBSPHERE</p></div>  	
         </div>
 				
         <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">대상 WAS</p></div>
