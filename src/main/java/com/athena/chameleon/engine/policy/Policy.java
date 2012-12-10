@@ -38,6 +38,7 @@ public class Policy {
 	private String defaultEncoding;
 	private String enEncoding;
 	private String[] suffix;
+	private String[] webSphere;
 	private String[] weblogic;
 	private String[] jeus;
 	private Pattern pattern;
@@ -89,6 +90,18 @@ public class Policy {
 	 */
 	public void setSuffix(String[] suffix) {
 		this.suffix = suffix;
+	}
+	/**
+	 * @return the webSphere
+	 */
+	public String[] getWebSphere() {
+		return webSphere;
+	}
+	/**
+	 * @param webSphere the webSphere to set
+	 */
+	public void setWebSphere(String[] webSphere) {
+		this.webSphere = webSphere;
 	}
 	/**
 	 * @return the weblogic

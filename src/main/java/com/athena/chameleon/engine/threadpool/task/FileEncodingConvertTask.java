@@ -68,6 +68,7 @@ public class FileEncodingConvertTask extends BaseTask {
 	/*/
 	private static String[] SEARCH_CHAR_SET;
 	//*/
+	// 해당 확장자를 가진 파일 안에는 또 다른 인코딩 설정 정보가 들어가 있을 수 있기 때문...
 	private static final String[] TARGET_SUFFIX = {"html", "htm", "jsp", "xml", "js", "css"};
 	
 	static {

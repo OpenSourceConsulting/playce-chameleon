@@ -62,6 +62,9 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 		policy.setSuffix((PropertyUtil.getProperty("chameleon.migration.policy.suffix").indexOf(",") > -1 ? 
 				PropertyUtil.getProperty("chameleon.migration.policy.suffix").split(",") : 
 					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.suffix")}));
+		policy.setWebSphere((PropertyUtil.getProperty("chameleon.migration.policy.webSphere").indexOf(",") > -1 ? 
+				PropertyUtil.getProperty("chameleon.migration.policy.webSphere").split(",") : 
+					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.webSphere")}));
 		policy.setWeblogic((PropertyUtil.getProperty("chameleon.migration.policy.weblogic").indexOf(",") > -1 ? 
 				PropertyUtil.getProperty("chameleon.migration.policy.weblogic").split(",") : 
 					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.weblogic")}));
@@ -70,7 +73,10 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.jeus")}));
 		
 		StringBuilder regex = new StringBuilder("(");
-		
+
+		for(String webSphere : policy.getWebSphere()) {
+			regex.append(".*").append(webSphere).append(".*|");
+		}
 		for(String weblogic : policy.getWeblogic()) {
 			regex.append(".*").append(weblogic).append(".*|");
 		}

@@ -146,7 +146,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		// 인터페이스에 대한 의존성 검사
 		interfaceParse(clazz.getGenericInterfaces(), classAnalyze);
 		
-		// 인터페이스에 대한 의존성 검사
+		// 부모클래스에 대한 의존성 검사
 		superClassParse(getAncestor(clazz, new ArrayList<Class<?>>()), classAnalyze);
 		
 		// 애노테이션에 대한 의존성 검사
@@ -213,7 +213,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 				classAnalyze.getInterfaces().add(value.substring(10));
 				
 				// EJB 상속 여부
-				if(value.indexOf("javax.ejb.SessionBean") > -1) {
+				if(value.indexOf("javax.ejb.SessionBean") > -1 || value.indexOf("javax.ejb.EntityBean") > -1 || value.indexOf("javax.ejb.MessageDrivenBean") > -1) {
 					CommonAnalyze commonAnalyze = new CommonAnalyze();
 					commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
 					commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
@@ -281,7 +281,8 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 				value = annotation.toString();
 				
 				// Annotation을 이용한 EJB 상속 여부
-				if(value.indexOf("@javax.ejb.Stateless") > -1 || value.indexOf("@javax.ejb.Remote") > -1) {
+				if(value.indexOf("@javax.ejb.Stateless") > -1 || value.indexOf("@javax.ejb.Remote") > -1 ||
+						value.indexOf("@javax.ejb.Stateful") > -1 || value.indexOf("@javax.ejb.Entity") > -1) {
 					CommonAnalyze commonAnalyze = new CommonAnalyze();
 					commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
 					commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
