@@ -161,7 +161,9 @@ public abstract class Parser {
 			int idx1 = xmlData.indexOf("<!DOCTYPE");
 			int idx2 = xmlData.indexOf(">", idx1);
 			
-			rewrite(file, xmlData.substring(0, idx1) + xmlData.substring(idx2 + 1));
+			if(idx1 > -1 && idx2 > -1) {
+				rewrite(file, xmlData.substring(0, idx1) + xmlData.substring(idx2 + 1));
+			}
 		} catch (IOException e) {
 			logger.error("IOException has occurred.", e);
 		}
