@@ -78,6 +78,9 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 */
 	@Override
 	protected void taskRun() {
+
+		logger.debug("[jwchoi] [{}] 클래스 파일을 분석합니다.", file.getAbsolutePath());
+		
 		className = file.getAbsolutePath()
 						.substring(rootPath.length() + 1, file.getAbsolutePath().lastIndexOf("."))
 						.replaceAll("/", ".").replaceAll("\\\\", ".");

@@ -21,7 +21,10 @@
 package com.athena.chameleon.engine.core.analyzer.support;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
@@ -35,6 +38,9 @@ import com.athena.chameleon.engine.core.analyzer.AbstractAnalyzer;
 import com.athena.chameleon.engine.core.converter.FileEncodingConverter;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.ArchiveType;
+import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
+import com.athena.chameleon.engine.entity.pdf.FileSummary;
+import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.policy.Policy;
 import com.athena.chameleon.engine.threadpool.executor.ChameleonThreadPoolExecutor;
@@ -88,6 +94,8 @@ public class WarAnalyzer extends AbstractAnalyzer {
 		String newFileName = null;
 		
 		try {
+			logger.debug("[jwchoi] 임시 디렉토리에 압축을 해제합니다.");
+			
 			// 임시 디렉토리에 압축 해제
 			String tempDir = null;
 			
@@ -109,8 +117,12 @@ public class WarAnalyzer extends AbstractAnalyzer {
 				deleteDirectory(new File(tempDir, "__MACOSX"));
 			}
 
+			logger.debug("[jwchoi] 인코딩을 변경합니다.");
+			
 			// 인코딩 변경
 			converter.convert(new File(tempDir), analyzeDefinition);
+
+			logger.debug("[jwchoi] 클래스파일들이 위치한 디렉토리 => [{}]", getClassesDirPath(new File(tempDir)));
 			
 			// 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
 			if(!StringUtils.isEmpty(getClassesDirPath(new File(tempDir)))) {
@@ -119,9 +131,14 @@ public class WarAnalyzer extends AbstractAnalyzer {
 				if(embed) {
 					jcl = ((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getEarDefinition().getJcl();
 				} 
+
+				logger.debug("[jwchoi] 다음 라이브러리 파일들을 클래스로더에 추가합니다.");
 				
 				List<String> pathList = analyzeDefinition.getLibraryFullPathList();
 				for(String str : pathList) {
+					
+					logger.debug("[jwchoi] Library => {}", str);
+					
 					try {
 						if(jcl == null) {
 							jcl = new JarClassLoader(new File(str).toURI().toURL());
@@ -148,9 +165,13 @@ public class WarAnalyzer extends AbstractAnalyzer {
 				
 	            ClasspathUtil.addPath(getClassesDirPath(new File(tempDir)), jcl);
 			}
+
+			logger.debug("[jwchoi] 압축 해제 디렉토리 내의 파일들을 분석합니다.");
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
 			analyze(new File(tempDir), tempDir);
+			
+			logger.debug("[jwchoi] jboss-classloading.xml 파일을 생성합니다.");
 			
 			// jboss-classloading.xml 파일을 생성한다.
 			if(embed) {
@@ -162,6 +183,9 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			}
 			
 			if(!isExploded) {
+
+				logger.debug("[jwchoi] 임시 디렉토리를 재 압축 후 삭제합니다.");
+				
 				// 임시디렉토리를 재 압축한다.
 				newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
 				ZipUtil.compress(tempDir, newFileName, ArchiveType.WAR);
@@ -170,7 +194,7 @@ public class WarAnalyzer extends AbstractAnalyzer {
 				deleteDirectory(new File(tempDir));
 			}
 			
-			/*
+			//*
 			System.err.println("\n\n================== [Deploy File Result] ==================");
 			PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 			FileType[] fileTypes = FileType.values();
