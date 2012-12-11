@@ -42,6 +42,9 @@ public class Dependency {
 	// 몇 번째 라인 또는 어떤 위치(메소드, 필드 등)에 어떤 의존 클래스가 포함되어 있는지..
 	private Map<String, String> dependencyStrMap;
 	
+	// Connection URL 등 기타 레포트 대상 요소가 포함되어 있는지..
+	private Map<String, String> othersStrMap;
+	
 	/**
 	 * @return the fileName
 	 */
@@ -94,5 +97,30 @@ public class Dependency {
 	 */
 	public void setDependencyStrMap(Map<String, String> dependencyStrMap) {
 		this.dependencyStrMap = dependencyStrMap;
+	}
+
+	/**
+	 * @return the othersStrMap
+	 */
+	public Map<String, String> getOthersStrMap() {
+		if(othersStrMap == null) {
+			othersStrMap = new TreeMap<String, String>();
+		}
+		return othersStrMap;
+	}
+	
+	/**
+	 * @param key
+	 * @param value
+	 */
+	public void addOthersStrMap(String key, String value) {
+		getOthersStrMap().put(key, value);
+	}
+
+	/**
+	 * @param othersStrMap the othersStrMap to set
+	 */
+	public void setOthersStrMap(Map<String, String> othersStrMap) {
+		this.othersStrMap = othersStrMap;
 	}
 }//end of Dependency.java
