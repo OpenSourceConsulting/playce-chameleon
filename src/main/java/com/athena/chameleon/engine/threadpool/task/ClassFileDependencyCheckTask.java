@@ -101,6 +101,8 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			pattern = policy.getPattern();
 
 	        // HttpServlet 상속 체크
+			/* 
+			// ClassNotFoundException 발생으로 추후 재 분석
 			boolean isServletExtends = isExtendsServlet(clazz);
 			
 			if(isServletExtends) {
@@ -115,6 +117,7 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 				
 				analyzeDefinition.getServletExtendsList().add(commonAnalyze);
 			}
+			*/
 
 			// reflection을 이용한 class 분석
 			classParse(clazz, classAnalyze);
@@ -241,10 +244,16 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 */
 	private void superClassParse(List<Class<?>> ancestorList, ClassAnalyze classAnalyze) {
 		String value = null;
+		boolean isServletExtends = false;
 		boolean isEjbExtends = false;
 		for (Class<?> clazz : ancestorList) {
 			value = clazz.getCanonicalName();
 			classAnalyze.getSuperClasses().add(value);
+			
+			// HttpServlet 상속 여부
+			if(value.indexOf("javax.servlet.http.HttpServlet") > -1 || value.indexOf("org.springframework.web.servlet.mvc.AbstractController") > -1) {
+				isServletExtends = true;
+			}
 			
 			// EJB 상속 여부
 			if(value.indexOf("javax.ejb.EJBHome") > -1 || value.indexOf("javax.ejb.EJBObject") > -1) {
@@ -255,6 +264,19 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 			if(match.matches()) {
 				addDependencyStrMap("SuperClass", value);
 			}
+		}
+		
+		if(isServletExtends) {
+			CommonAnalyze commonAnalyze = new CommonAnalyze();
+			if(className.indexOf(".") > -1) {
+				commonAnalyze.setItem(className.substring(className.lastIndexOf(".") + 1));
+				commonAnalyze.setLocation(className.substring(0, className.lastIndexOf(".")));
+			} else {
+				commonAnalyze.setItem(className);
+				commonAnalyze.setLocation("");
+			}
+			
+			analyzeDefinition.getServletExtendsList().add(commonAnalyze);
 		}
 		
 		if(isEjbExtends) {
@@ -392,18 +414,18 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	 * @param clazz
 	 * @return
 	 */
-	private boolean isExtendsServlet(Class<?> clazz) {
+	protected boolean isExtendsServlet(Class<?> clazz) {
 		boolean result = false;
 		
 		try {
-			Object obj = Class.forName(clazz.getCanonicalName()).newInstance();
+			Object obj = clazz.newInstance();
 			result = (obj instanceof HttpServlet);
 		} catch (InstantiationException e) {
 			logger.error("InstantiationException has occurred.", e);
 		} catch (IllegalAccessException e) {
 			logger.error("IllegalAccessException has occurred.", e);
-		} catch (ClassNotFoundException e) {
-			logger.error("ClassNotFoundException has occurred.", e);
+		} catch (Exception e) {
+			logger.error("Unhandled Exception has occurred.", e);
 		}
 		
 		return result;
