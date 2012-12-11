@@ -64,12 +64,17 @@ public class SystemController {
         if(loginFlag == null || !loginFlag.equals("Y"))
             return "redirect:/login/showLogin.do";
         
-        File resource = new File(PropertyUtil.class.getResource("/filtering.properties").getFile());
+        File filteringResource = new File(PropertyUtil.class.getResource("/filtering.properties").getFile());
         CharsetDetector detector = new CharsetDetector();
-        detector.setText(FileUtils.readFileToByteArray(resource));
-        String code = FileUtils.readFileToString(resource, detector.detect().getName());
+        detector.setText(FileUtils.readFileToByteArray(filteringResource));
+        String filteringCode = FileUtils.readFileToString(filteringResource, detector.detect().getName());
 
-        modelMap.addAttribute("code", code);
+        File contextResource = new File(PropertyUtil.class.getResource("/config/context.properties").getFile());
+        detector.setText(FileUtils.readFileToByteArray(contextResource));
+        String contextCode = FileUtils.readFileToString(contextResource, detector.detect().getName());
+
+        modelMap.addAttribute("filteringCode", filteringCode);
+        modelMap.addAttribute("contextCode", contextCode);
         
         return "/main/system/codeForm";
     }
@@ -88,11 +93,18 @@ public class SystemController {
     public String saveCode(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap, HttpSession session) throws Exception {
         
     	
-    	String code = request.getParameter("code");
-    	File resource = new File(PropertyUtil.class.getResource("/filtering.properties").getFile());
+    	String filteringCode = request.getParameter("filteringCode");
+    	File filteringResource = new File(PropertyUtil.class.getResource("/filtering.properties").getFile());
     	
-    	Writer output = new BufferedWriter(new FileWriter(resource));
-    	output.write(code);
+    	Writer output = new BufferedWriter(new FileWriter(filteringResource));
+    	output.write(filteringCode);
+    	output.close();
+    	
+    	String contextCode = request.getParameter("contextCode");
+    	File contextResource = new File(PropertyUtil.class.getResource("/config/context.properties").getFile());
+    	
+    	output = new BufferedWriter(new FileWriter(contextResource));
+    	output.write(contextCode);
     	output.close();
     	
     	modelMap.addAttribute("result", true);
