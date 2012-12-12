@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.jcl.JarClassLoader;
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.MigrationStatusUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
@@ -84,6 +85,10 @@ public class JarAnalyzer extends AbstractAnalyzer {
 		
 		try {
 			// 임시 디렉토리에 압축 해제
+			if(!embed) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP1);
+				MigrationStatusUtil.setPercentage(this, 20);
+			}
 			String tempDir = null;
 			
 			if(isExploded) {
@@ -96,6 +101,10 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			ThreadLocalUtil.add(ChameleonConstants.JAR_ROOT_DIR, tempDir);
 
 			// 인코딩 변경
+			if(!embed) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP2);
+				MigrationStatusUtil.setPercentage(this, 40);
+			}
 			converter.convert(new File(tempDir), analyzeDefinition);
 			
 			// 압축 해제 디렉토리를 클래스 패스에 추가한다. 
@@ -120,6 +129,10 @@ public class JarAnalyzer extends AbstractAnalyzer {
 			ClasspathUtil.addPath(tempDir, jcl);
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
+			if(!embed) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP3);
+				MigrationStatusUtil.setPercentage(this, 60);
+			}
 			analyze(new File(tempDir), tempDir);
 
 			if(embed) {
@@ -129,10 +142,18 @@ public class JarAnalyzer extends AbstractAnalyzer {
 
 			if(!isExploded) {
 				// 임시디렉토리를 재 압축한다.
+				if(!embed) {
+					MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP4);
+					MigrationStatusUtil.setPercentage(this, 80);
+				}
 				newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
 				ZipUtil.compress(tempDir, newFileName, ArchiveType.JAR);
 				
 				// 임시 디렉토리를 삭제한다.
+				if(!embed) {
+					MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP5);
+					MigrationStatusUtil.setPercentage(this, 100);
+				}
 				deleteDirectory(new File(tempDir));
 			}
 			

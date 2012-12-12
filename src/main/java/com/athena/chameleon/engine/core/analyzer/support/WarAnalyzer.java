@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.jcl.JarClassLoader;
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.MigrationStatusUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
@@ -97,6 +98,10 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			logger.debug("[jwchoi] 임시 디렉토리에 압축을 해제합니다.");
 			
 			// 임시 디렉토리에 압축 해제
+			if(!embed) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP1);
+				MigrationStatusUtil.setPercentage(this, 20);
+			}
 			String tempDir = null;
 			
 			if(isExploded) {
@@ -120,6 +125,10 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			logger.debug("[jwchoi] 인코딩을 변경합니다.");
 			
 			// 인코딩 변경
+			if(!embed) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP2);
+				MigrationStatusUtil.setPercentage(this, 40);
+			}
 			converter.convert(new File(tempDir), analyzeDefinition);
 
 			logger.debug("[jwchoi] 클래스파일들이 위치한 디렉토리 => [{}]", getClassesDirPath(new File(tempDir)));
@@ -169,6 +178,10 @@ public class WarAnalyzer extends AbstractAnalyzer {
 			logger.debug("[jwchoi] 압축 해제 디렉토리 내의 파일들을 분석합니다.");
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
+			if(!embed) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP3);
+				MigrationStatusUtil.setPercentage(this, 60);
+			}
 			analyze(new File(tempDir), tempDir);
 			
 			logger.debug("[jwchoi] jboss-classloading.xml 파일을 생성합니다.");
@@ -187,10 +200,18 @@ public class WarAnalyzer extends AbstractAnalyzer {
 				logger.debug("[jwchoi] 임시 디렉토리를 재 압축 후 삭제합니다.");
 				
 				// 임시디렉토리를 재 압축한다.
+				if(!embed) {
+					MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP4);
+					MigrationStatusUtil.setPercentage(this, 80);
+				}
 				newFileName = embed ? file.getAbsolutePath() : getResultFile(file);
 				ZipUtil.compress(tempDir, newFileName, ArchiveType.WAR);
 			
 				// 임시 디렉토리를 삭제한다.
+				if(!embed) {
+					MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP5);
+					MigrationStatusUtil.setPercentage(this, 100);
+				}
 				deleteDirectory(new File(tempDir));
 			}
 			

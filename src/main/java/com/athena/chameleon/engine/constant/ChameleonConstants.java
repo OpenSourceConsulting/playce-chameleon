@@ -50,4 +50,7 @@ public class ChameleonConstants {
 	public static final String JAR_ROOT_DIR				= "JAR_ROOT_DIR";
 	public static final String DEPLOY_DIR_IN_EAR		= "DEPLOY_DIR_IN_EAR";
 	
+	public static final String MIGRATION_CURRENT_STATUS	= "MIGRATION_CURRENT_STATUS";
+	public static final String MIGRATION_PERCENTAGE		= "MIGRATION_PERCENTAGE";
+	
 }//end of ChameleonConstants.java

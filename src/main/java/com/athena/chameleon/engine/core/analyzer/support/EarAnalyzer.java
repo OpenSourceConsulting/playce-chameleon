@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
 
 import com.athena.chameleon.common.jcl.JarClassLoader;
 import com.athena.chameleon.common.utils.ClasspathUtil;
+import com.athena.chameleon.common.utils.MigrationStatusUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.common.utils.ZipUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
@@ -78,6 +79,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 		
 		try {
 			// 임시 디렉토리에 압축 해제
+			MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP1);
+			MigrationStatusUtil.setPercentage(this, 20);
 			String tempDir = policy.getUnzipDir() + File.separator + System.currentTimeMillis();
 			ZipUtil.decompress(file.getAbsolutePath(), tempDir);
 			
@@ -104,6 +107,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			analyzeDefinition.setJarFileList(jarFileList);
 
 			// 인코딩 변경
+			MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP3);
+			MigrationStatusUtil.setPercentage(this, 40);
 			converter.convert(new File(tempDir), analyzeDefinition);
 			
 			// 압축 해제 디렉토리 중 classes 디렉토리를 클래스 패스에 추가한다. 
@@ -140,10 +145,14 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			}
 			
 			// 압축 해제 디렉토리 내의 파일을 분석한다.
+			MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP3);
+			MigrationStatusUtil.setPercentage(this, 60);
 			analyze(new File(tempDir), tempDir);
 			
 			// war 파일이 존재할 경우 해당 war 파일에 대해 분석한다.
 			if(warFileList != null && warFileList.size() > 0) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP3_1);
+				MigrationStatusUtil.setPercentage(this, 70);
 				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 				AnalyzeDefinition warDefinition = null;
 				for(File warFile : warFileList) {
@@ -157,6 +166,8 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			
 			// jar 파일이 존재할 경우 해당 jar 파일에 대해 분석한다.
 			if(jarFileList != null && jarFileList.size() > 0) {
+				MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP3_2);
+				MigrationStatusUtil.setPercentage(this, 80);
 				PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 				AnalyzeDefinition jarDefinition = null;
 				for(File jarFile : jarFileList) {
@@ -173,10 +184,14 @@ public class EarAnalyzer extends AbstractAnalyzer {
 			makeClassLoading(getMetaInfDirPath(new File(tempDir)), file.getName(), null);
 			
 			// 해당 ear 파일로 재 압축한다.
+			MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP4);
+			MigrationStatusUtil.setPercentage(this, 90);
 			newFileName = getResultFile(file);
 			ZipUtil.compress(tempDir, newFileName, ArchiveType.EAR);
 			
 			// 임시 디렉토리를 삭제한다.
+			MigrationStatusUtil.setCurrentStatus(MigrationStatusUtil.STEP5);
+			MigrationStatusUtil.setPercentage(this, 100);
 			deleteDirectory(new File(tempDir));
 			
 			ThreadLocalUtil.add(ChameleonConstants.EAR_ROOT_DIR, null);
