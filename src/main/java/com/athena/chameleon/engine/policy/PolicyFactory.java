@@ -71,6 +71,9 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 		policy.setJeus((PropertyUtil.getProperty("chameleon.migration.policy.jeus").indexOf(",") > -1 ? 
 				PropertyUtil.getProperty("chameleon.migration.policy.jeus").split(",") : 
 					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.jeus")}));
+		policy.setOthers((PropertyUtil.getProperty("chameleon.migration.policy.others").indexOf(",") > -1 ? 
+				PropertyUtil.getProperty("chameleon.migration.policy.others").split(",") : 
+					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.others")}));
 		
 		StringBuilder regex = new StringBuilder("(");
 
@@ -87,6 +90,15 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 		regex.append(")");
 		
 		policy.setPattern(Pattern.compile(regex.toString()));
+		
+		regex = new StringBuilder("(");
+		for(String other : policy.getOthers()) {
+			regex.append(".*").append(other).append(".*|");
+		}
+		regex.deleteCharAt(regex.toString().length() - 1);
+		regex.append(")");
+		
+		policy.setEtcPattern(Pattern.compile(regex.toString()));
 	}
 
 	@Override

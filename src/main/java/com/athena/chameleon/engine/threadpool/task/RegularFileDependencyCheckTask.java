@@ -74,6 +74,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 	@Override
 	protected void taskRun() {
 		Pattern pattern = policy.getPattern();
+		Pattern etcPattern = policy.getEtcPattern();
 		Matcher match = null;
 
 		try {
@@ -140,10 +141,16 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 					analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
 				}
 				
-				//  Weblogic, Jeus 등 상용 WAS 의존성 검사
+				//  WehSphere, Weblogic, Jeus 등 상용 WAS 의존성 검사
 			    match = pattern.matcher(lineStr);
 			    if (match.matches()) {
 			    	dependency.addDependencyStrMap(new String("Line " + Integer.toString(lineNum)) + " : ", lineStr);
+			    }
+				
+				// Connection URL 등 기타 레포트 대상 요소 존재여부 검사
+			    match = etcPattern.matcher(lineStr);
+			    if (match.matches()) {
+			    	dependency.addOthersStrMap(new String("Line " + Integer.toString(lineNum)) + " : ", lineStr);
 			    }
 			    
 				lineNum++;

@@ -41,7 +41,9 @@ public class Policy {
 	private String[] webSphere;
 	private String[] weblogic;
 	private String[] jeus;
+	private String[] others;
 	private Pattern pattern;
+	private Pattern etcPattern;
 	
 	/**
 	 * @return the unzipDir
@@ -128,6 +130,18 @@ public class Policy {
 		this.jeus = jeus;
 	}	
 	/**
+	 * @return the others
+	 */
+	public String[] getOthers() {
+		return others;
+	}
+	/**
+	 * @param others the others to set
+	 */
+	public void setOthers(String[] others) {
+		this.others = others;
+	}
+	/**
 	 * @return the pattern
 	 */
 	public Pattern getPattern() {
@@ -138,6 +152,18 @@ public class Policy {
 	 */
 	public void setPattern(Pattern pattern) {
 		this.pattern = pattern;
+	}	
+	/**
+	 * @return the etcPattern
+	 */
+	public Pattern getEtcPattern() {
+		return etcPattern;
+	}
+	/**
+	 * @param etcPattern the etcPattern to set
+	 */
+	public void setEtcPattern(Pattern etcPattern) {
+		this.etcPattern = etcPattern;
 	}
 	
 	@Override
@@ -146,9 +172,12 @@ public class Policy {
 				.append("defaultEncoding : ").append(defaultEncoding).append("\n")
 				.append("enEncoding : " + enEncoding).append("\n")
 				.append("suffix : ").append(ArrayUtils.toString(suffix)).append("\n")
+				.append("webSphere : ").append(ArrayUtils.toString(webSphere)).append("\n")
 				.append("weblogic : ").append(ArrayUtils.toString(weblogic)).append("\n")
 				.append("jeus : ").append(ArrayUtils.toString(jeus))
-				.append("pattern : ").append(pattern.toString());
+				.append("others : ").append(ArrayUtils.toString(others)).append("\n")
+				.append("pattern : ").append(pattern.toString())
+				.append("etcPattern : ").append(etcPattern.toString());
 		
 		return sb.toString();
 	}
