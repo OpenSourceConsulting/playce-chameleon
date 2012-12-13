@@ -98,7 +98,7 @@ public class JeusEjbDDXMLParser extends Parser {
 				logger.error("JAXBException has occurred.", e2);
         		location = removeTempDir(file.getAbsolutePath(), key);
         		stackTrace = StackTracer.getStackTrace(e2);
-        		comments = "지원되지 않는 버젼의 파일입니다.";
+        		comments = "지원되지 않는 버젼의 스키마로 작성된 파일입니다.";
 			} catch (Exception e2) {
 				logger.error("Unhandled Exception has occurred.", e2);
 	    		location = removeTempDir(file.getAbsolutePath(), key);

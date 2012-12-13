@@ -112,7 +112,7 @@ public class WeblogicApplicationXMLParser extends Parser {
 					logger.error("JAXBException has occurred.", e3);
 	        		location = removeTempDir(file.getAbsolutePath(), key);
 	        		stackTrace = StackTracer.getStackTrace(e3);
-	        		comments = "지원되지 않는 버젼의 파일입니다.";
+	        		comments = "지원되지 않는 버젼의 스키마로 작성된 파일입니다.";
 				} catch (IOException e3) {
 					logger.error("IOException has occurred.", e3);
 	        		location = removeTempDir(file.getAbsolutePath(), key);
