@@ -23,6 +23,7 @@
 				background-image: url(<c:url value='/images/common/bg_pattern.gif' />);
 			}
 			#mask {    position:absolute;    left:0;  top:0;  z-index:9000;    background-color:#ffffff;   filter:alpha(opacity=70); opacity:0.7; -moz-opacity:0.7 }
+			#mask1{    position:absolute;    left:0;  top:0;  z-index:9000;    background-color:#ffffff;   filter:alpha(opacity=70); opacity:0.7; -moz-opacity:0.7 }
 		</style>
 		<script>
 			$(document).ready(function (){
@@ -40,14 +41,20 @@
 		<div class="body_box">
 			<tiles:insertAttribute name="contents" />
 		</div>
-		
 		<div id="hideDiv" style="display:none;">
 			<div id="mask"></div>
 			<div style="z-index:9100;" class="pop_box00">
 				<div class="pop_box00-img"><img src="<c:url value="/images/common/ani_chameleon.gif"/>" width="67" height="69" /></div>
 			    <div class="pop_box00-text">작업 진행 중입니다.</div>
 			</div>
-		</div>    
-<%-- 		<tiles:insertAttribute name="footer" /> --%>
+		</div> 
+		<div id="hideDiv01" style="display:none;">
+			<div id="mask1"></div>
+			<div style="z-index:9100;height:170px;" class="pop_box00">
+				<div class="pop_box00-img"><img src="<c:url value="/images/common/ani_chameleon.gif"/>" width="67" height="69" /></div>
+				<div class="pop_box00-text">작업 진행율 : <span id="percentageLayer" style="color:#d54153!important;">0</span> %</div>
+			    <div class="pop_box00-text1" id="statusLayer">마이그레이션을 시작합니다.</div>
+			</div>
+		</div>            
 	</body>
 </html>

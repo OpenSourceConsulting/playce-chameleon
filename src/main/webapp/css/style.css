@@ -246,6 +246,10 @@ html,body {height:100%;}
 	position:relative;
 	top:60px; left:110px; width:250px; height:69px; float:left;
 }
+.pop_box00-text1{
+	position:relative;
+	left:20px; top:63px; width:410px; font-size:14px; text-align:center; height:69px; float:left;
+}
 
 
 a:link p,a:visited p{color:#d54153 !important; text-decoration:none !important;}
@@ -254,3 +258,4 @@ a:link p,a:visited p{color:#d54153 !important; text-decoration:none !important;}
 .textbox_sub2 p{margin-bottom: 5px;}
 .textbox_sub2 p.subtit{color:#697676; font-weight:bold; font-size: 16px;}
 .textbox_sub2 img{margin-bottom: 22px; max-width: 680px;}
+.formbox_help {position:absolute;background-color:white;border:1px solid #bbbbbb; padding: 8px 13px 13px 13px; left: 90px; font: 11px '맑은고딕','Malgun Gothic','굴림','gulim'; width: 400px; z-index: 9000; display:none;}

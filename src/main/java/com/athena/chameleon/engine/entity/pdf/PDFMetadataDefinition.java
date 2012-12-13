@@ -59,6 +59,8 @@ public class PDFMetadataDefinition {
     private List<String> webTransFileList;
     //application 변환 대상 파일 리스트
     private List<String> ejbTransFileList;
+    //exception 발생 항목
+    private List<ExceptionInfo> exceptionInfoList;
     
 	/**
 	 * @return the sourceFile
@@ -280,5 +282,11 @@ public class PDFMetadataDefinition {
             webRecommendList = new ArrayList<EjbRecommend>();
         return webRecommendList;
     }
+    /**
+	 * @return the exceptionInfoList
+	 */
+	public List<ExceptionInfo> getExceptionInfoList() {
+		return exceptionInfoList;
+	}
 }
 //end of PDFDefination.java

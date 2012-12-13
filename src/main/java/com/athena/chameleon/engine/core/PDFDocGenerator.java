@@ -535,6 +535,20 @@ public class PDFDocGenerator {
                     buf.append(entry.getKey() + " " + entry.getValue()+"\n");
                 }
                 childs.add(new Element("box").setText(buf.toString()+"\n"));
+                
+                if(type.equals("java") || type.equals("jsp") || type.equals("property")) {
+                	iterator = comm.getOthersStrMap().entrySet().iterator();
+                	if(iterator.hasNext()) {
+                		childs.add(new Element("textR").setText("기타 체크리스트"));
+                		
+                		buf = new StringBuffer();
+                        while (iterator.hasNext()) {
+                            Entry entry = (Entry)iterator.next();
+                            buf.append(entry.getKey() + " " + entry.getValue()+"\n");
+                        }
+                        childs.add(new Element("boxW").setText(buf.toString()+"\n"));
+                	}
+                }
             }
             
         }

@@ -38,6 +38,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.springframework.stereotype.Component;
 
+import com.athena.chameleon.common.utils.MigrationStatusUtil;
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
@@ -551,6 +552,10 @@ public class MigrationComponent {
     		    PDFDocGenerator.createPDF(new File(deployFile).getParentFile().getAbsolutePath()+File.separator+upload.getProjectNm()+"_Migration.pdf", upload, metadataDefinition);
     		    metadataDefinition.setPdfFile(new File(deployFile).getParentFile().getAbsolutePath()+File.separator+upload.getProjectNm()+"_Migration.pdf");
     		}
+    		
+    		MigrationStatusUtil.setPercentage(null, 0);
+        	MigrationStatusUtil.setCurrentStatus(null);
+        	
 		} catch(Exception e) {
 		    e.printStackTrace();
 		}

@@ -20,10 +20,15 @@
  */
 package com.athena.chameleon.web.upload.controller;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +39,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 
+import com.athena.chameleon.common.utils.MigrationStatusUtil;
 import com.athena.chameleon.common.utils.PropertyUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
@@ -96,8 +102,8 @@ public class UploadController {
      */
     @RequestMapping("/upload.do")
     public String upload(Upload upload, ModelMap modelMap, BindingResult results, SessionStatus status, HttpSession session) throws Exception {
-
-        String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
+    	
+    	String loginFlag = String.valueOf(session.getAttribute("loginFlag"));
         if(loginFlag == null || !loginFlag.equals("Y"))
             return "redirect:/login/showLogin.do";
         
@@ -106,7 +112,8 @@ public class UploadController {
         }
         
         try {
-            String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis()  + File.separator;
+        	
+        	String defaultPath = PropertyUtil.getProperty("chameleon.upload.temp.dir") + File.separator + System.currentTimeMillis()  + File.separator;
             String sourceFile, deployFile = "";
             File migrationFile;
             
@@ -160,6 +167,25 @@ public class UploadController {
         
                 
         return "/main/upload/resultForm";
+    }
+
+    /**
+     * 업로드 진행상태 확인
+     * 
+     * @param request
+     * @param response
+     * @param modelMap
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/getProgressStatus.do")
+    public String getProgressStatus(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap, HttpSession session) throws Exception {
+        
+    	modelMap.addAttribute("percentage", MigrationStatusUtil.getPercentage());
+    	modelMap.addAttribute("currentStatus", MigrationStatusUtil.getCurrentStatus());
+    	
+    	return "jsonView";
     }
 
 }
