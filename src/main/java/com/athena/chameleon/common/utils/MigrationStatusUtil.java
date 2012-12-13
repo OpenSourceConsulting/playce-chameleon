@@ -20,6 +20,9 @@
  */
 package com.athena.chameleon.common.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.core.analyzer.Analyzer;
 import com.athena.chameleon.engine.core.analyzer.support.ZipAnalyzer;
@@ -34,6 +37,8 @@ import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
  * @version 1.0
  */
 public class MigrationStatusUtil {
+
+	private static final Logger logger = LoggerFactory.getLogger(MigrationStatusUtil.class);
 	
 	public static final String STEP1 	= "임시 디렉토리에 압축을 해제합니다.";
 	public static final String STEP2 	= "인코딩 변경 작업을 수행중입니다.";
@@ -42,6 +47,9 @@ public class MigrationStatusUtil {
 	public static final String STEP3_2 	= "ear 내부의 EJB 애플리케이션에 대한 분석 작업을 수행중입니다.";
 	public static final String STEP4 	= "인코딩 변경 파일 및 수정된 디스크립터 파일을 재압축합니다.";
 	public static final String STEP5 	= "임시 디렉토리에 삭제합니다.";
+	
+	private static String currentStatus;
+	private static int percent;
 
 	/**
 	 * <pre>
@@ -49,8 +57,11 @@ public class MigrationStatusUtil {
 	 * </pre>
 	 * @param status
 	 */
-	public static void setCurrentStatus(String status) {
+	public synchronized static void setCurrentStatus(String status) {
 		ThreadLocalUtil.add(ChameleonConstants.MIGRATION_CURRENT_STATUS, status);
+		currentStatus = status;
+		
+		logger.debug("Current Status => [{}]", getCurrentStatus());
 	}//end of setCurrentStatus()
 	
 	/**
@@ -61,7 +72,8 @@ public class MigrationStatusUtil {
 	 * @return
 	 */
 	public static String getCurrentStatus() {
-		return (String)ThreadLocalUtil.get(ChameleonConstants.MIGRATION_CURRENT_STATUS);
+		//return (String)ThreadLocalUtil.get(ChameleonConstants.MIGRATION_CURRENT_STATUS);
+		return currentStatus;
 	}//end of getCurrentStatus()
 	
 	/**
@@ -70,7 +82,7 @@ public class MigrationStatusUtil {
 	 * </pre>
 	 * @param percentage
 	 */
-	public static void setPercentage(Analyzer analyzer, int percentage) {
+	public synchronized static void setPercentage(Analyzer analyzer, int percentage) {
 		int value = percentage;
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		
@@ -85,6 +97,9 @@ public class MigrationStatusUtil {
 		}
 		
 		ThreadLocalUtil.add(ChameleonConstants.MIGRATION_PERCENTAGE, value);
+		percent = value;
+		
+		logger.debug("Percentage => [{}]", getPercentage());
 	}//end of setPercentage()
 	
 	/**
@@ -94,7 +109,8 @@ public class MigrationStatusUtil {
 	 * @return
 	 */
 	public static int getPercentage() {
-		return (ThreadLocalUtil.get(ChameleonConstants.MIGRATION_PERCENTAGE) == null ? 0 : (Integer)ThreadLocalUtil.get(ChameleonConstants.MIGRATION_PERCENTAGE));
+		//return (ThreadLocalUtil.get(ChameleonConstants.MIGRATION_PERCENTAGE) == null ? 0 : (Integer)ThreadLocalUtil.get(ChameleonConstants.MIGRATION_PERCENTAGE));
+		return percent;
 	}//end of getPercentage()
 }
 //end of MigrationStatusUtil.java
