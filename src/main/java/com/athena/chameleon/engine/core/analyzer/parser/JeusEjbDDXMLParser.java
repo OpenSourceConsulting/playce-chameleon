@@ -34,6 +34,7 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
+import com.athena.chameleon.engine.entity.pdf.ExceptionInfo;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.EnterpriseBeans;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Jboss;
@@ -95,20 +96,21 @@ public class JeusEjbDDXMLParser extends Parser {
 				obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType.class.getPackage().getName(), file)).getValue();
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);
-        		location = ejbRecommend.getLocation();
+        		location = removeTempDir(file.getAbsolutePath(), key);
         		stackTrace = StackTracer.getStackTrace(e2);
         		comments = "지원되지 않는 버젼의 파일입니다.";
 			} catch (Exception e2) {
 				logger.error("Unhandled Exception has occurred.", e2);
-	    		location = ejbRecommend.getLocation();
+	    		location = removeTempDir(file.getAbsolutePath(), key);
 	    		stackTrace = StackTracer.getStackTrace(e2);
 	    	} 
     	} catch (Exception e1) {
 			logger.error("Unhandled Exception has occurred.", e1);
-    		location = ejbRecommend.getLocation();
+    		location = removeTempDir(file.getAbsolutePath(), key);
     		stackTrace = StackTracer.getStackTrace(e1);
     	} finally {
 			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo = new ExceptionInfo();
 				exceptionInfo.setLocation(location);
 				exceptionInfo.setStackTrace(stackTrace);
 				exceptionInfo.setComments(comments);

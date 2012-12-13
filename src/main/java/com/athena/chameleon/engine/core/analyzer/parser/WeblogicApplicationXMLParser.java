@@ -33,6 +33,7 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
+import com.athena.chameleon.engine.entity.pdf.ExceptionInfo;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.JbossApp;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.LoaderRepository;
@@ -109,29 +110,30 @@ public class WeblogicApplicationXMLParser extends Parser {
 					rewrite(file, ejbRecommend.getContents());
 	    		} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
-	        		location = ejbRecommend.getLocation();
+	        		location = removeTempDir(file.getAbsolutePath(), key);
 	        		stackTrace = StackTracer.getStackTrace(e3);
 	        		comments = "지원되지 않는 버젼의 파일입니다.";
 				} catch (IOException e3) {
 					logger.error("IOException has occurred.", e3);
-	        		location = ejbRecommend.getLocation();
+	        		location = removeTempDir(file.getAbsolutePath(), key);
 	        		stackTrace = StackTracer.getStackTrace(e3);
 				} catch (Exception e3) {
 					logger.error("Unhandled Exception has occurred.", e3);
-		    		location = ejbRecommend.getLocation();
+		    		location = removeTempDir(file.getAbsolutePath(), key);
 		    		stackTrace = StackTracer.getStackTrace(e3);
 				}
 			} catch (Exception e2) {
 				logger.error("Unhandled Exception has occurred.", e2);
-	    		location = ejbRecommend.getLocation();
+	    		location = removeTempDir(file.getAbsolutePath(), key);
 	    		stackTrace = StackTracer.getStackTrace(e2);
 	    	} 
     	} catch (Exception e1) {
 			logger.error("Unhandled Exception has occurred.", e1);
-    		location = ejbRecommend.getLocation();
+    		location = removeTempDir(file.getAbsolutePath(), key);
     		stackTrace = StackTracer.getStackTrace(e1);
     	} finally {
 			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo = new ExceptionInfo();
 				exceptionInfo.setLocation(location);
 				exceptionInfo.setStackTrace(stackTrace);
 				exceptionInfo.setComments(comments);

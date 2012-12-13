@@ -35,6 +35,7 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.ExceptionInfo;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 import com.athena.peacock.engine.common.StackTracer;
@@ -95,37 +96,38 @@ public class WebXMLParser extends Parser {
 					rewrite(file, commonAnalyze.getContents());
             	} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
-		    		location = commonAnalyze.getLocation();
+		    		location = removeTempDir(file.getAbsolutePath(), key);
 		    		stackTrace = StackTracer.getStackTrace(e1);
 		    		comments = "지원하지 않는 버젼의 파일이거나 인코딩 필터 추가 작업 시 에러가 발생하였습니다.";
     			} catch (IOException e3) {
     				logger.error("IOException has occurred.", e3);
-    	    		location = commonAnalyze.getLocation();
+    	    		location = removeTempDir(file.getAbsolutePath(), key);
     	    		stackTrace = StackTracer.getStackTrace(e1);
     			} catch (Exception e3) {
     				logger.error("Unhandled Exception has occurred.", e3);
-    	    		location = commonAnalyze.getLocation();
+    	    		location = removeTempDir(file.getAbsolutePath(), key);
     	    		stackTrace = StackTracer.getStackTrace(e1);
     			}
 			} catch (IOException e2) {
 				logger.error("IOException has occurred.", e2);
-	    		location = commonAnalyze.getLocation();
+	    		location = removeTempDir(file.getAbsolutePath(), key);
 	    		stackTrace = StackTracer.getStackTrace(e1);
 			} catch (Exception e2) {
 				logger.error("Unhandled Exception has occurred.", e2);
-	    		location = commonAnalyze.getLocation();
+	    		location = removeTempDir(file.getAbsolutePath(), key);
 	    		stackTrace = StackTracer.getStackTrace(e1);
 			}
 		} catch (IOException e1) {
 			logger.error("IOException has occurred.", e1);
-    		location = commonAnalyze.getLocation();
+    		location = removeTempDir(file.getAbsolutePath(), key);
     		stackTrace = StackTracer.getStackTrace(e1);
 		} catch (Exception e1) {
 			logger.error("Unhandled Exception has occurred.", e1);
-    		location = commonAnalyze.getLocation();
+    		location = removeTempDir(file.getAbsolutePath(), key);
     		stackTrace = StackTracer.getStackTrace(e1);
 		} finally {
 			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo = new ExceptionInfo();
 				exceptionInfo.setLocation(location);
 				exceptionInfo.setStackTrace(stackTrace);
 				exceptionInfo.setComments(comments);
