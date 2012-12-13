@@ -117,6 +117,8 @@ public class JeusEjbDDXMLParser extends Parser {
 				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
 		}
+    	
+    	stackTrace = null;
 		
 		// jboss.xml 변환 생성
     	try {
@@ -136,8 +138,22 @@ public class JeusEjbDDXMLParser extends Parser {
     		}
 		} catch (JAXBException e) {
 			logger.error("JAXBException has occurred.", e);
+    		location = removeTempDir(file.getAbsolutePath(), key);
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "jboss.xml 파일 생성 중 marshalling이 실패하였습니다.";
 		} catch (IOException e) {
 			logger.error("IOException has occurred.", e);
+    		location = removeTempDir(file.getAbsolutePath(), key);
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "jboss.xml 파일 생성할 수 였습니다.";
+		} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo = new ExceptionInfo();
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
+			}
 		}
     	
     	return obj;

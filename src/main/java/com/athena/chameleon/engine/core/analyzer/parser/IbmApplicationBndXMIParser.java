@@ -16,14 +16,13 @@
  * Revision History
  * Author			Date				Description
  * ---------------	----------------	------------
- * Sang-cheon Park	2012. 10. 3.		First Draft.
+ * Sang-cheon Park	2012. 12. 13.		First Draft.
  */
 package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +32,6 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
-import com.athena.chameleon.engine.entity.pdf.ExceptionInfo;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.JbossApp;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.LoaderRepository;
@@ -48,7 +46,7 @@ import com.athena.peacock.engine.common.StackTracer;
  * @author Sang-cheon Park
  * @version 1.0
  */
-public class WeblogicApplicationXMLParser extends Parser {
+public class IbmApplicationBndXMIParser extends Parser {
 
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.core.analyzer.parser.Parser#parse(java.io.File, com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition)
@@ -82,67 +80,6 @@ public class WeblogicApplicationXMLParser extends Parser {
             logger.error("IOException has occurred.", e);
         }
 
-//        try {
-//            CommonAnalyze commonAnalyze = new CommonAnalyze();
-//            commonAnalyze.setItem(file.getName());
-//            commonAnalyze.setLocation(removeTempDir(file.getParent()));
-//            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
-//            
-//            analyzeDefinition.getDescripterList().add(commonAnalyze);
-//        } catch (IOException e) {
-//            logger.error("IOException has occurred.", e);
-//        }
-        
-    	Object obj = null;
-    	
-    	try {
-        	// http://www.bea.com/ns/weblogic/weblogic-application/1.0/weblogic-application.xsd
-			obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.weblogic.v1_0.WeblogicApplicationType.class.getPackage().getName(), file)).getValue();
-    	} catch (JAXBException e1) {
-			try {
-	    		// http://www.bea.com/ns/weblogic/90/weblogic-application.xsd
-				obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.weblogic.v9_0.WeblogicApplicationType.class.getPackage().getName(), file)).getValue();
-			} catch (JAXBException e2) {
-	    		try {
-					// http://www.bea.com/servers/wls810/dtd/weblogic-application_2_0.dtd
-	        		removeDoctype(file);
-					obj = JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.weblogic.v8_1.WeblogicApplication.class.getPackage().getName(), file);
-					rewrite(file, ejbRecommend.getContents());
-	    		} catch (JAXBException e3) {
-					logger.error("JAXBException has occurred.", e3);
-	        		location = removeTempDir(file.getAbsolutePath(), key);
-	        		stackTrace = StackTracer.getStackTrace(e3);
-	        		comments = "지원되지 않는 버젼의 파일입니다.";
-				} catch (IOException e3) {
-					logger.error("IOException has occurred.", e3);
-	        		location = removeTempDir(file.getAbsolutePath(), key);
-	        		stackTrace = StackTracer.getStackTrace(e3);
-				} catch (Exception e3) {
-					logger.error("Unhandled Exception has occurred.", e3);
-		    		location = removeTempDir(file.getAbsolutePath(), key);
-		    		stackTrace = StackTracer.getStackTrace(e3);
-				}
-			} catch (Exception e2) {
-				logger.error("Unhandled Exception has occurred.", e2);
-	    		location = removeTempDir(file.getAbsolutePath(), key);
-	    		stackTrace = StackTracer.getStackTrace(e2);
-	    	} 
-    	} catch (Exception e1) {
-			logger.error("Unhandled Exception has occurred.", e1);
-    		location = removeTempDir(file.getAbsolutePath(), key);
-    		stackTrace = StackTracer.getStackTrace(e1);
-    	} finally {
-			if(StringUtils.isNotEmpty(stackTrace)) {
-				exceptionInfo = new ExceptionInfo();
-				exceptionInfo.setLocation(location);
-				exceptionInfo.setStackTrace(stackTrace);
-				exceptionInfo.setComments(comments);
-				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
-			}
-		}
-    	
-    	stackTrace = null;
-    	
 		try {
 			JbossApp jbossApp = new JbossApp();
 			
@@ -175,15 +112,15 @@ public class WeblogicApplicationXMLParser extends Parser {
     		comments = "jboss-app.xml 파일 생성할 수 였습니다.";
 		} finally {
 			if(StringUtils.isNotEmpty(stackTrace)) {
-				exceptionInfo = new ExceptionInfo();
 				exceptionInfo.setLocation(location);
 				exceptionInfo.setStackTrace(stackTrace);
 				exceptionInfo.setComments(comments);
 				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
 		}
-    	
-		return obj;
+        
+		return ejbRecommend.getContents();
 	}//end of parse()
+
 }
-//end of WeblogicApplicationXMLParser.java
+//end of IbmApplicationBndXMIParser.java

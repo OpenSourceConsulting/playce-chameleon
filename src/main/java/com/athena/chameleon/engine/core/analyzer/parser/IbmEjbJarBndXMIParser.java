@@ -16,18 +16,24 @@
  * Revision History
  * Author			Date				Description
  * ---------------	----------------	------------
- * Sang-cheon Park	2012. 10. 3.		First Draft.
+ * Sang-cheon Park	2012. 12. 13.		First Draft.
  */
 package com.athena.chameleon.engine.core.analyzer.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
@@ -35,8 +41,10 @@ import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
 import com.athena.chameleon.engine.entity.pdf.ExceptionInfo;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
-import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.JbossApp;
-import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.LoaderRepository;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.EnterpriseBeans;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Jboss;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.JndiName;
+import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Session;
 import com.athena.chameleon.engine.utils.JaxbUtils;
 import com.athena.peacock.engine.common.StackTracer;
 
@@ -48,7 +56,7 @@ import com.athena.peacock.engine.common.StackTracer;
  * @author Sang-cheon Park
  * @version 1.0
  */
-public class JeusApplicationDDXMLParser extends Parser {
+public class IbmEjbJarBndXMIParser extends Parser {
 
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.core.analyzer.parser.Parser#parse(java.io.File, com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition)
@@ -60,11 +68,11 @@ public class JeusApplicationDDXMLParser extends Parser {
 		
 		this.analyzeDefinition = analyzeDefinition;
 		
-        // only zip and ear
+        // only zip and jar
         String key = ChameleonConstants.ZIP_ROOT_DIR;
         
         if(StringUtils.isEmpty((String)ThreadLocalUtil.get(key))) {
-        	key = ChameleonConstants.EAR_ROOT_DIR;
+        	key = ChameleonConstants.JAR_ROOT_DIR;
         }
 		
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
@@ -77,87 +85,36 @@ public class JeusApplicationDDXMLParser extends Parser {
     		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
     		ejbRecommend.setContents(fileToString(file.getAbsolutePath()));
     		
-    		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);
+    		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
         } catch (IOException e) {
             logger.error("IOException has occurred.", e);
         }
-
-//        try {
-//            CommonAnalyze commonAnalyze = new CommonAnalyze();
-//            commonAnalyze.setItem(file.getName());
-//            commonAnalyze.setLocation(removeTempDir(file.getParent()));
-//            commonAnalyze.setContents(fileToString(file.getAbsolutePath()));
-//            
-//            analyzeDefinition.getDescripterList().add(commonAnalyze);
-//        } catch (IOException e) {
-//            logger.error("IOException has occurred.", e);
-//        }
         
-    	Object obj = null;
-
-    	try {
-        	// jeus-main.xsd v6_0
-			obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.jeus.v6_0.ApplicationType.class.getPackage().getName(), file)).getValue();
-    	} catch (JAXBException e1) {
-	    	try {
-	        	// jeus-main.xsd v5_0
-				obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.jeus.v5_0.ApplicationType.class.getPackage().getName(), file)).getValue();
-			} catch (JAXBException e2) {
-				logger.error("JAXBException has occurred.", e2);
-        		location = removeTempDir(file.getAbsolutePath(), key);
-        		stackTrace = StackTracer.getStackTrace(e2);
-        		comments = "지원되지 않는 버젼의 파일입니다.";
-			} catch (Exception e2) {
-				logger.error("Unhandled Exception has occurred.", e2);
-	    		location = removeTempDir(file.getAbsolutePath(), key);
-	    		stackTrace = StackTracer.getStackTrace(e2);
-	    	} 
-    	} catch (Exception e1) {
-			logger.error("Unhandled Exception has occurred.", e1);
-    		location = removeTempDir(file.getAbsolutePath(), key);
-    		stackTrace = StackTracer.getStackTrace(e1);
-    	} finally {
-			if(StringUtils.isNotEmpty(stackTrace)) {
-				exceptionInfo = new ExceptionInfo();
-				exceptionInfo.setLocation(location);
-				exceptionInfo.setStackTrace(stackTrace);
-				exceptionInfo.setComments(comments);
-				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
-			}
-		}
-    	
-    	stackTrace = null;
-    	
-		try {
-			JbossApp jbossApp = new JbossApp();
+        List<String> jndiNameList = new ArrayList<String>();
+        
+        try {
+			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(file);
 			
-			LoaderRepository loaderRepository = new LoaderRepository();
-			loaderRepository.setvalue("com.athena.chameleon:loader=" + ThreadLocalUtil.get(ChameleonConstants.PROJECT_NAME));
-			
-			jbossApp.setLoaderRepository(loaderRepository);
-			
-			String xmlData = JaxbUtils.marshal(JbossApp.class.getPackage().getName(), jbossApp, "<!DOCTYPE jboss-app PUBLIC \"-//JBoss//DTD J2EE Application 5.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd\">");
-
-			rewrite(new File(file.getParentFile(), "jboss-app.xml"), xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
-			
-        	ejbRecommend = new EjbRecommend();
-    		ejbRecommend.setItem("jboss-app.xml");
-    		ejbRecommend.setTransFlag(true);
-    		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
-    		ejbRecommend.setContents(xmlData.replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", ""));
-    		
-    		metadataDefinition.getApplicationRecommendList().add(ejbRecommend);
-    		metadataDefinition.getAppTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-app.xml");
-		} catch (JAXBException e) {
-			logger.error("JAXBException has occurred.", e);
+			// normalize text representation
+            doc.getDocumentElement().normalize();
+            
+            NodeList listClass = doc.getElementsByTagName("ejbBindings");
+            Element element = null;
+            String jndiName = null;
+            for (int i = 0; i < listClass.getLength(); i++) {
+            	element = (Element) listClass.item(i);
+            	jndiName = element.getAttribute("jndiName");
+            	
+            	if (StringUtils.isNotEmpty(jndiName)) {
+            		jndiNameList.add(jndiName);
+            	}
+            }            
+		} catch (Exception e) {
     		location = removeTempDir(file.getAbsolutePath(), key);
     		stackTrace = StackTracer.getStackTrace(e);
-    		comments = "jboss-app.xml 파일 생성 중 marshalling이 실패하였습니다.";
-		} catch (IOException e) {
-			logger.error("IOException has occurred.", e);
-    		location = removeTempDir(file.getAbsolutePath(), key);
-    		stackTrace = StackTracer.getStackTrace(e);
-    		comments = "jboss-app.xml 파일 생성할 수 였습니다.";
+    		comments = "ibm-ejb-jar-bnd.xmi 파일 분석 중 에러가 발생하였습니다.";
 		} finally {
 			if(StringUtils.isNotEmpty(stackTrace)) {
 				exceptionInfo = new ExceptionInfo();
@@ -167,9 +124,82 @@ public class JeusApplicationDDXMLParser extends Parser {
 				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
 		}
-		
-		return obj;
+        
+        stackTrace = null;
+        
+		// jboss.xml 변환 생성
+    	try {
+    		if(jndiNameList.size() > 0) {
+    			Jboss jboss = generateJbossXML(jndiNameList);
+    			String xmlData = JaxbUtils.marshal(Jboss.class.getPackage().getName(), jboss, "<!DOCTYPE jboss PUBLIC \"-//JBoss//DTD JBOSS 4.0//EN\" \"http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd\">").replaceAll(" standalone=\"yes\"", "").replaceAll(" standalone=\"true\"", "");
+    			rewrite(new File(file.getParentFile(), "jboss.xml"), xmlData);
+
+            	ejbRecommend = new EjbRecommend();
+        		ejbRecommend.setItem("jboss.xml");
+        		ejbRecommend.setTransFlag(true);
+        		ejbRecommend.setLocation(removeTempDir(file.getParent(), key));
+        		ejbRecommend.setContents(xmlData);
+        		
+        		metadataDefinition.getEjbRecommendList().add(ejbRecommend);
+        		metadataDefinition.getEjbTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss.xml");
+    		}
+		} catch (JAXBException e) {
+			logger.error("JAXBException has occurred.", e);
+    		location = removeTempDir(file.getAbsolutePath(), key);
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "jboss.xml 파일 생성 중 marshalling이 실패하였습니다.";
+		} catch (IOException e) {
+			logger.error("IOException has occurred.", e);
+    		location = removeTempDir(file.getAbsolutePath(), key);
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "jboss.xml 파일 생성할 수 였습니다.";
+		} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo = new ExceptionInfo();
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
+			}
+		}
+    	
+    	return ejbRecommend.getContents();
 	}//end of parse()
+	
+	/**
+	 * <pre>
+	 * 
+	 * </pre>
+	 * @param obj
+	 */
+	private Jboss generateJbossXML(List<String> jndiNameList) {
+		Jboss jboss = null;
+		EnterpriseBeans enterpriseBeans = null;
+		Session session = null;
+		JndiName jndiName = null;
+		
+		if(jndiNameList.size() > 0) {
+			jboss = new Jboss();
+			enterpriseBeans = new EnterpriseBeans();
+		
+			for(String name : jndiNameList) {
+				session = new Session();
+				
+				jndiName = new JndiName();
+				jndiName.setvalue(name);
+				session.setJndiName(jndiName);
+				
+				session.setCallByValue("true");
+				session.setClustered("False");
+				
+				enterpriseBeans.getSessionOrEntityOrMessageDriven().add(session);
+			}
+			
+			jboss.setEnterpriseBeans(enterpriseBeans);
+		}
+		
+		return jboss;
+	}//end of generateJbossXML()
 
 }
-//end of JeusApplicationDDXMLParser.java
+//end of IbmEjbJarBndXMIParser.java
