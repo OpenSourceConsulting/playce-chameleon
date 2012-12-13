@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
+import com.athena.chameleon.engine.entity.pdf.ExceptionInfo;
 
 /**
  * <pre>
@@ -49,6 +50,11 @@ public abstract class Parser {
 	protected static final Logger logger = LoggerFactory.getLogger(Parser.class);
 	
 	protected AnalyzeDefinition analyzeDefinition;
+	
+	protected ExceptionInfo exceptionInfo;
+	protected String location;
+	protected String stackTrace;
+	protected String comments;
 	
 	/**
 	 * <pre>

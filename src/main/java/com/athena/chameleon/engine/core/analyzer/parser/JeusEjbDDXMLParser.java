@@ -40,6 +40,7 @@ import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Jboss;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.JndiName;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Session;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -94,8 +95,26 @@ public class JeusEjbDDXMLParser extends Parser {
 				obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.ejbjar.jeus.v5_0.JeusEjbDdType.class.getPackage().getName(), file)).getValue();
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);
+        		location = ejbRecommend.getLocation();
+        		stackTrace = StackTracer.getStackTrace(e2);
+        		comments = "지원되지 않는 버젼의 파일입니다.";
+			} catch (Exception e2) {
+				logger.error("Unhandled Exception has occurred.", e2);
+	    		location = ejbRecommend.getLocation();
+	    		stackTrace = StackTracer.getStackTrace(e2);
+	    	} 
+    	} catch (Exception e1) {
+			logger.error("Unhandled Exception has occurred.", e1);
+    		location = ejbRecommend.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e1);
+    	} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
-    	}
+		}
 		
 		// jboss.xml 변환 생성
     	try {

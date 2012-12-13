@@ -35,7 +35,9 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -93,9 +95,41 @@ public class WebXMLParser extends Parser {
 					rewrite(file, commonAnalyze.getContents());
             	} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
+		    		location = commonAnalyze.getLocation();
+		    		stackTrace = StackTracer.getStackTrace(e1);
+		    		comments = "지원하지 않는 버젼의 파일이거나 인코딩 필터 추가 작업 시 에러가 발생하였습니다.";
     			} catch (IOException e3) {
     				logger.error("IOException has occurred.", e3);
+    	    		location = commonAnalyze.getLocation();
+    	    		stackTrace = StackTracer.getStackTrace(e1);
+    			} catch (Exception e3) {
+    				logger.error("Unhandled Exception has occurred.", e3);
+    	    		location = commonAnalyze.getLocation();
+    	    		stackTrace = StackTracer.getStackTrace(e1);
     			}
+			} catch (IOException e2) {
+				logger.error("IOException has occurred.", e2);
+	    		location = commonAnalyze.getLocation();
+	    		stackTrace = StackTracer.getStackTrace(e1);
+			} catch (Exception e2) {
+				logger.error("Unhandled Exception has occurred.", e2);
+	    		location = commonAnalyze.getLocation();
+	    		stackTrace = StackTracer.getStackTrace(e1);
+			}
+		} catch (IOException e1) {
+			logger.error("IOException has occurred.", e1);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e1);
+		} catch (Exception e1) {
+			logger.error("Unhandled Exception has occurred.", e1);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e1);
+		} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
 		}
     	
@@ -110,8 +144,10 @@ public class WebXMLParser extends Parser {
 	 * @param obj
 	 * @param path
 	 * @return
+	 * @throws JAXBException 
+	 * @throws IOException 
 	 */
-	private Object checkEncodignFilter(Object obj, String path) {
+	private Object checkEncodignFilter(Object obj, String path) throws JAXBException, IOException {
         String[] charSet = {"UTF-8", "UTF8"};
         boolean hasEncodingFilter = false;
         boolean hasUTF8EncodingFilter = false;
@@ -230,8 +266,10 @@ public class WebXMLParser extends Parser {
 					logger.debug("web.xml has been modified.\n{}", xmlData);
 				} catch (JAXBException e) {
 					logger.error("JAXBException has occurred.", e);
+					throw e;
 				} catch (IOException e) {
 					logger.error("IOException has occurred.", e);
+					throw e;
 				}
             }
             
@@ -344,8 +382,10 @@ public class WebXMLParser extends Parser {
 					logger.debug("web.xml has been modified.\n{}", xmlData);
 				} catch (JAXBException e) {
 					logger.error("JAXBException has occurred.", e);
+					throw e;
 				} catch (IOException e) {
 					logger.error("IOException has occurred.", e);
+					throw e;
 				}
             }
 
@@ -459,8 +499,10 @@ public class WebXMLParser extends Parser {
 					logger.debug("web.xml has been modified.\n{}", xmlData);
 				} catch (JAXBException e) {
 					logger.error("JAXBException has occurred.", e);
+					throw e;
 				} catch (IOException e) {
 					logger.error("IOException has occurred.", e);
+					throw e;
 				}
             }
 

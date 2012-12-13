@@ -34,7 +34,7 @@ public class ExceptionInfo {
 	//stack trace 정보 
 	private String stackTrace;
 	//내용
-	private String comment;
+	private String comments;
 	
 	/**
 	 * @return the location
@@ -61,16 +61,16 @@ public class ExceptionInfo {
 		this.stackTrace = stackTrace;
 	}
 	/**
-	 * @return the comment
+	 * @return the comments
 	 */
-	public String getComment() {
-		return comment;
+	public String getComments() {
+		return comments;
 	}
 	/**
-	 * @param comment the comment to set
+	 * @param comments the comments to set
 	 */
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
     	
 }

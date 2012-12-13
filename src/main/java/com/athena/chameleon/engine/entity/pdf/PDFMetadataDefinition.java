@@ -286,6 +286,8 @@ public class PDFMetadataDefinition {
 	 * @return the exceptionInfoList
 	 */
 	public List<ExceptionInfo> getExceptionInfoList() {
+        if(exceptionInfoList == null)
+        	exceptionInfoList = new ArrayList<ExceptionInfo>();
 		return exceptionInfoList;
 	}
 }

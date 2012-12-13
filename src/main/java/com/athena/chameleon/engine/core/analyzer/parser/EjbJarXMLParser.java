@@ -35,7 +35,9 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -89,10 +91,31 @@ public class EjbJarXMLParser extends Parser {
 				rewrite(file, commonAnalyze.getContents());
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);
+        		location = commonAnalyze.getLocation();
+        		stackTrace = StackTracer.getStackTrace(e2);
+        		comments = "지원되지 않는 버젼의 파일입니다.";
 			} catch (IOException e2) {
 				logger.error("IOException has occurred.", e2);
+        		location = commonAnalyze.getLocation();
+        		stackTrace = StackTracer.getStackTrace(e2);
+        		comments = "파일을 열 수 없습니다.";
+			} catch (Exception e2) {
+				logger.error("Unhandled Exception has occurred.", e2);
+	    		location = commonAnalyze.getLocation();
+	    		stackTrace = StackTracer.getStackTrace(e2);
+	    	} 
+    	} catch (Exception e1) {
+			logger.error("Unhandled Exception has occurred.", e1);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e1);
+    	} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
-    	}
+		}
     	
     	return obj;
 	}//end of parse()
@@ -115,20 +138,26 @@ public class EjbJarXMLParser extends Parser {
 			CommonAnalyze commonAnalyze = null;
 			for(Object bean : beanList) {
 				if(bean instanceof com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType) {
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem("Home Interface");
-					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getHome().getValue());
-					commonAnalyzeList.add(commonAnalyze);
+					try {
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem("Home Interface");
+						commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getHome().getValue());
+						commonAnalyzeList.add(commonAnalyze);
 
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem("Remote Interface");
-					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getRemote().getValue());
-					commonAnalyzeList.add(commonAnalyze);
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem("Remote Interface");
+						commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getRemote().getValue());
+						commonAnalyzeList.add(commonAnalyze);
 
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem("Enterprise Bean Class");
-					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getEjbClass().getValue());
-					commonAnalyzeList.add(commonAnalyze);
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem("Enterprise Bean Class");
+						commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_1.SessionBeanType)bean).getEjbClass().getValue());
+						commonAnalyzeList.add(commonAnalyze);
+					} catch (Exception e) {
+		        		location = commonAnalyze.getLocation();
+		        		stackTrace = StackTracer.getStackTrace(e);
+		        		comments = "Session Bean 내에 home / remote / ejb-class 가 모두 존재해야 합니다.";
+					}
 				}
 			}
 			
@@ -147,20 +176,26 @@ public class EjbJarXMLParser extends Parser {
 			CommonAnalyze commonAnalyze = null;
 			for(Object bean : beanList) {
 				if(bean instanceof com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session) {
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem("Home Interface");
-					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getHome().getvalue());
-					commonAnalyzeList.add(commonAnalyze);
+					try {
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem("Home Interface");
+						commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getHome().getvalue());
+						commonAnalyzeList.add(commonAnalyze);
 
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem("Remote Interface");
-					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getRemote().getvalue());
-					commonAnalyzeList.add(commonAnalyze);
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem("Remote Interface");
+						commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getRemote().getvalue());
+						commonAnalyzeList.add(commonAnalyze);
 
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem("Enterprise Bean Class");
-					commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getEjbClass().getvalue());
-					commonAnalyzeList.add(commonAnalyze);
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem("Enterprise Bean Class");
+						commonAnalyze.setContents(((com.athena.chameleon.engine.entity.xml.ejbjar.v2_0.Session)bean).getEjbClass().getvalue());
+						commonAnalyzeList.add(commonAnalyze);
+					} catch (Exception e) {
+		        		location = commonAnalyze.getLocation();
+		        		stackTrace = StackTracer.getStackTrace(e);
+		        		comments = "Session Bean 내에 home / remote / ejb-class 가 모두 존재해야 합니다.";
+					}
 				}
 			}
 			

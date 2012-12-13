@@ -37,6 +37,7 @@ import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.JbossApp;
 import com.athena.chameleon.engine.entity.xml.application.jboss.v5_0.LoaderRepository;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -102,8 +103,26 @@ public class JeusApplicationDDXMLParser extends Parser {
 				obj = ((JAXBElement<?>)JaxbUtils.unmarshal(com.athena.chameleon.engine.entity.xml.application.jeus.v5_0.ApplicationType.class.getPackage().getName(), file)).getValue();
 			} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);
+        		location = ejbRecommend.getLocation();
+        		stackTrace = StackTracer.getStackTrace(e2);
+        		comments = "지원되지 않는 버젼의 파일입니다.";
+			} catch (Exception e2) {
+				logger.error("Unhandled Exception has occurred.", e2);
+	    		location = ejbRecommend.getLocation();
+	    		stackTrace = StackTracer.getStackTrace(e2);
+	    	} 
+    	} catch (Exception e1) {
+			logger.error("Unhandled Exception has occurred.", e1);
+    		location = ejbRecommend.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e1);
+    	} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
-    	}
+		}
     	
 		try {
 			JbossApp jbossApp = new JbossApp();
@@ -127,8 +146,21 @@ public class JeusApplicationDDXMLParser extends Parser {
     		metadataDefinition.getAppTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-app.xml");
 		} catch (JAXBException e) {
 			logger.error("JAXBException has occurred.", e);
+    		location = ejbRecommend.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "jboss-app.xml 파일 생성 중 marshalling이 실패하였습니다.";
 		} catch (IOException e) {
 			logger.error("IOException has occurred.", e);
+    		location = ejbRecommend.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "jboss-app.xml 파일 생성할 수 였습니다.";
+		} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
+			}
 		}
 		
 		return obj;

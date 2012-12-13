@@ -33,6 +33,7 @@ import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
 import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -119,7 +120,17 @@ public class JeusWebDDXMLParser extends Parser {
     		metadataDefinition.getWebTransFileList().add(ejbRecommend.getLocation() + File.separator + "jboss-web.xml");
         } catch (Exception e) {
 			logger.error("Unhandled exception has occurred.", e);
-        }
+    		location = ejbRecommend.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "jboss-web.xml 파일 생성 시 에러가 발생하였습니다.";
+        } finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
+			}
+		}
     	
 		return doc;
 	}//end of parse()

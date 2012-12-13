@@ -33,14 +33,17 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
 
+import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.MavenDependency;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.entity.xml.project.v4_0.Dependency;
 import com.athena.chameleon.engine.entity.xml.project.v4_0.Model;
 import com.athena.chameleon.engine.entity.xml.project.v4_0.Model.Dependencies;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -81,12 +84,29 @@ public class PomXMLParser extends Parser {
 			obj = checkDependency(((JAXBElement<?>)JaxbUtils.unmarshal(Model.class.getPackage().getName(), file)).getValue(), file.getParentFile().getAbsolutePath());
 		} catch (JAXBException e) {
 			logger.error("JAXBException has occurred.", e);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "pom.xml 파싱 중 에러가 발생하였습니다.";
 		} catch (IOException e) {
 			logger.error("IOException has occurred.", e);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e);
+    		comments = "pom.xml 파일을 읽을 수 없습니다.";
 		} catch (IllegalAccessException e) {
 			logger.error("IllegalAccessException has occurred.", e);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e);
 		} catch (InvocationTargetException e) {
 			logger.error("InvocationTargetException has occurred.", e);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e);
+		} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
+			}
 		}
     	
 		return obj;

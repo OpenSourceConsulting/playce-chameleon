@@ -42,6 +42,7 @@ import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Method;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.MethodAttributes;
 import com.athena.chameleon.engine.entity.xml.ejbjar.jboss.v5_0.Session;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -98,8 +99,29 @@ public class WeblogicEjbJarXMLParser extends Parser {
 				rewrite(file, ejbRecommend.getContents());
 	    	} catch (JAXBException e2) {
 				logger.error("JAXBException has occurred.", e2);
+        		location = ejbRecommend.getLocation();
+        		stackTrace = StackTracer.getStackTrace(e2);
+        		comments = "지원되지 않는 버젼의 파일입니다.";
 			} catch (IOException e2) {
 				logger.error("IOException has occurred.", e2);
+        		location = ejbRecommend.getLocation();
+        		stackTrace = StackTracer.getStackTrace(e2);
+        		comments = "파일을 열 수 없습니다.";
+			} catch (Exception e2) {
+				logger.error("Unhandled Exception has occurred.", e2);
+	    		location = ejbRecommend.getLocation();
+	    		stackTrace = StackTracer.getStackTrace(e2);
+			}
+    	} catch (Exception e1) {
+			logger.error("Unhandled Exception has occurred.", e1);
+    		location = ejbRecommend.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e1);
+    	} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
     	}
 		

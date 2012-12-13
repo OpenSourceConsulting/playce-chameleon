@@ -35,7 +35,9 @@ import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.constant.ChameleonConstants;
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
+import com.athena.chameleon.engine.entity.pdf.PDFMetadataDefinition;
 import com.athena.chameleon.engine.utils.JaxbUtils;
+import com.athena.peacock.engine.common.StackTracer;
 
 /**
  * <pre>
@@ -93,11 +95,36 @@ public class ApplicationXMLParser extends Parser {
 					rewrite(file, commonAnalyze.getContents());
 	        	} catch (JAXBException e3) {
 					logger.error("JAXBException has occurred.", e3);
+	        		location = commonAnalyze.getLocation();
+	        		stackTrace = StackTracer.getStackTrace(e3);
+	        		comments = "지원되지 않는 버젼의 파일입니다.";
 				} catch (IOException e3) {
 					logger.error("IOException has occurred.", e3);
-				}
+	        		location = commonAnalyze.getLocation();
+	        		stackTrace = StackTracer.getStackTrace(e3);
+	        		comments = "파일을 열 수 없습니다.";
+				} catch (Exception e3) {
+					logger.error("Unhandled Exception has occurred.", e3);
+		    		location = commonAnalyze.getLocation();
+		    		stackTrace = StackTracer.getStackTrace(e3);
+		    	} 
+			} catch (Exception e2) {
+				logger.error("Unhandled Exception has occurred.", e2);
+	    		location = commonAnalyze.getLocation();
+	    		stackTrace = StackTracer.getStackTrace(e2);
+	    	} 
+    	} catch (Exception e1) {
+			logger.error("Unhandled Exception has occurred.", e1);
+    		location = commonAnalyze.getLocation();
+    		stackTrace = StackTracer.getStackTrace(e1);
+    	} finally {
+			if(StringUtils.isNotEmpty(stackTrace)) {
+				exceptionInfo.setLocation(location);
+				exceptionInfo.setStackTrace(stackTrace);
+				exceptionInfo.setComments(comments);
+				((PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION)).getExceptionInfoList().add(exceptionInfo);
 			}
-    	}
+		}
     	
 		return obj;
 	}//end of parse()
