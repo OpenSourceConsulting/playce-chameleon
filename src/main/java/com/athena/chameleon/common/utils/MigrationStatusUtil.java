@@ -86,7 +86,9 @@ public class MigrationStatusUtil {
 		int value = percentage;
 		PDFMetadataDefinition metadataDefinition = (PDFMetadataDefinition)ThreadLocalUtil.get(ChameleonConstants.PDF_METADATA_DEFINITION);
 		
-		if(analyzer instanceof ZipAnalyzer) {
+		if(analyzer == null) {
+			value = percentage;
+		} else if(analyzer instanceof ZipAnalyzer) {
 			if(metadataDefinition.getDeployFile() != null) {
 				value = percentage / 2;
 			} 
