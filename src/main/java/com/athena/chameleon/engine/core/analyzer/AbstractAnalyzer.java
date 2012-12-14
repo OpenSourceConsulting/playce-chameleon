@@ -34,6 +34,12 @@ import com.athena.chameleon.common.utils.ClasspathUtil;
 import com.athena.chameleon.common.utils.ThreadLocalUtil;
 import com.athena.chameleon.engine.core.analyzer.parser.ApplicationXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.EjbJarXMLParser;
+import com.athena.chameleon.engine.core.analyzer.parser.IbmApplicationBndXMIParser;
+import com.athena.chameleon.engine.core.analyzer.parser.IbmApplicationExtXMIParser;
+import com.athena.chameleon.engine.core.analyzer.parser.IbmEjbJarBndXMIParser;
+import com.athena.chameleon.engine.core.analyzer.parser.IbmEjbJarExtXMIParser;
+import com.athena.chameleon.engine.core.analyzer.parser.IbmWebBndXMIParser;
+import com.athena.chameleon.engine.core.analyzer.parser.IbmWebExtXMIParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusApplicationDDXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusEjbDDXMLParser;
 import com.athena.chameleon.engine.core.analyzer.parser.JeusWebDDXMLParser;
@@ -147,10 +153,10 @@ public abstract class AbstractAnalyzer implements Analyzer {
 						analyzeDefinition.addClassFileCount();
 						executor.execute(new ClassFileDependencyCheckTask(f, ClasspathUtil.lastAddedPath, policy, analyzeDefinition));
 					}
-				} else if (extension.equals("xml")) {
-					// [war] WEB-INF/web.xml, WEB-INF/weblogic.xml, WEB-INF/jeus-web-dd.xml
-					// [ear] META-INF/application.xml, META-INF/weblogic-application.xml, META-INF/jeus-application-dd.xml
-					// [jar] META-INF/ejb-jar.xml, META-INF/weblogic-ejb-jar.xml, META-INF/jeus-ejb-dd.xml
+				} else if (extension.equals("xml") || extension.equals("xmi")) {
+					// [war] WEB-INF/web.xml, WEB-INF/weblogic.xml, WEB-INF/jeus-web-dd.xml, WEB-INF/ibm-web-bnd.xmi, WEB-INF/ibm-web-ext.xmi
+					// [ear] META-INF/application.xml, META-INF/weblogic-application.xml, META-INF/jeus-application-dd.xml, META-INF/ibm-ejb-jar-bnd.xmi, META-INF/ibm-ejb-jar-ext.xmi
+					// [jar] META-INF/ejb-jar.xml, META-INF/weblogic-ejb-jar.xml, META-INF/jeus-ejb-dd.xml, META-INF/ibm-application-bnd.xmi, META-INF/ibm-application-ext.xmi
 					if (f.getParent().endsWith("WEB-INF")) {
 						if (f.getName().equals("web.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
@@ -163,6 +169,14 @@ public abstract class AbstractAnalyzer implements Analyzer {
 						} else if (f.getName().equals("jeus-web-dd.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
 								new JeusWebDDXMLParser().parse(f, analyzeDefinition);
+							}
+						} else if (f.getName().equals("ibm-web-bnd.xmi")) {
+							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
+								new IbmWebBndXMIParser().parse(f, analyzeDefinition);
+							}
+						} else if (f.getName().equals("ibm-web-ext.xmi")) {
+							if (this instanceof ZipAnalyzer || this instanceof WarAnalyzer) {
+								new IbmWebExtXMIParser().parse(f, analyzeDefinition);
 							}
 						}
 					} else if (f.getParent().endsWith("META-INF")) {
@@ -179,6 +193,14 @@ public abstract class AbstractAnalyzer implements Analyzer {
 							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
 								new JeusApplicationDDXMLParser().parse(f, analyzeDefinition);
 							}
+						} else if (f.getName().equals("ibm-application-bnd.xmi")) {
+							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
+								new IbmApplicationBndXMIParser().parse(f, analyzeDefinition);
+							}
+						} else if (f.getName().equals("ibm-application-ext.xmi")) {
+							if (this instanceof ZipAnalyzer || this instanceof EarAnalyzer) {
+								new IbmApplicationExtXMIParser().parse(f, analyzeDefinition);
+							}
 						} else if (f.getName().equals("ejb-jar.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
 								new EjbJarXMLParser().parse(f, analyzeDefinition);
@@ -190,6 +212,14 @@ public abstract class AbstractAnalyzer implements Analyzer {
 						} else if (f.getName().equals("jeus-ejb-dd.xml")) {
 							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
 								new JeusEjbDDXMLParser().parse(f, analyzeDefinition);
+							}
+						} else if (f.getName().equals("ibm-ejb-jar-bnd.xmi")) {
+							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
+								new IbmEjbJarBndXMIParser().parse(f, analyzeDefinition);
+							}
+						} else if (f.getName().equals("ibm-ejb-jar-ext.xmi")) {
+							if (this instanceof ZipAnalyzer || this instanceof JarAnalyzer) {
+								new IbmEjbJarExtXMIParser().parse(f, analyzeDefinition);
 							}
 						}
 					} else {
