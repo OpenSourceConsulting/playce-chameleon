@@ -46,7 +46,7 @@ public class MigrationStatusUtil {
 	public static final String STEP3_1 	= "ear 내부의 웹 애플리케이션에 대한 분석 작업을 수행중입니다.";
 	public static final String STEP3_2 	= "ear 내부의 EJB 애플리케이션에 대한 분석 작업을 수행중입니다.";
 	public static final String STEP4 	= "인코딩 변경 파일 및 수정된 디스크립터 파일을 재압축합니다.";
-	public static final String STEP5 	= "임시 디렉토리에 삭제합니다.";
+	public static final String STEP5 	= "임시 디렉토리를 삭제합니다.";
 	
 	private static String currentStatus;
 	private static int percent;

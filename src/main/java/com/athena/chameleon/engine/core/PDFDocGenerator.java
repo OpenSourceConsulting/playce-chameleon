@@ -42,6 +42,7 @@ import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
 import com.athena.chameleon.engine.entity.pdf.CommonAnalyze;
 import com.athena.chameleon.engine.entity.pdf.Dependency;
 import com.athena.chameleon.engine.entity.pdf.EjbRecommend;
+import com.athena.chameleon.engine.entity.pdf.ExceptionInfo;
 import com.athena.chameleon.engine.entity.pdf.FileSummary;
 import com.athena.chameleon.engine.entity.pdf.FileType;
 import com.athena.chameleon.engine.entity.pdf.MavenDependency;
@@ -173,7 +174,14 @@ public class PDFDocGenerator {
                     
                     addChapter(writer, chapterE, cNum, pdf, builder);
                     cNum++;
-                }
+                //Exception 항목 발생시 출력되는 chapter 
+                } else if(option.equals("exception")) {
+                    
+                    if(data.getExceptionInfoList().size() > 0) {
+                        addChapterForDynamic(writer, chapterE, cNum, pdf, builder, data, upload);
+                        cNum++;
+                    }
+                }  
                 
             } else {
                 addChapter(writer, chapterE, cNum, pdf, builder);
@@ -283,14 +291,26 @@ public class PDFDocGenerator {
                 } else if(e.getChild("trans_ejb_xml_info") != null) {
                 	//마이그레이션 권고안 - EJB Deployment Descriptor 정보
                     childs = setTransXmlData(rootData, upload, "ejb");
-                }
-            }
+                } 
+            } 
             
             for(Element child : childs) {
                 e.addContent(child);
             }
             childs = new ArrayList<Element>();
         }
+        
+        //마이그레이션 예외 발생 항목 정보 start(chapter 밑에 동적 section을 생성시켜야 하므로 예외처리)
+        for(Element e : root.getChildren()) {
+            if(e.getName().equals("exception_info")) {
+                childs = setExceptionData(rootData, upload);
+            }
+        }
+        for(Element child : childs) {
+            root.addContent(child);
+        }
+        childs = new ArrayList<Element>();
+        //마이그레이션 예외 발생 항목 정보 end
     }
 
     /**
@@ -528,27 +548,30 @@ public class PDFDocGenerator {
                 text.setAttribute("padding", "23");
                 childs.add(text);
                 
+                Element box = new Element("box");
+                box.setAttribute("option", "other");
                 Iterator iterator = comm.getDependencyStrMap().entrySet().iterator();
                 StringBuffer buf = new StringBuffer();
                 while (iterator.hasNext()) {
                     Entry entry = (Entry)iterator.next();
                     buf.append(entry.getKey() + " " + entry.getValue()+"\n");
                 }
-                childs.add(new Element("box").setText(buf.toString()+"\n"));
+                box.addContent(new Element("text").setAttribute("type", "default").setText(buf.toString()+"\n"));
                 
                 if(type.equals("java") || type.equals("jsp") || type.equals("property")) {
                 	iterator = comm.getOthersStrMap().entrySet().iterator();
                 	if(iterator.hasNext()) {
-                		childs.add(new Element("textR").setText("기타 체크리스트"));
+                		box.addContent(new Element("text").setAttribute("type", "red").setText("기타 체크리스트"+"\n"));
                 		
                 		buf = new StringBuffer();
                         while (iterator.hasNext()) {
                             Entry entry = (Entry)iterator.next();
                             buf.append(entry.getKey() + " " + entry.getValue()+"\n");
                         }
-                        childs.add(new Element("boxW").setText(buf.toString()+"\n"));
+                        box.addContent(new Element("text").setAttribute("type", "default").setText(buf.toString()+"\n"));
                 	}
                 }
+                childs.add(box);
             }
             
         }
@@ -1047,6 +1070,33 @@ public class PDFDocGenerator {
                 cSection.addContent(new Element("box").setText(data.getMavenProjectList().get(1).getContents()));
                 section.addContent(cSection);
             }
+            
+            childs.add(section);
+        }
+        
+        return childs;
+    }
+
+    /**
+     * 마이그레이션 예외 발생 항목 정보 생성
+     * 
+     * @param data
+     * @param upload
+     * @return
+     */
+    public static List<Element> setExceptionData(PDFMetadataDefinition data, Upload upload) {
+
+        List<Element> childs = new ArrayList<Element>();
+        
+        Element section; 
+        for(ExceptionInfo comm : data.getExceptionInfoList()) {
+            section = new Element("section");
+            section.setAttribute("title", comm.getLocation());
+            
+            if(comm.getComments() != null && comm.getComments().length() > 0)
+                section.addContent(new Element("text").setText(comm.getComments()));
+                
+            section.addContent(new Element("box").setText(comm.getStackTrace()));
             
             childs.add(section);
         }

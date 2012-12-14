@@ -135,13 +135,27 @@
         <div class="formbox_form02"><input type="text" id="person" name="person" title="담당자 입력" value="" class="input_form02" /></div>
         
         <div class="formbox_txt02">
-        	<p style="padding-top:11px; padding-left:15px;">Project Source</p> 
+        	<span style="position:absolute;padding-top:8px;padding-left:120px;"><img src="<c:url value='/images/btn_help.gif' />" style="cursor:pointer;" onmouseover="showHelp(this);" onmouseout="hideHelp(this);" /></span>
+        	<p style="padding-top:11px; padding-left:15px;">Project Source</p>
+        	<div class="formbox_help" style="left:120px;">
+        		<p>Project Source의 참조 정보를 넣는 항목입니다.</p>
+        		<p>테스트1</p>
+        		<p>테스트2</p>
+        	</div> 
         </div>
         <div class="formbox_form02">
         	<div class="formbox_sub01"><input type="file" name="projectSrc" id="projectSrc" title="찾아보기" class="input_form02"/></div>
         </div>
         
-        <div class="formbox_txt02"><p style="padding-top:11px; padding-left:15px;">Deploy Source</p></div>
+        <div class="formbox_txt02">
+        	<span style="position:absolute;padding-top:8px;padding-left:120px;"><img src="<c:url value='/images/btn_help.gif' />" style="cursor:pointer;" onmouseover="showHelp(this);" onmouseout="hideHelp(this);" /></span>
+        	<p style="padding-top:11px; padding-left:15px;">Deploy Source</p>
+        	<div class="formbox_help" style="left:120px;">
+        		<p>Deploy Source의 참조 정보를 넣는 항목입니다.</p>
+        		<p>테스트1</p>
+        		<p>테스트2</p>
+        	</div>
+        </div>
         <div class="formbox_form02">
         	<div class="formbox_sub01"><input type="file" name="deploySrc" id="deploySrc" title="찾아보기" class="input_form02" /></div>
         </div>
