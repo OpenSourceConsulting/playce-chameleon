@@ -138,9 +138,10 @@
         	<span style="position:absolute;padding-top:8px;padding-left:120px;"><img src="<c:url value='/images/btn_help.gif' />" style="cursor:pointer;" onmouseover="showHelp(this);" onmouseout="hideHelp(this);" /></span>
         	<p style="padding-top:11px; padding-left:15px;">Project Source</p>
         	<div class="formbox_help" style="left:120px;">
-        		<p>Project Source의 참조 정보를 넣는 항목입니다.</p>
-        		<p>테스트1</p>
-        		<p>테스트2</p>
+        		<p>본 항목은 프로젝트 소스를 입력받는 곳입니다.</p>
+        		<p>프로젝트의 소스는 확장자 zip파일 형태로 입력을 받습니다. zip 포맷형태로 생성하여 입력하셔야 합니다.</p>
+        		<p>압축 파일내의 디렉토리 구조는 다양한 형태여도 상관이 없습니다.</p>
+        		<p>다른 포맷의 압축 파일일 경우 분석이 진행되지 않으니 주의하십시오.</p>
         	</div> 
         </div>
         <div class="formbox_form02">
@@ -151,9 +152,10 @@
         	<span style="position:absolute;padding-top:8px;padding-left:120px;"><img src="<c:url value='/images/btn_help.gif' />" style="cursor:pointer;" onmouseover="showHelp(this);" onmouseout="hideHelp(this);" /></span>
         	<p style="padding-top:11px; padding-left:15px;">Deploy Source</p>
         	<div class="formbox_help" style="left:120px;">
-        		<p>Deploy Source의 참조 정보를 넣는 항목입니다.</p>
-        		<p>테스트1</p>
-        		<p>테스트2</p>
+        		<p>본 항목은 기존 WAS에 디플로이된 애플리케이션을 입력받는 곳입니다.</p>
+        		<p>엔터프라이즈 아카이브: 확장자 ear 형태를 가져야 하며, EJB 및 웹 애플리케이션의 압축파일입니다. APP-INF 디렉토리와 디스크립터 정보를 포함하는 META-INF 디렉토리를 가져야 하며 jar명령을 통해 압축된 파일이어야 합니다.</p>
+        		<p>웹 아카이브: 확장자 war 형태를 가져야 하며, 웹 애플리케이션의 압축파일입니다. WEB-INF 디렉토리와 디스크립터 정보를 포함하는 web.xml 및 벤더 디스크립터를 가져야 하며 jar명령을 통해 압축된 파일이어야 합니다.</p>
+        		<p>EJB 아카이브: 확장자 jar 형태를 가져야 하며, EJB 애플리케이션의 압축파일입니다. META-INF 디렉토리에 EJB관련 디스크립터 정보가 포함되어 있어야 합니다.  jar명령을 통해 압축된 파일이어야 합니다.</p></p>
         	</div>
         </div>
         <div class="formbox_form02">
@@ -164,9 +166,8 @@
         	<span style="position:absolute;padding-top:8px;padding-left:90px;"><img src="<c:url value='/images/btn_help.gif' />" style="cursor:pointer;" onmouseover="showHelp(this);" onmouseout="hideHelp(this);" /></span>
         	<p style="padding-top:11px; padding-left:15px;">기존 WAS</p>
          	<div class="formbox_help">
-        		<p>기존 WAS의 참조 정보를 넣는 항목입니다.</p>
-        		<p>테스트1</p>
-        		<p>테스트2</p>
+        		<p>기존에 사용하셨던 WAS를 선택합니다. </p>
+        		<p>&nbsp;</p>
         	</div>
         </div>
         <div class="formbox_form02">
@@ -182,9 +183,9 @@
         	<span style="position:absolute;padding-top:8px;padding-left:90px;"><img src="<c:url value='/images/btn_help.gif' />" style="cursor:pointer;" onmouseover="showHelp(this);" onmouseout="hideHelp(this);" /></span>
         	<p style="padding-top:11px; padding-left:15px;">대상 WAS</p>
         	<div class="formbox_help">
-        		<p>대상 WAS의 참조 정보를 넣는 항목입니다.</p>
-        		<p>테스트1</p>
-        		<p>테스트2</p>
+        		<p>대상 WAS를 선택합니다.</p>
+        		<p>JBoss: Red Hat에서 만드는 표준 JEE의 엔터프라이즈 애플리케이션 서버입니다.</p>
+        		<p>Tomcat: 아파치 재단에서 만드는 웹(서블릿) 컨테이너이며, EAR, EJB는 지원하지 않습니다.</p>
         	</div>
         </div>
         <div class="formbox_form02">
