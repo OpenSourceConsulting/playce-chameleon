@@ -387,7 +387,7 @@ public class PDFDocGenerator {
              } else if(e.getName().equals("convert_encoding")) {
             	 //인코딩 변경 로직 정보
             	 childs = setConvertEncodingData(data, upload);
-            	 index = 4;
+            	 index = 7;
              }
         }
         
@@ -395,7 +395,7 @@ public class PDFDocGenerator {
         if(index == 0) {
             root.addContent(childs);
         } else {
-            root.addContent(index, childs);
+        	root.addContent(index, childs);
             index = 0;
         }
         
@@ -547,35 +547,40 @@ public class PDFDocGenerator {
             
             Element text;
             for(Dependency comm : dataList) {
-                text = new Element("text");
-                text.setText(comm.getFileName());
-                text.setAttribute("padding", "23");
-                childs.add(text);
-                
-                Element box = new Element("box");
-                box.setAttribute("option", "other");
-                Iterator iterator = comm.getDependencyStrMap().entrySet().iterator();
-                StringBuffer buf = new StringBuffer();
-                while (iterator.hasNext()) {
-                    Entry entry = (Entry)iterator.next();
-                    buf.append(entry.getKey() + " " + entry.getValue()+"\n");
-                }
-                box.addContent(new Element("text").setAttribute("type", "default").setText(buf.toString()+"\n"));
-                
-                if(type.equals("java") || type.equals("jsp") || type.equals("property")) {
-                	iterator = comm.getOthersStrMap().entrySet().iterator();
-                	if(iterator.hasNext()) {
-                		box.addContent(new Element("text").setAttribute("type", "red").setText("기타 체크리스트"+"\n"));
-                		
-                		buf = new StringBuffer();
-                        while (iterator.hasNext()) {
-                            Entry entry = (Entry)iterator.next();
-                            buf.append(entry.getKey() + " " + entry.getValue()+"\n");
-                        }
-                        box.addContent(new Element("text").setAttribute("type", "default").setText(buf.toString()+"\n"));
-                	}
-                }
-                childs.add(box);
+            	
+            	if(comm.getDependencyStrMap().entrySet().iterator().hasNext()
+            		|| comm.getOthersStrMap().entrySet().iterator().hasNext()) {
+            		
+	                text = new Element("text");
+	                text.setText(comm.getFileName());
+	                text.setAttribute("padding", "23");
+	                childs.add(text);
+	                
+	                Element box = new Element("box");
+	                box.setAttribute("option", "other");
+	                Iterator iterator = comm.getDependencyStrMap().entrySet().iterator();
+	                StringBuffer buf = new StringBuffer();
+	                while (iterator.hasNext()) {
+	                    Entry entry = (Entry)iterator.next();
+	                    buf.append(entry.getKey() + " " + entry.getValue()+"\n");
+	                }
+	                box.addContent(new Element("text").setAttribute("type", "default").setText(buf.toString()+"\n"));
+	                
+	                if(type.equals("java") || type.equals("jsp") || type.equals("property")) {
+	                	iterator = comm.getOthersStrMap().entrySet().iterator();
+	                	if(iterator.hasNext()) {
+	                		box.addContent(new Element("text").setAttribute("type", "red").setText("기타 체크리스트"+"\n"));
+	                		
+	                		buf = new StringBuffer();
+	                        while (iterator.hasNext()) {
+	                            Entry entry = (Entry)iterator.next();
+	                            buf.append(entry.getKey() + " " + entry.getValue()+"\n");
+	                        }
+	                        box.addContent(new Element("text").setAttribute("type", "default").setText(buf.toString()+"\n"));
+	                	}
+	                }
+	                childs.add(box);
+            	}
             }
             
         }
@@ -1114,7 +1119,8 @@ public class PDFDocGenerator {
             	
             	Iterator iterator = comm.getEncodingStrMap().entrySet().iterator();
             	if(iterator.hasNext()) {
-	                text = new Element("text");
+            		
+            		text = new Element("text");
 	                text.setText(comm.getFileName());
 	                text.setAttribute("padding", "23");
 	                section.addContent(text);
@@ -1125,7 +1131,7 @@ public class PDFDocGenerator {
 	                    Entry entry = (Entry)iterator.next();
 	                    buf.append(entry.getKey() + " " + entry.getValue()+"\n");
 	                }
-	                box.addContent(new Element("text").setText(buf.toString()+"\n"));
+	                box.setText(buf.toString()+"\n");
 	                
 	                section.addContent(box);
             	}
