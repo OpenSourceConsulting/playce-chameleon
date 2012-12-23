@@ -145,7 +145,7 @@ public abstract class Parser {
     		earPath += File.separator;
     	}
     	
-    	if(StringUtils.isEmpty(tempPath)) {
+    	if(StringUtils.isEmpty(tempPath) || fullPath.equals(tempPath)) {
     		return earPath + fullPath;
     	} else {
     		return earPath + fullPath.substring(tempPath.length() + 1);

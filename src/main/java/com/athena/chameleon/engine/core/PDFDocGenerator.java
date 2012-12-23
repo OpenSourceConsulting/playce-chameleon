@@ -387,6 +387,7 @@ public class PDFDocGenerator {
              } else if(e.getName().equals("convert_encoding")) {
             	 //인코딩 변경 로직 정보
             	 childs = setConvertEncodingData(data, upload);
+            	 index = 4;
              }
         }
         
@@ -1095,6 +1096,7 @@ public class PDFDocGenerator {
         
         boolean viewFlag = false;
         for(Dependency dependency : data.getJavaDependencyList()) {
+        	
         	Iterator iterator = dependency.getEncodingStrMap().entrySet().iterator();
         	if(iterator.hasNext()) {
         		viewFlag = true;

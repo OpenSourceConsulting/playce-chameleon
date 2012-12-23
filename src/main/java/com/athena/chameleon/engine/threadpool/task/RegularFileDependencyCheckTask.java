@@ -168,7 +168,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 			
 			IOUtils.closeQuietly(buffer);
 			
-			if (dependency.getDependencyStrMap().size() > 0) {
+			if (dependency.getDependencyStrMap().size() > 0 || dependency.getOthersStrMap().size() > 0 || dependency.getEncodingStrMap().size() > 0) {
 				if (file.getName().endsWith("java")) {
 		    		analyzeDefinition.getJavaDependencyList().add(dependency);
 		    	} else if (file.getName().endsWith("jsp")) {
