@@ -384,6 +384,9 @@ public class PDFDocGenerator {
              } else if(e.getName().equals("maven_dependency")) {
                  // Maven Dependency 정보
                  childs = setMavenDependencyList(data, upload);
+             } else if(e.getName().equals("convert_encoding")) {
+            	 //인코딩 변경 로직 정보
+            	 childs = setConvertEncodingData(data, upload);
              }
         }
         
@@ -1072,6 +1075,63 @@ public class PDFDocGenerator {
             }
             
             childs.add(section);
+        }
+        
+        return childs;
+    }
+
+    /**
+     * 인코딩 변경 로직 정보
+     * 
+     * @param rootData
+     * @param upload
+     * @param type
+     * @return
+     * @throws Exception
+     */
+    public static List<Element> setConvertEncodingData(AnalyzeDefinition data, Upload upload) {
+        
+        List<Element> childs = new ArrayList<Element>();
+        
+        boolean viewFlag = false;
+        for(Dependency dependency : data.getJavaDependencyList()) {
+        	Iterator iterator = dependency.getEncodingStrMap().entrySet().iterator();
+        	if(iterator.hasNext()) {
+        		viewFlag = true;
+        		break;
+        	}
+        }
+        
+        if(viewFlag) {
+        	Element section = new Element("section").setAttribute("title", "인코딩 변경 로직");
+        	
+        	section.addContent(new Element("text").setText("자바 파일 내에 아래와 같은 인코딩 변환 로직이 포함되어 있습니다."));
+    	
+    	    Element text;
+            for(Dependency comm : data.getJavaDependencyList()) {
+            	
+            	Iterator iterator = comm.getEncodingStrMap().entrySet().iterator();
+            	if(iterator.hasNext()) {
+	                text = new Element("text");
+	                text.setText(comm.getFileName());
+	                text.setAttribute("padding", "23");
+	                section.addContent(text);
+	                
+	                Element box = new Element("box");
+	                StringBuffer buf = new StringBuffer();
+	                while (iterator.hasNext()) {
+	                    Entry entry = (Entry)iterator.next();
+	                    buf.append(entry.getKey() + " " + entry.getValue()+"\n");
+	                }
+	                box.addContent(new Element("text").setText(buf.toString()+"\n"));
+	                
+	                section.addContent(box);
+            	}
+            
+            }
+            
+            childs.add(section);
+        	
         }
         
         return childs;

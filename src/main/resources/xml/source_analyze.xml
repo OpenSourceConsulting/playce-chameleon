@@ -16,6 +16,7 @@
 			<text>아래의 클래스들은 EJB(Enterprise Java Beans)를 상속받은 클래스들입니다.</text>
 			<pattern_ejb/>
 		</section>
+		<convert_encoding/>
 		<section title="Java 의존성">
 			<dependency_java/>
 		</section>
