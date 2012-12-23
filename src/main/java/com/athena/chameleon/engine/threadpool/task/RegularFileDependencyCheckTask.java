@@ -76,6 +76,8 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 		Pattern pattern = policy.getPattern();
 		Pattern etcPattern = policy.getEtcPattern();
 		Matcher match = null;
+		
+		String[] encodings = policy.getEncodings();
 
 		try {
 			Dependency dependency = new Dependency();
@@ -114,31 +116,39 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 					}
 				}
 				
-				// Servlet 상속 여부 검사
-				// 추후 패턴으로 지정하여 파일 전체 내용을 검사
-				if (commonAnalyze == null && file.getName().endsWith("java") && 
-						(lineStr.indexOf("extends HttpServlet") > -1 || lineStr.indexOf("extends javax.servlet.http.HttpServlet") > -1 || 
-						lineStr.indexOf("@Controller") > -1)) {
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem(file.getName());
-					commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
+				// Java 파일 내 Servlet 상속 여부, EJB 관련 상속 여부, 인코딩 변경 여부 검사
+				if (file.getName().endsWith("java")) {
+
+					// Servlet 상속 여부 검사
+					if(commonAnalyze == null && (lineStr.indexOf("extends HttpServlet") > -1 || 
+							lineStr.indexOf("extends javax.servlet.http.HttpServlet") > -1 || 
+							lineStr.indexOf("@Controller") > -1)) {
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem(file.getName());
+						commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
+						
+						analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+					}
+
+					// EJB 관련 상속 여부 검사
+					if(commonAnalyze == null && (lineStr.indexOf("extends EJBHome") > -1 || lineStr.indexOf("extends javax.ejb.EJBHome") > -1 ||
+							lineStr.indexOf("extends EJBObject") > -1 || lineStr.indexOf("extends javax.ejb.EJBObject") > -1 || 
+							lineStr.indexOf("implements SessionBean") > -1 || lineStr.indexOf("implements javax.ejb.SessionBean") > -1 ||
+							lineStr.indexOf("@Stateless") > -1 || lineStr.indexOf("@Stateful") > -1 || 
+							lineStr.indexOf("@Entity") > -1 || lineStr.indexOf("@Remote") > -1)) {
+						commonAnalyze = new CommonAnalyze();
+						commonAnalyze.setItem(file.getName());
+						commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
+						
+						analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+					}
 					
-					analyzeDefinition.getServletExtendsList().add(commonAnalyze);
-				}
-				
-				// EJB 관련 상속 여부 검사
-				// 추후 패턴으로 지정하여 파일 전체 내용을 검사
-				if (commonAnalyze == null && file.getName().endsWith("java") && 
-						(lineStr.indexOf("extends EJBHome") > -1 || lineStr.indexOf("extends javax.ejb.EJBHome") > -1 ||
-						lineStr.indexOf("extends EJBObject") > -1 || lineStr.indexOf("extends javax.ejb.EJBObject") > -1 || 
-						lineStr.indexOf("implements SessionBean") > -1 || lineStr.indexOf("implements javax.ejb.SessionBean") > -1 ||
-						lineStr.indexOf("@Stateless") > -1 || lineStr.indexOf("@Stateful") > -1 || lineStr.indexOf("@Entity") > -1 || lineStr.indexOf("@Remote") > -1)) {
-					
-					commonAnalyze = new CommonAnalyze();
-					commonAnalyze.setItem(file.getName());
-					commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
-					
-					analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+					// 인코딩 변경 여부 검사
+					for(String encoding : encodings) {
+						if(lineStr.indexOf(encoding) > -1) {
+							dependency.addEncodingStrMap(new String("Line " + Integer.toString(lineNum)) + " : ", lineStr);
+						}
+					}
 				}
 				
 				//  WehSphere, Weblogic, Jeus 등 상용 WAS 의존성 검사

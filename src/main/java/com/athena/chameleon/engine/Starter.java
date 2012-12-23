@@ -94,22 +94,23 @@ public class Starter {
 			System.exit(-1);
 		}
 		
-		logger.debug("Project Source File => [{}]", sourceFile);
-		logger.debug("Application Archive File => [{}]", deployFile);
-		
 		if(StringUtils.isEmpty(sourceFile) && StringUtils.isEmpty(deployFile)) {
 			System.out.println("[Error] 입력된 파일 정보가 없기 때문에 프로그램을 종료합니다.");
 			System.exit(-1);
 		}
 		
+		Upload upload = new Upload();
+		upload.setProjectNm(getProjectName());
+		upload.setAfterWas(getTargetWas());
+		upload.setDepartment(getDepartment());
+		upload.setPerson(getManagerName());
+		
+		logger.debug("Project Source File => [{}]", sourceFile);
+		logger.debug("Application Archive File => [{}]", deployFile);
+		
 		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/context-*.xml");
 		
 		MigrationComponent component = (MigrationComponent)context.getBean("migrationComponent");
-		Upload upload = new Upload();
-		upload.setProjectNm("Test Project");
-		upload.setAfterWas("B");
-		upload.setDepartment("Development");
-		upload.setPerson("홍길동");
 		component.migrate(sourceFile, deployFile, upload);
 	}//end of main()
 	
@@ -228,6 +229,140 @@ public class Starter {
 		
 		return fqfn;
 	}// end of getApplicationFileName()
+	
+	/**
+	 * @return
+	 */
+	private static String getProjectName() {
+		String name = null;
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		try {
+            System.out.println("+:+:+:+: 프로젝트명을 입력해주세요. +:+:+:+:");
+            System.out.print("('q' or 'quit' to terminate and press ENTER to skip) => ");
+            
+            name = br.readLine();
+            
+            if(name.equals("")) {
+            	return null;
+            }
+            
+            if(name.toLowerCase().equals("q") || name.toLowerCase().equals("quit")) {
+                System.exit(1);
+            }
+        } catch (Exception e) {
+            System.out.println("알 수 없는 오류가 발생했습니다.");
+            logger.error("Unhandled exception has occurred.", e);
+            System.exit(1);
+        }
+		
+		return name;
+	}// end of getProjectName()
+	
+	/**
+	 * @return
+	 */
+	private static String getTargetWas() {
+		String was = null;
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		try {
+            System.out.println("+:+:+:+: 변환 대상 WAS를 선택해주세요.(1 : Tomcat, 2 : JBoss) +:+:+:+:");
+
+            do {
+	            System.out.print("('q' or 'quit' to terminate and press ENTER to skip) => ");
+	            
+	            was = br.readLine();
+	            
+	            if(was.equals("")) {
+	            	continue;
+	            }
+	            
+	            if(was.toLowerCase().equals("q") || was.toLowerCase().equals("quit")) {
+	                System.exit(1);
+	            }
+	            
+	            if(!was.equals("1") && !was.equals("2")) {
+	            	System.out.println("잘 못 입력하였습니다. 다시 입력해 주십시오.");
+	            	System.out.println("+:+:+:+: 변환 대상 WAS를 선택해주세요.(1 : Tomcat, 2 : JBoss) +:+:+:+:");
+	            	continue;
+	            }
+	            break;
+	        } while(true);
+        } catch (Exception e) {
+            System.out.println("알 수 없는 오류가 발생했습니다.");
+            logger.error("Unhandled exception has occurred.", e);
+            System.exit(1);
+        }
+		
+		if(was.equals("1")) {
+			return "T";
+		} else {
+			return "B";
+		}
+	}// end of getTargetWas()
+	
+	/**
+	 * @return
+	 */
+	private static String getDepartment() {
+		String name = null;
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		try {
+            System.out.println("+:+:+:+: 부서명을 입력해주세요. +:+:+:+:");
+            System.out.print("('q' or 'quit' to terminate and press ENTER to skip) => ");
+            
+            name = br.readLine();
+            
+            if(name.equals("")) {
+            	return null;
+            }
+            
+            if(name.toLowerCase().equals("q") || name.toLowerCase().equals("quit")) {
+                System.exit(1);
+            }
+        } catch (Exception e) {
+            System.out.println("알 수 없는 오류가 발생했습니다.");
+            logger.error("Unhandled exception has occurred.", e);
+            System.exit(1);
+        }
+		
+		return name;
+	}// end of getDepartment()
+	
+	/**
+	 * @return
+	 */
+	private static String getManagerName() {
+		String name = null;
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		try {
+            System.out.println("+:+:+:+: 담당자명을 입력해주세요. +:+:+:+:");
+            System.out.print("('q' or 'quit' to terminate and press ENTER to skip) => ");
+            
+            name = br.readLine();
+            
+            if(name.equals("")) {
+            	return null;
+            }
+            
+            if(name.toLowerCase().equals("q") || name.toLowerCase().equals("quit")) {
+                System.exit(1);
+            }
+        } catch (Exception e) {
+            System.out.println("알 수 없는 오류가 발생했습니다.");
+            logger.error("Unhandled exception has occurred.", e);
+            System.exit(1);
+        }
+		
+		return name;
+	}// end of getManagerName()
 	
 	/**
 	 * <pre>

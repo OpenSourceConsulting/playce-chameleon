@@ -171,11 +171,11 @@ public class RegularFileDependencyCheckTaskTest {
 			assertTrue("dependencyList의 크기는 1이어야 합니다.", dependencyList.size() == 1);
 			assertTrue("첫 번째 dependency는 \"CartEJB.java\" 이어야 합니다.", dependencyList.get(0).getFileName().equals("CartEJB.java"));
 			assertTrue("\"CartEJB.java\"에는 3 개의 의존성이 있어야 합니다.", dependencyList.get(0).getDependencyStrMap().size() == 3);
+			assertTrue("\"CartEJB.java\"에는 3 개의 인코딩 변경 로직이 있어야 합니다.", dependencyList.get(0).getEncodingStrMap().size() == 3);
 		} catch (Throwable t) {
 			t.printStackTrace();
 			fail("NullPointerException이 발생하면 안됩니다.");
 		}
 	}//end of testJavaDependency()
-
 }
 //end of RegularFileDependencyCheckTaskTest.java

@@ -35,6 +35,7 @@ import org.apache.commons.lang.ArrayUtils;
 public class Policy {
 
 	private String unzipDir;
+	private boolean convertYn;
 	private String defaultEncoding;
 	private String enEncoding;
 	private String[] suffix;
@@ -42,6 +43,7 @@ public class Policy {
 	private String[] weblogic;
 	private String[] jeus;
 	private String[] others;
+	private String[] encodings;
 	private Pattern pattern;
 	private Pattern etcPattern;
 	
@@ -56,6 +58,18 @@ public class Policy {
 	 */
 	public void setUnzipDir(String unzipDir) {
 		this.unzipDir = unzipDir;
+	}
+	/**
+	 * @return the convertYn
+	 */
+	public boolean getConvertYn() {
+		return convertYn;
+	}
+	/**
+	 * @param convertYn the convertYn to set
+	 */
+	public void setConvertYn(boolean convertYn) {
+		this.convertYn = convertYn;
 	}
 	/**
 	 * @return the defaultEncoding
@@ -140,6 +154,18 @@ public class Policy {
 	 */
 	public void setOthers(String[] others) {
 		this.others = others;
+	}
+	/**
+	 * @return the encodings
+	 */
+	public String[] getEncodings() {
+		return encodings;
+	}
+	/**
+	 * @param encodings the encodings to set
+	 */
+	public void setEncodings(String[] encodings) {
+		this.encodings = encodings;
 	}
 	/**
 	 * @return the pattern

@@ -92,6 +92,7 @@ public class FileEncodingConverter {
 	public void convert(String fqfn, AnalyzeDefinition analyzeDefinition) {
 		Assert.notNull(fqfn, "fqfn must not be null");
 		Assert.notNull(analyzeDefinition, "analyzeDefinition must not be null");
+		
 		convert(new File(fqfn), analyzeDefinition);
 	}//end of convert()
 
@@ -125,14 +126,17 @@ public class FileEncodingConverter {
 		jarFileList = analyzeDefinition.getJarFileList();
 		
 		convertAll(file);
-		executor.getExecutor().shutdown();	
-		
-		try {
-			while (!executor.getExecutor().isTerminated()) {
-				Thread.sleep(100);
+
+		if(policy.getConvertYn()) {
+			executor.getExecutor().shutdown();	
+			
+			try {
+				while (!executor.getExecutor().isTerminated()) {
+					Thread.sleep(100);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 
 		// 모든 Runnable Task가 완료된 후 전체 항목에 대한 Total Count를 세팅한다.
@@ -216,7 +220,7 @@ public class FileEncodingConverter {
 			    		}
 		    			continue;
 					}
-					
+
 					// 해당 파일 타입에 대한 소스 인코딩이 정의되어 있지 않은 경우 제일 처음 탐색되는 파일로 소스 인코딩을 판별한다.
 					if ((fileSummary.getSourceEncoding().equals("N/A") || fileSummary.getSourceEncoding().equals(policy.getDefaultEncoding())) && !fileType.equals(FileType.CLASS) && !fileType.equals(FileType.JAR)) {
 						try {
@@ -230,7 +234,10 @@ public class FileEncodingConverter {
 							CharsetMatch cm = detector.detect();
 							
 							fileSummary.setSourceEncoding(cm.getName());
-							fileSummary.setTargetEncoding(policy.getDefaultEncoding());
+							
+							if(policy.getConvertYn()) {
+								fileSummary.setTargetEncoding(policy.getDefaultEncoding());
+							}
 						} catch (FileNotFoundException e) {
 							logger.error("FileNotFoundException has occurred.", e);
 						} catch (IOException e) {
@@ -241,7 +248,7 @@ public class FileEncodingConverter {
 			}
 			
 			// suffix property에 지정된 확장자를 가진 파일인지 검사
-			if (ArrayUtils.contains(policy.getSuffix(), extension)) {
+			if (policy.getConvertYn() && ArrayUtils.contains(policy.getSuffix(), extension)) {
 				executor.execute(new FileEncodingConvertTask(file, policy.getDefaultEncoding()));
 			}
 		}

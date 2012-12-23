@@ -45,6 +45,9 @@ public class Dependency {
 	// Connection URL 등 기타 레포트 대상 요소가 포함되어 있는지..
 	private Map<String, String> othersStrMap;
 	
+	// 인코딩 변경 로직이 포함되어 있는지...
+	private Map<String, String> encodingStrMap;
+	
 	/**
 	 * @return the fileName
 	 */
@@ -122,5 +125,30 @@ public class Dependency {
 	 */
 	public void setOthersStrMap(Map<String, String> othersStrMap) {
 		this.othersStrMap = othersStrMap;
+	}
+
+	/**
+	 * @return the encodingStrMap
+	 */
+	public Map<String, String> getEncodingStrMap() {
+		if(encodingStrMap == null) {
+			encodingStrMap = new TreeMap<String, String>();
+		}
+		return encodingStrMap;
+	}
+	
+	/**
+	 * @param key
+	 * @param value
+	 */
+	public void addEncodingStrMap(String key, String value) {
+		getEncodingStrMap().put(key, value);
+	}
+
+	/**
+	 * @param encodingStrMap the encodingStrMap to set
+	 */
+	public void setEncodingStrMap(Map<String, String> encodingStrMap) {
+		this.encodingStrMap = encodingStrMap;
 	}
 }//end of Dependency.java

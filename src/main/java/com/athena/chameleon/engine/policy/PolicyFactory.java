@@ -57,6 +57,10 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 		
 		// Migration 기본 정책이 DB에 저장될 경우 여기에서 DB 조회 및 Policy 초기화 수행
 		policy.setUnzipDir(PropertyUtil.getProperty("chameleon.migration.policy.unzip.dir"));
+		policy.setConvertYn((PropertyUtil.getProperty("chameleon.migration.policy.convert.encoding.yn") == null ? true :
+			PropertyUtil.getProperty("chameleon.migration.policy.convert.encoding.yn").equalsIgnoreCase("true") ||
+			PropertyUtil.getProperty("chameleon.migration.policy.convert.encoding.yn").equalsIgnoreCase("yes") ||
+			PropertyUtil.getProperty("chameleon.migration.policy.convert.encoding.yn").equalsIgnoreCase("y")));
 		policy.setDefaultEncoding(PropertyUtil.getProperty("chameleon.migration.policy.default.encoding"));
 		policy.setEnEncoding(PropertyUtil.getProperty("chameleon.migration.policy.en.encoding"));
 		policy.setSuffix((PropertyUtil.getProperty("chameleon.migration.policy.suffix").indexOf(",") > -1 ? 
@@ -74,6 +78,9 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 		policy.setOthers((PropertyUtil.getProperty("chameleon.migration.policy.others").indexOf(",") > -1 ? 
 				PropertyUtil.getProperty("chameleon.migration.policy.others").split(",") : 
 					new String[]{PropertyUtil.getProperty("chameleon.migration.policy.others")}));
+		policy.setEncodings((PropertyUtil.getProperty("chameleon.migrarion.policy.detect.encodings").indexOf(",") > -1 ? 
+				PropertyUtil.getProperty("chameleon.migrarion.policy.detect.encodings").split(",") : 
+					new String[]{PropertyUtil.getProperty("chameleon.migrarion.policy.detect.encodings")}));
 		
 		StringBuilder regex = new StringBuilder("(");
 
