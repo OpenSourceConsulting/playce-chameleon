@@ -6,8 +6,6 @@
 		<property name="basenames">
 			<list>
 			    <value>classpath:message/message-chameleon</value>
-			    <value>classpath:message/message-generation</value>
-				<value>classpath:message/message-moviefinder</value>
 				<value>classpath:message/message-converter</value>
 			</list>
 		</property>
