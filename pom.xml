@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>athena-chameleon</groupId>
 	<artifactId>athena-chameleon</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>war</packaging>
 	<name>athena.chameleon</name>
-	<url>http://www.opensourceconsulting.co.kr</url>
+	<url>http://www.osci.kr</url>
 	<inceptionYear>2012</inceptionYear>
 
 	<properties>
