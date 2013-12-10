@@ -38,51 +38,25 @@ Enjoy!
 
 About Open Source Consulting.
 
- 1. Official Partnership:
+1. Official Partnership:
 
   - Amazon AWS Consulting Partner, Red Hat Ready Partner, Samsung Open Source Strategic Partner, Zabbix Reseller, etc.
 
- 2. Services:
+2. Services:
 
   - Technical Architecture Consulting - Provide consulting to enterprise customer such as Samsung, LG, Hyundai, POSCO, etc
   - Performance Tuning and Maintenance - Assist with diagnostics and performance tuning customer's operating system and middleware on Amazon AWS.
   - Cloud Advisory Services - Business and technical consulting to accelerate the decision making process and ensure that best practices for the Cloud are implemented.
   - Education: Web Application Server Basic(WebLogic/JBoss), WAS Trouble Shooting and Tuning, Amazon AWS Advanced Architecture, etc
 
- 3. Solutions:
+3. Solutions:
 
   - Athena SQS - Large message transfer toolkit on Amazon AWS SQS
   - Athena Chameleon - WAS migration tool from WebLogic, WebSphere, Jeus to JBoss
   - Athena Peacock - Cloud automation tool by auto provisioning, auto scaling, etc
 
- 4. Support:
+4. Support:
 
   - Red Hat Products - Red Hat Enterprise Linux, Red Hat Enterprise Virtualization, OpenShift, Red Hat Storage, JBoss Products, etc
   - Zabbix Enterprise Monitoring Solution
   - All of open source products - Assist with benchmark test, PoC(Proof of Concept), etc
-=======
-1. Official Partnership:
-
-Amazon AWS Consulting Partner, Red Hat Ready Partner, Samsung Open Source Strategic Partner, Zabbix Reseller, etc.
-
-2. Services:
-
-Technical Architecture Consulting - Provide consulting to enterprise customer such as Samsung, LG, Hyundai, POSCO, etc
-Performance Tuning and Maintenance - Assist with diagnostics and performance tuning customer's operating system and middleware on Amazon AWS.
-Cloud Advisory Services - Business and technical consulting to accelerate the decision making process and ensure that best practices for the Cloud are implemented.
-Education: Web Application Server Basic(WebLogic/JBoss), WAS Trouble Shooting and Tuning, Amazon AWS Advanced Architecture, etc
-
-3. Solutions:
-
-Athena SQS - Large message transfer toolkit on Amazon AWS SQS
-Athena Chameleon - WAS migration tool from WebLogic, WebSphere, Jeus to JBoss
-Athena Peacock - Cloud automation tool by auto provisioning, auto scaling, etc
-
-4. Support:
-
-Red Hat Products - Red Hat Enterprise Linux, Red Hat Enterprise Virtualization, OpenShift, Red Hat Storage, JBoss Products, etc
-Zabbix Enterprise Monitoring Solution
-All of open source products - Assist with benchmark test, PoC(Proof of Concept), etc
-
-
-
