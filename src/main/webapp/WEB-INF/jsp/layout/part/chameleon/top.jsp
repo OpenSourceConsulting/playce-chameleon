@@ -22,8 +22,8 @@ function onMenu(idx) {
     <div class="bt02"> <a href="<c:url value='/provisioning/wasSelectForm.do'/>"><img src="<c:url value='/images/common/bt_02-01.jpg'/>" /></a></div> <!-- Provisioning -->
     <div class="bt03"> <a href="<c:url value='/system/manualForm.do' />"> <img src="<c:url value='/images/common/bt_03-01.jpg'/>" /></a></div> <!-- System -->
     <div class="top_text01"> WAS Migration Tool</div> 
-    <div class="top_text02">Log In ID : admin@nipa.kr</div>
-    <div class="top_text03">Last Log In : 2011-12-08 13:00:00 GMT +00:00</div>
+    <div class="top_text02">Log In ID : admin@osci.kr</div>
+    <div class="top_text03">Last Log In : 2012-12-08 13:00:00 GMT +00:00</div>
 </div>
 
 <div class="bt_logout"> <a href="<c:url value='/login/logout.do'/>"> <img src="<c:url value='/images/common/bt_logout-01.png'/>" /></a></div>

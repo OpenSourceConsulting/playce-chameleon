@@ -63,7 +63,7 @@ body {
 		<div class="login_formbox">
 	    	<div class="login_id01"> <p style="padding-top:8px"> ID </p> </div>
 	        <div class="login_id02">
-	        	<input id="loginId" name="loginId" type="text" maxlength="20" title="Username" value="admin@nipa.kr" class="input_form01" /> <!-- 글자 입력수 20자로 제한 -->
+	        	<input id="loginId" name="loginId" type="text" maxlength="20" title="Username" value="admin@osci.kr" class="input_form01" /> <!-- 글자 입력수 20자로 제한 -->
 	        </div>
 	        <div class="login_pw01"> <p style="padding-top:8px"> Password </p> </div>
 	        <div class="login_pw02">

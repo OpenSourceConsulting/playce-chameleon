@@ -28,7 +28,7 @@ Install and Run
     mvn jetty:run -Dmode=[production, local]
   - Open a web browser
     URL is http://localhost:8180/chameleon
-    ID: admin@nipa.kr
+    ID: admin@osci.kr
     Password: 1234
   - After logon, click Migration menu and input information
   - Click Apply, then you can download the result of the migration.
@@ -38,7 +38,6 @@ Enjoy!
 
 About Open Source Consulting.
 
-<<<<<<< HEAD
  1. Official Partnership:
 
   - Amazon AWS Consulting Partner, Red Hat Ready Partner, Samsung Open Source Strategic Partner, Zabbix Reseller, etc.
@@ -84,5 +83,6 @@ Athena Peacock - Cloud automation tool by auto provisioning, auto scaling, etc
 Red Hat Products - Red Hat Enterprise Linux, Red Hat Enterprise Virtualization, OpenShift, Red Hat Storage, JBoss Products, etc
 Zabbix Enterprise Monitoring Solution
 All of open source products - Assist with benchmark test, PoC(Proof of Concept), etc
->>>>>>> branch 'master' of https://github.com/OpenSourceConsulting/athena-chameleon.git
+
+
 
