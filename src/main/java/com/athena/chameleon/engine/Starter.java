@@ -164,7 +164,7 @@ public class Starter {
                 break;
             } while(true);
         } catch (Exception e) {
-            System.out.println("알 수 없는 오류가 발생했습니다.");
+            System.out.println("알 수 없는 오류가 발생했습니다. 해당 에러를 support@osci.kr로 메일을 보내주십시오.");
             logger.error("Unhandled exception has occurred.", e);
             System.exit(1);
         }
@@ -222,7 +222,7 @@ public class Starter {
                 break;
             } while(true);
         } catch (Exception e) {
-            System.out.println("알 수 없는 오류가 발생했습니다.");
+        	System.out.println("알 수 없는 오류가 발생했습니다. 해당 에러를 support@osci.kr로 메일을 보내주십시오.");
             logger.error("Unhandled exception has occurred.", e);
             System.exit(1);
         }
@@ -252,7 +252,7 @@ public class Starter {
                 System.exit(1);
             }
         } catch (Exception e) {
-            System.out.println("알 수 없는 오류가 발생했습니다.");
+        	System.out.println("알 수 없는 오류가 발생했습니다. 해당 에러를 support@osci.kr로 메일을 보내주십시오.");
             logger.error("Unhandled exception has occurred.", e);
             System.exit(1);
         }
@@ -292,7 +292,7 @@ public class Starter {
 	            break;
 	        } while(true);
         } catch (Exception e) {
-            System.out.println("알 수 없는 오류가 발생했습니다.");
+        	System.out.println("알 수 없는 오류가 발생했습니다. 해당 에러를 support@osci.kr로 메일을 보내주십시오.");
             logger.error("Unhandled exception has occurred.", e);
             System.exit(1);
         }
@@ -326,7 +326,7 @@ public class Starter {
                 System.exit(1);
             }
         } catch (Exception e) {
-            System.out.println("알 수 없는 오류가 발생했습니다.");
+        	System.out.println("알 수 없는 오류가 발생했습니다. 해당 에러를 support@osci.kr로 메일을 보내주십시오.");
             logger.error("Unhandled exception has occurred.", e);
             System.exit(1);
         }
@@ -356,7 +356,7 @@ public class Starter {
                 System.exit(1);
             }
         } catch (Exception e) {
-            System.out.println("알 수 없는 오류가 발생했습니다.");
+        	System.out.println("알 수 없는 오류가 발생했습니다. 해당 에러를 support@osci.kr로 메일을 보내주십시오.");
             logger.error("Unhandled exception has occurred.", e);
             System.exit(1);
         }
