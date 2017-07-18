@@ -149,6 +149,13 @@ public class FileEncodingConvertTask extends BaseTask {
 				detector.setText(data);
 				cm = detector.detect();
 				
+				for (com.ibm.icu.text.CharsetMatch m : detector.detectAll()) {
+					if (m.getName().toLowerCase().equals("euc-kr")) {
+						cm = m;
+						break;
+					}
+				}
+				
 	            fileContents = cm.getString();
 	            
 	            //logger.debug("Encoding => {}" + cm.getName());
