@@ -141,23 +141,23 @@ public class FileEncodingConvertTask extends BaseTask {
             //String fileContents = new CharsetDetector().getString(data, defaultEncoding);
             
             String fileContents = null;
-            com.ibm.icu.text.CharsetMatch cm = null;
             
 			try {
 				CharsetDetector detector = new CharsetDetector();
 				detector.setDeclaredEncoding(defaultEncoding);
 				detector.setText(data);
-				cm = detector.detect();
 				
 				for (com.ibm.icu.text.CharsetMatch m : detector.detectAll()) {
 					if (m.getName().toLowerCase().equals("euc-kr")) {
-						cm = m;
+						fileContents = m.getString();
 						break;
 					}
 				}
 				
-	            fileContents = cm.getString();
-	            
+				if (fileContents == null) {
+					fileContents = detector.detect().getString();
+				}
+				
 	            //logger.debug("Encoding => {}" + cm.getName());
 	            //logger.debug("Contents => {}" + cm.getString());
 			} catch (Exception e) {
