@@ -66,7 +66,7 @@ public class ScpActionTest {
 		//*/
 	}
 
-	@Test
+//	@Test
 	public void perform() {
 		
 		/*********************

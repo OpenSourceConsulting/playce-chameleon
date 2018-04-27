@@ -68,7 +68,7 @@ public class SshActionTest {
 		//*/
 	}
 
-	@Test
+//	@Test
 	public void perform() {
 		// 초기화
 		commandList = new ArrayList<String>();

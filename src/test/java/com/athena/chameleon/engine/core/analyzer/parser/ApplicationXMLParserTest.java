@@ -112,9 +112,162 @@ public class ApplicationXMLParserTest {
 			
 			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
 			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
-			assertTrue("Web application은 2개 이어야 합니다.", warFileList.size() == 2);
-			assertTrue("EJB application은 2개 이어야 합니다.", jarFileList.size() == 2);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
+			
+
+			// 테스트
+			new ApplicationXMLParser().parse(file, analyzeDefinition);
+			
+			// 검증
+			warFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.WAR_FILE_LIST);
+			jarFileList = (List<File>) ThreadLocalUtil.get(ChameleonConstants.JAR_FILE_LIST);
+			
+			assertNotNull("warFileList는 null이 아니어야 합니다.", warFileList);
+			assertNotNull("jarFileList는 null이 아니어야 합니다.", jarFileList);
 		} catch(Throwable t) {
+			t.printStackTrace();
 			fail("Exception이 발생하면 안됩니다.");
 		}
 	}//end of testApplication_1_3()
