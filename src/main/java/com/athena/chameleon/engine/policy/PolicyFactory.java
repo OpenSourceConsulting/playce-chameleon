@@ -51,7 +51,6 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 
 	private Policy policy;
 	
-	@Override
 	public void afterPropertiesSet() throws Exception {
 		policy = new Policy();
 		
@@ -108,17 +107,14 @@ public class PolicyFactory implements FactoryBean<Policy>, InitializingBean {
 		policy.setEtcPattern(Pattern.compile(regex.toString()));
 	}
 
-	@Override
 	public Policy getObject() throws Exception {
 		return policy;
 	}
 
-	@Override
 	public Class<?> getObjectType() {
 		return Policy.class;
 	}
 
-	@Override
 	public boolean isSingleton() {
 		return true;
 	}

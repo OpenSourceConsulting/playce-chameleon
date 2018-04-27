@@ -14,6 +14,7 @@
 		<spring.maven.artifact.version>3.1.2.RELEASE</spring.maven.artifact.version>
 		<slf4j.artifact.version>1.6.6</slf4j.artifact.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<lib.dir>${project.basedir}/lib</lib.dir>
 		<skipTests>true</skipTests>
 		<cobertura.skip>true</cobertura.skip>
 	</properties>
@@ -110,6 +111,25 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
+							<includeScope>system</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			
 			<!-- Jetty Local Runtime Environment -->
 			<plugin>
@@ -165,22 +185,26 @@
 			</plugin>
 			
 			<!-- PMD manven plugin -->
+			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>2.5</version>
 			</plugin>
+			-->
 			
 			<!-- CheckStyle manven plugin -->
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>2.9.1</version>
 				<configuration>
+			-->
 					<!-- 
 					<configLocation>/src/main/resources/checks/checkstyle.xml</configLocation>
 					-->
 					<!-- <excludes>com/**/a/*, com/**/b/*, com/**/c/*</excludes> -->
+			<!-- 
 					<excludes>com/**/engine/entity/*</excludes>
 				</configuration>
 				<executions>
@@ -192,6 +216,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			
 			<!-- Cobertura Plugin -->
 			<plugin>
@@ -348,7 +373,7 @@
 							</target>
 							-->
 							<target>
-								<property name="base.dir" value="target/athena-chameleon-1.0.0-SNAPSHOT/WEB-INF" description="빌드 결과 루트 디렉토리" />
+								<property name="base.dir" value="target/athena-chameleon-0.0.1/WEB-INF" description="빌드 결과 루트 디렉토리" />
 								<property name="target.dir" value="target/engine" description="패키징 작업 루트 디렉토리" />
 							
 								<echo>이전 패키징 결과를 삭제합니다.</echo>
@@ -482,6 +507,14 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.maven.artifact.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.benf.cfr</groupId>
+			<artifactId>cfr</artifactId>
+			<version>0_119</version>
+			<scope>system</scope>
+			<systemPath>${lib.dir}/cfr_0_119.jar</systemPath>
 		</dependency>
 
 		<!-- junit -->

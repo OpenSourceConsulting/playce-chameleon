@@ -145,7 +145,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				logger.debug("[jwchoi] [{}] 파일을 탐색합니다.", f.getAbsolutePath());
 				extension = f.getName().substring(f.getName().lastIndexOf(".") + 1).toLowerCase();
 
-				if (extension.equals("java") || extension.equals("jsp") || extension.equals("properties")) {
+				if (extension.equals("java") || extension.equals("jsp") || extension.equals("jspx") || extension.equals("properties")) {
 					executor.execute(new RegularFileDependencyCheckTask(f, rootPath, policy, analyzeDefinition));
 				} else if (extension.equals("class")) {
 					// classpath 내에 존재하는 class 파일일 경우에만 의존성 검사를 수행한다.

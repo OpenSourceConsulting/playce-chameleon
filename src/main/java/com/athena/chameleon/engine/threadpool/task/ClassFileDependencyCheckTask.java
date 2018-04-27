@@ -20,7 +20,14 @@
  */
 package com.athena.chameleon.engine.threadpool.task;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,6 +41,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServlet;
+
+import org.apache.commons.io.IOUtils;
+import org.benf.cfr.reader.Main;
+import org.benf.cfr.reader.state.ClassFileSourceImpl;
+import org.benf.cfr.reader.state.DCCommonState;
+import org.benf.cfr.reader.util.AnalysisType;
+import org.benf.cfr.reader.util.getopt.GetOptParser;
+import org.benf.cfr.reader.util.getopt.Options;
+import org.benf.cfr.reader.util.getopt.OptionsImpl;
+import org.benf.cfr.reader.util.output.DumperFactoryImpl;
 
 import com.athena.chameleon.engine.entity.pdf.AnalyzeDefinition;
 import com.athena.chameleon.engine.entity.pdf.ClassAnalyze;
@@ -57,7 +74,10 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 	private AnalyzeDefinition analyzeDefinition;
 	
 	private Pattern pattern;
+	private Pattern etcPattern;
+	private Pattern ipPattern;
 	private Matcher match;
+	private String[] encodings;
 	private Dependency dependency;
 	private String className;
 	
@@ -73,11 +93,121 @@ public class ClassFileDependencyCheckTask extends BaseTask {
 		this.analyzeDefinition = analyzeDefinition;
 	}
 	
+	@Override
+	protected void taskRun() {
+		logger.debug("[jwchoi] [{}] 클래스 파일을 분석합니다.", file.getAbsolutePath());
+		
+		pattern = policy.getPattern();
+		etcPattern = policy.getEtcPattern();
+		ipPattern = Pattern.compile(IPADDRESS_PATTERN);
+		match = null;
+		encodings = policy.getEncodings();
+		
+		try {
+			dependency = new Dependency();
+			dependency.setFileName(file.getAbsolutePath().substring(rootPath.length() + 1));
+			dependency.setExtension(file.getName().substring(file.getName().lastIndexOf(".") + 1));
+
+			CommonAnalyze commonAnalyze = null;
+			
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(readClass(file.getAbsolutePath()))));
+
+			String lineStr = null;
+			int lineNum = 1;
+			while ((lineStr = buffer.readLine()) != null) {
+				// Servlet 상속 여부 검사
+				if(commonAnalyze == null && (lineStr.indexOf("extends HttpServlet") > -1 || 
+						lineStr.indexOf("extends javax.servlet.http.HttpServlet") > -1 || 
+						lineStr.indexOf("@Controller") > -1 || 
+						lineStr.indexOf("@RestController") > -1)) {
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem(file.getName());
+					commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
+					
+					analyzeDefinition.getServletExtendsList().add(commonAnalyze);
+				}
+
+				// EJB 관련 상속 여부 검사
+				if(commonAnalyze == null && (lineStr.indexOf("extends EJBHome") > -1 || lineStr.indexOf("extends javax.ejb.EJBHome") > -1 ||
+						lineStr.indexOf("extends EJBObject") > -1 || lineStr.indexOf("extends javax.ejb.EJBObject") > -1 || 
+						lineStr.indexOf("implements SessionBean") > -1 || lineStr.indexOf("implements javax.ejb.SessionBean") > -1 ||
+						lineStr.indexOf("@Stateless") > -1 || lineStr.indexOf("@Stateful") > -1 || 
+						lineStr.indexOf("@Entity") > -1 || lineStr.indexOf("@Remote") > -1)) {
+					commonAnalyze = new CommonAnalyze();
+					commonAnalyze.setItem(file.getName());
+					commonAnalyze.setLocation(file.getAbsolutePath().substring(rootPath.length(), file.getAbsolutePath().indexOf(file.getName())));
+					
+					analyzeDefinition.getEjbExtendsList().add(commonAnalyze);
+				}
+				
+				// 인코딩 변경 여부 검사
+				for(String encoding : encodings) {
+					if(lineStr.indexOf(encoding) > -1) {
+						dependency.addEncodingStrMap(new String("# " + Integer.toString(lineNum++)) + " : ", lineStr);
+					}
+				}
+				
+				//  WehSphere, Weblogic, Jeus 등 상용 WAS 의존성 검사
+			    match = pattern.matcher(lineStr);
+			    if (match.matches()) {
+			    	dependency.addDependencyStrMap(new String("# " + Integer.toString(lineNum++)) + " : ", lineStr);
+			    }
+				
+				// Connection URL 등 기타 레포트 대상 요소 존재여부 검사
+			    match = etcPattern.matcher(lineStr);
+			    if (match.matches()) {
+			    	dependency.addOthersStrMap(new String("# " + Integer.toString(lineNum++)) + " : ", lineStr);
+			    }
+
+				// IP Address 존재여부 검사
+			    match = ipPattern.matcher(lineStr);
+			    if (match.find()) {
+			    	dependency.addOthersStrMap(new String("Line " + Integer.toString(lineNum)) + " : ", lineStr);
+			    }
+			}
+			
+			IOUtils.closeQuietly(buffer);
+			
+			if (dependency.getDependencyStrMap().size() > 0 || dependency.getOthersStrMap().size() > 0 || dependency.getEncodingStrMap().size() > 0) {
+				analyzeDefinition.getClassDependencyList().add(dependency);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private static synchronized byte[] readClass(String classFile) {
+		try {
+			String[] args = new String[]{classFile};
+	
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			System.setOut(new PrintStream(baos));
+			
+			GetOptParser getOptParser = new GetOptParser();
+			Options options = getOptParser.parse(args, OptionsImpl.getFactory());
+	
+			ClassFileSourceImpl classFileSource = new ClassFileSourceImpl(options);
+			DCCommonState dcCommonState = new DCCommonState(options, classFileSource);
+			String path = (String) options.getOption(OptionsImpl.FILENAME);
+			AnalysisType type = (AnalysisType) ((Object) options.getOption(OptionsImpl.ANALYSE_AS));
+			
+			if (type == null) {
+				type = dcCommonState.detectClsJar(path);
+			}
+			DumperFactoryImpl dumperFactory = new DumperFactoryImpl(options);
+			Main.doClass(dcCommonState, path, dumperFactory);
+			
+			return baos.toByteArray();
+		} finally {
+			System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.athena.chameleon.engine.threadpool.task.BaseTask#taskRun()
 	 */
-	@Override
-	protected void taskRun() {
+	//@Override
+	protected void taskRunOld() {
 
 		logger.debug("[jwchoi] [{}] 클래스 파일을 분석합니다.", file.getAbsolutePath());
 		

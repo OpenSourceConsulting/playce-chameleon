@@ -75,6 +75,7 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 	protected void taskRun() {
 		Pattern pattern = policy.getPattern();
 		Pattern etcPattern = policy.getEtcPattern();
+		Pattern ipPattern = Pattern.compile(IPADDRESS_PATTERN);
 		Matcher match = null;
 		
 		String[] encodings = policy.getEncodings();
@@ -160,6 +161,12 @@ public class RegularFileDependencyCheckTask extends BaseTask {
 				// Connection URL 등 기타 레포트 대상 요소 존재여부 검사
 			    match = etcPattern.matcher(lineStr);
 			    if (match.matches()) {
+			    	dependency.addOthersStrMap(new String("Line " + Integer.toString(lineNum)) + " : ", lineStr);
+			    }
+
+				// IP Address 존재여부 검사
+			    match = ipPattern.matcher(lineStr);
+			    if (match.find()) {
 			    	dependency.addOthersStrMap(new String("Line " + Integer.toString(lineNum)) + " : ", lineStr);
 			    }
 			    

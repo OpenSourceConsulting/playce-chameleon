@@ -39,10 +39,22 @@ public class ClasspathUtil {
 	 * ClassLoader에 지정된 path를 추가한다.
 	 * </pre>
 	 * 
+	 * @throws Exception
+	 */
+	public static void addPath(String path) throws Exception {
+		lastAddedPath = path;
+	}//end of addPath()
+	
+	/**
+	 * <pre>
+	 * ClassLoader에 지정된 path를 추가한다.
+	 * </pre>
+	 * 
 	 * @param path
 	 * @throws Exception
 	 */
 	public static void addPath(String path, JarClassLoader jcl) throws Exception {
+		/*
 		java.io.File file = new java.io.File(path);
 		java.net.URL url = file.toURI().toURL();
 		//java.net.URLClassLoader urlClassLoader = (java.net.URLClassLoader) ClassLoader.getSystemClassLoader();
@@ -51,7 +63,7 @@ public class ClasspathUtil {
 		method.setAccessible(true);
 		//method.invoke(urlClassLoader, new Object[] { url });
 		method.invoke(jcl, new Object[] { url });
-		
+		*/
 		lastAddedPath = path;
 	}//end of addPath()
 }//end of ClasspathUtil.java
