@@ -1018,7 +1018,7 @@ public class PDFDocGenerator {
                 cSection = new Element("section");
                 cSection.setAttribute("title", MessageUtil.getMessage("pdf.message.maven_dependency.lib.title"));
                 
-                cSection.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.maven_dependency.lib.title") + MessageUtil.getMessage("pdf.message.maven_dependency.lib.ather_text")));
+                cSection.addContent(new Element("text").setText(MessageUtil.getMessage("pdf.message.maven_dependency.lib.title") + MessageUtil.getMessage("pdf.message.maven_dependency.lib.other_text")));
                 
                 child = new Element("table");
                 childE1 = new Element("header");
@@ -1569,7 +1569,7 @@ public class PDFDocGenerator {
                                 String[] param2 = new String[]{homeName, remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length()), getValue(cls2.getMethod("getJndiName").invoke(o2)), 
                                         transaction.toUpperCase(), ejbclass.substring(ejbclass.lastIndexOf(".")+1, ejbclass.length()), remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length())};
                                 
-                                    buf.append(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
+                                    buf.append(MessageUtil.getMessage("pdf.message.ejbjar.weblogic", param2));
                             }
                             
                         }
@@ -1586,7 +1586,7 @@ public class PDFDocGenerator {
                                 String[] param2 = new String[]{homeName, remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length()), getValue(cls2.getMethod("getExportName").invoke(o2)), 
                                         transaction.toUpperCase(), ejbclass.substring(ejbclass.lastIndexOf(".")+1, ejbclass.length()), remoteName.substring(remoteName.lastIndexOf(".")+1, remoteName.length())};
                                 
-                                buf.append(MessageUtil.getMessage("pdf.message.jebjar.weblogic", param2));
+                                buf.append(MessageUtil.getMessage("pdf.message.ejbjar.weblogic", param2));
                             }
                             
                         }
