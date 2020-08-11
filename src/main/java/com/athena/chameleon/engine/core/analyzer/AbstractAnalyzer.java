@@ -131,7 +131,7 @@ public abstract class AbstractAnalyzer implements Analyzer {
 				
 				logger.debug("[jwchoi] [{}] 디렉토리를 탐색합니다.", f.getAbsolutePath());
 				
-				// EJB Archive 내에 Exploded 형태로 존재하는 WEB Directory 또는 EJB Directory인 경우 탐색하지 않는다.
+				// EAR Archive 내에 Exploded 형태로 존재하는 WEB Directory 또는 EJB Directory인 경우 탐색하지 않는다.
 				if(this instanceof EarAnalyzer && (warFileList.contains(file) || jarFileList.contains(file))) {
 					return;
 				}

@@ -181,7 +181,7 @@ public class FileEncodingConverter {
 	 */
 	private void convertAll(File file) {
 		if (file.isDirectory()) {
-			// EJB Archive 내에 Exploded 형태로 존재하는 WEB Directory 또는 EJB Directory인 경우 탐색하지 않는다.
+			// EAR Archive 내에 Exploded 형태로 존재하는 WEB Directory 또는 EJB Directory인 경우 탐색하지 않는다.
 			if(warFileList.contains(file) || jarFileList.contains(file)) {
 				return;
 			}
